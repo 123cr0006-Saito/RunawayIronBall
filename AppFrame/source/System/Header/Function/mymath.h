@@ -40,5 +40,6 @@ public:
 	//垂直かどうか
 	static bool CheckVerticalRelation(VECTOR line_1_start, VECTOR line_1_end, VECTOR line_2_start, VECTOR line_2_end);
 
-
+	// 2つのベクトルのなす角を計算する
+	static float CalcVectorAngle(VECTOR v1, VECTOR v2);
 };

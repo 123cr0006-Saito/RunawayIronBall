@@ -15,6 +15,11 @@ public:
 		float x2, float y2, float w2, float h2		// ‚Ó‚½‚Â‚ß‚Ìbox ¶ã(x,y), ‘å‚«‚³w,h
 	);
 
+	static bool IsHitBox(
+		MYRECT rect1,		// ‚Ğ‚Æ‚Â‚ß‚ÌMYRECT ¶ã(x,y), ‘å‚«‚³w,h
+		MYRECT rect2		// ‚Ó‚½‚Â‚ß‚ÌMYRECT ¶ã(x,y), ‘å‚«‚³w,h
+	);
+
 	// “–‚½‚è”»’è—pB2‚Â‚Ì‰~‚ª“–‚½‚Á‚½‚©‚ğ”»’è
 	// “–‚½‚Á‚Ä‚¢‚½‚ç1, “–‚½‚Á‚Ä‚¢‚È‚©‚Á‚½‚ç0‚ğ•Ô‚·
 	static bool IsHitCircle(

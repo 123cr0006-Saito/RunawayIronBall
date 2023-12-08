@@ -21,6 +21,10 @@ bool TwoDimCol::IsHitBox(
 	return false;
 }
 
+bool TwoDimCol::IsHitBox(MYRECT rect1, MYRECT rect2) {
+	return IsHitBox(rect1.x, rect1.y, rect1.w, rect1.h, rect2.x, rect2.y, rect2.w, rect2.h);
+};
+
 // “–‚½‚è”»’è—pB2‚Â‚Ì‰~‚ª“–‚½‚Á‚½‚©‚ğ”»’è
 // “–‚½‚Á‚Ä‚¢‚½‚ç1, “–‚½‚Á‚Ä‚¢‚È‚©‚Á‚½‚ç0‚ğ•Ô‚·
 bool TwoDimCol::IsHitCircle(

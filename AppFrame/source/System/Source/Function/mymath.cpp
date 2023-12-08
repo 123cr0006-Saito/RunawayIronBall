@@ -115,3 +115,13 @@ bool Math::CheckVerticalRelation(VECTOR line_1_start, VECTOR line_1_end, VECTOR 
 	return -effective_range <= dot && dot <= effective_range;
 }
 
+float Math::CalcVectorAngle(VECTOR v1, VECTOR v2)
+{
+	float v1Size = VSize(v1);
+	float v2Size = VSize(v2);
+	if (v1Size > 0.000000f && v2Size > 0.000000f) {
+		float cos = VDot(v1, v2) / VSize(v1) * VSize(v2);
+		return acos(cos);
+	}
+	return 0;
+}
