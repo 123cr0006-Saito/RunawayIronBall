@@ -9,7 +9,7 @@ float Math::RadToDeg(float rad) {
 	return rad * 180.0f / PI;		// äpìxÇradianÇ©ÇÁdegreeÇ…ïœä∑
 }
 
-//ÉuÉâÉìÉN
+// ÉNÉâÉìÉv
 float Math::Max(float left, float right) {
 	return left > right ? left : right;
 };
@@ -92,12 +92,12 @@ bool Math::SetMatrixToVector(VECTOR& vec_x, VECTOR& vec_y, VECTOR& vec_z, const 
 	return true;
 }
 
-//âsäpÇ©Ç«Ç§Ç©
+// âsäpÇ©Ç«Ç§Ç©
 bool Math::CheckAcuteAngle(VECTOR p1, VECTOR p2, VECTOR p3) {
 	return VDot(VSub(p1, p2), VSub(p3, p2)) >= 0.0f;
 }
 
-//ïΩçsÇ©Ç«Ç§Ç©
+// ïΩçsÇ©Ç«Ç§Ç©
 bool Math::CheckParallelRelation(VECTOR line_1_start, VECTOR line_1_end, VECTOR line_2_start, VECTOR line_2_end) {
 	VECTOR line_1 = VSub(line_1_end, line_1_start);
 	VECTOR line_2 = VSub(line_2_end, line_2_start);
@@ -106,7 +106,7 @@ bool Math::CheckParallelRelation(VECTOR line_1_start, VECTOR line_1_end, VECTOR 
 	return -effective_range <= value && value <= effective_range;
 }
 
-//êÇíºÇ©Ç«Ç§Ç©
+// êÇíºÇ©Ç«Ç§Ç©
 bool Math::CheckVerticalRelation(VECTOR line_1_start, VECTOR line_1_end, VECTOR line_2_start, VECTOR line_2_end) {
 	VECTOR line_1 = VSub(line_1_end, line_1_start);
 	VECTOR line_2 = VSub(line_2_end, line_2_start);
@@ -115,6 +115,8 @@ bool Math::CheckVerticalRelation(VECTOR line_1_start, VECTOR line_1_end, VECTOR 
 	return -effective_range <= dot && dot <= effective_range;
 }
 
+// 2Ç¬ÇÃÉxÉNÉgÉãÇÃÇ»Ç∑äpÇåvéZÇ∑ÇÈ
+// ñﬂÇËíl: äpìx(radian) 
 float Math::CalcVectorAngle(VECTOR v1, VECTOR v2)
 {
 	float v1Size = VSize(v1);

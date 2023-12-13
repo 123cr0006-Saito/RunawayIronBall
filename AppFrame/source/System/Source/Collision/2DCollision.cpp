@@ -4,7 +4,7 @@
 
 
 // 当たり判定用。2つのboxが当たったかを判定
-// 当たっていたら1, 当たっていなかったら0を返す
+// 当たっていたらtrue, 当たっていなかったらfalseを返す
 bool TwoDimCol::IsHitBox(
 	float x1, float y1, float w1, float h1,		// ひとつめのbox 左上(x,y), 大きさw,h
 	float x2, float y2, float w2, float h2		// ふたつめのbox 左上(x,y), 大きさw,h
@@ -26,7 +26,7 @@ bool TwoDimCol::IsHitBox(MYRECT rect1, MYRECT rect2) {
 };
 
 // 当たり判定用。2つの円が当たったかを判定
-// 当たっていたら1, 当たっていなかったら0を返す
+// 当たっていたらtrue, 当たっていなかったらfalseを返す
 bool TwoDimCol::IsHitCircle(
 	float x1, float y1, float r1,		// ひとつめのcircle 中心(x,y), 半径r
 	float x2, float y2, float r2		// ふたつめのcircle 中心(x,y), 半径r
@@ -41,6 +41,8 @@ bool TwoDimCol::IsHitCircle(
 	return false;
 }
 
+// 当たり判定用。円と矩形が当たったかを判定
+// 当たっていたらtrue, 当たっていなかったらfalseを返す
 bool TwoDimCol::IsHitCircleRect(
 	float cx1, float cy1, float r,          // 円の判定
 	float x2, float y2, float w, float h    // 矩形の判定
