@@ -1,20 +1,20 @@
 #include "../../Header/Collision/3DCollision.h"
 
-bool ThrDimCol::PlaneCollision(VECTOR pos1, float w1,float d1, VECTOR pos2, float w2, float d2)
+bool Collision3D::PlaneCollision(VECTOR pos1, float w1,float d1, VECTOR pos2, float w2, float d2)
 {
 	VECTOR receiv = VSub(pos1, VGet(w1 / 2, 0, d1 / 2));
 	VECTOR give = VSub(pos2, VGet(w2 / 2, 0, d2 / 2));
 
-	return TwoDimCol::IsHitBox(receiv.x, receiv.z, w1, d1, give.x, give.z, w2, d2);
+	return Collision2D::IsHitBox(receiv.x, receiv.z, w1, d1, give.x, give.z, w2, d2);
 }
 
-bool ThrDimCol::AABBCollision(VECTOR pos1, float w1, float h1, float d1, VECTOR pos2, float w2, float h2, float d2)
+bool Collision3D::AABBCollision(VECTOR pos1, float w1, float h1, float d1, VECTOR pos2, float w2, float h2, float d2)
 {
 	VECTOR receiv = VSub(pos1, VGet(w1 / 2, h1 / 2, d1 / 2));
 	VECTOR give = VSub(pos2, VGet(w2 / 2, h2 / 2, d2 / 2));
 
-	if(TwoDimCol::IsHitBox(receiv.x, receiv.z, w1, d1, give.x, give.z, w2, d2)) {
-		if(TwoDimCol::IsHitBox(receiv.x, receiv.y, w1, h1, give.x, give.y, w2, h2)) {
+	if(Collision2D::IsHitBox(receiv.x, receiv.z, w1, d1, give.x, give.z, w2, d2)) {
+		if(Collision2D::IsHitBox(receiv.x, receiv.y, w1, h1, give.x, give.y, w2, h2)) {
 			return true;
 		}
 	}
@@ -22,7 +22,7 @@ bool ThrDimCol::AABBCollision(VECTOR pos1, float w1, float h1, float d1, VECTOR 
 	return false;
 }
 
-bool ThrDimCol::CircleCollision(VECTOR pos1, float r1, VECTOR pos2, float r2){
+bool Collision3D::CircleCollision(VECTOR pos1, float r1, VECTOR pos2, float r2){
 	VECTOR col = VSub(pos1, pos2); col.y = 0;
 	float r = r1 + r2;
 	if (r * r > col.x * col.x + col.z * col.z) {
@@ -31,7 +31,7 @@ bool ThrDimCol::CircleCollision(VECTOR pos1, float r1, VECTOR pos2, float r2){
 	return false;
 }
 
-bool ThrDimCol::CylindCollision(VECTOR pos1, float r1, float h1, VECTOR pos2, float r2, float h2) {
+bool Collision3D::CylindCollision(VECTOR pos1, float r1, float h1, VECTOR pos2, float r2, float h2) {
 	VECTOR col = VSub(pos1, pos2); 
 	float r = r1 + r2;
 	if (r * r > col.x * col.x + col.z * col.z) {
@@ -43,7 +43,7 @@ bool ThrDimCol::CylindCollision(VECTOR pos1, float r1, float h1, VECTOR pos2, fl
 	return false;
 }
 
-float ThrDimCol::AABBShortLength(VECTOR Box, float wide, float height ,float depth ,VECTOR Point) {
+float Collision3D::AABBShortLength(VECTOR Box, float wide, float height ,float depth ,VECTOR Point) {
 	float SqLen = 0;   // 長さのべき乗の値を格納
 	float point[3] = { Point.x,Point.y,Point.z};
 	float box[3] = { Box.x,Box.y,Box.z };
@@ -60,7 +60,7 @@ float ThrDimCol::AABBShortLength(VECTOR Box, float wide, float height ,float dep
 	return sqrt(SqLen);
 }
 
-bool ThrDimCol::OBBCollision(OBB obb_1, OBB obb_2, bool flag) {
+bool Collision3D::OBBCollision(OBB obb_1, OBB obb_2, bool flag) {
 	// lengthは全体の長さなので使うときは半分にする
 	//NAe は 方向ベクトル Ae は 方向ベクトルにその長さをかけたもの　方向ベクトルはマトリクスから持ってきたもので正規化されている
 	MATRIX matrix_A = Math::MMultXYZ(obb_1.direction[0], obb_1.direction[1], obb_1.direction[2]);
@@ -210,7 +210,7 @@ bool ThrDimCol::OBBCollision(OBB obb_1, OBB obb_2, bool flag) {
 
 //最短距離は大体点と点を垂直に下した線になる
 //点と直線の最短距離
-POINT_LINE_SHORT ThrDimCol::PointLineShortLength(VECTOR line_start, VECTOR line_end, VECTOR point) {
+POINT_LINE_SHORT Collision3D::PointLineShortLength(VECTOR line_start, VECTOR line_end, VECTOR point) {
 	POINT_LINE_SHORT Re;
 	VECTOR line = VSub(line_end, line_start);
 	float length = VSquareSize(line);
@@ -227,9 +227,9 @@ POINT_LINE_SHORT ThrDimCol::PointLineShortLength(VECTOR line_start, VECTOR line_
 };
 
 //点と線分の最短距離   私的な作りは始点と終点はワールド座標で入れる
-POINT_LINE_SHORT ThrDimCol::PointLineSegShortLength(VECTOR line_start, VECTOR line_end, VECTOR point) {
+POINT_LINE_SHORT Collision3D::PointLineSegShortLength(VECTOR line_start, VECTOR line_end, VECTOR point) {
 	VECTOR end = VSub(line_end, line_start);
-	POINT_LINE_SHORT Re = ThrDimCol::PointLineShortLength(line_start, line_end, point);
+	POINT_LINE_SHORT Re = Collision3D::PointLineShortLength(line_start, line_end, point);
 
 	if (!Math::CheckAcuteAngle(point, line_start, line_end)) {
 		//始点側
@@ -246,14 +246,14 @@ POINT_LINE_SHORT ThrDimCol::PointLineSegShortLength(VECTOR line_start, VECTOR li
 }
 
 //2直線の垂直になる場所とベクトル係数
-TWOLINE_SHORT ThrDimCol::TwoLineShortPoint(VECTOR line_1_start, VECTOR line_1_end, VECTOR line_2_start, VECTOR line_2_end) {
+TWOLINE_SHORT Collision3D::TwoLineShortPoint(VECTOR line_1_start, VECTOR line_1_end, VECTOR line_2_start, VECTOR line_2_end) {
 	TWOLINE_SHORT Re;
 	VECTOR one_way = VSub(line_1_end, line_1_start);
 	VECTOR two_way = VSub(line_2_end, line_2_start);
 
 	//平行な直線か調べる
 	if (Math::CheckParallelRelation(line_1_start, line_1_end, line_2_start, line_2_end)) {
-		POINT_LINE_SHORT pls = ThrDimCol::PointLineSegShortLength(line_1_start, line_1_end, line_2_start);
+		POINT_LINE_SHORT pls = Collision3D::PointLineSegShortLength(line_1_start, line_1_end, line_2_start);
 		Re.length = pls.length;
 		Re.line_1_point = line_1_start;
 		Re.line_1_coefficient = 0.0f;
@@ -277,7 +277,7 @@ TWOLINE_SHORT ThrDimCol::TwoLineShortPoint(VECTOR line_1_start, VECTOR line_1_en
 	return Re;
 }
 
-TWOLINE_SHORT ThrDimCol::TwoSegmentShortPoint(VECTOR line_1_start, VECTOR line_1_end, VECTOR line_2_start, VECTOR line_2_end) {
+TWOLINE_SHORT Collision3D::TwoSegmentShortPoint(VECTOR line_1_start, VECTOR line_1_end, VECTOR line_2_start, VECTOR line_2_end) {
 
 	TWOLINE_SHORT Re;
 
@@ -303,7 +303,7 @@ TWOLINE_SHORT ThrDimCol::TwoSegmentShortPoint(VECTOR line_1_start, VECTOR line_1
 		else {
 			// 線分2は縮退していなかった
 			//線分1の始点と直線2の最短距離
-			POINT_LINE_SHORT value = ThrDimCol::PointLineSegShortLength(line_2_start, line_2_end, line_1_start);
+			POINT_LINE_SHORT value = Collision3D::PointLineSegShortLength(line_2_start, line_2_end, line_1_start);
 			Re.line_1_point = line_1_start;
 			Re.line_1_coefficient = 0.0f;
 			Re.line_2_point = value.hit_point;
@@ -317,7 +317,7 @@ TWOLINE_SHORT ThrDimCol::TwoSegmentShortPoint(VECTOR line_1_start, VECTOR line_1
 	else if (VSquareSize(two_way) < effective_range) {
 		// 線分2は縮退していた
 		//上で線分1は確認したのでここはしない
-		POINT_LINE_SHORT value = ThrDimCol::PointLineSegShortLength(line_1_start, line_1_end, line_2_start);
+		POINT_LINE_SHORT value = Collision3D::PointLineSegShortLength(line_1_start, line_1_end, line_2_start);
 		Re.line_1_point = value.hit_point;
 		Re.line_1_coefficient = value.coefficient;
 		Re.line_2_point = line_2_start;
@@ -331,7 +331,7 @@ TWOLINE_SHORT ThrDimCol::TwoSegmentShortPoint(VECTOR line_1_start, VECTOR line_1
 	//線分1と線分2が並行か
 	if (Math::CheckParallelRelation(line_1_start, line_1_end, line_2_start, line_2_end)) {
 		//平行だったので垂線の端の一つをＰ1とする
-		POINT_LINE_SHORT value = ThrDimCol::PointLineSegShortLength(line_1_start, line_1_end, line_2_start);
+		POINT_LINE_SHORT value = Collision3D::PointLineSegShortLength(line_1_start, line_1_end, line_2_start);
 		Re.line_1_point = line_1_start;
 		Re.line_1_coefficient = 0.0f;
 		Re.line_2_point = value.hit_point;
@@ -343,7 +343,7 @@ TWOLINE_SHORT ThrDimCol::TwoSegmentShortPoint(VECTOR line_1_start, VECTOR line_1
 	}
 	else {
 		//平行でなかったので線分二つの最短距離を求める
-		Re = ThrDimCol::TwoLineShortPoint(line_1_start, line_1_end, line_2_start, line_2_end);
+		Re = Collision3D::TwoLineShortPoint(line_1_start, line_1_end, line_2_start, line_2_end);
 		if (0.0f <= Re.line_1_coefficient && Re.line_1_coefficient <= 1.0f &&
 			0.0f <= Re.line_2_coefficient && Re.line_2_coefficient <= 1.0f) {
 			return Re;
@@ -355,7 +355,7 @@ TWOLINE_SHORT ThrDimCol::TwoSegmentShortPoint(VECTOR line_1_start, VECTOR line_1
 
 	Re.line_1_coefficient = Math::Clamp(0, 1, Re.line_1_coefficient);
 	Re.line_1_point = VAdd(line_1_start, VScale(one_way, Re.line_1_coefficient));
-	POINT_LINE_SHORT value = ThrDimCol::PointLineSegShortLength(line_2_start, line_2_end, Re.line_1_point);
+	POINT_LINE_SHORT value = Collision3D::PointLineSegShortLength(line_2_start, line_2_end, Re.line_1_point);
 	Re.line_2_coefficient = value.coefficient;
 	Re.line_2_point = value.hit_point;
 	Re.length = value.length;
@@ -366,7 +366,7 @@ TWOLINE_SHORT ThrDimCol::TwoSegmentShortPoint(VECTOR line_1_start, VECTOR line_1
 	//-------------------------------------------------------------------------------------------------------------------------------------------------------
 	Re.line_2_coefficient = Math::Clamp(0, 1, Re.line_2_coefficient);
 	Re.line_2_point = VAdd(line_2_start, VScale(two_way, Re.line_2_coefficient));
-	value = ThrDimCol::PointLineSegShortLength(line_1_start, line_1_end, Re.line_2_point);
+	value = Collision3D::PointLineSegShortLength(line_1_start, line_1_end, Re.line_2_point);
 
 	Re.line_1_coefficient = value.coefficient;
 	Re.line_1_point = value.hit_point;
@@ -382,17 +382,17 @@ TWOLINE_SHORT ThrDimCol::TwoSegmentShortPoint(VECTOR line_1_start, VECTOR line_1
 	return Re;
 }
 
-bool ThrDimCol::SphereCol(VECTOR pos1, float r1, VECTOR pos2, float r2) {
+bool Collision3D::SphereCol(VECTOR pos1, float r1, VECTOR pos2, float r2) {
 	return VSquareSize(VSub(pos2, pos1)) <= (r1 + r2) * (r1 + r2);
 }
 
-bool ThrDimCol::TwoCapselCol(VECTOR line_1_start, VECTOR line_1_end, float r_1, VECTOR line_2_start, VECTOR line_2_end, float r_2) {
-	TWOLINE_SHORT value = ThrDimCol::TwoSegmentShortPoint(line_1_start, line_1_end, line_2_start, line_2_end);
-	return ThrDimCol::SphereCol(value.line_1_point, r_1, value.line_2_point, r_2);
+bool Collision3D::TwoCapselCol(VECTOR line_1_start, VECTOR line_1_end, float r_1, VECTOR line_2_start, VECTOR line_2_end, float r_2) {
+	TWOLINE_SHORT value = Collision3D::TwoSegmentShortPoint(line_1_start, line_1_end, line_2_start, line_2_end);
+	return Collision3D::SphereCol(value.line_1_point, r_1, value.line_2_point, r_2);
 }
 
 //点とＯＢＢの最接近点
-VECTOR ThrDimCol::PointOBB(VECTOR point, OBB obb) {
+VECTOR Collision3D::PointOBB(VECTOR point, OBB obb) {
 	VECTOR pos = VSub(obb.pos, VTransform(obb.Misalignment, MGetRotY(obb.direction[1])));
 	VECTOR cp = VSub(point, pos);
 	VECTOR Re = pos;
@@ -411,7 +411,7 @@ VECTOR ThrDimCol::PointOBB(VECTOR point, OBB obb) {
 	return Re;
 }
 
-VECTOR ThrDimCol::PointOBBToBillBoard(VECTOR point, OBB obb) {
+VECTOR Collision3D::PointOBBToBillBoard(VECTOR point, OBB obb) {
 	VECTOR pos = obb.pos;
 	VECTOR cp = VSub(point, pos);
 	VECTOR Re = pos;
@@ -430,8 +430,8 @@ VECTOR ThrDimCol::PointOBBToBillBoard(VECTOR point, OBB obb) {
 	return Re;
 }
 
-bool ThrDimCol::OBBSphereCol(OBB obb, VECTOR point, float r) {
-	VECTOR pos = ThrDimCol::PointOBB(point, obb);
+bool Collision3D::OBBSphereCol(OBB obb, VECTOR point, float r) {
+	VECTOR pos = Collision3D::PointOBB(point, obb);
 
 	VECTOR vector = VSub(pos, point);
 
@@ -442,10 +442,10 @@ bool ThrDimCol::OBBSphereCol(OBB obb, VECTOR point, float r) {
 	return false;
 }
 
-bool ThrDimCol::OBBCapselCol(VECTOR line_start, VECTOR line_end, OBB obb, float r) {
-	POINT_LINE_SHORT  a = ThrDimCol::PointLineSegShortLength(line_start, line_end, VSub(obb.pos, VTransform(obb.Misalignment, MGetRotY(obb.direction[1]))));
+bool Collision3D::OBBCapselCol(VECTOR line_start, VECTOR line_end, OBB obb, float r) {
+	POINT_LINE_SHORT  a = Collision3D::PointLineSegShortLength(line_start, line_end, VSub(obb.pos, VTransform(obb.Misalignment, MGetRotY(obb.direction[1]))));
 
-	VECTOR pos = ThrDimCol::PointOBB(a.hit_point, obb);
+	VECTOR pos = Collision3D::PointOBB(a.hit_point, obb);
 
 	VECTOR vector = VSub(pos, a.hit_point);
 
@@ -456,10 +456,10 @@ bool ThrDimCol::OBBCapselCol(VECTOR line_start, VECTOR line_end, OBB obb, float 
 	return false;
 }
 
-bool ThrDimCol::OBBCapselCol(Capsule capsule, OBB obb) {
-	POINT_LINE_SHORT  cap_pos = ThrDimCol::PointLineSegShortLength(capsule.down_pos, capsule.up_pos, VSub(obb.pos, VTransform(obb.Misalignment, MGetRotY(obb.direction[1]))));
+bool Collision3D::OBBCapselCol(Capsule capsule, OBB obb) {
+	POINT_LINE_SHORT  cap_pos = Collision3D::PointLineSegShortLength(capsule.down_pos, capsule.up_pos, VSub(obb.pos, VTransform(obb.Misalignment, MGetRotY(obb.direction[1]))));
 
-	VECTOR obb_pos = ThrDimCol::PointOBB(cap_pos.hit_point, obb);
+	VECTOR obb_pos = Collision3D::PointOBB(cap_pos.hit_point, obb);
 
 	VECTOR vector = VSub(obb_pos, cap_pos.hit_point);
 
@@ -471,10 +471,10 @@ bool ThrDimCol::OBBCapselCol(Capsule capsule, OBB obb) {
 	return false;
 }
 
-bool ThrDimCol::OBBToBillBoardCapselCol(Capsule capsule, OBB obb) {
-	POINT_LINE_SHORT  cap_pos = ThrDimCol::PointLineSegShortLength(capsule.down_pos, capsule.up_pos,obb.pos);
+bool Collision3D::OBBToBillBoardCapselCol(Capsule capsule, OBB obb) {
+	POINT_LINE_SHORT  cap_pos = Collision3D::PointLineSegShortLength(capsule.down_pos, capsule.up_pos,obb.pos);
 
-	VECTOR obb_pos = ThrDimCol::PointOBBToBillBoard(cap_pos.hit_point, obb);
+	VECTOR obb_pos = Collision3D::PointOBBToBillBoard(cap_pos.hit_point, obb);
 
 	VECTOR vector = VSub(obb_pos, cap_pos.hit_point);
 

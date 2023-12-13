@@ -2,7 +2,7 @@
 #include "MyStructure.h"
 #include "../../Header/Collision/2DCollision.h"
 #include"dxlib.h"
-class ThrDimCol
+class Collision3D
 {
 public:
 
@@ -57,7 +57,5 @@ public:
 	//オーバーロード
 	static bool OBBCapselCol(Capsule capsule, OBB obb);
 	static bool OBBToBillBoardCapselCol(Capsule capsule, OBB obb);
-	// 当たり判定には問題ないと思うがまだ少しPointLineSegShortLengthがおかしなところがあると思われる
-
 
 };

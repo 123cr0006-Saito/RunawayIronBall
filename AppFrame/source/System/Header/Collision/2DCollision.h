@@ -4,7 +4,7 @@
 #include "../Function/mymath.h"
 #include "dxlib.h"
 
-class TwoDimCol
+class Collision2D
 {
 public:
 
@@ -27,13 +27,6 @@ public:
 		float x2, float y2, float r2		// ‚Ó‚½‚Â‚ß‚Ìcircle ’†S(x,y), ”¼Œar
 	);
 
-	static bool IsHitCircleRect(
-		float cx1, float cy1, float r,               // ‰~‚Ì”»’è
-		float x2, float y2, float w, float h         // ‹éŒ`‚Ì”»’è      
-	);
-
 	static bool IsHitCircleAndBox(float box_x, float  box_y, float  box_w, float  box_h, float circle_x, float circle_y, float circle_r);   //‰~‚ÆlŠp‚Ì“–‚½‚è”»’è
 
-	static bool IsHitMultBox(float bullet_x, float bullet_y, float bullet_w, float bullet_h, float bullet_cx, float bullet_cy, float bullet_direction,
-								          float player_x, float player_y, float player_w, float player_h); //•¡”‹éŒ`‚Æ‚Ì“–‚½‚è”»’è
 };
