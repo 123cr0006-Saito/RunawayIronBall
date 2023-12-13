@@ -18,6 +18,9 @@ bool ApplicationBase::Initialize(HINSTANCE hInstance) {
 	}
 	SetGraphMode(DispSizeW(), DispSizeH(), 32);
 
+	// 距離が近いところでチラツキが発生する（Z深度が足りない）対策
+	SetZBufferBitDepth(32);
+
 	if (DxLib_Init() == -1)
 	{	// エラーが起きたら直ちに終了
 		return false;
