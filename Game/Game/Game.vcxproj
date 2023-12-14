@@ -164,6 +164,7 @@
     <ClCompile Include="source\ModeGame.cpp" />
     <ClCompile Include="source\ModeTitle.cpp" />
     <ClCompile Include="source\Player.cpp" />
+    <ClCompile Include="source\Chain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\bone.h" />
@@ -175,6 +176,7 @@
     <ClInclude Include="source\ModeGame.h" />
     <ClInclude Include="source\ModeTitle.h" />
     <ClInclude Include="source\Player.h" />
+    <ClInclude Include="source\Chain.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
