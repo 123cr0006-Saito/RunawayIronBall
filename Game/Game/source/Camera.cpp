@@ -6,6 +6,8 @@ Camera::Camera(XInput* input) {
 	_cameraDirY = 0.0f;
 	_pointDistance = VGet(0, 300, -400);
 	_gazeShift = VGet(0, 200, 0);
+	_reverseX = -1;
+	_reverseY = 1;
 };
 
 Camera::~Camera() {
@@ -19,10 +21,10 @@ bool Camera::Process(VECTOR pos) {
 
 	//32768はshort型の最大値 移動速度の最大は0.02
 	if (_input->GetRx() != 0) {
-		_cameraDirY += move_speed_process(_input->GetRx(), 32768, 0.02);
+		_cameraDirY += move_speed_process(_input->GetRx(), 32768, 0.02)*_reverseY;
 	}
 	if (_input->GetRy() != 0) {
-		_cameraDirX += move_speed_process(_input->GetRy(), 32768, 0.02);
+		_cameraDirX += move_speed_process(_input->GetRy(), 32768, 0.02)*_reverseX;
 	}
 
 	//デバック用
