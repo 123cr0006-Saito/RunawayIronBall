@@ -39,4 +39,6 @@ private:
 	MATRIX _m[CHAIN_MAX];
 
 	float _length;
+
+	bool _isSwing;
 };

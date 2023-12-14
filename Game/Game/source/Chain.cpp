@@ -39,6 +39,8 @@ void Chain::Init() {
 	}
 
 	_length = 80.0f;
+
+	_isSwing = false;
 }
 
 void Chain::Process(VECTOR playerPos) {
@@ -58,32 +60,61 @@ void Chain::Process(VECTOR playerPos) {
 //	_cnt += 8.0f;					 // swing
 //#endif	
 
+
+
 	//VECTOR vDir = VSub(_pos[1], _pos[0]);
 	//MATRIX mRot = MGetRotY(DegToRad(_cnt))/*MGetRotVec2(VGet(0.0f, 0.0f, -100.0f), vDir)*/;
-
-	//for (int i = CHAIN_MAX - 1; 0 < i; i--) {
-	//	_m[i] = _m[i - 1];
-	//}
-	//_m[0] = mRot;
-
-	//for (int i = 1; i < CHAIN_MAX; i++) {
-	//	VECTOR vTmp = VGet(0.0f, 0.0f, -100.0f * i);
-	//	_pos[i] = VTransform(vTmp, MMult(_m[i], MGetTranslate(_pos[0])));
-	//}
-
-	//// リセット
-	//if (CheckHitKey(KEY_INPUT_Z) != 0) {
-	//	_pos[0] = VGet(0, 0, 0);
-	//	for (int i = 0; i < CHAIN_MAX; i++) {
-	//		_m[i] = MGetIdent();
-	//		if (i > 0) {
-	//			_pos[i] = VAdd(_pos[i - 1], VGet(0.0f, 0.0f, -100.0f));
-	//		}
-	//	}
-	//	_cnt = 0.0f;
-	//}
-
+	
+	
+	
 	_pos[0] = playerPos;
+	if (_isSwing) {
+		MATRIX mRot = MGetRotY(Math::DegToRad(_cnt));
+
+		for (int i = CHAIN_MAX - 1; 0 < i; i--) {
+			_m[i] = _m[i - 1];
+		}
+		_m[0] = mRot;
+
+		for (int i = 1; i < CHAIN_MAX; i++) {
+			VECTOR vTmp = VGet(0.0f, 0.0f, -100.0f * i);
+			_pos[i] = VTransform(vTmp, MMult(_m[i], MGetTranslate(_pos[0])));
+		}
+
+		_cnt += 5.0f;
+	}
+	else {
+		//MATRIX mRot = MGetRotY(Math::DegToRad(_cnt));
+		//MATRIX mIdentity = MGetIdent();
+		//for (int i = CHAIN_MAX - 1; 0 < i; i--) {
+		//	_m[i] = _m[i - 1];
+		//}
+		//_m[0] = mRot;
+
+		//for (int i = 1; i < CHAIN_MAX; i++) {
+		//	VECTOR vTmp = VGet(0.0f, 0.0f, -100.0f * i);
+		//	_pos[i] = VTransform(vTmp, MMult(_m[i], MGetTranslate(_pos[0])));
+		//}
+		//_cnt -= 5.0f;
+		//if (_cnt < 0.0f) { _cnt = 0.0f; }
+	}
+
+	// ストップ
+	if (_input->GetTrg(XINPUT_BUTTON_BACK) != 0) {
+		_isSwing = !(_isSwing);
+	}
+
+	if (CheckHitKey(KEY_INPUT_Z) != 0) {
+		_pos[0] = VGet(0, 0, 0);
+		for (int i = 0; i < CHAIN_MAX; i++) {
+			_m[i] = MGetIdent();
+			if (i > 0) {
+				_pos[i] = VAdd(_pos[i - 1], VGet(0.0f, 0.0f, -100.0f));
+			}
+		}
+		_cnt = 0.0f;
+	}
+	
 
 	//for (int i = 1; i < CHAIN_MAX; i++) {
 	//	if (_cnt / 60.0f < i) break;
@@ -191,9 +222,11 @@ void Chain::Process(VECTOR playerPos) {
 	for (int i = 0; i < CHAIN_MAX; i++) {
 		MV1SetPosition(_modelHandle[i], _pos[i]);
 	}
+	
 
 	_mbDir = VSub(_pos[0], _pos[CHAIN_MAX - 1]);
 	if (VSize(_mbDir) > 0.0f) {
+		if (_isSwing) _mbDir = VScale(_mbDir, -1.0f);
 		_mbDir = VNorm(_mbDir);
 		Math::SetModelForward_RotationY(_modelHandle[CHAIN_MAX - 1], _mbDir);
 	}
