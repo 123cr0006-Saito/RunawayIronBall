@@ -55,6 +55,8 @@ bool ModeGame::Render() {
 	_player->Render();
 	_chain->Render();
 
+	VECTOR ballPos = _chain->GetBallPosition();
+	DrawSphere3D(ballPos, 130.0f, 16, GetColor(255, 0, 0), GetColor(255, 0, 0), false);
 
 
 	SetUseZBuffer3D(FALSE);
