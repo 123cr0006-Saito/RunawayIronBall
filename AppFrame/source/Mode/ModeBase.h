@@ -28,7 +28,6 @@ public:
 	int GetCallPerFrame() { return _callPerFrame; }
 	int GetCallOfCount() { return _callOfCount; }
 
-	XInput* GetInputAdd() { return input; }
 
 
 private:
@@ -54,8 +53,6 @@ private:
 	int		_callPerFrame, _callPerFrame_cnt;
 	int		_callOfCount;
 	//Input
-	XInput* input;
-	Fps* fps;
 	Effect* effect;
 };
 

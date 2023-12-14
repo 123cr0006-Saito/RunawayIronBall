@@ -30,8 +30,16 @@ const int PAYER_4 = 4;
 class XInput
 {
 public:
+	// スティック入力値を「-1 ~ 1」に変換して保持する
+	struct STICK {
+		float x, y;
+	};
+
 	XInput(int number);
 	virtual bool Input();
+
+	static XInput* _instance;
+	static XInput* GetInstance() { return (XInput*)_instance; }
 
 	//ゲッター
 	//-------------------------------------------------
@@ -47,17 +55,20 @@ public:
 	unsigned char GetLTrg() { return _input.LeftTrigger; }
 	unsigned char GetRTrg() { return _input.RightTrigger; }
 
+
+
+
+	STICK GetAdjustedStick_L() { return _adjustedLStick; }
+	STICK GetAdjustedStick_R() { return _adjustedRStick; }
+
 	//-----------------------------------------------------
 
 private:
 	XINPUT_STATE _input;
 
-	// スティック入力の値を「-1 ~ 1」に変換する
-	struct STICK {
-		float x, y;
-	};
-	STICK _lStick;
-	STICK _rStick;
+
+	STICK _adjustedLStick;
+	STICK _adjustedRStick;
 
 // xboxコントローラーのボタン配置
 // 最大数

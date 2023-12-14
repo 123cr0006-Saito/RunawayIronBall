@@ -1,6 +1,6 @@
 #include "Camera.h"
-Camera::Camera(XInput* input) {
-	this->_input = input;//コンストラクタで入力用のクラスのポインタを取得
+Camera::Camera() {
+	this->_input = XInput::GetInstance();//コンストラクタで入力用のクラスのポインタを取得
 
 	_cameraDirX = 0.0f;
 	_cameraDirY = 0.0f;
@@ -21,10 +21,10 @@ bool Camera::Process(VECTOR pos) {
 
 	//32768はshort型の最大値 移動速度の最大は0.02
 	if (_input->GetRx() != 0) {
-		_cameraDirY += move_speed_process(_input->GetRx(), 32768, 0.02)*_reverseY;
+		_cameraDirY += move_speed_process(_input->GetRx(), 32768, 0.02) * _reverseY;
 	}
 	if (_input->GetRy() != 0) {
-		_cameraDirX += move_speed_process(_input->GetRy(), 32768, 0.02)*_reverseX;
+		_cameraDirX += move_speed_process(_input->GetRy(), 32768, 0.02) * _reverseX;
 	}
 
 	//デバック用

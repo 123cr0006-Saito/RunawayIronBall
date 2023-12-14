@@ -14,5 +14,8 @@ public:
 	virtual bool AppWindowed() { return true; }
 
 protected:
+	XInput* _input;
 
+
+	Fps* _fpsController;
 }; 
