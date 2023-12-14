@@ -127,3 +127,16 @@ float Math::CalcVectorAngle(VECTOR v1, VECTOR v2)
 	}
 	return 0;
 }
+
+// 3Dƒ‚ƒfƒ‹‚ğˆø”vForward‚Ì•û‚ÉŒü‚¯‚é
+void Math::SetModelForward_RotationY(int modelHandle, VECTOR vForwad)
+{
+	VECTOR vBase = VGet(0.0f, 0.0f, -1.0f);
+	vForwad.y = 0.0f;
+	float angle = CalcVectorAngle(vBase, vForwad);
+	angle *= vForwad.x < 0.0f ? 1.0f : -1.0f;
+
+	MATRIX mRot = MGetRotVec2(vBase, vForwad);
+	VECTOR vRot = VTransform(vBase, mRot);
+	MV1SetRotationXYZ(modelHandle, VGet(0, angle, 0));
+}

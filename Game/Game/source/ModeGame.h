@@ -2,6 +2,7 @@
 
 #include "Camera.h"
 #include "Player.h"
+#include "Chain.h"
 
 class ModeGame : public ModeBase
 {
@@ -18,4 +19,6 @@ public:
 protected:
 	Camera* _camera;
 	Player* _player;
+
+	Chain* _chain;
 }; 

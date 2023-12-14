@@ -14,6 +14,8 @@ bool ModeGame::Initialize() {
 	int playerModelHandle = MV1LoadModel("res/Character/cg_player_girl/cg_player_girl.mv1");
 	_player = new Player(playerModelHandle, VGet(0,0,0));
 
+	_chain = new Chain();
+	_chain->Init();
 
 	return true;
 }
@@ -27,6 +29,7 @@ bool ModeGame::Process() {
 	base::Process();
 	
 	_player->Process(_camera->GetCamY());
+	_chain->Process(_player->GetRightHandPos());
 	_camera->Process(_player->GetPosition());
 	return true;
 }
@@ -40,10 +43,6 @@ bool ModeGame::Render() {
 	SetUseLighting(TRUE);
 	//clsDx();
 	
-
-	
-	_player->Render();
-
 	// 0,0,0‚ð’†S‚Éü‚ðˆø‚­
 	{
 		float linelength = 1000.f;
@@ -52,6 +51,11 @@ bool ModeGame::Render() {
 		DrawLine3D(VAdd(v, VGet(0, -linelength, 0)), VAdd(v, VGet(0, linelength, 0)), GetColor(0, 255, 0));
 		DrawLine3D(VAdd(v, VGet(0, 0, -linelength)), VAdd(v, VGet(0, 0, linelength)), GetColor(0, 0, 255));
 	}
+		
+	_player->Render();
+	_chain->Render();
+
+
 
 	SetUseZBuffer3D(FALSE);
 	return true;
