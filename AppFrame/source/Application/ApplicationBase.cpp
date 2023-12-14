@@ -12,6 +12,8 @@ ApplicationBase::~ApplicationBase() {
 
 bool ApplicationBase::Initialize(HINSTANCE hInstance) {
 
+	SetOutApplicationLogValidFlag(false);
+
 	// DXライブラリの初期化
 	if(AppWindowed()){
 		ChangeWindowMode(true);							// ウィンドウモードに指定する

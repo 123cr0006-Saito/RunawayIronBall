@@ -6,10 +6,12 @@
 bool ModeGame::Initialize() {
 	if (!base::Initialize()) { return false; }
 
-	
 
 	_camera = new Camera();
 
+	_skySphere = MV1LoadModel(_T("res/SkySphere/skysphere.mv1"));
+	MV1SetPosition(_skySphere, VGet(0, 0, 0));
+	MV1SetScale(_skySphere, VGet(1,1,1));
 
 	int playerModelHandle = MV1LoadModel("res/Character/cg_player_girl/cg_player_girl.mv1");
 	_player = new Player(playerModelHandle, VGet(0,0,0));
@@ -43,6 +45,7 @@ bool ModeGame::Render() {
 	SetUseLighting(TRUE);
 	//clsDx();
 	
+	MV1DrawModel(_skySphere);
 	// 0,0,0‚ğ’†S‚Éü‚ğˆø‚­
 	{
 		float linelength = 1000.f;

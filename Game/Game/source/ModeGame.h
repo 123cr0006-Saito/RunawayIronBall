@@ -21,4 +21,6 @@ protected:
 	Player* _player;
 
 	Chain* _chain;
+
+	int _skySphere;
 }; 

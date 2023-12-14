@@ -2,10 +2,10 @@
 Camera::Camera() {
 	this->_input = XInput::GetInstance();//コンストラクタで入力用のクラスのポインタを取得
 
-	_cameraDirX = 0.0f;
+	_cameraDirX = 0.53f;
 	_cameraDirY = 0.0f;
-	_pointDistance = VGet(0, 300, -400);
-	_gazeShift = VGet(0, 200, 0);
+	_pointDistance = VGet(0, 0, -2360);
+	_gazeShift = VGet(0, 80, 0);
 	_reverseX = -1;
 	_reverseY = 1;
 };
@@ -46,13 +46,13 @@ bool Camera::Process(VECTOR pos) {
 	//トリガ入力でカメラの距離を変更
 	//カメラが遠くに移動
 	if (_input->GetRTrg() > 25) {
-		if (_pointDistance.z > -800) {
+		if (_pointDistance.z > -2500) {
 			_pointDistance.z -= _input->GetRTrg() / 25;
 		}
 	}
 	//カメラが近くに移動
 	if (_input->GetLTrg() > 25) {
-		if (_pointDistance.z < -200) {
+		if (_pointDistance.z < -150) {
 			_pointDistance.z += _input->GetLTrg() / 25;
 		}
 	}
@@ -63,6 +63,13 @@ bool Camera::Process(VECTOR pos) {
 	}
 	if (abs(Math::RadToDeg(_cameraDirY)) > 360) {
 		_cameraDirY = 0;
+	}
+
+	if (_cameraDirX >= 1.39491415f) {
+		_cameraDirX = 1.39491415f;
+	}
+	else if (_cameraDirX <= -1.39491415f) {
+		_cameraDirX = -1.39491415f;
 	}
 
 	//カメラの位置を計算
