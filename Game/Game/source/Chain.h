@@ -13,6 +13,8 @@ public:
 
 	void Render();
 
+	VECTOR GetBallPosition() { return _pos[CHAIN_MAX - 1]; }
+
 	void DrawDebugInfo();
 
 
