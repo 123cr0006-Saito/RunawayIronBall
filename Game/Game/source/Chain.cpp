@@ -7,17 +7,19 @@ void Chain::Init() {
 	_modelHandle[0] = MV1LoadModel("res/Chain/Chain02.mv1");
 	_pos[0] = VGet(0.0f, 0.0f, 0.0f);
 	MV1SetPosition(_modelHandle[0], _pos[0]);
+	MV1SetScale(_modelHandle[0], VGet(0.5f, 0.5f, 0.5f));
 
 	for (int i = 1; i < CHAIN_MAX - 1; i++) {
 		_modelHandle[i] = MV1DuplicateModel(_modelHandle[0]);
 		_pos[i] = VAdd(_pos[i - 1], VGet(0.0f, 0.0f, -100.0f));
 		MV1SetPosition(_modelHandle[i], _pos[i]);
+		MV1SetScale(_modelHandle[i], VGet(0.5f, 0.5f, 0.5f));
 	}
 
 	_modelHandle[CHAIN_MAX - 1] = MV1LoadModel("res/Character/meatball/cg_player_meatball.mv1");
 	_pos[CHAIN_MAX - 1] = VAdd(_pos[CHAIN_MAX - 1 - 1], VGet(0.0f, 10.0f, 0.0f));
 	MV1SetPosition(_modelHandle[CHAIN_MAX - 1], _pos[CHAIN_MAX - 1]);
-	MV1SetScale(_modelHandle[CHAIN_MAX - 1], VGet(5.0f, 5.0f, 5.0f));
+	MV1SetScale(_modelHandle[CHAIN_MAX - 1], VGet(3.0f, 3.0f, 3.0f));
 
 	_animIndex = MV1AttachAnim(_modelHandle[CHAIN_MAX - 1], 0);
 	_animTotalTime = MV1GetAnimTotalTime(_modelHandle[CHAIN_MAX - 1], _animIndex);
@@ -83,6 +85,20 @@ void Chain::Process(VECTOR playerPos) {
 
 	_pos[0] = playerPos;
 
+	//for (int i = 1; i < CHAIN_MAX; i++) {
+	//	if (_cnt / 60.0f < i) break;
+	//	VECTOR vDir = VSub(_pos[i], _pos[i - 1]);
+	//	vDir.y = 0.0f;
+	//	if (VSize(vDir) > 0.0f) {
+	//		vDir = VNorm(vDir);
+	//		vDir = VTransform(vDir, MGetRotY(90));
+	//		_pos[i] = VAdd(_pos[i], VScale(vDir, 60.0f));
+	//	}		
+	//}
+	//_cnt++;
+
+	//VECTOR vTmp = VGet(0, 0, 0);
+	//MATRIX mTranslate = MGetTranslate(VGet())
 
 
 	//bool isMove = false;
@@ -119,21 +135,21 @@ void Chain::Process(VECTOR playerPos) {
 		}
 	}
 
-
+	_length = 50.0f;
 	for (int i = 0; i < CHAIN_MAX - 1; i++) {
 		VECTOR vDelta = VSub(_pos[i + 1], _pos[i]);
 		float distance = VSize(vDelta);
 		float difference = _length - distance;
 
-		float offsetX = (difference * vDelta.x / distance) * 0.5;
-		float offsetY = (difference * vDelta.y / distance) * 0.5;
-		float offsetZ = (difference * vDelta.z / distance) * 0.5;
+		float offsetX = (difference * vDelta.x / distance) * 0.5f;
+		float offsetY = (difference * vDelta.y / distance) * 0.5f;
+		float offsetZ = (difference * vDelta.z / distance) * 0.5f;
 
-		//if (i != 0) {
-		//	_pos[i].x -= offsetX;
-		//	_pos[i].y -= offsetY;
-		//	_pos[i].z -= offsetZ;
-		//}
+		if (i != 0) {
+			_pos[i].x -= offsetX;
+			_pos[i].y -= offsetY;
+			_pos[i].z -= offsetZ;
+		}
 		_pos[i + 1].x += offsetX;
 		_pos[i + 1].y += offsetY;
 		_pos[i + 1].z += offsetZ;
@@ -176,11 +192,11 @@ void Chain::Process(VECTOR playerPos) {
 		MV1SetPosition(_modelHandle[i], _pos[i]);
 	}
 
-	//_mbDir = VSub(_pos[CHAIN_MAX - 1], _pos[0]);
-	//if (VSize(_mbDir) > 0.0f) {
-	//	_mbDir = VNorm(_mbDir);
-	//	SetModelForward_RotationY(_modelHandle[CHAIN_MAX - 1], _mbDir);
-	//}
+	_mbDir = VSub(_pos[0], _pos[CHAIN_MAX - 1]);
+	if (VSize(_mbDir) > 0.0f) {
+		_mbDir = VNorm(_mbDir);
+		Math::SetModelForward_RotationY(_modelHandle[CHAIN_MAX - 1], _mbDir);
+	}
 	_attackCnt++;
 	if (90 < _attackCnt) {
 		_attackCnt = 0;
