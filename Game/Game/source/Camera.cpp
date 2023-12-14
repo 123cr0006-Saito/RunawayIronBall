@@ -1,123 +1,90 @@
 #include "Camera.h"
 Camera::Camera() {
-	input = XInput::GetInstance();
-	
-	cam_gaze_shift = VGet(0, 200, 0);
-	move_camera = nullptr;
-	 keep_dir = 0.0f;
-	 next_dir = 0.0f;
-	 flag = false;
-	 count = 0;
-	 cam_len = VGet(0, 300, -400);
+	this->_input = XInput::GetInstance();//コンストラクタで入力用のクラスのポインタを取得
+
+	_cameraDirX = 0.0f;
+	_cameraDirY = 0.0f;
+	_pointDistance = VGet(0, 300, -400);
+	_gazeShift = VGet(0, 200, 0);
+	_reverseX = -1;
+	_reverseY = 1;
 };
 
 Camera::~Camera() {
-	input = nullptr;
-};
-
-bool Camera::Input() {
-	return true;
+	_input = nullptr;
 };
 
 bool Camera::Process(VECTOR pos) {
 
+	//入力から得た値で移動値を返す関数
 	auto move_speed_process = [](float pos, float pos_max, float max_speed) {return pos * max_speed / pos_max; };
-	
-	if (input->GetRx() != 0) {
-		camera_dir_y += move_speed_process(input->GetRx(), 32768, 0.02);
+
+	//32768はshort型の最大値 移動速度の最大は0.02
+	if (_input->GetRx() != 0) {
+		_cameraDirY += move_speed_process(_input->GetRx(), 32768, 0.02) * _reverseY;
 	}
-	if (input->GetRy() != 0) {
-		camera_dir_x += move_speed_process(input->GetRy(), 32768, 0.02);
+	if (_input->GetRy() != 0) {
+		_cameraDirX += move_speed_process(_input->GetRy(), 32768, 0.02) * _reverseX;
 	}
 
+	//デバック用
+	// 十字キーで微調整できる
 
 	//if (input->GetKey(XINPUT_BUTTON_DPAD_DOWN)) {
-	//	camera_dir_y -= 0.02;
+	//	_cameraDirY -= 0.02;
 	//}
 	//if (input->GetKey(XINPUT_BUTTON_DPAD_UP)) {
-	//	camera_dir_y += 0.02;
+	//	_cameraDirY += 0.02;
 	//}
 	//if (input->GetKey(XINPUT_BUTTON_DPAD_LEFT)) {
 	//	camera_dir_x -= 0.02;
 	//}
 	//if (input->GetKey(XINPUT_BUTTON_DPAD_RIGHT)) {
-	//	camera_dir_x += 0.02;
+	//	_cameraDirX += 0.02;
 	//}
 
-	if (input->GetRTrg() > 25) {
-		if (cam_len.z > -800) {
-			cam_len.z -= input->GetRTrg() / 25;
+	//トリガ入力でカメラの距離を変更
+	//カメラが遠くに移動
+	if (_input->GetRTrg() > 25) {
+		if (_pointDistance.z > -800) {
+			_pointDistance.z -= _input->GetRTrg() / 25;
+		}
+	}
+	//カメラが近くに移動
+	if (_input->GetLTrg() > 25) {
+		if (_pointDistance.z < -200) {
+			_pointDistance.z += _input->GetLTrg() / 25;
 		}
 	}
 
-	if (input->GetLTrg() > 25) {
-		if (cam_len.z < -200) {
-			cam_len.z += input->GetLTrg() / 25;
-		}
+	//±で1周回ったら０度に変換
+	if (abs(Math::RadToDeg(_cameraDirX)) > 360) {
+		_cameraDirX = 0;
+	}
+	if (abs(Math::RadToDeg(_cameraDirY)) > 360) {
+		_cameraDirY = 0;
 	}
 
+	//カメラの位置を計算
+	MATRIX origin = MGetIdent();
+	MATRIX MatrixX = MGetRotX(_cameraDirX);
+	MATRIX MatrixY = MGetRotY(_cameraDirY);
 
-	if (abs(Math::RadToDeg(camera_dir_x)) > 360) {
-		camera_dir_x = 0;
-	}
-	if (abs(Math::RadToDeg(camera_dir_y)) > 360) {
-		camera_dir_y = 0;
-	}
+	//引数としてプロセス内で得るのはめんどくさそいので
+	//できればプレイヤークラスから引っ張ってきたいです
+	VECTOR playerPos = pos;
 
-	if (flag) {
-		if (count < 90) {
-			*move_camera = Easing::Linear(count, keep_dir, next_dir, 90);
-			count++;
-		}
-		else {
-			move_camera = nullptr;
-			flag = false;
-		}
-	}
+	//行列の掛け算
+	origin = MMult(origin, MatrixX);
+	origin = MMult(origin, MatrixY);
 
+	//注視点からの距離に行列を変換する
+	VECTOR Vecter = VTransform(_pointDistance, origin);
 
-	MATRIX moto = MGetIdent();
-	MATRIX Matrix = MGetRotY(camera_dir_y);
-	MATRIX Matrix2 = MGetRotX(camera_dir_x);
+	//注視点の位置に移動
+	VECTOR VecAdd = VAdd(Vecter, playerPos);
+	//カメラのセット
+	SetCameraPositionAndTarget_UpVecY(VecAdd, VAdd(playerPos, _gazeShift));
 
-	moto = MMult(moto, Matrix2);
-	moto = MMult(moto, Matrix);
-
-	VECTOR Vecter = VTransform(cam_len,moto);
-
-	VECTOR VecAdd = VAdd(Vecter, pos);
-
-	int shift_y = 0;
-	//if (VecAdd.y <= 0) {
-	//	shift_y = VecAdd.y;
-	//	VecAdd.y = 0;
-	//}
-
-	SetCameraPositionAndTarget_UpVecY(VecAdd, VAdd(pos, VSub(cam_gaze_shift,VGet(0,shift_y,0))));
-
-	return true;
-};
-
-void Camera::SetCamera(float dir,int shaft) {
-	if (!flag) {
-		switch (shaft) {
-		case 0:
-			move_camera = &camera_dir_x;
-			keep_dir = camera_dir_x;
-			break;
-		case 1:
-			move_camera = &camera_dir_y;
-			keep_dir = camera_dir_y;
-			break;
-		}
-		next_dir = dir;
-		count = 0;
-		flag = true;
-	}
-};
-
-bool Camera::DebugDraw(VECTOR pos) {
-	clsDx();
-	printfDx("%d", flag);
 	return true;
 };
