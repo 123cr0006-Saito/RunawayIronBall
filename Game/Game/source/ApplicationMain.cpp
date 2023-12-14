@@ -10,8 +10,12 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance) {
 	if (!base::Initialize(hInstance)) { return false; }
 
 	// ƒ‚[ƒh‚Ì“o˜^
-	ModeServer::GetInstance()->Add(new ModeTitle(), 1, "Title");
+	//ModeServer::GetInstance()->Add(new ModeTitle(), 1, "Title");
+	ModeServer::GetInstance()->Add(new ModeGame(), 1, "Game");
 	global.Init();
+
+	_input = new XInput(DX_INPUT_PAD1);
+	_fpsController = new Fps();
 	return true;
 }
 
@@ -22,6 +26,7 @@ bool ApplicationMain::Terminate() {
 
 bool ApplicationMain::Input() {
 	base::Input();
+	_input->Input();
 	return true;
 }
 

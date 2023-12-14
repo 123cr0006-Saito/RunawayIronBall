@@ -6,8 +6,6 @@
 bool ModeGameOver::Initialize() {
 	if (!base::Initialize()) { return false; }
 
-	input = base::GetInputAdd();
-
 	return true;
 };
 

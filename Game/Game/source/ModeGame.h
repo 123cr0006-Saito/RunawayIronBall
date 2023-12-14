@@ -1,5 +1,8 @@
-
 #include "appframe.h"
+
+#include "Camera.h"
+#include "Player.h"
+
 class ModeGame : public ModeBase
 {
 	typedef ModeBase base;
@@ -13,5 +16,6 @@ public:
 
 
 protected:
-
+	Camera* _camera;
+	Player* _player;
 }; 

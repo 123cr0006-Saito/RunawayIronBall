@@ -4,7 +4,7 @@
 class Camera
 {
 public:
-	Camera(XInput* input);
+	Camera();
 	~Camera();
 
 	virtual bool Input();

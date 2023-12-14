@@ -1,6 +1,6 @@
 #include "Camera.h"
-Camera::Camera(XInput* input) {
-	this->input = input;
+Camera::Camera() {
+	input = XInput::GetInstance();
 	
 	cam_gaze_shift = VGet(0, 200, 0);
 	move_camera = nullptr;
@@ -23,12 +23,12 @@ bool Camera::Process(VECTOR pos) {
 
 	auto move_speed_process = [](float pos, float pos_max, float max_speed) {return pos * max_speed / pos_max; };
 	
-	//if (input->GetRx() != 0) {
-	//	camera_dir_y += move_speed_process(input->GetRx(), 32768, 0.02);
-	//}
-	//if (input->GetRy() != 0) {
-	//	camera_dir_x += move_speed_process(input->GetRy(), 32768, 0.02);
-	//}
+	if (input->GetRx() != 0) {
+		camera_dir_y += move_speed_process(input->GetRx(), 32768, 0.02);
+	}
+	if (input->GetRy() != 0) {
+		camera_dir_x += move_speed_process(input->GetRy(), 32768, 0.02);
+	}
 
 
 	//if (input->GetKey(XINPUT_BUTTON_DPAD_DOWN)) {
