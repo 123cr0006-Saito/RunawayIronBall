@@ -7,33 +7,20 @@ public:
 	Camera(XInput* input);
 	~Camera();
 
-	virtual bool Input();
 	virtual bool Process(VECTOR pos);
-	void SetCamera(float dir, int shaft);
-	bool GetFlag() { return flag; }
 
-	bool DebugDraw(VECTOR pos);
-
-	float GetCamX() { return camera_dir_x; }
-	float GetCamY() { return camera_dir_y; }
+	float GetCamX() { return _cameraDirX; }//プレイヤーなどで使うかもしれないためゲッターとして作っておく
+	float GetCamY() { return _cameraDirY; }//プレイヤーなどで使うかもしれないためゲッターとして作っておく
 
 
 protected:
-	XInput* input;
+	XInput* _input;//コントローラーでの入力を受け付けるためのinputクラス
 
-	float camera_dir_x = 0.0f;
-	float camera_dir_y = 0.0f;;
-	
+	float _cameraDirX;//カメラのＸ軸回転行列で使用する変数
+	float _cameraDirY;//カメラのＹ軸回転行列で使用する変数
 
-	float* move_camera;
-	float keep_dir;
-	float next_dir;
-	bool flag;
-	int count;
+	VECTOR _pointDistance;//注視点からの距離
 
-	VECTOR cam_len;
-
-	VECTOR cam_gaze_shift;//足元を見るからおなかあたりにずらす
+	VECTOR _gazeShift;//注視点をプレイヤーにしたときに基準点が足元なので腰あたりに移動させるための変数
 
 };
-
