@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\System\Source\Function\DrawGauge.cpp" />
     <ClCompile Include="source\System\Source\Function\mymath.cpp" />
     <ClCompile Include="source\Application\Global.cpp" />
     <ClCompile Include="source\System\Source\Effect\Effect.cpp" />
@@ -179,6 +180,7 @@
     <ClCompile Include="source\System\Source\Function\Easing.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\System\Header\Function\DrawGauge.h" />
     <ClInclude Include="source\System\Header\Function\mymath.h" />
     <ClInclude Include="source\Application\Global.h" />
     <ClInclude Include="source\System\Header\Effect\Effect.h" />
