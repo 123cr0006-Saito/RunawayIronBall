@@ -31,6 +31,12 @@
     <Filter Include="ソース ファイル\System">
       <UniqueIdentifier>{234593ec-10fd-44cc-9be0-9308b3cc9f8e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Test">
+      <UniqueIdentifier>{c0e711ec-9038-43e6-9a31-d2eae04a6d15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Test">
+      <UniqueIdentifier>{e9f77622-3513-4595-ab80-836231d38289}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\ModeGame.cpp">
@@ -54,14 +60,17 @@
     <ClCompile Include="source\bone.cpp">
       <Filter>ソース ファイル\Player</Filter>
     </ClCompile>
-    <ClCompile Include="source\Player.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="source\CharacterBase.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\Chain.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Player.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Test_BreakObject.cpp">
+      <Filter>ソース ファイル\Test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -94,6 +103,9 @@
     </ClInclude>
     <ClInclude Include="source\Chain.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Test_BreakObject.h">
+      <Filter>ヘッダー ファイル\Test</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
