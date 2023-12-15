@@ -48,6 +48,7 @@ bool SlaBlock::Process() {
 
 			if ((float)(GetNowCount() - _arriveTime) / 1000 >= _stopTime) {
 				if (_nextDir == 0.0f) {
+
 					//atan2タイプ
 					VECTOR vArrow = VGet((float)(rand() % 20 / 10.0f) - 1.0f, 1.0f, (float)(rand() % 20 / 10.0f) - 1.0f);//ランダムな方向ベクトルを取る
 					vArrow = VScale(vArrow, rand() % (int)_moveRange); vArrow.y = 0.0f;//基準点からの半径分をランダムで掛け、次に進むポイントを決める
@@ -61,6 +62,10 @@ bool SlaBlock::Process() {
 					//MATRIX matrix = Math::MMultXYZ(0.0f, _direction, 0.0f);
 					//VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
 					//float range_dir = Math::CalcVectorAngle(ene_dir, dirVec);
+					// VECTOR arrow = VCross(ene_dir, dirVec);
+					//if (arrow.y < 0) {
+					//	range_dir *= -1;
+					//}
 					//_direction = _direction + range_dir;
 
 					_stopTime = 0;//時間の初期化
