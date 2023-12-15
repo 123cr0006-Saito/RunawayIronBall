@@ -19,5 +19,9 @@ protected:
 	//回旋させるための変数
 	float _nextDir;
 	float _oldDir;
+
+	//イージングに使用
+	int _easingFrame;
+	VECTOR _saveNextPoint;
 };
 

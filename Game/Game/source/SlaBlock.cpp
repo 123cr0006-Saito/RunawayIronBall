@@ -26,6 +26,9 @@ SlaBlock::SlaBlock(std::string model_name,VECTOR pos,Player* Player) :
 	_nextDir = 0.0f;
 	_oldDir = 0.0f;
 	
+	_easingFrame = 0;
+	_saveNextPoint = VGet(0, 0, 0);
+
 	//今のモデルに貼り付けているテクスチャ
 	MV1SetTextureGraphHandle(_model, 0, global.resource->LoadGraph("res/katatumuri/14086_Snail_with_toy_house_for_ shell_v2_diff2.jpg"), true);
 	MV1SetTextureGraphHandle(_model, 1, global.resource->LoadGraph("res/katatumuri/14086_Snail_with_toy_house_for_ shell_v2_diff.jpg"), true ) ;
@@ -49,26 +52,36 @@ bool SlaBlock::Process() {
 			if ((float)(GetNowCount() - _arriveTime) / 1000 >= _stopTime) {
 				if (_nextDir == 0.0f) {
 
-					//atan2タイプ
 					VECTOR vArrow = VGet((float)(rand() % 20 / 10.0f) - 1.0f, 1.0f, (float)(rand() % 20 / 10.0f) - 1.0f);//ランダムな方向ベクトルを取る
 					vArrow = VScale(vArrow, rand() % (int)_moveRange); vArrow.y = 0.0f;//基準点からの半径分をランダムで掛け、次に進むポイントを決める
 					_nextMovePoint = VAdd(vArrow, _orignPos);//基準点に平行移動
-					VECTOR dirVec = VSub(_nextMovePoint, _pos);//方向ベクトルからモデルが向く方向を計算
-					_direction = atan2(dirVec.x, dirVec.z)+180*3.14/180;//-をなくすためRadの180を足している
+
+					//atan2タイプ
+					//VECTOR dirVec = VSub(_nextMovePoint, _pos);//方向ベクトルからモデルが向く方向を計算
+					//_direction = atan2(dirVec.x, dirVec.z)+180*3.14/180;//-をなくすためRadの180を足している
 
 					//フォワードベクトルタイプ
-					//VECTOR dirVec = VSub(_nextMovePoint, _pos);//方向ベクトルからモデルが向く方向を計算
-					//dirVec = VNorm(dirVec);
-					//MATRIX matrix = Math::MMultXYZ(0.0f, _direction, 0.0f);
-					//VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
-					//float range_dir = Math::CalcVectorAngle(ene_dir, dirVec);
-					// VECTOR arrow = VCross(ene_dir, dirVec);
-					//if (arrow.y < 0) {
-					//	range_dir *= -1;
-					//}
-					//_direction = _direction + range_dir;
-
-					_stopTime = 0;//時間の初期化
+					VECTOR dirVec = VSub(_nextMovePoint, _pos);//方向ベクトルからモデルが向く方向を計算
+					dirVec = VNorm(dirVec);
+					MATRIX matrix = Math::MMultXYZ(0.0f, _direction, 0.0f);
+					VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
+					float range_dir = Math::CalcVectorAngle(ene_dir, dirVec);
+					 VECTOR arrow = VCross(ene_dir, dirVec);
+					if (arrow.y < 0) {
+						range_dir *= -1;
+					}
+					_nextDir = _direction + range_dir;
+					_oldDir = _direction;
+				}
+				else {
+					_easingFrame++;
+					_direction = Easing::Linear(_easingFrame, _oldDir, _nextDir, 60);
+					if (_easingFrame >= 60) {
+						_easingFrame = 0;
+						_nextDir = 0.0f;
+						_stopTime = 0;//時間の初期化
+						_nextMovePoint = _saveNextPoint;
+					}
 				}
 			}
 		}
