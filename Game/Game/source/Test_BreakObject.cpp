@@ -41,8 +41,11 @@ void BreakObject::Process()
 	//MV1SetMatrix(_modelHandle, mRot);
 	_breakCnt++;
 
-	if (CheckHitKeyAll() != 0) {
+	if (_breakCnt > 90) {
 		_breakCnt = 0;
+		for (int i = 0; i < MV1GetFrameNum(_modelHandle); i++) {
+			MV1ResetFrameUserLocalMatrix(_modelHandle, i);
+		}
 	}
 }
 
