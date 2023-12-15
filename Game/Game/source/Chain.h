@@ -18,6 +18,9 @@ public:
 	void DrawDebugInfo();
 
 
+
+	bool GetIsSwing() { return _isSwing; }
+
 private:
 	XInput* _input;
 

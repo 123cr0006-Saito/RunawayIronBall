@@ -48,16 +48,24 @@ bool ModeGame::Process() {
 		_enemy[i]->Process(_player->GetPosition());
 	}
 
+	
 	for (int i = 0; i < 10; i++) {
 		if (Collision3D::SphereCol(_enemy[i]->GetPosition(), 160.0f, _chain->GetBallPosition(), 130.0f)) {
-			if (_enemy[i]->GetIsHit() == false) {
-				VECTOR vDir = VSub(_enemy[i]->GetPosition(), _player->GetPosition());
-				vDir.y = 200.0f;
-				vDir = VNorm(vDir);
-				_enemy[i]->SetIsHit(vDir);
-				PlaySoundMem(_seHandle, DX_PLAYTYPE_BACK);
+			if (_chain->GetIsSwing()) {
+				if (_enemy[i]->GetIsHit() == false) {
+					VECTOR vDir = VSub(_enemy[i]->GetPosition(), _player->GetPosition());
+					vDir.y = 200.0f;
+					vDir = VNorm(vDir);
+					_enemy[i]->SetIsHit(vDir);
+					PlaySoundMem(_seHandle, DX_PLAYTYPE_BACK);
+				}
 			}
-
+			else {
+				VECTOR vDir = VSub(_enemy[i]->GetPosition(), _chain->GetBallPosition());
+				vDir = VNorm(vDir);
+				VECTOR pos = VAdd(_chain->GetBallPosition(), VScale(vDir, 160.0f + 130.0));
+				_enemy[i]->SetPos(pos);
+			}
 
 		}
 	}
