@@ -19,6 +19,17 @@ bool ModeGame::Initialize() {
 	_chain = new Chain();
 	_chain->Init();
 
+
+	int enemyModelHandle = MV1LoadModel("res/Character/enemy/cg_enemy_float.mv1");
+
+	for (int i = 0; i < 10; i++) {
+		VECTOR vTmp = VGet((200.0f * (i+ 1)) + 1000.0f, 0, 0);
+		vTmp = VTransform(vTmp, MGetRotY(float(i + 1) * Math::DegToRad(20.0f)));
+		_enemy[i] = new Enemy(MV1DuplicateModel(enemyModelHandle), vTmp);
+	}
+
+	_seHandle = LoadSoundMem("res/se_rbenemy_break.mp3");
+
 	return true;
 }
 
@@ -32,6 +43,25 @@ bool ModeGame::Process() {
 	
 	_player->Process(_camera->GetCamY());
 	_chain->Process(_player->GetRightHandPos());
+
+	for (int i = 0; i < 10; i++) {
+		_enemy[i]->Process(_player->GetPosition());
+	}
+
+	for (int i = 0; i < 10; i++) {
+		if (Collision3D::SphereCol(_enemy[i]->GetPosition(), 160.0f, _chain->GetBallPosition(), 130.0f)) {
+			if (_enemy[i]->GetIsHit() == false) {
+				VECTOR vDir = VSub(_enemy[i]->GetPosition(), _player->GetPosition());
+				vDir.y = 200.0f;
+				vDir = VNorm(vDir);
+				_enemy[i]->SetIsHit(vDir);
+				PlaySoundMem(_seHandle, DX_PLAYTYPE_BACK);
+			}
+
+
+		}
+	}
+
 	_camera->Process(_player->GetPosition());
 	return true;
 }
@@ -58,8 +88,16 @@ bool ModeGame::Render() {
 	_player->Render();
 	_chain->Render();
 
+	for (int i = 0; i < 10; i++) {
+		_enemy[i]->Render();
+
+		VECTOR ePos = _enemy[i]->GetPosition();
+		DrawSphere3D(ePos, 160.0f, 16, GetColor(255, 0, 0), GetColor(255, 0, 0), false);
+	}
+
 	VECTOR ballPos = _chain->GetBallPosition();
 	DrawSphere3D(ballPos, 130.0f, 16, GetColor(255, 0, 0), GetColor(255, 0, 0), false);
+
 
 
 	SetUseZBuffer3D(FALSE);

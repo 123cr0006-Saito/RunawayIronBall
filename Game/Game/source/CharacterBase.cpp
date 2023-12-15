@@ -3,7 +3,8 @@
 CharacterBase::CharacterBase(int modelHandle, VECTOR pos)
 {
 	this->_modelHandle = modelHandle;
-	this->_pos = VGet(0.0f, 0.0f, 0.0f);
+	this->_pos = pos;
+	MV1SetPosition(this->_modelHandle, this->_pos);
 }
 
 CharacterBase::~CharacterBase()

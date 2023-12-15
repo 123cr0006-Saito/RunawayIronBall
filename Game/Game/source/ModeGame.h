@@ -4,6 +4,9 @@
 #include "Player.h"
 #include "Chain.h"
 
+
+#include "enemy.h"
+
 class ModeGame : public ModeBase
 {
 	typedef ModeBase base;
@@ -23,4 +26,10 @@ protected:
 	Chain* _chain;
 
 	int _skySphere;
+
+
+	// 仕様プレゼン用
+	Enemy* _enemy[10];
+
+	int _seHandle;
 }; 
