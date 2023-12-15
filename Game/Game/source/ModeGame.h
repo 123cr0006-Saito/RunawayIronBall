@@ -4,6 +4,9 @@
 #include "Player.h"
 #include "Chain.h"
 
+
+#include "Test_BreakObject.h"
+
 class ModeGame : public ModeBase
 {
 	typedef ModeBase base;
@@ -23,4 +26,6 @@ protected:
 	Chain* _chain;
 
 	int _skySphere;
+
+	BreakObject* _breakObj;
 }; 

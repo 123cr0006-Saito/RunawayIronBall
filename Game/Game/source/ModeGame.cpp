@@ -9,15 +9,17 @@ bool ModeGame::Initialize() {
 
 	_camera = new Camera();
 
-	_skySphere = MV1LoadModel(_T("res/SkySphere/skysphere.mv1"));
-	MV1SetPosition(_skySphere, VGet(0, 0, 0));
-	MV1SetScale(_skySphere, VGet(1,1,1));
+	//_skySphere = MV1LoadModel(_T("res/SkySphere/skysphere.mv1"));
+	//MV1SetPosition(_skySphere, VGet(0, 0, 0));
+	//MV1SetScale(_skySphere, VGet(1,1,1));
 
-	int playerModelHandle = MV1LoadModel("res/Character/cg_player_girl/cg_player_girl.mv1");
-	_player = new Player(playerModelHandle, VGet(0,0,0));
+	//int playerModelHandle = MV1LoadModel("res/Character/cg_player_girl/cg_player_girl.mv1");
+	//_player = new Player(playerModelHandle, VGet(0,0,0));
 
-	_chain = new Chain();
-	_chain->Init();
+	//_chain = new Chain();
+	//_chain->Init();
+
+	_breakObj = new BreakObject();
 
 	return true;
 }
@@ -30,9 +32,15 @@ bool ModeGame::Terminate() {
 bool ModeGame::Process() {
 	base::Process();
 	
-	_player->Process(_camera->GetCamY());
-	_chain->Process(_player->GetRightHandPos());
-	_camera->Process(_player->GetPosition());
+	//_player->Process(_camera->GetCamY());
+	//_chain->Process(_player->GetRightHandPos());
+
+
+	_breakObj->Process();
+	_camera->Process(VGet(0.0f, 0.0f, 0.0f));
+
+
+
 	return true;
 }
 
@@ -55,11 +63,14 @@ bool ModeGame::Render() {
 		DrawLine3D(VAdd(v, VGet(0, 0, -linelength)), VAdd(v, VGet(0, 0, linelength)), GetColor(0, 0, 255));
 	}
 		
-	_player->Render();
-	_chain->Render();
+	//_player->Render();
+	//_chain->Render();
 
-	VECTOR ballPos = _chain->GetBallPosition();
-	DrawSphere3D(ballPos, 130.0f, 16, GetColor(255, 0, 0), GetColor(255, 0, 0), false);
+	//VECTOR ballPos = _chain->GetBallPosition();
+	//DrawSphere3D(ballPos, 130.0f, 16, GetColor(255, 0, 0), GetColor(255, 0, 0), false);
+
+
+	_breakObj->Render();
 
 
 	SetUseZBuffer3D(FALSE);

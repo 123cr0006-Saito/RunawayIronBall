@@ -7,6 +7,15 @@ public:
 	BreakObject();
 	~BreakObject();
 
-private:
+	void Process();
+	void Render();
 
+private:
+	int _modelHandle;
+	VECTOR _pos;
+
+	// ‚Á”ò‚Î‚·ƒp[ƒc‚Ìindex”Ô†
+	int _breakFrameIndex;
+
+	int _breakCnt;
 };
