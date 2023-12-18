@@ -5,7 +5,10 @@ EnemyBase::EnemyBase(int model, VECTOR pos) {
 	_player = nullptr;
 
 	_pos = pos;
-	_nextMovePoint = _orignPos = _pos;
+
+	_orignPos = _pos;
+	_savePos = _pos;
+	_nextMovePoint = _pos;
 
 	_sartchRangeSize = 0.0f;
 	_discoverRangeSize = 0.0f;
@@ -21,7 +24,7 @@ EnemyBase::EnemyBase(int model, VECTOR pos) {
 	_r = 0.0f;
 
 	_stopTime = 0.0f;
-	_arriveTime = 0;
+	_currentTime = 0;
 
 	_nextDir = 0.0f;
 	_oldDir = 0.0f;
@@ -45,15 +48,16 @@ bool EnemyBase::StopPos() {
 };
 
 bool EnemyBase::Process() {
+
 	if (_state == TYPE::search) {
 		//移動方向の設定
 		if (StopPos()) {
 			if (_stopTime == 0) {
 				_stopTime = (float)(rand() % 200) / 100.0f + 2.0f;//1秒から3秒まで止まる　コンマ０.0１まで
-				_arriveTime = GetNowCount();
+				_currentTime = GetNowCount();
 			}
 
-			if ((float)(GetNowCount() - _arriveTime) / 1000 >= _stopTime) {
+			if ((float)(GetNowCount() - _currentTime) / 1000 >= _stopTime) {
 				if (_nextDir == 0.0f) {
 
 					VECTOR vArrow = VGet((float)(rand() % 20 / 10.0f) - 1.0f, 1.0f, (float)(rand() % 20 / 10.0f) - 1.0f);//ランダムな方向ベクトルを取る
@@ -76,7 +80,6 @@ bool EnemyBase::Process() {
 					//}
 					//_direction = _direction + range_dir;
 
-					//フォワードベクトルタイプ 方向を向いてから移動するタイプ
 					VECTOR dirVec = VSub(_saveNextPoint, _pos);//方向ベクトルからモデルが向く方向を計算
 					dirVec = VNorm(dirVec);
 					MATRIX matrix = Math::MMultXYZ(0.0f, _direction, 0.0f);
@@ -95,6 +98,7 @@ bool EnemyBase::Process() {
 					if (_easingFrame >= 60) {
 						_easingFrame = 0;
 						_nextDir = 0.0f;
+						_currentTime = 0;
 						_stopTime = 0;//時間の初期化
 						_nextMovePoint = _saveNextPoint;
 					}
@@ -108,28 +112,30 @@ bool EnemyBase::Process() {
 			move = VScale(move, _speed);
 			_pos = VAdd(_pos, move);
 		}
-	}
 
-	//索敵処理
-	VECTOR v_length = VSub(_player->GetCollision().down_pos, _pos);
-	float len = VSize(v_length);
-	if (VSize(v_length) <= _sartchRange) {
+		//索敵処理
+		VECTOR v_length = VSub(_player->GetCollision().down_pos, _pos);
+		float len = VSize(v_length);
+		if (VSize(v_length) <= _sartchRange) {
 
-		MATRIX matrix = Math::MMultXYZ(0.0f, _direction, 0.0f);
-		VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
-		VECTOR pla_dir = VNorm(v_length);
-		float range_dir = Math::CalcVectorAngle(ene_dir, pla_dir);
+			MATRIX matrix = Math::MMultXYZ(0.0f, _direction, 0.0f);
+			VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
+			VECTOR pla_dir = VNorm(v_length);
+			float range_dir = Math::CalcVectorAngle(ene_dir, pla_dir);
 
-		if (range_dir <= _flontAngle) {
-			_state = TYPE::discover;//状態を発見にする
-			_sartchRange = _discoverRangeSize;//索敵範囲を発見時の半径に変更
+			if (range_dir <= _flontAngle) {
+				_state = TYPE::discover;//状態を発見にする
+				_sartchRange = _discoverRangeSize;//索敵範囲を発見時の半径に変更
+				_currentTime = 0;
+			}
 		}
+
 	}
 
 	//対象発見状態
 	if (_state == TYPE::discover) {
 		//移動処理
-		VECTOR move = VSub(_player->GetCollision().down_pos, _pos);//move.y = 0.0f;
+		VECTOR move = VSub(_player->GetCollision().down_pos, _pos); move.y = 0.0f;//これをオンにするとy軸の移動がなくなる
 		move = VNorm(move);
 		move = VScale(move, _speed);
 		_pos = VAdd(_pos, move);
@@ -138,15 +144,24 @@ bool EnemyBase::Process() {
 		VECTOR dirVec = VScale(move, -1);//方向ベクトルからモデルが向く方向を計算
 		_direction = atan2(dirVec.x, dirVec.z);
 
-		//索敵処理
+		//敵とプレイヤーの距離を算出
 		move = VSub(_player->GetCollision().down_pos, _pos);
 		float p_distance = VSize(move);//敵とプレイヤーの距離
+
+		//索敵処理
 		if (p_distance >= _sartchRange) {
 			_state = TYPE::search;//状態を索敵にする
 			_sartchRange = _sartchRangeSize;//索敵範囲を発見時の半径に変更
 			_orignPos = _nextMovePoint = _pos;
 		}
+		//攻撃処理
+		if (p_distance <= _attackRangeSize) {
+			_state = TYPE::attack;//状態を索敵にする
+			_saveNextPoint = VAdd(_player->GetCollision().down_pos, VGet(0, 500, 0));
+			_savePos = _pos;
+		}
 	}
+
 	return true;
 };
 

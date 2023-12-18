@@ -4,8 +4,8 @@ Global global;
 
 Global::Global() {
 resource = new ResourceServer();
+effect = new Effect();
 exit_count = false;
-time = 0;
 };
 
 Global::~Global() {

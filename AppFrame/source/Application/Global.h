@@ -1,5 +1,6 @@
 #pragma once
 #include "../System/Header/Resource/ResourceServer.h"
+#include "../System/Header/Effect/Effect.h"
 class Global
 {
 public:
@@ -11,9 +12,8 @@ public:
 	bool GetExit() { return exit_count; }
 //•Ï”EƒNƒ‰ƒX
 	ResourceServer* resource;
+	Effect* effect;
 	bool exit_count;
-
-	int time;
 };
 extern Global global;
 

@@ -14,5 +14,5 @@ public:
 protected:
 	static const float _fixSartchSize;//索敵範囲の半径
 	static const float _fixDiscoverSize;//発見時、対象の見失うまでの距離の半径
-
+	static const float _fixAttackSize;//発見時、攻撃モーションに入るまでの範囲
 };
