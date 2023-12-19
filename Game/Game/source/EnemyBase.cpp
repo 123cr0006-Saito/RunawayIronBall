@@ -12,6 +12,7 @@ EnemyBase::EnemyBase(int model, VECTOR pos) {
 
 	_sartchRangeSize = 0.0f;
 	_discoverRangeSize = 0.0f;
+	_attackRangeSize = 0.0f;
 
 	_model = MV1DuplicateModel(model);
 	_speed = 0;
