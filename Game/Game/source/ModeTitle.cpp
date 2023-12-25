@@ -29,7 +29,9 @@ void ModeTitle::SelectOption() {
 };
 
 void ModeTitle::SelectGameEnd() {
-
+	if (_input->GetTrg(XINPUT_BUTTON_A)) {
+		global.exit_count = true;
+	}
 };
 
 bool ModeTitle::Process() {
