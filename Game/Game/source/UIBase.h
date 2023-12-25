@@ -5,8 +5,9 @@
 //‰æ–Ê‚É•\Ž¦‚·‚éUI‚ÌŠî”Õ‚Æ‚È‚éƒNƒ‰ƒX
 class UIBase
 {
-	UIBase(std::string handleName);
-	UIBase(std::string handleName, int AllNum, int XNum, int YNum, int XSize, int YSize, int* HandleBuf);
+public:
+	UIBase(VECTOR pos, std::string handleName);
+	UIBase(VECTOR pos, std::string handleName, int AllNum, int XNum, int YNum, int XSize, int YSize, int* HandleBuf);
 	~UIBase();
 
 	virtual bool Process();
@@ -14,7 +15,8 @@ class UIBase
 
 protected:
 	int* _handle;
-	int _imageNum;
+	int _handleNum;
 	VECTOR _pos;
+	float _cx, _cy;
 };
 
