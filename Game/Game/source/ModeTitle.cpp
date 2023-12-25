@@ -47,11 +47,7 @@ bool ModeTitle::Process() {
 	}
 
 	_modeCount += count;
-	_modeCount = _modeCount % 3;
-
-	if (_modeCount < 0) {
-		_modeCount = 2;
-	}
+	_modeCount = (_modeCount +3)% 3;
 
 	//ƒ‚[ƒh‚Ì‘I‘ð
 	if (_input->GetTrg(XINPUT_BUTTON_A)) {
