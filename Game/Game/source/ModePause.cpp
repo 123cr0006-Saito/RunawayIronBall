@@ -66,11 +66,8 @@ bool ModePause::Process() {
 	}
 
 	_selectItem += count;
-	_selectItem = _selectItem % MAX_MODE;
+	_selectItem = (_selectItem + MAX_MODE) % MAX_MODE;
 
-	if (_selectItem < 0) {
-		_selectItem = MAX_MODE - 1;
-	}
 
 	//€–Ú‚Ì‘I‘ð
 	switch (_selectItem) {
