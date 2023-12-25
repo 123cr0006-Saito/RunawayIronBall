@@ -155,6 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\ModePause.cpp" />
     <ClCompile Include="source\bone.cpp" />
     <ClCompile Include="source\CharacterBase.cpp" />
     <ClCompile Include="source\ModeGameOver.cpp" />
@@ -167,6 +168,7 @@
     <ClCompile Include="source\Chain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\ModePause.h" />
     <ClInclude Include="source\bone.h" />
     <ClInclude Include="source\CharacterBase.h" />
     <ClInclude Include="source\ModeGameOver.h" />
