@@ -20,6 +20,7 @@ bool ModeGame::Initialize() {
 	//_chain->Init();
 
 	_breakObj = new BreakObject();
+	_breakObj->Init();
 
 	return true;
 }

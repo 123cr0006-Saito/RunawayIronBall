@@ -10,6 +10,9 @@ BreakObject::BreakObject()
 	//_breakFrameIndex = 35;
 
 	_breakCnt = 0;
+
+	_blastDir = VGet(0.0f, 0.0f, -1.0f);
+	_blastPower = 60.0f;
 }
 
 BreakObject::~BreakObject()
@@ -19,28 +22,47 @@ BreakObject::~BreakObject()
 	}
 }
 
-void BreakObject::Process()
+void BreakObject::Init()
 {
 	for (int i = 0; i < MV1GetFrameNum(_modelHandle); i++) {
-		//MV1ResetFrameUserLocalMatrix(_modelHandle, i);
-		MATRIX mOrigin = MGetIdent();
-		mOrigin = MV1GetFrameLocalMatrix(_modelHandle, i);
+		// フレームの座標変換行列を取得する
+		MATRIX mFrameLocal = MV1GetFrameLocalMatrix(_modelHandle, i);
+		// フレームのローカル座標を求める
+		VECTOR vFrameLocalPos = VGet(0.0f, 0.0f, 0.0f);
+		vFrameLocalPos = VTransform(vFrameLocalPos, mFrameLocal);
+	
+		// モデルの起点座標から見たフレームの方向を取得する
+		VECTOR vFrameLocalDir = VGet(0.0f, 0.0f, -1.0f);
+		if (VSquareSize(vFrameLocalPos) > 0.000000f) {
+			vFrameLocalDir = VNorm(vFrameLocalPos);
+			// 吹っ飛ぶ方向をz軸マイナス方向に限定する
+			if (vFrameLocalDir.z > 0.0f) {
+				vFrameLocalDir.z *= -1;
+			}
+		}
 
-		VECTOR vOrigin = VGet(0.0f, 0.0f, 0.0f);
-		VECTOR vFramePos = VGet(0.0f, 0.0f, 0.0f);
-		vFramePos = VTransform(vFramePos, MV1GetFrameLocalMatrix(_modelHandle, i));
-		//vFramePos.z = fabs(vFramePos.z);
-
-		VECTOR vDir = VSub(vFramePos, vOrigin);
-		vDir = VNorm(vDir);
-		vDir = VScale(vDir, _breakCnt * 10.0f);
-		MATRIX mTrans = MGetTranslate(vDir);
-
-		MV1SetFrameUserLocalMatrix(_modelHandle, i, MMult(mOrigin, mTrans));
+		FRAME_INFO f = { i, vFrameLocalDir };
+		_frameInfo.push_back(f);
 	}
-	//MV1SetMatrix(_modelHandle, mRot);
+
+	// テスト用
+	// 吹っ飛ばす方向を指定
+	SetBlastDir(VGet(1.0f, 0.0f, 0.0f));
+}
+
+void BreakObject::Process()
+{
+	// 破片が飛び散る処理
+	for (auto itr = _frameInfo.begin(); itr != _frameInfo.end(); ++itr) {
+		MATRIX mBefor = MV1GetFrameLocalMatrix(_modelHandle, itr->frameIndex);
+		MATRIX mTrans = MGetTranslate(VScale(itr->dir, _blastPower));
+		MV1SetFrameUserLocalMatrix(_modelHandle, itr->frameIndex, MMult(mBefor, mTrans));
+	}
+	//_blastPower -= 0.5f;
+
 	_breakCnt++;
 
+	// リセット
 	if (_breakCnt > 90) {
 		_breakCnt = 0;
 		for (int i = 0; i < MV1GetFrameNum(_modelHandle); i++) {
@@ -53,4 +75,12 @@ void BreakObject::Render()
 {
 	MV1SetPosition(_modelHandle, _pos);
 	MV1DrawModel(_modelHandle);
+}
+
+void BreakObject::SetBlastDir(VECTOR vDir)
+{
+	MATRIX mRot = MGetRotVec2(VGet(0.0f, 0.0f, -1.0f), vDir);
+	for (auto itr = _frameInfo.begin(); itr != _frameInfo.end(); ++itr) {
+		itr->dir = VTransform(itr->dir, mRot);
+	}
 }
