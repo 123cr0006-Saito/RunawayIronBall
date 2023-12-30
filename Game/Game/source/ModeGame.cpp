@@ -73,8 +73,10 @@ bool ModeGame::Render() {
 
 	_breakObj->Render();
 
+	_breakObj->DrawDebugInfo();
 
-	SetUseZBuffer3D(FALSE);
+
+	//SetUseZBuffer3D(FALSE);
 	return true;
 }
 
