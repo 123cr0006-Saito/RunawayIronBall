@@ -11,11 +11,18 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
+	virtual bool ModeSearch();
+	virtual bool ModeDisCover();
+	virtual bool ModeAttack();
+	virtual bool ModeCoolTime();
+
 	virtual bool StopPos();
+
+	VECTOR GetPos() { return _pos; }
+	float GetR() { return _r; }
 
 protected:
 	Player* _player;
-
 	//主な変数
 	int    _model;//モデル
 	VECTOR _pos;//エネミーの座標
@@ -52,7 +59,8 @@ protected:
 	enum TYPE : int {
 		search,
 		discover,
-		attack
+		attack,
+		cooltime
 	};
 
 	TYPE _state;//今の状態

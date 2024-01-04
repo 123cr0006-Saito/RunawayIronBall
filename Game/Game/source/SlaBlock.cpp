@@ -21,6 +21,7 @@ SlaBlock::SlaBlock(int model, VECTOR pos, Player* Player) :EnemyBase::EnemyBase(
 	_sartchRange = _sartchRangeSize;
 	_moveRange = 1000.0f;
 	_speed = 5.0f;
+	_r = 100.0f;
 
 	MV1SetScale(_model, VGet(0.1f, 0.1f, 0.1f));//持ってきたモデルが大きかったため1/10に設定
 };
@@ -29,55 +30,44 @@ SlaBlock::~SlaBlock() {
 	EnemyBase::~EnemyBase();
 };
 
-bool SlaBlock::Process() {
-	//基底の索敵状態と発見状態
-	EnemyBase::Process();
+bool SlaBlock::ModeAttack() {
+	int nowTime = GetNowCount() - _currentTime;//今の状態になってから何秒経ったか？
 
-	//ここから下に攻撃処理を描く
-	if (_state == TYPE::attack) {
+	//プランナーさん側で変更できる場所　※秒数単位 
+	int enemyRigidityTime = 1.0f * 1000; //攻撃モーションに入っての硬直時間
+	int enemyToPlayerPosFrame = 20.0f / 60.0f * 1000;//敵がプレイヤーの位置につくまでの時間
+	int fallTime = 1.0f * 1000;//落下するまでの時間
 
-		//プランナーさん側で変更できる場所
-		int enemyToPlayerPosFrame = 30;//敵がプレイヤーの位置につくまでのフレーム
-		int fallTime = 60;//落下するまでのフレーム
-		float moveCoolTime = 5.0f; //攻撃してからのクールタイム   ※秒数単位 
-		if (_currentTime == 0) {
-			_easingFrame++;
-
-			if (_easingFrame < enemyToPlayerPosFrame) {
-				_pos.x = Easing::InQuart(_easingFrame, _savePos.x, _saveNextPoint.x, enemyToPlayerPosFrame);
-				_pos.y = Easing::InQuart(_easingFrame, _savePos.y, _saveNextPoint.y, enemyToPlayerPosFrame);
-				_pos.z = Easing::InQuart(_easingFrame, _savePos.z, _saveNextPoint.z, enemyToPlayerPosFrame);
-			}
-
-			if (_easingFrame >= fallTime + enemyToPlayerPosFrame) {
-				_pos.y -= _speed * 8;
-				//とりあえずyが0になるまで落下
-				if (_pos.y <= 0.0f) {
-					_pos.y = 0.0f;
-					global.effect->SetVibration(0, 20, 20);
-					_currentTime = GetNowCount();
-				}
-			}
-
-		}
-		else {
-			if (GetNowCount() - _currentTime >= moveCoolTime * 1000) {
-				_easingFrame = 0;
-				_currentTime = 0;
-				_state = TYPE::discover;
-			}
-		}
-
+	// 1秒待ってから20フレームでプレイヤーの頭上に到着
+	if (enemyRigidityTime <= nowTime && nowTime < enemyRigidityTime + enemyToPlayerPosFrame) {
+		_pos.x = Easing::InQuart(nowTime - enemyRigidityTime, _savePos.x, _saveNextPoint.x, enemyToPlayerPosFrame);
+		_pos.y = Easing::InQuart(nowTime - enemyRigidityTime, _savePos.y, _saveNextPoint.y, enemyToPlayerPosFrame);
+		_pos.z = Easing::InQuart(nowTime - enemyRigidityTime, _savePos.z, _saveNextPoint.z, enemyToPlayerPosFrame);
 	}
 
-	//最終的なモデルの位置や角度を調整
-	MV1SetRotationXYZ(_model, VGet(0, _direction, 0));
-	MV1SetPosition(_model, _pos);
+	//１秒待ってから落下
+	if (nowTime >= enemyRigidityTime + enemyToPlayerPosFrame + fallTime) {
+		_pos.y -= _speed * 8;
+		//とりあえずyが0になるまで落下
+		if (_pos.y <= 0.0f) {
+			_pos.y = 0.0f;
+			_easingFrame = 0;
+			global.effect->SetVibration(0, 20, 20);
+			_currentTime = GetNowCount();
+			_state = TYPE::cooltime;
+		}
+	}
 	return true;
-}
+};
 
-bool SlaBlock::Render() {
-	EnemyBase::Render();
-	MV1DrawModel(_model);
+bool SlaBlock::ModeCoolTime() {
+
+	//プランナーさん側で変更できる場所　※秒数単位 
+	float moveCoolTime = 3.0f * 1000; //攻撃してからのクールタイム   
+
+	if (GetNowCount() - _currentTime >= moveCoolTime) {
+		_currentTime = 0;
+		_state = TYPE::discover;
+	}
 	return true;
 };
