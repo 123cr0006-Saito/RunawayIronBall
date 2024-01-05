@@ -10,17 +10,17 @@ public:
 	~bone();
 	void SetMain(Vector3D* pos_list);
 	void SetBoneDir(VECTOR world_dir_vec, VECTOR boon_pos, int target_frame, int parent_frame, MATRIX trans_mat, VECTOR dir_parent);;
-	static const VECTOR orign;
+	static const VECTOR _orign;
 
-	VECTOR* orign_pos;
+	VECTOR* _orignPos;
 
-	VECTOR GetOrignPos(int index) { return orign_pos[index]; }
+	VECTOR GetOrignPos(int index) { return _orignPos[index]; }
 private:
-	int* model;
-	int list_size;
-	VECTOR* vec_dir_list;
-	MATRIX* trans_mat_list;
-	std::vector<int> Frame_list;
+	int* _model;
+	int _listSize;
+	VECTOR* _vecDirList;
+	MATRIX* _transMatrixList;
+	std::vector<int> _frameList;
 
 	// « ‚±‚±‚©‚ç‰º‚Í•¨—‰‰Z‚Åg‚¤•Ï”‚âŠÖ”
 public:
@@ -30,6 +30,8 @@ public:
 	void UpdatePosAndAccel(double _elapsedTime);
 	Vector3D ForceWorksToMassPoint(int i, Vector3D* posList, Vector3D* accelList); //¿“_‚É“­‚­—Í‚ğŒvZ F=ma
 	bool Process();
+
+	void PositionReset();
 
 private:
 

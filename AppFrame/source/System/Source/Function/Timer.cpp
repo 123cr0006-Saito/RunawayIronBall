@@ -1,4 +1,4 @@
-#include "Timer.h"
+#include "../../Header/Function/Timer.h"
 Timer::Timer() {
 	_lastTime = 0;
 	_elapsedTime = 0.0f;

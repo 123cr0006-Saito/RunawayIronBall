@@ -165,7 +165,6 @@
     <ClCompile Include="source\ModeTitle.cpp" />
     <ClCompile Include="source\Player.cpp" />
     <ClCompile Include="source\Chain.cpp" />
-    <ClCompile Include="source\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\bone.h" />
@@ -178,7 +177,6 @@
     <ClInclude Include="source\ModeTitle.h" />
     <ClInclude Include="source\Player.h" />
     <ClInclude Include="source\Chain.h" />
-    <ClInclude Include="source\Timer.h" />
     <ClInclude Include="source\Vector3D.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

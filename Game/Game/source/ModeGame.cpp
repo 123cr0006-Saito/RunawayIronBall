@@ -29,6 +29,7 @@ bool ModeGame::Terminate() {
 
 bool ModeGame::Process() {
 	base::Process();
+	global._timer->TimeElapsed();
 	
 	_player->Process(_camera->GetCamY());
 	_chain->Process(_player->GetRightHandPos());

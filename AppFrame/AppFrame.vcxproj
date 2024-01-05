@@ -170,6 +170,7 @@
     <ClCompile Include="source\Mode\ModeBase.cpp" />
     <ClCompile Include="source\Mode\ModeServer.cpp" />
     <ClCompile Include="source\System\Source\Collision\2DCollision.cpp" />
+    <ClCompile Include="source\System\Source\Function\Timer.cpp" />
     <ClCompile Include="source\System\Source\Resource\ResourceServer.cpp" />
     <ClCompile Include="source\System\Source\Sound\FadeSound.cpp" />
     <ClCompile Include="source\System\Source\Function\Fps.cpp" />
@@ -192,6 +193,7 @@
     <ClInclude Include="source\Mode\ModeServer.h" />
     <ClInclude Include="source\System\Header\Collision\2DCollision.h" />
     <ClInclude Include="source\System\Header\Collision\MyStructure.h" />
+    <ClInclude Include="source\System\Header\Function\Timer.h" />
     <ClInclude Include="source\System\Header\Resource\ResourceServer.h" />
     <ClInclude Include="source\System\Header\Sound\FadeSound.h" />
     <ClInclude Include="source\System\Header\Function\Fps.h" />

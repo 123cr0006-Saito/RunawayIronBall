@@ -1,5 +1,6 @@
 #pragma once
 #include "../System/Header/Resource/ResourceServer.h"
+#include "../System/Header/Function/Timer.h"
 class Global
 {
 public:
@@ -10,6 +11,7 @@ public:
 	void SetExit() { exit_count = true; }
 	bool GetExit() { return exit_count; }
 //•Ï”EƒNƒ‰ƒX
+	Timer* _timer;
 	ResourceServer* resource;
 	bool exit_count;
 

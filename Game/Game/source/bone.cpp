@@ -1,13 +1,13 @@
 #include "bone.h"
 
-const VECTOR bone::orign = VGet(0, 0, 0);
+const VECTOR bone::_orign = VGet(0, 0, 0);
 
-const float bone::_massWeight = 0.2f;
-const float bone::_viscousResistance = 1.5f;
-const float bone::_gravity = 400.0f;
-const float bone::_spring = 50.0f;
-const float bone::_naturalCorrectionFactor = 1.0f;
+const float bone::_massWeight = 1.5f;
+const float bone::_viscousResistance = 20.0f;
+const float bone::_gravity = 4000.0f;
+const float bone::_spring = 500.0f;
 
+const float bone::_naturalCorrectionFactor = 0.8f;
 const Vector3D bone::_gravityDir(0.0f, -1.0f, 0.0f);
 
 //1Ｆ 大体0.015 ~ 0.017秒ぐらい 
@@ -24,39 +24,39 @@ bone::bone(
 	std::vector<int> list,
 	int size
 ) :
-	model(Model),
-	Frame_list(list),
-	list_size(size),
+	_model(Model),
+	_frameList(list),
+	_listSize(size),
 	_springList(size + 1),
 	_naturalList(size + 1)
 {
 	//ボーンの初期化
-	vec_dir_list = new VECTOR[list_size];
-	orign_pos = new VECTOR[list_size + 2];
-	trans_mat_list = new MATRIX[list_size];
+	_vecDirList = new VECTOR[_listSize];
+	_orignPos = new VECTOR[_listSize + 2];
+	_transMatrixList = new MATRIX[_listSize];
 
 
-	for (int i = 0; i < list_size; i++) {
-		trans_mat_list[i] = MV1GetFrameLocalMatrix(*model, Frame_list[i + 1]);
-		MATRIX local_mat = MV1GetFrameLocalMatrix(*model, Frame_list[i + 2]);
-		vec_dir_list[i] = VTransform(orign, local_mat);
+	for (int i = 0; i < _listSize; i++) {
+		_transMatrixList[i] = MV1GetFrameLocalMatrix(*_model, _frameList[i + 1]);
+		MATRIX local_mat = MV1GetFrameLocalMatrix(*_model, _frameList[i + 2]);
+		_vecDirList[i] = VTransform(_orign, local_mat);
 
 		for (int j = 0; j < 3; j++) {
-			trans_mat_list[i].m[3][j] = 0.0f;
+			_transMatrixList[i].m[3][j] = 0.0f;
 		}
-		orign_pos[i + 2] = MV1GetFramePosition(*model, Frame_list[i + 2]);
+		_orignPos[i + 2] = MV1GetFramePosition(*_model, _frameList[i + 2]);
 	}
-	orign_pos[0] = MV1GetFramePosition(*model, Frame_list[0]);
-	orign_pos[1] = MV1GetFramePosition(*model, Frame_list[1]);
+	_orignPos[0] = MV1GetFramePosition(*_model, _frameList[0]);
+	_orignPos[1] = MV1GetFramePosition(*_model, _frameList[1]);
 
 	//----------------------------------------------------------------------------------
 	//物理演算をするための変数の初期化
-	_massPointSize = Frame_list.size() - 1;
+	_massPointSize = _frameList.size() - 1;
 	_massPosList = new Vector3D[_massPointSize];
 	_massAccelList = new Vector3D[_massPointSize];
 
 	for (int i = 0; i < _massPointSize; i++) {
-		_massPosList[i].Set(MV1GetFramePosition(*model, Frame_list[i + 1]));
+		_massPosList[i].Set(MV1GetFramePosition(*_model, _frameList[i + 1]));
 	}
 
 	for (int i = 0; i < _massPointSize - 1; i++) {
@@ -75,21 +75,21 @@ bone::bone(
 };
 
 bone::~bone() {
-	SAFE_DELETE(vec_dir_list);
-	SAFE_DELETE(orign_pos);
-	SAFE_DELETE(trans_mat_list);
-	model = nullptr;
+	SAFE_DELETE(_vecDirList);
+	SAFE_DELETE(_orignPos);
+	SAFE_DELETE(_transMatrixList);
+	_model = nullptr;
 };
 
 void bone::SetMain(Vector3D* pos_list) {
-	for (int i = 0; i < list_size; i++) {
+	for (int i = 0; i < _listSize; i++) {
 		SetBoneDir(
 			pos_list[i + 1].toVECTOR(),
 			pos_list[i].toVECTOR(),
-			Frame_list[i + 1],
-			Frame_list[i],
-			trans_mat_list[i],
-			vec_dir_list[i]
+			_frameList[i + 1],
+			_frameList[i],
+			_transMatrixList[i],
+			_vecDirList[i]
 		);
 	};
 };
@@ -102,26 +102,26 @@ void bone::SetBoneDir(
 	MATRIX trans_mat,
 	VECTOR dir_parent)
 {
-	MATRIX TmpMat;
-	TmpMat = MV1GetFrameLocalWorldMatrix(*model, parent_frame); // 親ボーンのローカル→ワールド
-	TmpMat = MInverse(TmpMat); // 逆行列を計算
-	VECTOR Local_Dir_Vec = VTransform(world_dir_vec, TmpMat);//ボーンを方向のローカル座標
-	VECTOR Local_Bone_Pos = VTransform(boon_pos, TmpMat);//自分の付け根のローカル座標
+	MATRIX tmpMat;
+	tmpMat = MV1GetFrameLocalWorldMatrix(*_model, parent_frame); // 親ボーンのローカル→ワールド
+	tmpMat = MInverse(tmpMat); // 逆行列を計算
+	VECTOR localDirVec = VTransform(world_dir_vec, tmpMat);//ボーンを方向のローカル座標
+	VECTOR localBonePos = VTransform(boon_pos, tmpMat);//自分の付け根のローカル座標
 
 	//ボーンを向けたい方向
-	VECTOR Local_Dir_Look = VNorm(VSub(Local_Dir_Vec, Local_Bone_Pos));
+	VECTOR localDirLook = VNorm(VSub(localDirVec, localBonePos));
 
 	//今の向きから次の向きへの回転行列
-	MATRIX RotMat = MGetRotVec2(dir_parent, Local_Dir_Look);
+	MATRIX rotationMat = MGetRotVec2(dir_parent, localDirLook);
 
 	//自分の付け根が位置になるよう、平行移動
-	MATRIX shift_point = trans_mat;
-	shift_point.m[3][0] = Local_Bone_Pos.x;
-	shift_point.m[3][1] = Local_Bone_Pos.y;
-	shift_point.m[3][2] = Local_Bone_Pos.z;
+	MATRIX shiftPos = trans_mat;
+	shiftPos.m[3][0] = localBonePos.x;
+	shiftPos.m[3][1] = localBonePos.y;
+	shiftPos.m[3][2] = localBonePos.z;
 
-	TmpMat = MMult(RotMat, shift_point);
-	MV1SetFrameUserLocalMatrix(*model, target_frame, TmpMat);
+	tmpMat = MMult(rotationMat, shiftPos);
+	MV1SetFrameUserLocalMatrix(*_model, target_frame, tmpMat);
 }
 
 bool bone::Process() {
@@ -150,7 +150,7 @@ void bone::UpdatePosAndAccel(double _elapsedTime) {
 	Vector3D* newAccelList = new Vector3D[_massPointSize];
 
 	//付け根の位置は固定
-	_massPosList[0] = MV1GetFramePosition(*model, Frame_list[1]);
+	_massPosList[0] = MV1GetFramePosition(*_model, _frameList[1]);
 	newPosList[0] = _massPosList[0];
 
 	// 速度と位置の更新
@@ -173,7 +173,7 @@ void bone::UpdatePosAndAccel(double _elapsedTime) {
 //参考サイト
 //https://www.yukimura-physics.com/entry/dyn-f22 //運動方程式の立て方について
 Vector3D bone::ForceWorksToMassPoint(int i, Vector3D* posList, Vector3D* accelList) {
-	Vector3D _force;
+	Vector3D force;
 
 	//行う処理
 	//ばねのつり合い 上向きの弾性力と下向きの重力がつり合いを計算
@@ -182,24 +182,40 @@ Vector3D bone::ForceWorksToMassPoint(int i, Vector3D* posList, Vector3D* accelLi
 
 	//質点i～質点i+1間のばねから受ける力
 	if (i < _massPointSize - 1) {
-		//ばねの伸び具合を調べる
-		float _growth = (posList[i + 1] - posList[i]).len() - _naturalList[i];
+		////ばねの伸び具合を調べる
+		float growth = (posList[i + 1] - posList[i]).len() - _naturalList[i];
 		//ばねの伸びを力に変換
-		_force += _springList[i] * _growth * (posList[i + 1] - posList[i]).normalize();
+		force += _springList[i] * growth * (posList[i + 1] - posList[i]).normalize();
 	}
 
 	// 質点i-1～質点i間のバネから受ける力 
 	//ばねの伸び具合を調べる
-	float _growth = (posList[i] - posList[i - 1]).len() - _naturalList[i - 1];
+	float growth = (posList[i] - posList[i - 1]).len() - _naturalList[i - 1];
 	//ばねの伸びを力に変換
-	_force += _springList[i - 1] * _growth * (posList[i - 1] - posList[i]).normalize();
+	force += _springList[i - 1] * growth * (posList[i - 1] - posList[i]).normalize();
 
 	//今回は粘性抵抗 
 	//抵抗力なので－を足す
-	_force -= _viscousResistance * accelList[i];
+	force -= _viscousResistance * accelList[i];
 
 	//重力 
-	_force += _massWeight * _gravity * _gravityDir;
+	force += _massWeight * _gravity * _gravityDir;
 
-	return _force;
+	return force;
+};
+
+void bone::PositionReset() {
+	//※注意　位置や速度を初期化しますが、
+	// 垂直なモデルでないと初期化した後重力の影響で動きます
+	for (int i = 0; i < _listSize; i++) {
+		//座標返還行列の初期化
+		MV1ResetFrameUserLocalMatrix(*_model, _frameList[i + 1]);
+	}
+
+	for (int i = 0; i < _massPointSize; i++) {
+		//位置の初期化
+		_massPosList[i] = MV1GetFramePosition(*_model, _frameList[i + 1]);
+		//速度を０にする
+		_massAccelList[i].Set(0.0f, 0.0f, 0.0f);
+	}
 };
