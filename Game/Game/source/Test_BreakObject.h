@@ -12,7 +12,7 @@ public:
 	void Process();
 	void Render();
 
-	// 吹っ飛ばしの中心方向を指定
+	// 吹っ飛ばしの中心方向をセットする
 	void SetBlastDir(VECTOR vDir);
 
 
@@ -28,9 +28,14 @@ private:
 	int _breakCnt;
 	
 	struct FRAME_INFO {
+
 		int frameIndex;
-		// モデルの起点座標から見たフレームの方向
-		VECTOR dir;
+
+		// 吹き飛ばし
+
+		VECTOR horizontalDir; // 水平方向
+		float horizontalVelocity;
+		float verticalVelocity;
 
 		// デバッグ用
 		VECTOR pos, startPos;
@@ -41,10 +46,7 @@ private:
 	float _blastPower;
 
 
-	// デバッグ用
-	//struct FRAME_POSITION
-	//{
-	//	VECTOR pos, startPos;
-	//};
-	//std::vector<FRAME_POSITION> _framePos;
+	bool _isDrawLocus;
+	// 軌跡表示用の座標情報
+	std::vector<std::vector<VECTOR>> _locus;
 };
