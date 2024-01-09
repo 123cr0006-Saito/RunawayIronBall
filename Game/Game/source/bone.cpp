@@ -64,7 +64,7 @@ bone::bone(
 		//_natulalCorrectionFactorは通常1.0で良いと思うが、
 		// 髪の毛が異常に長くなったときは_natulalCorrectionFactorを変更し
 		// 元のモデルの髪の長さに近い状態にする
-		_naturalList[i] = _naturalCorrectionFactor * (_massPosList[i + 1] - _massPosList[i]).len();
+		_naturalList[i] = _naturalCorrectionFactor * (_massPosList[i + 1] - _massPosList[i]).Len();
 
 		//_springListの初期化
 		//ばねの値は決まっているが_naturalCorrectionFactorに比例して変更する
@@ -183,16 +183,16 @@ Vector3D bone::ForceWorksToMassPoint(int i, Vector3D* posList, Vector3D* accelLi
 	//質点i～質点i+1間のばねから受ける力
 	if (i < _massPointSize - 1) {
 		////ばねの伸び具合を調べる
-		float growth = (posList[i + 1] - posList[i]).len() - _naturalList[i];
+		float growth = (posList[i + 1] - posList[i]).Len() - _naturalList[i];
 		//ばねの伸びを力に変換
-		force += _springList[i] * growth * (posList[i + 1] - posList[i]).normalize();
+		force += _springList[i] * growth * (posList[i + 1] - posList[i]).Normalize();
 	}
 
 	// 質点i-1～質点i間のバネから受ける力 
 	//ばねの伸び具合を調べる
-	float growth = (posList[i] - posList[i - 1]).len() - _naturalList[i - 1];
+	float growth = (posList[i] - posList[i - 1]).Len() - _naturalList[i - 1];
 	//ばねの伸びを力に変換
-	force += _springList[i - 1] * growth * (posList[i - 1] - posList[i]).normalize();
+	force += _springList[i - 1] * growth * (posList[i - 1] - posList[i]).Normalize();
 
 	//今回は粘性抵抗 
 	//抵抗力なので－を足す

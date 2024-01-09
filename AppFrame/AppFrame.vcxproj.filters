@@ -107,5 +107,6 @@
     <ClInclude Include="source\Application\Global.h" />
     <ClInclude Include="source\System\Header\Function\mymath.h" />
     <ClInclude Include="source\System\Header\Function\Timer.h" />
+    <ClInclude Include="source\System\Header\Function\Vector3D.h" />
   </ItemGroup>
 </Project>

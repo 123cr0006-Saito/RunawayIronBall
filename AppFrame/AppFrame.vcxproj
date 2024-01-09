@@ -194,6 +194,7 @@
     <ClInclude Include="source\System\Header\Collision\2DCollision.h" />
     <ClInclude Include="source\System\Header\Collision\MyStructure.h" />
     <ClInclude Include="source\System\Header\Function\Timer.h" />
+    <ClInclude Include="source\System\Header\Function\Vector3D.h" />
     <ClInclude Include="source\System\Header\Resource\ResourceServer.h" />
     <ClInclude Include="source\System\Header\Sound\FadeSound.h" />
     <ClInclude Include="source\System\Header\Function\Fps.h" />

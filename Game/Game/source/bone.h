@@ -1,7 +1,6 @@
 #pragma once
 #include <vector>
 #include "dxlib.h"
-#include "Vector3D.h"
 #include "appframe.h"
 class bone
 {

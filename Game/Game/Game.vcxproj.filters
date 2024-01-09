@@ -95,8 +95,5 @@
     <ClInclude Include="source\Chain.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="source\Vector3D.h">
-      <Filter>ヘッダー ファイル\System</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

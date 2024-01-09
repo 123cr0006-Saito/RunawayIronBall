@@ -22,6 +22,7 @@
 #include "System/Header/Function/mydraw.h"
 #include "System/Header/Function/mymath.h"
 #include "System/Header/Function/3DDraw.h"
+#include "System/Header/Function/Vector3D.h"
 //Collision
 #include "System/Header/Collision/2DCollision.h"
 #include "System/Header/Collision/3DCollision.h"

@@ -131,19 +131,19 @@ public:
 	}
 
 	//ベクトルの長さ
-	float len() const
+	float Len() const
 	{
 		return sqrt(x * x + y * y + z * z);
 	};
 
 	//ベクトルの長さ 2乗
-	float sqlen() const
+	float Sqlen() const
 	{
 		return x * x + y * y + z * z;
 	}
 
 	// 二つのベクトル（始点と終点）からの長さを得る
-	static float sqlen(const Vector3D& start, const Vector3D& end)
+	static float Sqlen(const Vector3D& start, const Vector3D& end)
 	{
 		float len = 0.0f;
 		len += (start.x - end.x) * (start.x - end.x);
@@ -154,10 +154,10 @@ public:
 
 	//単位ベクトルを返す
 	//長さがなかった場合0ベクトルが返る
-	Vector3D normalize() const
+	Vector3D Normalize() const
 	{
 		Vector3D tmp;
-		float len = this->len();
+		float len = this->Len();
 		if (len > 0)
 		{
 			tmp.x = x / len;
