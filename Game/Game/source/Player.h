@@ -7,8 +7,9 @@ class Player : public CharacterBase
 private:
 	enum class STATUS {
 		NONE,
-		WAIT,
-		WALK,
+		SWING01,
+		SWING02,
+		RUN,
 		_EOT_
 	};
 
@@ -33,6 +34,9 @@ public:
 
 	VECTOR GetRightHandPos();
 
+
+	bool GetIsSwing() { return _isSwing; }
+
 	void DrawDebugInfo();
 private:
 	XInput* _input;
@@ -56,4 +60,6 @@ private:
 
 	int _rightHandFrameIndex;
 	
+
+	bool _isSwing;
 };
