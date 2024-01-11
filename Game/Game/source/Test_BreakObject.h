@@ -37,6 +37,8 @@ private:
 		float horizontalVelocity;
 		float verticalVelocity;
 
+		VECTOR rotVector;
+
 		// デバッグ用
 		VECTOR pos, startPos;
 	};

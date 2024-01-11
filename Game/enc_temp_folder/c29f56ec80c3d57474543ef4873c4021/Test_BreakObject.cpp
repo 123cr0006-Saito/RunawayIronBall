@@ -92,7 +92,7 @@ void BreakObject::Process()
 
 
 		// 重力処理
-		itr->verticalVelocity -= 1.5f;
+		itr->verticalVelocity -= 2.0f;
 
 		// 軌跡表示用の座標を保持
 		MATRIX mLocus = MV1GetFrameLocalWorldMatrix(_modelHandle, itr->frameIndex);
