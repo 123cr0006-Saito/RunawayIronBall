@@ -21,6 +21,7 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance) {
 
 bool ApplicationMain::Terminate() {
 	base::Terminate();
+	ResourceServer::DeleteResource();
 	return true;
 }
 

@@ -30,3 +30,4 @@
 
 //Global
 #include "Application/Global.h"
+#include "System/Header/Resource/ResourceServer.h"
