@@ -12,10 +12,7 @@ public:
 	bool GetExit() { return exit_count; }
 //•Ï”EƒNƒ‰ƒX
 	Timer* _timer;
-	ResourceServer* resource;
 	bool exit_count;
-
-	int time;
 };
 extern Global global;
 
