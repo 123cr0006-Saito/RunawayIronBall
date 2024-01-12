@@ -6,7 +6,10 @@
 class UIBase
 {
 public:
+<<<<<<< HEAD
 
+=======
+>>>>>>> feature/UI/Heart
 	UIBase(VECTOR pos, std::string handleName);
 	UIBase(VECTOR pos, std::string handleName, int AllNum, int XNum, int YNum, int XSize, int YSize, int* HandleBuf);
 	~UIBase();

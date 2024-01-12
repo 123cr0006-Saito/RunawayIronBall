@@ -168,6 +168,7 @@
     <ClCompile Include="source\Chain.cpp" />
     <ClCompile Include="source\SlaBlock.cpp" />
     <ClCompile Include="source\UIBase.cpp" />
+    <ClCompile Include="source\UIHeart.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\bone.h" />
@@ -183,6 +184,7 @@
     <ClInclude Include="source\Chain.h" />
     <ClInclude Include="source\SlaBlock.h" />
     <ClInclude Include="source\UIBase.h" />
+    <ClInclude Include="source\UIHeart.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
