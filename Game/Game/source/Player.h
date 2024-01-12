@@ -36,6 +36,7 @@ public:
 
 
 	bool GetIsSwing() { return _isSwing; }
+	static Player* GetInstance() { return _instance; }
 
 	void DrawDebugInfo();
 private:
@@ -62,4 +63,6 @@ private:
 	
 
 	bool _isSwing;
+
+	static Player* _instance;
 };

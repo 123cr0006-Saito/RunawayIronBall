@@ -1,6 +1,8 @@
 #include "Player.h"
 #include "appframe.h"
 
+Player* Player::_instance = NULL;
+
 Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 {
 	_input = XInput::GetInstance();
@@ -23,6 +25,11 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	_blastOffPower = 0.0f;
 
 	_rightHandFrameIndex = MV1SearchFrame(_modelHandle, "Character1_RightHand");
+
+
+
+	_isSwing = false;
+	_instance = this;
 }
 
 Player::~Player()
