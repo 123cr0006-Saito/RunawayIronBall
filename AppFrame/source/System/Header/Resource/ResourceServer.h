@@ -8,8 +8,6 @@ class ResourceServer
 {
 public:
 
-	static int LoadResource(const std::string resource_name, std::map<std::string, int>* server_name);
-
 	static int LoadGraph(std::string handle_name);//画像ハンドルの読み込み
 	static int LoadDivGraph(std::string handle_name, int AllNum, int XNum, int YNum, int XSize, int YSize, int* HandleBuf); //画像ハンドルの複数の読み込み
 	static int LoadEffekseerEffect(std::string handle_name);//エフェクシアのエフェクトの読み込み

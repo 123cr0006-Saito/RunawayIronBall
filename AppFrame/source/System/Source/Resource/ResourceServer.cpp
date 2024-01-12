@@ -6,36 +6,66 @@ std::map<std::string, ResourceServer::Div> ResourceServer::div_server;
 std::map<std::string, int >ResourceServer::effekseer_server;
 std::map<std::string, int >ResourceServer::model_server;
 
-int ResourceServer::LoadResource(const std::string resource_name, std::map<std::string, int>* server_name) {
+int ResourceServer::LoadGraph(std::string handle_name) {
 
 	int value = 0;
 
-	auto itr = (*server_name).find(resource_name);
-	if (itr != (*server_name).end()) {
+	auto itr = handle_server.find(handle_name);
+	if (itr != handle_server.end()) {
 		value = itr->second;
 	}
 	else {
-		value = ::LoadGraph(resource_name.c_str());
-		(*server_name)[resource_name] = value;
+		value = ::LoadGraph(handle_name.c_str());
+		handle_server[handle_name] = value;
 	}
 
 	return value;
 };
 
-int ResourceServer::LoadGraph(std::string handle_name) {
-	return LoadResource(handle_name, &handle_server);
-};
-
 int ResourceServer::LoadEffekseerEffect(std::string handle_name) {
-	return LoadResource(handle_name, &effekseer_server);
+
+	int value = 0;
+
+	auto itr = effekseer_server.find(handle_name);
+	if (itr != effekseer_server.end()) {
+		value = itr->second;
+	}
+	else {
+		value = ::LoadEffekseerEffect(handle_name.c_str());
+		effekseer_server[handle_name] = value;
+	}
+
+	return value;
 };
 
 int ResourceServer::MV1LoadModel(std::string model_name) {
-	return LoadResource(model_name, &model_server);
+	int value = 0;
+
+	auto itr = model_server.find(model_name);
+	if (itr != model_server.end()) {
+		value = itr->second;
+	}
+	else {
+		value = ::MV1LoadModel(model_name.c_str());
+		model_server[model_name] = value;
+	}
+
+	return value;
 };
 
 int ResourceServer::LoadSound(std::string sound_name) {
-	return LoadResource(sound_name, &sound_server);
+	int value = 0;
+
+	auto itr = sound_server.find(sound_name);
+	if (itr != sound_server.end()) {
+		value = itr->second;
+	}
+	else {
+		value = ::LoadSoundMem(sound_name.c_str());
+		sound_server[sound_name] = value;
+	}
+
+	return value;
 };
 
 
