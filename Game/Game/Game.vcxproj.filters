@@ -31,6 +31,12 @@
     <Filter Include="ソース ファイル\System">
       <UniqueIdentifier>{234593ec-10fd-44cc-9be0-9308b3cc9f8e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Effekseer">
+      <UniqueIdentifier>{ab7d6f6d-0dff-4378-add2-60bab3b241de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Effekseer">
+      <UniqueIdentifier>{20522758-16f6-4b33-8f89-c192756ca166}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\ModeGame.cpp">
