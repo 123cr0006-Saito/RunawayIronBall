@@ -74,6 +74,7 @@ void BreakObject::Process()
 {
 	// ”j•Ð‚ª”ò‚ÑŽU‚éˆ—
 	for (auto itr = _frameInfo.begin(); itr != _frameInfo.end(); ++itr) {
+		// ‰ñ“]s—ñ
 		MATRIX mRot = MGetRotX(itr->rotVector.x);
 		mRot = MMult(mRot, MGetRotY(itr->rotVector.y));
 		mRot = MMult(mRot, MGetRotZ(itr->rotVector.z));
@@ -162,6 +163,7 @@ void BreakObject::SetBlastDir(VECTOR vDir)
 		// ‰”’¼•ûŒü
 		itr->verticalVelocity = (rand() % maxVelocity) + 20.0f;
 
+		// ‰ñ“]’l
 		int deltaRot = 8;
 		float angleX = rand() % deltaRot;
 		angleX = Math::DegToRad(angleX);
