@@ -2,6 +2,7 @@
 #include "dxlib.h"
 #include <map>
 #include <string>
+#include <utility>
 #include "EffekseerForDXLib.h"
 
 class ResourceServer
@@ -14,17 +15,19 @@ public:
 	static int MV1LoadModel(std::string model_name);//dxlibの.mv1形式に対応した３Ｄモデルの読み込み
 	static int LoadSound(std::string sound_name);//サウンドの読み込み
 	static int SearchGraph(std::string name);//メモリ内に画像があるか検索　あった場合画像ハンドルの値を返す
-	static void DeleteResource();//全てのリソースを削除
 
+	static void DeleteResourceAll();//全てのリソースを削除
+
+	//複数の画像を保存するための構造体
 	static struct Div {
-		int  AllNum;
-		int* handle;
+		int  AllNum;//画像の全体の枚数
+		int* handle;//画像を保存する用の変数   枚数が動的に変化するためポインタ
 	};
 
-	static std::map<std::string, int> handle_server;
-	static std::map<std::string, int> sound_server;
-	static std::map<std::string, Div> div_server;
-	static std::map<std::string, int >effekseer_server;
-	static std::map<std::string, int >model_server;
+	static std::map<std::string, int> handle_server;//画像を保存する変数
+	static std::map<std::string, int> sound_server;//se・bgmを保存する変数
+	static std::map<std::string, Div> div_server;//複数に分割する画像を保存する変数
+	static std::map<std::string, int >effekseer_server;//エフェクシアのエフェクトを保存する変数
+	static std::map<std::string, std::vector<int> >model_server;//dxlibのモデルハンドルを保存する変数
 
 };
