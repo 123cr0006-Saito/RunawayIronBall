@@ -8,12 +8,11 @@ public:
 	SlaBlock(int model, VECTOR pos, Player* player);
 	~SlaBlock();
 
-	virtual bool ModeAttack()override;
-	virtual bool ModeCoolTime() override;
+	bool ModeAttack()override;
+	bool ModeCoolTime()override;
 
 protected:
 	static const float _fixSartchSize;//õ“G”ÍˆÍ‚Ì”¼Œa
 	static const float _fixDiscoverSize;//”­Œ©A‘ÎÛ‚ÌŒ©¸‚¤‚Ü‚Å‚Ì‹——£‚Ì”¼Œa
 	static const float _fixAttackSize;//”­Œ©AUŒ‚ƒ‚[ƒVƒ‡ƒ“‚É“ü‚é‚Ü‚Å‚Ì”ÍˆÍ
 };
-

@@ -8,15 +8,17 @@ public:
 	EnemyBase(int model, VECTOR pos);
 	~EnemyBase();
 
-	virtual bool Process();
-	virtual bool Render();
+	bool Process();
+	bool Render();
 
 	virtual bool ModeSearch();
 	virtual bool ModeDisCover();
 	virtual bool ModeAttack();
 	virtual bool ModeCoolTime();
 
-	virtual bool StopPos();
+	virtual bool SetState();
+
+	bool StopPos();
 
 	VECTOR GetPos() { return _pos; }
 	float GetR() { return _r; }

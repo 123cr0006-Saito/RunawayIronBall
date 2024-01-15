@@ -9,8 +9,8 @@ SlaBlock::SlaBlock(int model, VECTOR pos, Player* Player) :EnemyBase::EnemyBase(
 	//デバック時登録
 	_model = MV1LoadModel("res/katatumuri/snail.mv1");
 	//今のモデルに貼り付けているテクスチャ
-	MV1SetTextureGraphHandle(_model, 0, global.resource->LoadGraph("res/katatumuri/14086_Snail_with_toy_house_for_ shell_v2_diff2.jpg"), true);
-	MV1SetTextureGraphHandle(_model, 1, global.resource->LoadGraph("res/katatumuri/14086_Snail_with_toy_house_for_ shell_v2_diff.jpg"), true);
+	MV1SetTextureGraphHandle(_model, 0, ResourceServer::LoadGraph("res/katatumuri/14086_Snail_with_toy_house_for_ shell_v2_diff2.jpg"), true);
+	MV1SetTextureGraphHandle(_model, 1, ResourceServer::LoadGraph("res/katatumuri/14086_Snail_with_toy_house_for_ shell_v2_diff.jpg"), true);
 
 	_sartchRangeSize = _fixSartchSize;
 	_discoverRangeSize = _fixDiscoverSize;
@@ -52,7 +52,7 @@ bool SlaBlock::ModeAttack() {
 		if (_pos.y <= 0.0f) {
 			_pos.y = 0.0f;
 			_easingFrame = 0;
-			global.effect->SetVibration(0, 20, 20);
+			//global.effect->SetVibration(0, 20, 20);
 			_currentTime = GetNowCount();
 			_state = TYPE::cooltime;
 		}

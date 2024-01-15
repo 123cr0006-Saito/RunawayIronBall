@@ -112,7 +112,7 @@ bool EnemyBase::ModeSearch() {
 	}
 
 	//索敵処理
-	VECTOR v_length = VSub(_player->GetPos(), _pos);
+	VECTOR v_length = VSub(_player->GetCollision().down_pos, _pos);
 	float len = VSize(v_length);
 	if (VSize(v_length) <= _sartchRange) {
 
@@ -133,7 +133,7 @@ bool EnemyBase::ModeSearch() {
 
 bool EnemyBase::ModeDisCover() {
 	//移動処理
-	VECTOR move = VSub(_player->GetPos(), _pos); move.y = 0.0f;//これをオンにするとy軸の移動がなくなる
+	VECTOR move = VSub(_player->GetCollision().down_pos, _pos); move.y = 0.0f;//これをオンにするとy軸の移動がなくなる
 	move = VNorm(move);
 	move = VScale(move, _speed);
 	_pos = VAdd(_pos, move);
@@ -143,7 +143,7 @@ bool EnemyBase::ModeDisCover() {
 	_direction = atan2(dirVec.x, dirVec.z);
 
 	//敵とプレイヤーの距離を算出
-	move = VSub(_player->GetPos(), _pos);
+	move = VSub(_player->GetCollision().down_pos, _pos);
 	float p_distance = VSize(move);//敵とプレイヤーの距離
 
 	//索敵処理
@@ -157,7 +157,7 @@ bool EnemyBase::ModeDisCover() {
 	if (p_distance <= _attackRangeSize) {
 		_state = TYPE::attack;//状態を索敵にする
 		_currentTime = GetNowCount();
-		_saveNextPoint = VAdd(_player->GetPos(), VGet(0, 500, 0));
+		_saveNextPoint = VAdd(_player->GetCollision().down_pos, VGet(0, 500, 0));
 		_savePos = _pos;
 	}
 	return true;
@@ -168,6 +168,15 @@ bool EnemyBase::ModeAttack() {
 };
 
 bool EnemyBase::ModeCoolTime() {
+	return true;
+};
+
+bool EnemyBase::SetState() {
+	//最終的なモデルの位置や角度を調整
+	if (_model != 0) {
+		MV1SetRotationXYZ(_model, VGet(0.0f, _direction, 0.0f));
+		MV1SetPosition(_model, _pos);
+	}
 	return true;
 };
 
@@ -188,11 +197,8 @@ bool EnemyBase::Process() {
 		break;
 	}
 
-	//最終的なモデルの位置や角度を調整
-	if (_model != 0) {
-		MV1SetRotationXYZ(_model, VGet(0.0f, _direction, 0.0f));
-		MV1SetPosition(_model, _pos);
-	}
+	SetState();
+
 	return true;
 };
 
