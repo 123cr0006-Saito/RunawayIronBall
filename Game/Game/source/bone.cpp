@@ -1,11 +1,11 @@
 #include "bone.h"
 
-const VECTOR bone::_orign = VGet(0, 0, 0);
+const Vector3D bone::_orign(0,0,0);
 
 const float bone::_massWeight = 1.5f;
 const float bone::_viscousResistance = 20.0f;
 const float bone::_gravity = 4000.0f;
-const float bone::_spring = 500.0f;
+const float bone::_spring = 800.0f;
 
 const float bone::_naturalCorrectionFactor = 0.8f;
 const Vector3D bone::_gravityDir(0.0f, -1.0f, 0.0f);
@@ -31,19 +31,20 @@ bone::bone(
 	_naturalList(size + 1)
 {
 	//ボーンの初期化
-	_vecDirList = new VECTOR[_listSize];
-	_orignPos = new VECTOR[_listSize + 2];
+	_vecDirList = new Vector3D[_listSize];
+	_orignPos = new Vector3D[_listSize + 2];
 	_transMatrixList = new MATRIX[_listSize];
 
 
 	for (int i = 0; i < _listSize; i++) {
 		_transMatrixList[i] = MV1GetFrameLocalMatrix(*_model, _frameList[i + 1]);
 		MATRIX local_mat = MV1GetFrameLocalMatrix(*_model, _frameList[i + 2]);
-		_vecDirList[i] = VTransform(_orign, local_mat);
+		_vecDirList[i] = VTransform(_orign.toVECTOR(), local_mat);
 
 		for (int j = 0; j < 3; j++) {
 			_transMatrixList[i].m[3][j] = 0.0f;
 		}
+
 		_orignPos[i + 2] = MV1GetFramePosition(*_model, _frameList[i + 2]);
 	}
 	_orignPos[0] = MV1GetFramePosition(*_model, _frameList[0]);
@@ -75,17 +76,19 @@ bone::bone(
 };
 
 bone::~bone() {
-	SAFE_DELETE(_vecDirList);
-	SAFE_DELETE(_orignPos);
-	SAFE_DELETE(_transMatrixList);
 	_model = nullptr;
+	delete[] _vecDirList;         _vecDirList = nullptr;
+	delete[] _orignPos;           _orignPos = nullptr;
+	delete[] _transMatrixList; _transMatrixList = nullptr;
+	delete[] _massPosList;    _massPosList = nullptr;
+	delete[] _massAccelList;  _massAccelList = nullptr;
 };
 
 void bone::SetMain(Vector3D* pos_list) {
 	for (int i = 0; i < _listSize; i++) {
 		SetBoneDir(
-			pos_list[i + 1].toVECTOR(),
-			pos_list[i].toVECTOR(),
+			pos_list[i + 1],
+			pos_list[i],
 			_frameList[i + 1],
 			_frameList[i],
 			_transMatrixList[i],
@@ -95,24 +98,24 @@ void bone::SetMain(Vector3D* pos_list) {
 };
 
 void bone::SetBoneDir(
-	VECTOR world_dir_vec,
-	VECTOR boon_pos,
+	Vector3D world_dir_vec,
+	Vector3D boon_pos,
 	int target_frame,
 	int parent_frame,
 	MATRIX trans_mat,
-	VECTOR dir_parent)
+	Vector3D dir_parent)
 {
 	MATRIX tmpMat;
 	tmpMat = MV1GetFrameLocalWorldMatrix(*_model, parent_frame); // 親ボーンのローカル→ワールド
 	tmpMat = MInverse(tmpMat); // 逆行列を計算
-	VECTOR localDirVec = VTransform(world_dir_vec, tmpMat);//ボーンを方向のローカル座標
-	VECTOR localBonePos = VTransform(boon_pos, tmpMat);//自分の付け根のローカル座標
+	Vector3D localDirVec = VTransform(world_dir_vec.toVECTOR(), tmpMat);//ボーンを方向のローカル座標
+	Vector3D localBonePos = VTransform(boon_pos.toVECTOR(), tmpMat);//自分の付け根のローカル座標
 
 	//ボーンを向けたい方向
-	VECTOR localDirLook = VNorm(VSub(localDirVec, localBonePos));
+	Vector3D localDirLook = (localDirVec - localBonePos).Normalize();
 
 	//今の向きから次の向きへの回転行列
-	MATRIX rotationMat = MGetRotVec2(dir_parent, localDirLook);
+	MATRIX rotationMat = MGetRotVec2(dir_parent.toVECTOR(), localDirLook.toVECTOR());
 
 	//自分の付け根が位置になるよう、平行移動
 	MATRIX shiftPos = trans_mat;
@@ -127,13 +130,12 @@ void bone::SetBoneDir(
 bool bone::Process() {
 
 	double _elapsedTime = global._timer->GetElapsedTime();
-	//int processCount = 0;
 	while (1)
 	{
+		//1フレームを_processIntervalで差分化する
 		if (_elapsedTime < _processInterval)break;
 		_elapsedTime -= _processInterval;
 		UpdatePosAndAccel(_processInterval);
-		//processCount++;
 	}
 
 	return true;
@@ -146,8 +148,8 @@ bool bone::Process() {
 //時間があればルンゲクッタ法に変更したい
 void bone::UpdatePosAndAccel(double _elapsedTime) {
 	//時間で処理を細分化し少しずつ答えに近づけていく
-	Vector3D* newPosList = new Vector3D[_massPointSize];
-	Vector3D* newAccelList = new Vector3D[_massPointSize];
+	static Vector3D* newPosList = new Vector3D[_massPointSize];
+	static Vector3D* newAccelList = new Vector3D[_massPointSize];
 
 	//付け根の位置は固定
 	_massPosList[0] = MV1GetFramePosition(*_model, _frameList[1]);
