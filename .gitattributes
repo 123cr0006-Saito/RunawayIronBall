@@ -8,3 +8,5 @@
 *.bmp filter=lfs diff=lfs merge=lfs -text
 *.vcxproj.filters merge=union
 *.vcxproj merge=union
+ModeTest.cpp merge=ours
+ModeTest.h merge=ours
