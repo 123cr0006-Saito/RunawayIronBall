@@ -1,0 +1,195 @@
+#include "BreakObject.h"
+
+BreakObject::BreakObject()
+{
+	_modelHandle = -1;
+	_pos = VGet(0, 0, 0);
+	MV1SetPosition(_modelHandle, _pos);
+	//MV1SetScale(_modelHandle, VGet(10.0f, 10.0f, 10.0f));
+
+	//_breakFrameIndex = 35;
+
+	_breakCnt = 0;
+
+	_blastDir = VGet(0.0f, 0.0f, -1.0f);
+	_blastPower = 10.0f;
+
+
+	_isDrawLocus = false;
+}
+
+BreakObject::~BreakObject()
+{
+	if (_modelHandle != -1) {
+		MV1DeleteModel(_modelHandle);
+	}
+}
+
+void BreakObject::Init(int modelHandle)
+{
+	_modelHandle = modelHandle;
+	for (int i = 0; i < MV1GetFrameNum(_modelHandle); i++) {
+		// フレームの座標変換行列を取得する
+		MATRIX mFrameLocal = MV1GetFrameLocalMatrix(_modelHandle, i);
+		// フレームのローカル座標を求める
+		VECTOR vFrameLocalPos = VGet(0.0f, 0.0f, 0.0f);
+		vFrameLocalPos = VTransform(vFrameLocalPos, mFrameLocal);
+
+		// モデルの起点座標から見たフレームの方向を取得する
+		VECTOR vFrameLocalDir = VGet(0.0f, 0.0f, -1.0f);
+		if (VSquareSize(vFrameLocalPos) > 0.0000f) {
+			vFrameLocalDir = VNorm(vFrameLocalPos);
+			// 吹っ飛ぶ方向をz軸マイナス方向に限定する
+			if (vFrameLocalDir.z > 0.0f) {
+				vFrameLocalDir.z *= -1;
+			}
+		}
+
+		FRAME_INFO f = { i, vFrameLocalDir };
+		_frameInfo.push_back(f);
+
+		_locus.resize(_locus.size() + 1);
+	}
+
+
+
+
+
+
+	// デバッグ用
+
+	for (auto itr = _frameInfo.begin(); itr != _frameInfo.end(); ++itr) {
+		MATRIX m = MV1GetFrameLocalWorldMatrix(_modelHandle, itr->frameIndex);
+
+		VECTOR v = VTransform(VGet(0.0f, 0.0f, 0.0f), m);
+		_locus.at(std::distance(_frameInfo.begin(), itr)).push_back(v);
+	}
+
+	// 吹っ飛ばす方向を指定
+	SetBlastDir(VGet(1.0f, 0.0f, 0.0f));
+}
+
+void BreakObject::Process()
+{
+	// 破片が飛び散る処理
+	for (auto itr = _frameInfo.begin(); itr != _frameInfo.end(); ++itr) {
+		// 回転行列
+		MATRIX mRot = MGetRotX(itr->rotVector.x);
+		mRot = MMult(mRot, MGetRotY(itr->rotVector.y));
+		mRot = MMult(mRot, MGetRotZ(itr->rotVector.z));
+
+		// 移動前の行列
+		MATRIX mBefor = MV1GetFrameLocalMatrix(_modelHandle, itr->frameIndex);
+		// 平行移動行列（水平方向と鉛直方向の平行移動行列を合成する）
+		MATRIX mTrans = MGetTranslate(VAdd(VScale(itr->horizontalDir, itr->horizontalVelocity), VGet(0.0f, itr->verticalVelocity, 0.0f)));
+
+		MATRIX m = MMult(mRot, mBefor);
+		m = MMult(m, mTrans);
+
+		// 行列の適応
+		MV1SetFrameUserLocalMatrix(_modelHandle, itr->frameIndex, m);
+
+
+
+		// 重力処理
+		itr->verticalVelocity -= 1.5f;
+
+		// 軌跡表示用の座標を保持
+		MATRIX mLocus = MV1GetFrameLocalWorldMatrix(_modelHandle, itr->frameIndex);
+		VECTOR vLocus = VTransform(VGet(0.0f, 0.0f, 0.0f), mLocus);
+		_locus.at(std::distance(_frameInfo.begin(), itr)).push_back(vLocus);
+		//itr->pos = v;
+	}
+	//_blastPower -= 0.5f;
+
+	_breakCnt++;
+	//_blastDir.y -= 0.05f;
+
+	 // リセット
+	if (_breakCnt > 90) {
+		_breakCnt = 0;
+
+		// 吹っ飛ばす方向を指定
+		SetBlastDir(VGet(0.0f, 0.0f, 1.0f));
+
+		// 軌跡表示用の座標情報をリセット
+		for (auto itr = _locus.begin(); itr != _locus.end(); ++itr) {
+			itr->clear();
+		}
+
+		// パーツを初期位置に戻す
+		for (auto itr = _frameInfo.begin(); itr != _frameInfo.end(); ++itr) {
+			MV1ResetFrameUserLocalMatrix(_modelHandle, itr->frameIndex);
+
+			MATRIX m = MV1GetFrameLocalWorldMatrix(_modelHandle, itr->frameIndex);
+			VECTOR v = VTransform(VGet(0.0f, 0.0f, 0.0f), m);
+			_locus.at(std::distance(_frameInfo.begin(), itr)).push_back(v);
+		}
+	}
+
+	// 軌跡表示のOn/Off切り替え
+	auto input = XInput::GetInstance();
+	if (input->GetTrg(XINPUT_BUTTON_BACK) != 0) {
+		_isDrawLocus = !_isDrawLocus;
+	}
+}
+
+void BreakObject::Render()
+{
+	MV1SetPosition(_modelHandle, _pos);
+	MV1DrawModel(_modelHandle);
+}
+
+// 吹っ飛ばしの方向をセットする
+// 引数
+// vDir : ふっ飛ばしの中心方向
+void BreakObject::SetBlastDir(VECTOR vDir)
+{
+	vDir = VNorm(vDir);
+	// パーツごとに吹っ飛ばす水平方向をvDirから ±maxRange度の間でランダムに決定する
+	const int maxRange = 45;
+	// 水平・鉛直方向における最大速度
+	const int maxVelocity = 30;
+
+	// パーツごとにふっ飛ばし方向をセットする
+	for (auto itr = _frameInfo.begin(); itr != _frameInfo.end(); ++itr) {
+		// 水平方向
+		float angle = rand() % (maxRange * 2);
+		angle -= maxRange;
+		itr->horizontalDir = VTransform(vDir, MGetRotY(Math::DegToRad(angle)));
+		itr->horizontalVelocity = rand() % maxVelocity;
+
+		// 鉛直方向
+		itr->verticalVelocity = (rand() % maxVelocity) + 20.0f;
+
+		// 回転値
+		int deltaRot = 8;
+		float angleX = rand() % deltaRot;
+		angleX = Math::DegToRad(angleX);
+		float angleY = rand() % deltaRot;
+		angleY = Math::DegToRad(angleY);
+		float angleZ = rand() % deltaRot;
+		angleZ = Math::DegToRad(angleZ);
+		itr->rotVector = VGet(angleX, angleY, angleZ);
+	}
+	//_blastPower = 20.0f;
+	_blastDir = vDir;
+}
+
+void BreakObject::DrawDebugInfo()
+{
+	if (_isDrawLocus) {
+		// ふっ飛ばし方向の中心
+		{
+			VECTOR startPos = VGet(0.0f, 0.0f, 0.0f);
+			DrawLine3D(startPos, VAdd(startPos, VScale(_blastDir, 1000.0f)), GetColor(255, 255, 255));
+		}
+
+		// パーツごとに吹っ飛びの軌跡を表示する
+		for (auto i = _locus.begin(); i != _locus.end(); ++i) {
+			for (auto j = i->begin(); j != i->end() - 1; ++j) {
+				DrawLine3D((*j), (*(j + 1)), GetColor(255, 255, 0));
+			}
+		}
+	}
+}
