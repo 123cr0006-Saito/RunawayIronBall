@@ -1,13 +1,6 @@
 #include "bone.h"
 
 const Vector3D bone::_orign(0,0,0);
-
-const float bone::_massWeight = 1.5f;
-const float bone::_viscousResistance = 20.0f;
-const float bone::_gravity = 4000.0f;
-const float bone::_spring = 800.0f;
-
-const float bone::_naturalCorrectionFactor = 0.8f;
 const Vector3D bone::_gravityDir(0.0f, -1.0f, 0.0f);
 
 //1Ｆ 大体0.015 ~ 0.017秒ぐらい 
@@ -55,6 +48,15 @@ bone::bone(
 	_massPointSize = _frameList.size() - 1;
 	_massPosList = new Vector3D[_massPointSize];
 	_massAccelList = new Vector3D[_massPointSize];
+	_massWeight = new float[_massPointSize];
+	 _viscousResistance = new float[_massPointSize];
+	 _gravity = new float[_massPointSize];
+	 _spring = new float[_massPointSize];
+	 _naturalCorrectionFactor = new float[_massPointSize];
+
+	 //ファイル読み込み---------------------------------------------------
+	 
+	 //--------------------------------------------------------------------------
 
 	for (int i = 0; i < _massPointSize; i++) {
 		_massPosList[i].Set(MV1GetFramePosition(*_model, _frameList[i + 1]));
@@ -65,13 +67,13 @@ bone::bone(
 		//_natulalCorrectionFactorは通常1.0で良いと思うが、
 		// 髪の毛が異常に長くなったときは_natulalCorrectionFactorを変更し
 		// 元のモデルの髪の長さに近い状態にする
-		_naturalList[i] = _naturalCorrectionFactor * (_massPosList[i + 1] - _massPosList[i]).Len();
+		_naturalList[i] = _naturalCorrectionFactor[i] * (_massPosList[i + 1] - _massPosList[i]).Len();
 
 		//_springListの初期化
 		//ばねの値は決まっているが_naturalCorrectionFactorに比例して変更する
 		//今回は質点が一定の長さだが必要ないが
 		// 質点に合わしてばね定数も変更可能
-		_springList[i] = _naturalList[i] * _spring;
+		_springList[i] = _naturalList[i] * _spring[i];
 	}
 };
 
@@ -159,7 +161,7 @@ void bone::UpdatePosAndAccel(double _elapsedTime) {
 	for (int i = 1; i < _massPointSize; i++) {
 		// ニュートンの運動方程式より
 		// F = ma 今回は速度が欲しいので a = F/m
-		Vector3D Accel = ForceWorksToMassPoint(i, _massPosList, _massAccelList) / _massWeight;
+		Vector3D Accel = ForceWorksToMassPoint(i, _massPosList, _massAccelList) / _massWeight[i];
 		//速度を出す   y(i+1) = y(i) + hf 
 		newAccelList[i] = _massAccelList[i] + _elapsedTime * Accel;
 		//位置の更新   y(i+1) = y(i) + hf 
@@ -198,10 +200,10 @@ Vector3D bone::ForceWorksToMassPoint(int i, Vector3D* posList, Vector3D* accelLi
 
 	//今回は粘性抵抗 
 	//抵抗力なので－を足す
-	force -= _viscousResistance * accelList[i];
+	force -= _viscousResistance[i] * accelList[i];
 
 	//重力 
-	force += _massWeight * _gravity * _gravityDir;
+	force += _massWeight[i] * _gravity[i] * _gravityDir;
 
 	return force;
 };
