@@ -1,6 +1,8 @@
 #include "Player.h"
 #include "appframe.h"
 
+Player* Player::_instance = NULL;
+
 Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 {
 	_input = XInput::GetInstance();
@@ -23,6 +25,11 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	_blastOffPower = 0.0f;
 
 	_rightHandFrameIndex = MV1SearchFrame(_modelHandle, "Character1_RightHand");
+
+
+
+	_isSwing = false;
+	_instance = this;
 }
 
 Player::~Player()
@@ -36,34 +43,50 @@ bool Player::Process(float camAngleY)
 {
 	// 処理前のステータスを保存しておく
 	STATUS oldStatus = _animStatus;
-	_animStatus = STATUS::WAIT;
+	//_animStatus = STATUS::NONE;
 
-	// 左スティックの入力情報を取得する
-	auto lStick = _input->GetAdjustedStick_L();
-	//auto rStick = _input->GetAdjustedStick_R();
-	VECTOR vDir = VGet(lStick.x, 0, lStick.y);
-	// 左スティックの入力があったら
-	if (VSize(vDir) > 0.000000f) {
-		// 移動処理
-		vDir = VNorm(vDir);
 
-		MATRIX mRot = MGetRotY(camAngleY);
-		// 移動方向ベクトルを回転させる
-		vDir = VTransform(vDir, mRot);
-		_pos = VAdd(_pos, VScale(vDir, _speed));			
-		_animStatus = STATUS::WALK;
+	if (_input->GetTrg(XINPUT_BUTTON_X) != 0) {
+		_animStatus = STATUS::SWING02;
+		_isSwing = true;
+	}
 
-		// 回転処理
-		// 基準のベクトル
-		VECTOR vBase = VGet(0.0f, 0.0f, -1.0f);
-		// 基準のベクトルと移動方向のベクトルのなす角を計算する
-		float angle = Math::CalcVectorAngle(vDir, vBase);
-		// 反時計回りの場合
-		if (vDir.x > 0.0f) {
-			angle *= -1;
+	if (_animStatus != STATUS::SWING02) {
+
+		// 左スティックの入力情報を取得する
+		auto lStick = _input->GetAdjustedStick_L();
+		//auto rStick = _input->GetAdjustedStick_R();
+		VECTOR vDir = VGet(lStick.x, 0, lStick.y);
+		// 左スティックの入力があったら
+		if (VSize(vDir) > 0.000000f) {
+			// 移動処理
+			vDir = VNorm(vDir);
+
+			MATRIX mRot = MGetRotY(camAngleY);
+			// 移動方向ベクトルを回転させる
+			vDir = VTransform(vDir, mRot);
+			_pos = VAdd(_pos, VScale(vDir, _speed));
+			_animStatus = STATUS::RUN;
+
+			// 回転処理
+			// 基準のベクトル
+			VECTOR vBase = VGet(0.0f, 0.0f, -1.0f);
+			// 基準のベクトルと移動方向のベクトルのなす角を計算する
+			float angle = Math::CalcVectorAngle(vDir, vBase);
+			// 反時計回りの場合
+			if (vDir.x > 0.0f) {
+				angle *= -1;
+			}
+			// モデルの回転値をセットする
+			MV1SetRotationXYZ(_modelHandle, VGet(0.0f, angle, 0.0f));
 		}
-		// モデルの回転値をセットする
-		MV1SetRotationXYZ(_modelHandle, VGet(0.0f, angle, 0.0f));
+
+
+	}
+	else {
+		if (_isSwing == false) {
+			_animStatus = STATUS::RUN;
+		}
 	}
 
 	BlastOffProcess();
@@ -89,11 +112,14 @@ bool Player::AnimProcess(STATUS oldStatus)
 		}
 		// ステータスに合わせてアニメーションのアタッチ
 		switch (_animStatus) {
-		case STATUS::WAIT:
-			_attach_index = MV1AttachAnim(_modelHandle, 2, -1, FALSE);
-			break;
-		case STATUS::WALK:
+		case STATUS::SWING01:
 			_attach_index = MV1AttachAnim(_modelHandle, 0, -1, FALSE);
+			break;
+		case STATUS::SWING02:
+			_attach_index = MV1AttachAnim(_modelHandle, 1, -1, FALSE);
+			break;
+		case STATUS::RUN:
+			_attach_index = MV1AttachAnim(_modelHandle, 2, -1, FALSE);
 			break;
 		}
 		// アタッチしたアニメーションの総再生時間を取得する
@@ -105,6 +131,10 @@ bool Player::AnimProcess(STATUS oldStatus)
 	// 再生時間がアニメーションの総再生時間に達したら再生時間を０に戻す
 	if (_play_time >= _total_time) {
 		_play_time = 0.0f;
+
+		if (_animStatus == STATUS::SWING02) {
+			_isSwing = false;
+		}
 	}
 
 	// 再生時間をセットする

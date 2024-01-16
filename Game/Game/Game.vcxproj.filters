@@ -31,6 +31,18 @@
     <Filter Include="ソース ファイル\System">
       <UniqueIdentifier>{234593ec-10fd-44cc-9be0-9308b3cc9f8e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\Effekseer">
+      <UniqueIdentifier>{ab7d6f6d-0dff-4378-add2-60bab3b241de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Effekseer">
+      <UniqueIdentifier>{20522758-16f6-4b33-8f89-c192756ca166}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Enemy">
+      <UniqueIdentifier>{84f79595-f9ae-4a5e-8708-340bb9561ffb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Enemy">
+      <UniqueIdentifier>{6be95ea1-c2a8-455f-8ad1-6590b23ade27}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\ModeGame.cpp">
@@ -63,6 +75,18 @@
     <ClCompile Include="source\Chain.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="source\BuildingBase.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\EnemyBase.cpp">
+      <Filter>ソース ファイル\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="source\SlaBlock.cpp">
+      <Filter>ソース ファイル\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Crystarl.cpp">
+      <Filter>ソース ファイル\Enemy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\ModeGame.h">
@@ -94,6 +118,18 @@
     </ClInclude>
     <ClInclude Include="source\Chain.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\BuildingBase.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\EnemyBase.h">
+      <Filter>ヘッダー ファイル\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="source\SlaBlock.h">
+      <Filter>ヘッダー ファイル\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Crystarl.h">
+      <Filter>ヘッダー ファイル\Enemy</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

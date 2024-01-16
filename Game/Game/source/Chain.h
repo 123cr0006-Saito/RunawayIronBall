@@ -1,6 +1,6 @@
 #pragma once
 #include "appframe.h"
-
+#include "Player.h"
 
 #define CHAIN_MAX 12
 
@@ -28,7 +28,7 @@ private:
 
 
 
-	int _attackCnt;
+	int _attackAnimCnt;
 
 
 	int _animIndex;
@@ -37,10 +37,15 @@ private:
 
 
 	float _cnt;
+	int _attackDir;
 
 	MATRIX _m[CHAIN_MAX];
 
 	float _length;
 
 	bool _isSwing;
+
+
+	Player* _playerInstance;
+	int _playerModelHandle;
 };

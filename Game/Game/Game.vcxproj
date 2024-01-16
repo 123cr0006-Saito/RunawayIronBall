@@ -156,7 +156,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="source\bone.cpp" />
+    <ClCompile Include="source\BuildingBase.cpp" />
     <ClCompile Include="source\CharacterBase.cpp" />
+    <ClCompile Include="source\Crystarl.cpp" />
+    <ClCompile Include="source\EnemyBase.cpp" />
     <ClCompile Include="source\ModeGameOver.cpp" />
     <ClCompile Include="source\ModeClear.cpp" />
     <ClCompile Include="source\Camera.cpp" />
@@ -165,10 +168,14 @@
     <ClCompile Include="source\ModeTitle.cpp" />
     <ClCompile Include="source\Player.cpp" />
     <ClCompile Include="source\Chain.cpp" />
+    <ClCompile Include="source\SlaBlock.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\bone.h" />
+    <ClInclude Include="source\BuildingBase.h" />
     <ClInclude Include="source\CharacterBase.h" />
+    <ClInclude Include="source\Crystarl.h" />
+    <ClInclude Include="source\EnemyBase.h" />
     <ClInclude Include="source\ModeGameOver.h" />
     <ClInclude Include="source\ModeClear.h" />
     <ClInclude Include="source\Camera.h" />
@@ -177,6 +184,7 @@
     <ClInclude Include="source\ModeTitle.h" />
     <ClInclude Include="source\Player.h" />
     <ClInclude Include="source\Chain.h" />
+    <ClInclude Include="source\SlaBlock.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

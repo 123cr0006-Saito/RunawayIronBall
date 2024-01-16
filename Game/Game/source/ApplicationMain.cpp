@@ -21,6 +21,7 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance) {
 
 bool ApplicationMain::Terminate() {
 	base::Terminate();
+	ResourceServer::DeleteResourceAll();
 	return true;
 }
 
@@ -32,11 +33,13 @@ bool ApplicationMain::Input() {
 
 bool ApplicationMain::Process() {
 	base::Process();
+	_fpsController->WaitFps();
 	return true;
 }
 
 bool ApplicationMain::Render() {
 	base::Render();
+	_fpsController->DrawFps(0, 0);
 	return true;
 }
 
