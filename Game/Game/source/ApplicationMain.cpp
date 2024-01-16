@@ -1,6 +1,7 @@
 
 #include "ApplicationMain.h"
 #include "ModeGame.h"
+#include "ModeTest.h"
 #include "ModeTitle.h"
 
 // ŽÀ‘Ì
@@ -11,7 +12,7 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance) {
 
 	// ƒ‚[ƒh‚Ì“o˜^
 	//ModeServer::GetInstance()->Add(new ModeTitle(), 1, "Title");
-	ModeServer::GetInstance()->Add(new ModeGame(), 1, "Game");
+	ModeServer::GetInstance()->Add(new ModeTest(), 1, "Game");
 	global.Init();
 
 	_input = new XInput(DX_INPUT_PAD1);

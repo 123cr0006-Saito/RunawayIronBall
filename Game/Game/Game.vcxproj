@@ -156,6 +156,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="source\bone.cpp" />
+    <ClCompile Include="source\BreakObject.cpp" />
     <ClCompile Include="source\BuildingBase.cpp" />
     <ClCompile Include="source\CharacterBase.cpp" />
     <ClCompile Include="source\Crystarl.cpp" />
@@ -165,6 +166,7 @@
     <ClCompile Include="source\Camera.cpp" />
     <ClCompile Include="source\ApplicationMain.cpp" />
     <ClCompile Include="source\ModeGame.cpp" />
+    <ClCompile Include="source\ModeTest.cpp" />
     <ClCompile Include="source\ModeTitle.cpp" />
     <ClCompile Include="source\Player.cpp" />
     <ClCompile Include="source\Chain.cpp" />
@@ -172,6 +174,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\bone.h" />
+    <ClInclude Include="source\BreakObject.h" />
     <ClInclude Include="source\BuildingBase.h" />
     <ClInclude Include="source\CharacterBase.h" />
     <ClInclude Include="source\Crystarl.h" />
@@ -181,6 +184,7 @@
     <ClInclude Include="source\Camera.h" />
     <ClInclude Include="source\ApplicationMain.h" />
     <ClInclude Include="source\ModeGame.h" />
+    <ClInclude Include="source\ModeTest.h" />
     <ClInclude Include="source\ModeTitle.h" />
     <ClInclude Include="source\Player.h" />
     <ClInclude Include="source\Chain.h" />
