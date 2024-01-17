@@ -43,6 +43,12 @@
     <Filter Include="ヘッダー ファイル\Enemy">
       <UniqueIdentifier>{6be95ea1-c2a8-455f-8ad1-6590b23ade27}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\Building">
+      <UniqueIdentifier>{509dd2b1-5af5-4e50-ab54-2dc5e3999890}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Building">
+      <UniqueIdentifier>{b45c3417-7509-4a22-ae08-911650e2dfeb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\ModeGame.cpp">
@@ -75,9 +81,6 @@
     <ClCompile Include="source\Chain.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="source\BuildingBase.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="source\EnemyBase.cpp">
       <Filter>ソース ファイル\Enemy</Filter>
     </ClCompile>
@@ -87,11 +90,14 @@
     <ClCompile Include="source\Crystarl.cpp">
       <Filter>ソース ファイル\Enemy</Filter>
     </ClCompile>
-    <ClCompile Include="source\BreakObject.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="source\ModeTest.cpp">
       <Filter>ソース ファイル\Mode</Filter>
+    </ClCompile>
+    <ClCompile Include="source\BreakObject.cpp">
+      <Filter>ソース ファイル\Building</Filter>
+    </ClCompile>
+    <ClCompile Include="source\BuildingBase.cpp">
+      <Filter>ソース ファイル\Building</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -125,9 +131,6 @@
     <ClInclude Include="source\Chain.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="source\BuildingBase.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="source\EnemyBase.h">
       <Filter>ヘッダー ファイル\Enemy</Filter>
     </ClInclude>
@@ -137,11 +140,14 @@
     <ClInclude Include="source\Crystarl.h">
       <Filter>ヘッダー ファイル\Enemy</Filter>
     </ClInclude>
-    <ClInclude Include="source\BreakObject.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="source\ModeTest.h">
       <Filter>ヘッダー ファイル\Mode</Filter>
+    </ClInclude>
+    <ClInclude Include="source\BreakObject.h">
+      <Filter>ヘッダー ファイル\Building</Filter>
+    </ClInclude>
+    <ClInclude Include="source\BuildingBase.h">
+      <Filter>ヘッダー ファイル\Building</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
