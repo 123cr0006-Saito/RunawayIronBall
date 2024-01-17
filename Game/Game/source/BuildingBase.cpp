@@ -35,10 +35,10 @@ bool BuildingBase::Process()
 
 	_testCnt--;
 	if (_testCnt < -90) {
-		_breakObj->Activate(false);
+		ActivateBreakObject(false);
 		_testCnt = 60;
 	}else if (_testCnt < 0) {
-		_breakObj->Activate(true, VGet(0.0f, 0.0f, 1.0f));
+		ActivateBreakObject(true, VGet(0.0f, 0.0f, 1.0f));
 	}
 	return true;
 }
@@ -46,4 +46,9 @@ bool BuildingBase::Process()
 bool BuildingBase::Render()
 {
 	return MV1DrawModel(_modelHandle);
+}
+
+void BuildingBase::ActivateBreakObject(bool activate, VECTOR vDir)
+{
+	_breakObj->Activate(activate, vDir);
 }
