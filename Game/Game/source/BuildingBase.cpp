@@ -24,22 +24,12 @@ bool BuildingBase::Init(int modelHandle, VECTOR startPos)
 	_breakObj = new BreakObject();
 	_breakObj->Init(_modelHandle);
 
-	_testCnt = 60;
-
 	return true;
 }
 
 bool BuildingBase::Process()
 {
 	_breakObj->Process();
-
-	_testCnt--;
-	if (_testCnt < -90) {
-		ActivateBreakObject(false);
-		_testCnt = 60;
-	}else if (_testCnt < 0) {
-		ActivateBreakObject(true, VGet(0.0f, 0.0f, 1.0f));
-	}
 	return true;
 }
 
