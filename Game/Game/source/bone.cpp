@@ -48,6 +48,7 @@ bone::bone(
 	_massPointSize = _frameList.size() - 1;
 	_massPosList = new Vector3D[_massPointSize];
 	_massAccelList = new Vector3D[_massPointSize];
+
 	_massWeight = new float[_massPointSize];
 	 _viscousResistance = new float[_massPointSize];
 	 _gravity = new float[_massPointSize];
@@ -82,8 +83,15 @@ bone::~bone() {
 	delete[] _vecDirList;         _vecDirList = nullptr;
 	delete[] _orignPos;           _orignPos = nullptr;
 	delete[] _transMatrixList; _transMatrixList = nullptr;
+
 	delete[] _massPosList;    _massPosList = nullptr;
 	delete[] _massAccelList;  _massAccelList = nullptr;
+
+	delete[] _massWeight;     _massWeight = nullptr;
+	delete[] _viscousResistance; _viscousResistance = nullptr;
+	delete[] _gravity;               _gravity = nullptr;
+	delete[] _spring;               _spring = nullptr;
+	delete[] _naturalCorrectionFactor; _naturalCorrectionFactor = nullptr;
 };
 
 void bone::SetMain(Vector3D* pos_list) {
