@@ -3,6 +3,7 @@
 BuildingBase::BuildingBase()
 {
 	_modelHandle = -1;
+	_breakObj = nullptr;
 }
 
 BuildingBase::~BuildingBase()
@@ -11,15 +12,22 @@ BuildingBase::~BuildingBase()
 		MV1DeleteModel(_modelHandle);
 		_modelHandle = -1;
 	}
+	SAFE_DELETE(_breakObj);
 }
 
-bool BuildingBase::Init()
+bool BuildingBase::Init(int modelHandle)
 {
+	_modelHandle = modelHandle;
+
+	_breakObj = new BreakObject();
+	_breakObj->Init(_modelHandle);
+
 	return true;
 }
 
 bool BuildingBase::Process()
 {
+	_breakObj->Process();
 	return true;
 }
 
