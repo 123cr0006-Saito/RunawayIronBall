@@ -96,6 +96,9 @@
     <ClCompile Include="source\ModeTest.cpp">
       <Filter>ソース ファイル\Mode</Filter>
     </ClCompile>
+    <ClCompile Include="source\myJson.cpp">
+      <Filter>ソース ファイル\System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\ModeGame.h">
@@ -148,6 +151,9 @@
     </ClInclude>
     <ClInclude Include="source\ModeTest.h">
       <Filter>ヘッダー ファイル\Mode</Filter>
+    </ClInclude>
+    <ClInclude Include="source\myJson.h">
+      <Filter>ヘッダー ファイル\System</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
