@@ -25,7 +25,7 @@ protected:
 
 	Chain* _chain;
 
-	BuildingBase* _buildingBase;
+	std::vector<BuildingBase*> _buildingBase;
 
 	int _skySphere;
 };

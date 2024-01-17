@@ -14,13 +14,21 @@ public:
 
 
 	bool GetIsActive() { return _isActive; }
-	void SetIsActive(bool activate, VECTOR _blastDir = VGet(0.0f,0.0f,0.0f));
+	void Activate(bool activate, VECTOR _blastDir = VGet(0.0f,0.0f,0.0f));
 
-	// 吹っ飛ばしの中心方向をセットする
-	void SetBlastDir(VECTOR vDir);
+
 
 
 	void DrawDebugInfo();
+
+
+
+private:
+
+	// 吹っ飛ばしの中心方向をセットする
+	void SetBlastDir(VECTOR vDir);
+	void ResetFrameMatrix();
+
 
 private:
 	// パーツの吹っ飛び処理を行うかどうか

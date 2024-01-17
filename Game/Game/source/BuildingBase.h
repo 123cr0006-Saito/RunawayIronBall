@@ -8,12 +8,13 @@ public:
 	BuildingBase();
 	virtual ~BuildingBase();
 
-	virtual bool Init(int modelHandle);
+	virtual bool Init(int modelHandl, VECTOR startPos);
 	virtual bool Process();
 	virtual bool Render();
 
 private:
 	int _modelHandle;
+	VECTOR _pos;
 
 	BreakObject* _breakObj;
 

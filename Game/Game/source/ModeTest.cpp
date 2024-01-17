@@ -18,10 +18,17 @@ bool ModeTest::Initialize() {
 	_chain = new Chain();
 	_chain->Init();
 
-	_buildingBase = new BuildingBase();
 	int objHandle = MV1LoadModel("res/Test_BreakObject/centerpivot_2.mv1");
-	_buildingBase->Init(objHandle);
+	for (int i = 0; i < 10; i++) {
+		VECTOR v = VGet(rand() % 2000, 0.0f, rand() % 2000);
+		v.x -= 1000.0f;
+		v.z -= 1000.0f;
 
+		BuildingBase* building = new BuildingBase();
+		building->Init(MV1DuplicateModel(objHandle), v);
+		
+		_buildingBase.push_back(building);
+	}
 	return true;
 }
 
@@ -38,8 +45,9 @@ bool ModeTest::Process() {
 	_chain->Process(_player->GetRightHandPos());
 
 
-	_buildingBase->Process();
-
+	for (auto itr = _buildingBase.begin(); itr != _buildingBase.end(); ++itr) {
+		(*itr)->Process();
+	}
 	_camera->Process(_player->GetPosition());
 	return true;
 }
@@ -66,7 +74,9 @@ bool ModeTest::Render() {
 	_player->Render();
 	_chain->Render();
 
-	_buildingBase->Render();
+	for (auto itr = _buildingBase.begin(); itr != _buildingBase.end(); ++itr) {
+		(*itr)->Render();
+	}
 
 	VECTOR ballPos = _chain->GetBallPosition();
 	DrawSphere3D(ballPos, 130.0f, 16, GetColor(255, 0, 0), GetColor(255, 0, 0), false);

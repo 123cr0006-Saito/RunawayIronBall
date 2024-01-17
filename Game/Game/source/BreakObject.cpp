@@ -140,10 +140,11 @@ void BreakObject::Render()
 
 }
 
-void BreakObject::SetIsActive(bool activate, VECTOR _blastDir)
+void BreakObject::Activate(bool activate, VECTOR _blastDir)
 {
-	// 現在が有効状態でなく、新しく有効化する場合にのみ吹っ飛ばしの設定を行う
-	if (!_isActive && activate) {
+	if (!activate) {
+		ResetFrameMatrix();
+	}else if (!_isActive) { // 現在が有効状態でなく、新しく有効化する場合にのみ吹っ飛ばしの設定を行う	
 		SetBlastDir(_blastDir);
 	}
 	_isActive = activate;
@@ -183,6 +184,13 @@ void BreakObject::SetBlastDir(VECTOR vDir)
 	}
 	//_blastPower = 20.0f;
 	_blastDir = vDir;
+}
+
+void BreakObject::ResetFrameMatrix()
+{
+	for (auto itr = _frameInfo.begin(); itr != _frameInfo.end(); ++itr) {
+		MV1ResetFrameUserLocalMatrix(_modelHandle, itr->frameIndex);
+	}
 }
 
 void BreakObject::DrawDebugInfo()
