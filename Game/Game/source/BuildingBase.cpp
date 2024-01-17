@@ -22,12 +22,19 @@ bool BuildingBase::Init(int modelHandle)
 	_breakObj = new BreakObject();
 	_breakObj->Init(_modelHandle);
 
+	_testCnt = 60;
+
 	return true;
 }
 
 bool BuildingBase::Process()
 {
 	_breakObj->Process();
+
+	_testCnt--;
+	if (_testCnt < 0) {
+		_breakObj->SetIsActive(true, VGet(0.0f, 0.0f, 1.0f));
+	}
 	return true;
 }
 

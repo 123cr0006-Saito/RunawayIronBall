@@ -2,6 +2,7 @@
 
 BreakObject::BreakObject()
 {
+	_isActive = false;
 	_modelHandle = -1;
 	_pos = VGet(0, 0, 0);
 	//MV1SetPosition(_modelHandle, _pos);
@@ -69,72 +70,83 @@ void BreakObject::Init(int modelHandle)
 
 void BreakObject::Process()
 {
-	// 破片が飛び散る処理
-	for (auto itr = _frameInfo.begin(); itr != _frameInfo.end(); ++itr) {
-		// 回転行列
-		MATRIX mRot = MGetRotX(itr->rotVector.x);
-		mRot = MMult(mRot, MGetRotY(itr->rotVector.y));
-		mRot = MMult(mRot, MGetRotZ(itr->rotVector.z));
-
-		// 移動前の行列
-		MATRIX mBefor = MV1GetFrameLocalMatrix(_modelHandle, itr->frameIndex);
-		// 平行移動行列（水平方向と鉛直方向の平行移動行列を合成する）
-		MATRIX mTrans = MGetTranslate(VAdd(VScale(itr->horizontalDir, itr->horizontalVelocity), VGet(0.0f, itr->verticalVelocity, 0.0f)));
-
-		MATRIX m = MMult(mRot, mBefor);
-		m = MMult(m, mTrans);
-
-		// 行列の適応
-		MV1SetFrameUserLocalMatrix(_modelHandle, itr->frameIndex, m);
-
-
-
-		// 重力処理
-		itr->verticalVelocity -= 1.5f;
-
-		// 軌跡表示用の座標を保持
-		MATRIX mLocus = MV1GetFrameLocalWorldMatrix(_modelHandle, itr->frameIndex);
-		VECTOR vLocus = VTransform(VGet(0.0f, 0.0f, 0.0f), mLocus);
-		_locus.at(std::distance(_frameInfo.begin(), itr)).push_back(vLocus);
-		//itr->pos = v;
-	}
-	//_blastPower -= 0.5f;
-
-	_breakCnt++;
-	//_blastDir.y -= 0.05f;
-
-	 // リセット
-	if (_breakCnt > 90) {
-		_breakCnt = 0;
-
-		// 吹っ飛ばす方向を指定
-		SetBlastDir(VGet(0.0f, 0.0f, 1.0f));
-
-		// 軌跡表示用の座標情報をリセット
-		for (auto itr = _locus.begin(); itr != _locus.end(); ++itr) {
-			itr->clear();
-		}
-
-		// パーツを初期位置に戻す
+	if (_isActive) {
+		// 破片が飛び散る処理
 		for (auto itr = _frameInfo.begin(); itr != _frameInfo.end(); ++itr) {
-			MV1ResetFrameUserLocalMatrix(_modelHandle, itr->frameIndex);
+			// 回転行列
+			MATRIX mRot = MGetRotX(itr->rotVector.x);
+			mRot = MMult(mRot, MGetRotY(itr->rotVector.y));
+			mRot = MMult(mRot, MGetRotZ(itr->rotVector.z));
 
-			MATRIX m = MV1GetFrameLocalWorldMatrix(_modelHandle, itr->frameIndex);
-			VECTOR v = VTransform(VGet(0.0f, 0.0f, 0.0f), m);
-			_locus.at(std::distance(_frameInfo.begin(), itr)).push_back(v);
+			// 移動前の行列
+			MATRIX mBefor = MV1GetFrameLocalMatrix(_modelHandle, itr->frameIndex);
+			// 平行移動行列（水平方向と鉛直方向の平行移動行列を合成する）
+			MATRIX mTrans = MGetTranslate(VAdd(VScale(itr->horizontalDir, itr->horizontalVelocity), VGet(0.0f, itr->verticalVelocity, 0.0f)));
+
+			MATRIX m = MMult(mRot, mBefor);
+			m = MMult(m, mTrans);
+
+			// 行列の適応
+			MV1SetFrameUserLocalMatrix(_modelHandle, itr->frameIndex, m);
+
+
+
+			// 重力処理
+			itr->verticalVelocity -= 1.5f;
+
+			// 軌跡表示用の座標を保持
+			MATRIX mLocus = MV1GetFrameLocalWorldMatrix(_modelHandle, itr->frameIndex);
+			VECTOR vLocus = VTransform(VGet(0.0f, 0.0f, 0.0f), mLocus);
+			_locus.at(std::distance(_frameInfo.begin(), itr)).push_back(vLocus);
+			//itr->pos = v;
 		}
-	}
+		//_blastPower -= 0.5f;
 
-	// 軌跡表示のOn/Off切り替え
-	auto input = XInput::GetInstance();
-	if (input->GetTrg(XINPUT_BUTTON_BACK) != 0) {
-		_isDrawLocus = !_isDrawLocus;
+		_breakCnt++;
+		//_blastDir.y -= 0.05f;
+
+		 // リセット
+		if (_breakCnt > 90) {
+			_breakCnt = 0;
+
+			// 吹っ飛ばす方向を指定
+			SetBlastDir(VGet(0.0f, 0.0f, 1.0f));
+
+			// 軌跡表示用の座標情報をリセット
+			for (auto itr = _locus.begin(); itr != _locus.end(); ++itr) {
+				itr->clear();
+			}
+
+			// パーツを初期位置に戻す
+			for (auto itr = _frameInfo.begin(); itr != _frameInfo.end(); ++itr) {
+				MV1ResetFrameUserLocalMatrix(_modelHandle, itr->frameIndex);
+
+				MATRIX m = MV1GetFrameLocalWorldMatrix(_modelHandle, itr->frameIndex);
+				VECTOR v = VTransform(VGet(0.0f, 0.0f, 0.0f), m);
+				_locus.at(std::distance(_frameInfo.begin(), itr)).push_back(v);
+			}
+		}
+
+		// 軌跡表示のOn/Off切り替え
+		auto input = XInput::GetInstance();
+		if (input->GetTrg(XINPUT_BUTTON_BACK) != 0) {
+			_isDrawLocus = !_isDrawLocus;
+		}
 	}
 }
 
 void BreakObject::Render()
 {
 
+}
+
+void BreakObject::SetIsActive(bool activate, VECTOR _blastDir)
+{
+	// 現在が有効状態でなく、新しく有効化する場合にのみ吹っ飛ばしの設定を行う
+	if (!_isActive && activate) {
+		SetBlastDir(_blastDir);
+	}
+	_isActive = activate;
 }
 
 // 吹っ飛ばしの方向をセットする
@@ -175,7 +187,7 @@ void BreakObject::SetBlastDir(VECTOR vDir)
 
 void BreakObject::DrawDebugInfo()
 {
-	if (_isDrawLocus) {
+	if (_isActive && _isDrawLocus) {
 		// ふっ飛ばし方向の中心
 		{
 			VECTOR startPos = VGet(0.0f, 0.0f, 0.0f);

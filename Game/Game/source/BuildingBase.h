@@ -16,4 +16,12 @@ private:
 	int _modelHandle;
 
 	BreakObject* _breakObj;
+
+
+
+
+
+	// デバッグ用
+	// パーツの吹っ飛び処理を行うまでのフレーム数
+	int _testCnt;
 };

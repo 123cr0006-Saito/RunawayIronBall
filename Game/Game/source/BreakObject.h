@@ -12,6 +12,10 @@ public:
 	void Process();
 	void Render();
 
+
+	bool GetIsActive() { return _isActive; }
+	void SetIsActive(bool activate, VECTOR _blastDir = VGet(0.0f,0.0f,0.0f));
+
 	// 吹っ飛ばしの中心方向をセットする
 	void SetBlastDir(VECTOR vDir);
 
@@ -19,10 +23,13 @@ public:
 	void DrawDebugInfo();
 
 private:
+	// パーツの吹っ飛び処理を行うかどうか
+	bool _isActive;
+
 	// モデルハンドル
 	// 各建物クラスのインスタンスから受け取る（そのインスタンスとモデルハンドルを共有する）
 	int _modelHandle;
-	VECTOR _pos;
+	
 
 	int _breakCnt;
 
@@ -43,6 +50,7 @@ private:
 
 
 	/*  */
+	VECTOR _pos;
 	// 吹っ飛び方向
 	VECTOR _blastDir;
 	// 吹っ飛びの強さ
