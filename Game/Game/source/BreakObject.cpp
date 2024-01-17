@@ -4,7 +4,7 @@ BreakObject::BreakObject()
 {
 	_modelHandle = -1;
 	_pos = VGet(0, 0, 0);
-	MV1SetPosition(_modelHandle, _pos);
+	//MV1SetPosition(_modelHandle, _pos);
 	//MV1SetScale(_modelHandle, VGet(10.0f, 10.0f, 10.0f));
 
 	//_breakFrameIndex = 35;
@@ -20,9 +20,7 @@ BreakObject::BreakObject()
 
 BreakObject::~BreakObject()
 {
-	if (_modelHandle != -1) {
-		MV1DeleteModel(_modelHandle);
-	}
+
 }
 
 void BreakObject::Init(int modelHandle)
@@ -136,8 +134,7 @@ void BreakObject::Process()
 
 void BreakObject::Render()
 {
-	MV1SetPosition(_modelHandle, _pos);
-	MV1DrawModel(_modelHandle);
+
 }
 
 // êÅÇ¡îÚÇŒÇµÇÃï˚å¸ÇÉZÉbÉgÇ∑ÇÈ

@@ -19,6 +19,8 @@ public:
 	void DrawDebugInfo();
 
 private:
+	// モデルハンドル
+	// 各建物クラスのインスタンスから受け取る（そのインスタンスとモデルハンドルを共有する）
 	int _modelHandle;
 	VECTOR _pos;
 
@@ -38,7 +40,12 @@ private:
 	};
 
 	std::vector<FRAME_INFO> _frameInfo;
+
+
+	/*  */
+	// 吹っ飛び方向
 	VECTOR _blastDir;
+	// 吹っ飛びの強さ
 	float _blastPower;
 
 
