@@ -28,6 +28,9 @@ void BreakObject::Init(int modelHandle)
 {
 	_modelHandle = modelHandle;
 	for (int i = 0; i < MV1GetFrameNum(_modelHandle); i++) {
+		int childNum = MV1GetFrameChildNum(_modelHandle, i);
+		if (childNum != 0) continue;
+
 		// フレームの座標変換行列を取得する
 		MATRIX mFrameLocal = MV1GetFrameLocalMatrix(_modelHandle, i);
 		// フレームのローカル座標を求める
@@ -71,34 +74,38 @@ void BreakObject::Init(int modelHandle)
 void BreakObject::Process()
 {
 	if (_isActive) {
-		// 破片が飛び散る処理
-		for (auto itr = _frameInfo.begin(); itr != _frameInfo.end(); ++itr) {
-			// 回転行列
-			MATRIX mRot = MGetRotX(itr->rotVector.x);
-			mRot = MMult(mRot, MGetRotY(itr->rotVector.y));
-			mRot = MMult(mRot, MGetRotZ(itr->rotVector.z));
-
-			// 移動前の行列
-			MATRIX mBefor = MV1GetFrameLocalMatrix(_modelHandle, itr->frameIndex);
-			// 平行移動行列（水平方向と鉛直方向の平行移動行列を合成する）
-			MATRIX mTrans = MGetTranslate(VAdd(VScale(itr->horizontalDir, itr->horizontalVelocity), VGet(0.0f, itr->verticalVelocity, 0.0f)));
-
-			MATRIX m = MMult(mRot, mBefor);
-			m = MMult(m, mTrans);
-
-			// 行列の適応
-			MV1SetFrameUserLocalMatrix(_modelHandle, itr->frameIndex, m);
+		if (_breakCnt < 90) {
 
 
+			// 破片が飛び散る処理
+			for (auto itr = _frameInfo.begin(); itr != _frameInfo.end(); ++itr) {
+				// 回転行列
+				MATRIX mRot = MGetRotX(itr->rotVector.x);
+				mRot = MMult(mRot, MGetRotY(itr->rotVector.y));
+				mRot = MMult(mRot, MGetRotZ(itr->rotVector.z));
 
-			// 重力処理
-			itr->verticalVelocity -= 1.5f;
+				// 移動前の行列
+				MATRIX mBefor = MV1GetFrameLocalMatrix(_modelHandle, itr->frameIndex);
+				// 平行移動行列（水平方向と鉛直方向の平行移動行列を合成する）
+				MATRIX mTrans = MGetTranslate(VAdd(VScale(itr->horizontalDir, itr->horizontalVelocity), VGet(0.0f, itr->verticalVelocity, 0.0f)));
 
-			// 軌跡表示用の座標を保持
-			MATRIX mLocus = MV1GetFrameLocalWorldMatrix(_modelHandle, itr->frameIndex);
-			VECTOR vLocus = VTransform(VGet(0.0f, 0.0f, 0.0f), mLocus);
-			_locus.at(std::distance(_frameInfo.begin(), itr)).push_back(vLocus);
-			//itr->pos = v;
+				MATRIX m = MMult(mRot, mBefor);
+				m = MMult(m, mTrans);
+
+				// 行列の適応
+				MV1SetFrameUserLocalMatrix(_modelHandle, itr->frameIndex, m);
+
+
+
+				// 重力処理
+				itr->verticalVelocity -= 1.5f;
+
+				// 軌跡表示用の座標を保持
+				MATRIX mLocus = MV1GetFrameLocalWorldMatrix(_modelHandle, itr->frameIndex);
+				VECTOR vLocus = VTransform(VGet(0.0f, 0.0f, 0.0f), mLocus);
+				_locus.at(std::distance(_frameInfo.begin(), itr)).push_back(vLocus);
+				//itr->pos = v;
+			}
 		}
 		//_blastPower -= 0.5f;
 
@@ -107,7 +114,7 @@ void BreakObject::Process()
 
 		 // リセット
 		if (_breakCnt > 90) {
-			_breakCnt = 0;
+			//_breakCnt = 0;
 
 			// 吹っ飛ばす方向を指定
 			SetBlastDir(VGet(0.0f, 0.0f, 1.0f));
@@ -125,6 +132,9 @@ void BreakObject::Process()
 				VECTOR v = VTransform(VGet(0.0f, 0.0f, 0.0f), m);
 				_locus.at(std::distance(_frameInfo.begin(), itr)).push_back(v);
 			}
+		}
+		if (_breakCnt > 120) {
+			_breakCnt = 0;
 		}
 
 		// 軌跡表示のOn/Off切り替え

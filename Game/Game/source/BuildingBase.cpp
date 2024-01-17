@@ -34,9 +34,9 @@ bool BuildingBase::Process()
 	_breakObj->Process();
 
 	_testCnt--;
-	if (_testCnt < -90) {
-		_breakObj->Activate(false);
-		_testCnt = 60;
+	if (_testCnt < -80) {
+		//_breakObj->Activate(false);
+		//_testCnt = 60;
 	}else if (_testCnt < 0) {
 		_breakObj->Activate(true, VGet(0.0f, 0.0f, 1.0f));
 	}

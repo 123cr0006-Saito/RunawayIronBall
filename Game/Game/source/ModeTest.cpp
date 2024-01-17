@@ -18,11 +18,12 @@ bool ModeTest::Initialize() {
 	_chain = new Chain();
 	_chain->Init();
 
-	int objHandle = MV1LoadModel("res/Test_BreakObject/centerpivot_2.mv1");
-	for (int i = 0; i < 10; i++) {
-		VECTOR v = VGet(rand() % 2000, 0.0f, rand() % 2000);
-		v.x -= 1000.0f;
-		v.z -= 1000.0f;
+	int objHandle = MV1LoadModel("res/Building/House_test_01.mv1");
+	for (int i = 0; i < 1; i++) {
+		//VECTOR v = VGet(rand() % 2000, 0.0f, rand() % 2000);
+		//v.x -= 1000.0f;
+		//v.z -= 1000.0f;
+		VECTOR v = VGet(0.0f, 0.0f, 0.0f);
 
 		BuildingBase* building = new BuildingBase();
 		building->Init(MV1DuplicateModel(objHandle), v);
@@ -61,7 +62,7 @@ bool ModeTest::Render() {
 	SetUseLighting(TRUE);
 	//clsDx();
 
-	MV1DrawModel(_skySphere);
+	//MV1DrawModel(_skySphere);
 	// 0,0,0‚ð’†S‚Éü‚ðˆø‚­
 	{
 		float linelength = 1000.f;
@@ -71,15 +72,15 @@ bool ModeTest::Render() {
 		DrawLine3D(VAdd(v, VGet(0, 0, -linelength)), VAdd(v, VGet(0, 0, linelength)), GetColor(0, 0, 255));
 	}
 
-	_player->Render();
-	_chain->Render();
+	//_player->Render();
+	//_chain->Render();
 
 	for (auto itr = _buildingBase.begin(); itr != _buildingBase.end(); ++itr) {
 		(*itr)->Render();
 	}
 
-	VECTOR ballPos = _chain->GetBallPosition();
-	DrawSphere3D(ballPos, 130.0f, 16, GetColor(255, 0, 0), GetColor(255, 0, 0), false);
+	/*VECTOR ballPos = _chain->GetBallPosition();
+	DrawSphere3D(ballPos, 130.0f, 16, GetColor(255, 0, 0), GetColor(255, 0, 0), false);*/
 
 
 	SetUseZBuffer3D(FALSE);
