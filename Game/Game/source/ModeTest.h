@@ -4,7 +4,8 @@
 #include "Camera.h"
 #include "Player.h"
 #include "Chain.h"
-
+#include "UIBase.h"
+#include "uiheart.h"
 #include "BuildingBase.h"
 
 class ModeTest : public ModeBase
@@ -24,6 +25,7 @@ protected:
 	Player* _player;
 
 	Chain* _chain;
+	UIBase* ui;
 
 	std::vector<BuildingBase*> _buildingBase;
 

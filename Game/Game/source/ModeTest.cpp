@@ -29,6 +29,7 @@ bool ModeTest::Initialize() {
 		
 		_buildingBase.push_back(building);
 	}
+	ui = new UIHeart(VGet(0,0,0),"res/TemporaryMaterials/heart.png");
 	return true;
 }
 
@@ -73,7 +74,7 @@ bool ModeTest::Render() {
 
 	_player->Render();
 	_chain->Render();
-
+	ui->Draw();
 	for (auto itr = _buildingBase.begin(); itr != _buildingBase.end(); ++itr) {
 		(*itr)->Render();
 	}
