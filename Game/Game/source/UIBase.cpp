@@ -1,7 +1,7 @@
 #include "UIBase.h"
 UIBase::UIBase(VECTOR pos, std::string handleName) {
 	_handle = new int[1];
-	*_handle = global.resource->LoadGraph(handleName.c_str());
+	*_handle = ResourceServer::LoadGraph(handleName.c_str());
 	_pos = pos;
 	_handleNum = 0;
 	int _x, _y;
@@ -12,7 +12,7 @@ UIBase::UIBase(VECTOR pos, std::string handleName) {
 
 UIBase::UIBase(VECTOR pos, std::string handleName, int AllNum, int XNum, int YNum, int XSize, int YSize, int* HandleBuf) {
 	_handle = new int[AllNum];
-	global.resource->LoadDivGraph(handleName.c_str(), AllNum, XNum, YNum, XSize, YSize, _handle);
+	ResourceServer::LoadDivGraph(handleName.c_str(), AllNum, XNum, YNum, XSize, YSize, _handle);
 	_pos = pos;
 	_handleNum = 0;
 	int _x, _y;
