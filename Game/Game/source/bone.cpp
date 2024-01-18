@@ -15,7 +15,8 @@ const double bone::_processInterval = 0.0001;
 bone::bone(
 	int* Model,
 	std::vector<int> list,
-	int size
+	int size,
+	std::string jsonFileName
 ) :
 	_model(Model),
 	_frameList(list),
@@ -30,8 +31,8 @@ bone::bone(
 
 
 	for (int i = 0; i < _listSize; i++) {
-		_transMatrixList[i] = MV1GetFrameLocalMatrix(*_model, _frameList[i + 1]);
-		MATRIX local_mat = MV1GetFrameLocalMatrix(*_model, _frameList[i + 2]);
+		_transMatrixList[i] = MV1GetFrameLocalMatrix(*_model, _frameList[i + 1]);//自分（親）の場所
+		MATRIX local_mat = MV1GetFrameLocalMatrix(*_model, _frameList[i + 2]);//子に向いている方向
 		_vecDirList[i] = VTransform(_orign.toVECTOR(), local_mat);
 
 		for (int j = 0; j < 3; j++) {
@@ -56,7 +57,16 @@ bone::bone(
 	 _naturalCorrectionFactor = new float[_massPointSize];
 
 	 //ファイル読み込み---------------------------------------------------
-	 
+	 myJson json(jsonFileName);
+	 int i = 0;
+	 for (auto& bone : json._json) {
+		 bone.at("massWeight").get_to(_massWeight[i]);
+		 bone.at("viscousResistance").get_to(_viscousResistance[i]);
+		 bone.at("gravity").get_to(_gravity[i]);
+		 bone.at("spring").get_to(_spring[i]);
+		 bone.at("naturalCorrectionFactor").get_to(_naturalCorrectionFactor[i]);
+		 i++;
+	 }
 	 //--------------------------------------------------------------------------
 
 	for (int i = 0; i < _massPointSize; i++) {

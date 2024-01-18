@@ -8,7 +8,7 @@ public:
 	//ì«Ç›çûÇ›óp
 	myJson(std::string fileName);
 
-protected:
-	nlohmann::json json;
+	nlohmann::json _json;
 	int _size;
 };
+

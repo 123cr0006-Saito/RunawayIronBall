@@ -2,10 +2,11 @@
 #include <vector>
 #include "dxlib.h"
 #include "appframe.h"
+#include "myJson.h"
 class bone
 {
 public:
-	bone(int* Model, std::vector<int> list, int size);
+	bone(int* Model, std::vector<int> list, int size, std::string jsonFileName);
 	~bone();
 	void SetMain(Vector3D* pos_list);//boneの位置をセットする
 	void SetBoneDir(Vector3D world_dir_vec, Vector3D boon_pos, int target_frame, int parent_frame, MATRIX trans_mat, Vector3D dir_parent);;
