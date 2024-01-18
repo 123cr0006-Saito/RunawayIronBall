@@ -62,6 +62,7 @@
     <ClCompile Include="source\Application\Global.cpp" />
     <ClCompile Include="source\System\Source\Function\mymath.cpp" />
     <ClCompile Include="source\System\Source\Function\Timer.cpp" />
+    <ClCompile Include="source\System\Source\Function\DrawGauge.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Application\ApplicationBase.h">
@@ -108,5 +109,6 @@
     <ClInclude Include="source\System\Header\Function\mymath.h" />
     <ClInclude Include="source\System\Header\Function\Timer.h" />
     <ClInclude Include="source\System\Header\Function\Vector3D.h" />
+    <ClInclude Include="source\System\Header\Function\DrawGauge.h" />
   </ItemGroup>
 </Project>
