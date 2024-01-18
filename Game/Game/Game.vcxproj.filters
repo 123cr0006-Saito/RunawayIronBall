@@ -48,6 +48,17 @@
     </Filter>
     <Filter Include="ソース ファイル\Building">
       <UniqueIdentifier>{b45c3417-7509-4a22-ae08-911650e2dfeb}</UniqueIdentifier>
+    <Filter Include="ヘッダー ファイル\Enemy">
+      <UniqueIdentifier>{9525d6a9-23e1-477d-8a06-e38447a9f838}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Enemy">
+      <UniqueIdentifier>{1c194144-9cb5-467d-93f5-4d7b1f132e33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\UI">
+      <UniqueIdentifier>{511498e0-7eed-4578-9a5b-1d2e98f11436}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\UI">
+      <UniqueIdentifier>{61b86ff8-e2f0-46a6-b0c7-b65f173021b5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -72,14 +83,14 @@
     <ClCompile Include="source\bone.cpp">
       <Filter>ソース ファイル\Player</Filter>
     </ClCompile>
-    <ClCompile Include="source\Player.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="source\Chain.cpp">
+      <Filter>ソース ファイル\Player</Filter>
     </ClCompile>
     <ClCompile Include="source\CharacterBase.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\Player</Filter>
     </ClCompile>
-    <ClCompile Include="source\Chain.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="source\Player.cpp">
+      <Filter>ソース ファイル\Player</Filter>
     </ClCompile>
     <ClCompile Include="source\EnemyBase.cpp">
       <Filter>ソース ファイル\Enemy</Filter>
@@ -100,6 +111,11 @@
       <Filter>ソース ファイル\Building</Filter>
     <ClCompile Include="source\ModeTest.cpp">
       <Filter>ソース ファイル</Filter>
+    <ClCompile Include="source\UIBase.cpp">
+      <Filter>ソース ファイル\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UIHeart.cpp">
+      <Filter>ソース ファイル\UI</Filter>
     </ClCompile>
     <ClCompile Include="source\BreakObject.cpp">
       <Filter>ソース ファイル</Filter>
@@ -133,15 +149,6 @@
     <ClInclude Include="source\bone.h">
       <Filter>ヘッダー ファイル\Player</Filter>
     </ClInclude>
-    <ClInclude Include="source\Player.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\CharacterBase.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Chain.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="source\EnemyBase.h">
       <Filter>ヘッダー ファイル\Enemy</Filter>
     </ClInclude>
@@ -161,6 +168,20 @@
       <Filter>ヘッダー ファイル\Building</Filter>
     <ClInclude Include="source\ModeTest.h">
       <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="source\Player.h">
+      <Filter>ヘッダー ファイル\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="source\CharacterBase.h">
+      <Filter>ヘッダー ファイル\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Chain.h">
+      <Filter>ヘッダー ファイル\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="source\UIBase.h">
+      <Filter>ヘッダー ファイル\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="source\UIHeart.h">
+      <Filter>ヘッダー ファイル\UI</Filter>
     </ClInclude>
     <ClInclude Include="source\BreakObject.h">
       <Filter>ヘッダー ファイル</Filter>

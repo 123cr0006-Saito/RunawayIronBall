@@ -2,6 +2,7 @@
 #include "appframe.h"
 #include "Player.h"
 #include "math.h"
+//エネミー各種のもとになるクラス
 class EnemyBase
 {
 public:
@@ -69,3 +70,6 @@ protected:
 
 };
 
+//敵のような多量のvector配列を持つときのeraseは最後の要素と交換してからerase使用
+//処理時間が半減します。
+//敵だったら配列の中身がバラバラになっても大丈夫でしょう・・・
