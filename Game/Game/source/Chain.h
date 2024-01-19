@@ -13,7 +13,8 @@ public:
 
 	void Render();
 
-	VECTOR GetBallPosition() { return _cPos[CHAIN_MAX - 1]; }
+	VECTOR GetBallPosition() { return _iPos; }
+	float GetBallRadius() { return _r; }
 
 	void DrawDebugInfo();
 
@@ -28,8 +29,8 @@ private:
 	// “S‹…
 	int _iModelHandle;
 	VECTOR _iPos;
-
 	VECTOR _iForwardDir;
+	float _r = 130.0f; //// Œã‚ÅSphereƒNƒ‰ƒX‚ğì‚é
 
 
 

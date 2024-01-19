@@ -49,6 +49,11 @@ bool ModeTest::Process() {
 	for (auto itr = _buildingBase.begin(); itr != _buildingBase.end(); ++itr) {
 		(*itr)->Process();
 	}
+
+
+
+
+
 	_camera->Process(_player->GetPosition());
 	return true;
 }
@@ -80,8 +85,7 @@ bool ModeTest::Render() {
 		(*itr)->DrawDebugInfo();
 	}
 
-	VECTOR ballPos = _chain->GetBallPosition();
-	DrawSphere3D(ballPos, 130.0f, 16, GetColor(255, 0, 0), GetColor(255, 0, 0), false);
+	DrawSphere3D(_chain->GetBallPosition(), _chain->GetBallRadius(), 16, GetColor(255, 0, 0), GetColor(255, 0, 0), false);
 
 
 	SetUseZBuffer3D(FALSE);
