@@ -19,8 +19,9 @@
     <ClCompile Include="source\Chain.cpp" />
     <ClCompile Include="source\SlaBlock.cpp" />
     <ClCompile Include="source\UIBase.cpp" />
-    <ClCompile Include="source\UIHeart.cpp" />
     <ClCompile Include="source\UIExpPoint.cpp" />
+    <ClCompile Include="source\UIHeart.cpp" />
+    <ClCompile Include="source\House.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -41,7 +42,8 @@
     <ClInclude Include="source\Chain.h" />
     <ClInclude Include="source\SlaBlock.h" />
     <ClInclude Include="source\UIBase.h" />
-    <ClInclude Include="source\UIHeart.h" />
     <ClInclude Include="source\UIExpPoint.h" />
+    <ClInclude Include="source\UIHeart.h" />
+    <ClInclude Include="source\House.h" />
   </ItemGroup>
 </Project>

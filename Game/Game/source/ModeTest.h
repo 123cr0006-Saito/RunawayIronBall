@@ -6,7 +6,9 @@
 #include "Chain.h"
 #include "UIBase.h"
 #include "uiheart.h"
+
 #include "BuildingBase.h"
+#include "House.h"
 
 class ModeTest : public ModeBase
 {

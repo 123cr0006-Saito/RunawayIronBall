@@ -155,6 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\House.cpp" />
     <ClCompile Include="source\myJson.cpp" />
     <ClCompile Include="source\bone.cpp" />
     <ClCompile Include="source\BreakObject.cpp" />
@@ -177,6 +178,7 @@
     <ClCompile Include="source\UIHeart.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\House.h" />
     <ClInclude Include="source\myJson.h" />
     <ClInclude Include="source\bone.h" />
     <ClInclude Include="source\BreakObject.h" />

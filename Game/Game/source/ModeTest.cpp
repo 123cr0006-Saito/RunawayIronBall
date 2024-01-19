@@ -24,7 +24,7 @@ bool ModeTest::Initialize() {
 		v.x -= 1000.0f;
 		v.z -= 1000.0f;
 
-		BuildingBase* building = new BuildingBase();
+		BuildingBase* building = new House();
 		building->Init(MV1DuplicateModel(objHandle), v);
 		
 		_buildingBase.push_back(building);
