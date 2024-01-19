@@ -57,7 +57,8 @@ public:
 		}
 	}
 
-
+	// •`‰æˆ—
+	void Render(unsigned int color);
 
 	VECTOR pos;
 	VECTOR dir_vec[3];//xv,yv,zv
