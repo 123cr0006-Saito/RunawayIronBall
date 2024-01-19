@@ -42,3 +42,8 @@ void BuildingBase::ActivateBreakObject(bool activate, VECTOR vDir)
 {
 	_breakObj->Activate(activate, vDir);
 }
+
+bool BuildingBase::DrawDebugInfo()
+{
+	return true;
+}

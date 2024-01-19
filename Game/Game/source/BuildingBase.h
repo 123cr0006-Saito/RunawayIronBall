@@ -14,6 +14,9 @@ public:
 
 	void ActivateBreakObject(bool activate, VECTOR vDir = VGet(0.0f, 0.0f, 0.0f));
 
+	// デバッグ情報の表示
+	virtual bool DrawDebugInfo();
+
 protected:
 	int _modelHandle;
 	VECTOR _pos;

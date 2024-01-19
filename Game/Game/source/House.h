@@ -15,6 +15,8 @@ public:
 	bool Process() override;
 	bool Render() override;
 
+	// デバッグ情報の表示
+	bool DrawDebugInfo() override;
 
 protected:
 	OBB obb;

@@ -84,6 +84,11 @@ bool ModeTest::Render() {
 
 
 	SetUseZBuffer3D(FALSE);
+	
+	for (auto itr = _buildingBase.begin(); itr != _buildingBase.end(); ++itr) {
+		(*itr)->DrawDebugInfo();
+	}
+
 	return true;
 }
 
