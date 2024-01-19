@@ -1,5 +1,18 @@
 #include "../../Header/Collision/MyStructure.h"
 
+// ‰ñ“]ˆ—
+// x²->y²->z²‚Ì‡”Ô‚Å, Še²‚ğ‰ñ“]‚³‚¹‚é
+void OBB::Rotate(VECTOR vRot)
+{
+	MATRIX m = MGetRotX(vRot.x);
+	m = MMult(m, MGetRotY(vRot.y));
+	m = MMult(m, MGetRotZ(vRot.z));
+
+	for (int i = 0; i < 3; i++) {
+		dir_vec[i] = VTransform(dir_vec[i], m);
+	}
+}
+
 // •`‰æˆ—
 void OBB::Render(unsigned int color)
 {

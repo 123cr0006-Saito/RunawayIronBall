@@ -32,4 +32,7 @@ protected:
 	std::vector<BuildingBase*> _buildingBase;
 
 	int _skySphere;
+
+
+	OBB obb;
 };
