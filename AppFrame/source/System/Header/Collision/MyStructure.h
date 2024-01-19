@@ -51,8 +51,13 @@ class OBB
 public:
 	OBB() {
 		pos = VGet(0.0f, 0.0f, 0.0f);
-		for (int i = 0; i < 3; ++i) {
-			dir_vec[i] = VGet(0.0f, 0.0f, 0.0f);
+
+		// 初期状態ではワールドの軸と平行な状態にする（AABB）
+		dir_vec[0] = VGet(1.0f, 0.0f, 0.0f);
+		dir_vec[1] = VGet(0.0f, 1.0f, 0.0f);
+		dir_vec[2] = VGet(0.0f, 0.0f, 1.0f);
+
+		for (int i = 0; i < 3; ++i) {			
 			length[i] = 0.0f;
 		}
 	}
