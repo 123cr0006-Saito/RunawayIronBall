@@ -63,6 +63,7 @@
     <ClCompile Include="source\System\Source\Function\mymath.cpp" />
     <ClCompile Include="source\System\Source\Function\Timer.cpp" />
     <ClCompile Include="source\System\Source\Function\DrawGauge.cpp" />
+    <ClCompile Include="source\System\Source\Collision\MyStructure.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Application\ApplicationBase.h">

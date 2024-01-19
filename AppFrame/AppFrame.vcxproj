@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\System\Source\Collision\MyStructure.cpp" />
     <ClCompile Include="source\System\Source\Function\DrawGauge.cpp" />
     <ClCompile Include="source\System\Source\Function\mymath.cpp" />
     <ClCompile Include="source\Application\Global.cpp" />
