@@ -77,6 +77,7 @@ bool ModeTest::Render() {
 	ui->Draw();
 	for (auto itr = _buildingBase.begin(); itr != _buildingBase.end(); ++itr) {
 		(*itr)->Render();
+		(*itr)->DrawDebugInfo();
 	}
 
 	VECTOR ballPos = _chain->GetBallPosition();
@@ -85,9 +86,9 @@ bool ModeTest::Render() {
 
 	SetUseZBuffer3D(FALSE);
 	
-	for (auto itr = _buildingBase.begin(); itr != _buildingBase.end(); ++itr) {
-		(*itr)->DrawDebugInfo();
-	}
+	//for (auto itr = _buildingBase.begin(); itr != _buildingBase.end(); ++itr) {
+	//	(*itr)->DrawDebugInfo();
+	//}
 
 	return true;
 }

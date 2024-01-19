@@ -12,10 +12,11 @@ bool House::Init(int modelHandle, VECTOR startPos)
 {
 	if (!base::Init(modelHandle, startPos)){ return false;}
 
+	vDiffToCenter = VGet(0.0f, -250.0f, 0.0f);
 	obb.pos = VSub(_pos, vDiffToCenter);
-	obb.length[0] = 100.0f;
-	obb.length[1] = 100.0f;
-	obb.length[2] = 100.0f;
+	obb.length[0] = 500.0f;
+	obb.length[1] = 500.0f;
+	obb.length[2] = 500.0f;
 
 	return true;
 }
