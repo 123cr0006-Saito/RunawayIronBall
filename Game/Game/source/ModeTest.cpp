@@ -18,7 +18,7 @@ bool ModeTest::Initialize() {
 	_chain = new Chain();
 	_chain->Init();
 
-	int objHandle = MV1LoadModel("res/Test_BreakObject/centerpivot_2.mv1");
+	int objHandle = MV1LoadModel("res/Building/House_test_01.mv1");
 	for (int i = 0; i < 10; i++) {
 		VECTOR v = VGet(rand() % 2000, 0.0f, rand() % 2000);
 		v.x -= 1000.0f;
