@@ -24,10 +24,12 @@ bool ModeTest::Initialize() {
 		v.x -= 1000.0f;
 		v.z -= 1000.0f;
 
-		BuildingBase* building = new House();
+		House* building = new House();
 		building->Init(MV1DuplicateModel(objHandle), v);
+		building->ActivateBreakObject(true, VGet(0,0,-1));
 		
-		_buildingBase.push_back(building);
+		_building.push_back(building);
+
 	}
 	ui = new UIHeart(VGet(0,0,0),"res/TemporaryMaterials/heart.png");
 	return true;
@@ -46,8 +48,22 @@ bool ModeTest::Process() {
 	_chain->Process(_player->GetRightHandPos());
 
 
-	for (auto itr = _buildingBase.begin(); itr != _buildingBase.end(); ++itr) {
+	for (auto itr = _building.begin(); itr != _building.end(); ++itr) {
 		(*itr)->Process();
+
+		VECTOR ibPos = _chain->GetBallPosition();
+		float ibR = _chain->GetBallRadius();
+
+		for (auto itr = _building.begin(); itr != _building.end(); ++itr) {
+			(*itr)->Process();
+
+			//OBB houseObb = (*itr)->GetOBBCollision();
+
+			//if (Collision3D::OBBSphereCol(houseObb, ibPos, ibR)) {
+			//	VECTOR vDir = VSub(ibPos, houseObb.pos);
+			//	(*itr)->ActivateBreakObject(true, vDir);
+			//}
+		}
 	}
 
 
@@ -80,7 +96,7 @@ bool ModeTest::Render() {
 	_player->Render();
 	_chain->Render();
 	ui->Draw();
-	for (auto itr = _buildingBase.begin(); itr != _buildingBase.end(); ++itr) {
+	for (auto itr = _building.begin(); itr != _building.end(); ++itr) {
 		(*itr)->Render();
 		(*itr)->DrawDebugInfo();
 	}

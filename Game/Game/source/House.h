@@ -15,6 +15,8 @@ public:
 	bool Process() override;
 	bool Render() override;
 
+	OBB GetOBBCollision() { return obb; }
+
 	// デバッグ情報の表示
 	bool DrawDebugInfo() override;
 

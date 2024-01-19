@@ -29,7 +29,7 @@ protected:
 	Chain* _chain;
 	UIBase* ui;
 
-	std::vector<BuildingBase*> _buildingBase;
+	std::vector<House*> _building;
 
 	int _skySphere;
 
