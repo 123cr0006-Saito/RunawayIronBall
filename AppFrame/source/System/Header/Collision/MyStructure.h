@@ -42,9 +42,7 @@ struct TWOLINE_SHORT {
 
 struct OBB {
 	VECTOR pos = VGet(0, 0, 0);
-	VECTOR Misalignment = VGet(0, 0, 0);//ÉÇÉfÉãÇÃÇ∏ÇÍèCê≥óp
 	VECTOR dir_vec[3] = { VGet(0,0,0),VGet(0,0,0),VGet(0,0,0) };//xv,yv,zv
-	float direction[3] = { 0,0,0 };//0:x 1:y 2:z
 	float length[3] = {0.0f,0.0f,0.0f}; //0:w 1:h 3:d
 };
 

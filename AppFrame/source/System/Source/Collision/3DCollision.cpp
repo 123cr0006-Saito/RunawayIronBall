@@ -60,27 +60,19 @@ float Collision3D::AABBShortLength(VECTOR Box, float wide, float height ,float d
 	return sqrt(SqLen);
 }
 
-bool Collision3D::OBBCollision(OBB obb_1, OBB obb_2, bool flag) {
+bool Collision3D::OBBCollision(OBB obb_1, OBB obb_2) {
 	// lengthは全体の長さなので使うときは半分にする
 	//NAe は 方向ベクトル Ae は 方向ベクトルにその長さをかけたもの　方向ベクトルはマトリクスから持ってきたもので正規化されている
-	MATRIX matrix_A = Math::MMultXYZ(obb_1.direction[0], obb_1.direction[1], obb_1.direction[2]);
-	MATRIX matrix_B = Math::MMultXYZ(obb_2.direction[0], obb_2.direction[1], obb_2.direction[2]);
 
-	if (flag) {
-		matrix_B = MMult(matrix_B, GetCameraBillboardMatrix());
-	}
-
-	VECTOR NAe1 = VGet(matrix_A.m[0][0],matrix_A.m[0][1],matrix_A.m[0][2]), Ae1 = VScale(NAe1, obb_1.length[0]/2);
-	VECTOR NAe2 = VGet(matrix_A.m[1][0],matrix_A.m[1][1],matrix_A.m[1][2]), Ae2 = VScale(NAe2, obb_1.length[1]/2);
-	VECTOR NAe3 = VGet(matrix_A.m[2][0],matrix_A.m[2][1],matrix_A.m[2][2]), Ae3 = VScale(NAe3, obb_1.length[2]/2);
-	VECTOR NBe1 = VGet(matrix_B.m[0][0],matrix_B.m[0][1],matrix_B.m[0][2]), Be1 = VScale(NBe1, obb_2.length[0]/2);
-	VECTOR NBe2 = VGet(matrix_B.m[1][0],matrix_B.m[1][1],matrix_B.m[1][2]), Be2 = VScale(NBe2, obb_2.length[1]/2);
-	VECTOR NBe3 = VGet(matrix_B.m[2][0],matrix_B.m[2][1],matrix_B.m[2][2]), Be3 = VScale(NBe3, obb_2.length[2]/2);
+	VECTOR NAe1 = obb_1.dir_vec[0], Ae1 = VScale(NAe1, obb_1.length[0] / 2);
+	VECTOR NAe2 = obb_1.dir_vec[1], Ae2 = VScale(NAe2, obb_1.length[1]/2);
+	VECTOR NAe3 = obb_1.dir_vec[2], Ae3 = VScale(NAe3, obb_1.length[2]/2);
+	VECTOR NBe1 = obb_2.dir_vec[0], Be1 = VScale(NBe1, obb_2.length[0] / 2);
+	VECTOR NBe2 = obb_2.dir_vec[1], Be2 = VScale(NBe2, obb_2.length[1] / 2);
+	VECTOR NBe3 = obb_2.dir_vec[2], Be3 = VScale(NBe3, obb_2.length[2]/2);
 	//Misalignmentでおなかの中心にモデルをずらしている 大体ｙ軸だけで済むと思うがフライト系などの3軸回転を入れるときは
 	//VTransformの中の回転行列をy軸だけでなくｘとｚを含めた3軸で回転してください
-	VECTOR Interval = VSub(obb_1.pos , VSub(obb_2.pos, VTransform(obb_2.Misalignment,MGetRotY(obb_2.direction[1]))));
-
-	//VECTOR Interval = VSub(obb_1.pos, obb_2.pos);
+	VECTOR Interval = VSub(obb_1.pos , obb_2.pos);
 
 	//  各軸の方向ベクトルと分離軸との絶対値の内積の和をまとめたものと 中心点間の距離を比較し中心点間距離より短かったら衝突している
 
@@ -391,27 +383,7 @@ bool Collision3D::TwoCapselCol(VECTOR line_1_start, VECTOR line_1_end, float r_1
 	return Collision3D::SphereCol(value.line_1_point, r_1, value.line_2_point, r_2);
 }
 
-//点とＯＢＢの最接近点
 VECTOR Collision3D::PointOBB(VECTOR point, OBB obb) {
-	VECTOR pos = VSub(obb.pos, VTransform(obb.Misalignment, MGetRotY(obb.direction[1])));
-	VECTOR cp = VSub(point, pos);
-	VECTOR Re = pos;
-	float length = 0.0f;
-	for (int i = 0; i < 3; i++) {
-		length = VDot(cp, obb.dir_vec[i]);
-
-		if (length > (obb.length[i] / 2)) {
-			length = obb.length[i] / 2;
-		}
-		else if (length < -obb.length[i] / 2) {
-			length = -obb.length[i] / 2;
-		}
-		Re = VAdd(Re, VScale(obb.dir_vec[i], length));
-	}
-	return Re;
-}
-
-VECTOR Collision3D::PointOBBToBillBoard(VECTOR point, OBB obb) {
 	VECTOR pos = obb.pos;
 	VECTOR cp = VSub(point, pos);
 	VECTOR Re = pos;
@@ -443,7 +415,7 @@ bool Collision3D::OBBSphereCol(OBB obb, VECTOR point, float r) {
 }
 
 bool Collision3D::OBBCapselCol(VECTOR line_start, VECTOR line_end, OBB obb, float r) {
-	POINT_LINE_SHORT  a = Collision3D::PointLineSegShortLength(line_start, line_end, VSub(obb.pos, VTransform(obb.Misalignment, MGetRotY(obb.direction[1]))));
+	POINT_LINE_SHORT  a = Collision3D::PointLineSegShortLength(line_start, line_end, obb.pos);
 
 	VECTOR pos = Collision3D::PointOBB(a.hit_point, obb);
 
@@ -457,7 +429,7 @@ bool Collision3D::OBBCapselCol(VECTOR line_start, VECTOR line_end, OBB obb, floa
 }
 
 bool Collision3D::OBBCapselCol(Capsule capsule, OBB obb) {
-	POINT_LINE_SHORT  cap_pos = Collision3D::PointLineSegShortLength(capsule.down_pos, capsule.up_pos, VSub(obb.pos, VTransform(obb.Misalignment, MGetRotY(obb.direction[1]))));
+	POINT_LINE_SHORT  cap_pos = Collision3D::PointLineSegShortLength(capsule.down_pos, capsule.up_pos, obb.pos);
 
 	VECTOR obb_pos = Collision3D::PointOBB(cap_pos.hit_point, obb);
 
