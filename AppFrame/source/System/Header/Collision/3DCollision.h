@@ -24,7 +24,7 @@ public:
 	static float AABBShortLength(VECTOR Box, float wide, float height, float depth, VECTOR Point);
 
 	//OBB“¯m‚Ì“–‚½‚è”»’è
-	static bool OBBCollision(OBB box_1,OBB box_2,bool flag = false);
+	static bool OBBCollision(OBB box_1,OBB box_2);
 
     //“_‚Æ’¼ü‚ÌÅ’Z‹——£
 	static POINT_LINE_SHORT PointLineShortLength(VECTOR line_start, VECTOR line_end, VECTOR point);

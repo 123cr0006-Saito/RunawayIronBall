@@ -51,7 +51,7 @@ bool TDD::TweDimColDraw(VECTOR pos, float w,float d) {
 	return true;
 }
 
-bool TDD::ThrDimColDraw(VECTOR pos,float w, float h, float d, float direction, VECTOR Misalignment) {
+bool TDD::ThrDimColDraw(VECTOR pos,float w, float h, float d, float direction) {
 	MATRIX matrix = MGetRotY(direction);
 	VECTOR line_down[5] = {
 		// 通常用（左上から右回り）
@@ -70,14 +70,10 @@ bool TDD::ThrDimColDraw(VECTOR pos,float w, float h, float d, float direction, V
 		VGet(-w / 2.0f,h,-d / 2.0f),	// 左上
 	};
 
-	VECTOR vec = VTransform(Misalignment, matrix);
+	
 	for (int i = 0; i < 5; i++) {
 		line_down[i] = VTransform(line_down[i], matrix);
 		line_up[i] = VTransform(line_up[i], matrix);
-	}
-	for (int i = 0; i < 5; i++) {
-		line_down[i] = VAdd(line_down[i], VSub(pos, vec));
-		line_up[i] = VAdd(line_up[i], VSub(pos, vec));
 	}
 
 	for (int i = 0; i < 4; i++) {
@@ -87,6 +83,7 @@ bool TDD::ThrDimColDraw(VECTOR pos,float w, float h, float d, float direction, V
 	}
 	return true;
 }
+
 
 bool TDD::ThrDimColToBillBoradDraw(VECTOR pos, float w, float h, float d, float direction_z = 0) {
 	VECTOR line_down[5] = {
