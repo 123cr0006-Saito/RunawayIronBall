@@ -57,6 +57,10 @@ public:
 		}
 	}
 
+	// ‰ñ“]ˆ—
+	// x²->y²->z²‚Ì‡”Ô‚Å, Še²‚ğ‰ñ“]‚³‚¹‚é
+	void Rotate(VECTOR vRot);
+
 	// •`‰æˆ—
 	void Render(unsigned int color);
 

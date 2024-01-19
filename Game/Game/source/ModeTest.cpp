@@ -18,7 +18,7 @@ bool ModeTest::Initialize() {
 	_chain = new Chain();
 	_chain->Init();
 
-	int objHandle = MV1LoadModel("res/Test_BreakObject/centerpivot_2.mv1");
+	int objHandle = MV1LoadModel("res/Building/House_test_01.mv1");
 	for (int i = 0; i < 10; i++) {
 		VECTOR v = VGet(rand() % 2000, 0.0f, rand() % 2000);
 		v.x -= 1000.0f;
@@ -82,6 +82,20 @@ bool ModeTest::Render() {
 	VECTOR ballPos = _chain->GetBallPosition();
 	DrawSphere3D(ballPos, 130.0f, 16, GetColor(255, 0, 0), GetColor(255, 0, 0), false);
 
+
+
+
+	//obb.pos = VGet(0, 0, 0);
+	//obb.dir_vec[0] = VGet(1, 0, 0);
+	//obb.dir_vec[1] = VGet(0, 1, 0);
+	//obb.dir_vec[2] = VGet(0, 0, 1);
+	//obb.length[0] = 100.0f;
+	//obb.length[1] = 200.0f;
+	//obb.length[2] = 300.0f;
+	float angle = Math::DegToRad(1.0f);
+	obb.Rotate(VGet(angle, angle * 2, angle * 3));
+
+	obb.Render(GetColor(255, 255, 255));
 
 	SetUseZBuffer3D(FALSE);
 	return true;
