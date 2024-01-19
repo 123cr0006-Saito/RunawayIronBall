@@ -9,6 +9,7 @@
 
 #include "BuildingBase.h"
 #include "House.h"
+#include "SlideUI.h"
 
 class ModeTest : public ModeBase
 {
@@ -33,6 +34,7 @@ protected:
 
 	int _skySphere;
 
+	SlideUI* _slideUI;
 
 	OBB obb;
 };

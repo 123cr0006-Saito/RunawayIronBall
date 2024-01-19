@@ -22,6 +22,7 @@
     <ClCompile Include="source\UIExpPoint.cpp" />
     <ClCompile Include="source\UIHeart.cpp" />
     <ClCompile Include="source\House.cpp" />
+    <ClCompile Include="source\SlideUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -45,5 +46,6 @@
     <ClInclude Include="source\UIExpPoint.h" />
     <ClInclude Include="source\UIHeart.h" />
     <ClInclude Include="source\House.h" />
+    <ClInclude Include="source\SlideUI.h" />
   </ItemGroup>
 </Project>

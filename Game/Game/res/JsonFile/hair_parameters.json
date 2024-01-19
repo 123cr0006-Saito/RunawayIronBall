@@ -1,0 +1,58 @@
+[
+	{
+		"massWeight": 1.5,
+		"viscousResistance": 20,
+		"gravity": 6000,
+		"spring": 800,
+		"naturalCorrectionFactor": 0.8
+	},
+	{
+		"massWeight": 1.5,
+		"viscousResistance": 20,
+		"gravity": 6000,
+		"spring": 800,
+		"naturalCorrectionFactor": 0.8
+	},
+	{
+		"massWeight": 1.5,
+		"viscousResistance": 20,
+		"gravity": 6000,
+		"spring": 800,
+		"naturalCorrectionFactor": 0.8
+	},
+	{
+		"massWeight": 1.5,
+		"viscousResistance": 20,
+		"gravity": 6000,
+		"spring": 800,
+		"naturalCorrectionFactor": 0.8
+	},
+	{
+		"massWeight": 1.5,
+		"viscousResistance": 20,
+		"gravity": 6000,
+		"spring": 800,
+		"naturalCorrectionFactor": 0.8
+	},
+	{
+		"massWeight": 1.5,
+		"viscousResistance": 20,
+		"gravity": 15000,
+		"spring": 800,
+		"naturalCorrectionFactor": 0.8
+	},
+	{
+		"massWeight": 1.5,
+		"viscousResistance": 20,
+		"gravity": 15000,
+		"spring": 800,
+		"naturalCorrectionFactor": 0.8
+	},
+	{
+		"massWeight": 1.5,
+		"viscousResistance": 20,
+		"gravity": 15000,
+		"spring": 800,
+		"naturalCorrectionFactor": 0.8
+	}
+]

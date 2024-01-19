@@ -173,6 +173,7 @@
     <ClCompile Include="source\Player.cpp" />
     <ClCompile Include="source\Chain.cpp" />
     <ClCompile Include="source\SlaBlock.cpp" />
+    <ClCompile Include="source\SlideUI.cpp" />
     <ClCompile Include="source\UIBase.cpp" />
     <ClCompile Include="source\UIExpPoint.cpp" />
     <ClCompile Include="source\UIHeart.cpp" />
@@ -196,6 +197,7 @@
     <ClInclude Include="source\Player.h" />
     <ClInclude Include="source\Chain.h" />
     <ClInclude Include="source\SlaBlock.h" />
+    <ClInclude Include="source\SlideUI.h" />
     <ClInclude Include="source\UIBase.h" />
     <ClInclude Include="source\UIExpPoint.h" />
     <ClInclude Include="source\UIHeart.h" />

@@ -30,6 +30,9 @@ bool ModeTest::Initialize() {
 		_buildingBase.push_back(building);
 	}
 	ui = new UIHeart(VGet(0,0,0),"res/TemporaryMaterials/heart.png");
+
+	_slideUI = new SlideUI();
+	LoadSlideUI* slideHeart = new LoadSlideUI("res/TemporaryMaterials/heart.png", "res/JsonFile/SlideUI.json");
 	return true;
 }
 
@@ -50,6 +53,7 @@ bool ModeTest::Process() {
 		(*itr)->Process();
 	}
 	_camera->Process(_player->GetPosition());
+	_slideUI->Process();
 	return true;
 }
 
@@ -61,7 +65,7 @@ bool ModeTest::Render() {
 	// ƒ‰ƒCƒgÝ’è
 	SetUseLighting(TRUE);
 	//clsDx();
-
+	
 	MV1DrawModel(_skySphere);
 	// 0,0,0‚ð’†S‚Éü‚ðˆø‚­
 	{
@@ -74,7 +78,7 @@ bool ModeTest::Render() {
 
 	_player->Render();
 	_chain->Render();
-	ui->Draw();
+	
 	for (auto itr = _buildingBase.begin(); itr != _buildingBase.end(); ++itr) {
 		(*itr)->Render();
 	}
@@ -83,8 +87,8 @@ bool ModeTest::Render() {
 	DrawSphere3D(ballPos, 130.0f, 16, GetColor(255, 0, 0), GetColor(255, 0, 0), false);
 
 
-
-
+	ui->Draw();
+	_slideUI->Draw();
 	//obb.pos = VGet(0, 0, 0);
 	//obb.dir_vec[0] = VGet(1, 0, 0);
 	//obb.dir_vec[1] = VGet(0, 1, 0);
