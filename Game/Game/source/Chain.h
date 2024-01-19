@@ -13,7 +13,7 @@ public:
 
 	void Render();
 
-	VECTOR GetBallPosition() { return _pos[CHAIN_MAX - 1]; }
+	VECTOR GetBallPosition() { return _cPos[CHAIN_MAX - 1]; }
 
 	void DrawDebugInfo();
 
@@ -21,10 +21,15 @@ public:
 private:
 	XInput* _input;
 
-	int _modelHandle[CHAIN_MAX];
+	// çΩ
+	int _cModelHandle;
+	VECTOR _cPos[CHAIN_MAX];
 
-	VECTOR _pos[CHAIN_MAX];
-	VECTOR _mbDir;
+	// ìSãÖ
+	int _iModelHandle;
+	VECTOR _iPos;
+
+	VECTOR _iForwardDir;
 
 
 

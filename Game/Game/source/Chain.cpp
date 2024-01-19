@@ -4,30 +4,27 @@
 void Chain::Init() {
 	_input = XInput::GetInstance();
 
-	_modelHandle[0] = MV1LoadModel("res/Chain/Chain02.mv1");
-	_pos[0] = VGet(0.0f, 0.0f, 0.0f);
-	MV1SetPosition(_modelHandle[0], _pos[0]);
-	MV1SetScale(_modelHandle[0], VGet(0.5f, 0.5f, 0.5f));
+	_cModelHandle = MV1LoadModel("res/Chain/Chain02.mv1");
+	_cPos[0] = VGet(0.0f, 0.0f, 0.0f);
+	MV1SetPosition(_cModelHandle, _cPos[0]);
+	MV1SetScale(_cModelHandle, VGet(0.5f, 0.5f, 0.5f));
 
-	for (int i = 1; i < CHAIN_MAX - 1; i++) {
-		_modelHandle[i] = MV1DuplicateModel(_modelHandle[0]);
-		_pos[i] = VAdd(_pos[i - 1], VGet(0.0f, 0.0f, -100.0f));
-		MV1SetPosition(_modelHandle[i], _pos[i]);
-		MV1SetScale(_modelHandle[i], VGet(0.5f, 0.5f, 0.5f));
+	for (int i = 1; i < CHAIN_MAX; i++) {
+		_cPos[i] = VAdd(_cPos[i - 1], VGet(0.0f, 0.0f, -100.0f));
 	}
 
-	_modelHandle[CHAIN_MAX - 1] = MV1LoadModel("res/Character/meatball/cg_player_meatball.mv1");
-	_pos[CHAIN_MAX - 1] = VAdd(_pos[CHAIN_MAX - 1 - 1], VGet(0.0f, 10.0f, 0.0f));
-	MV1SetPosition(_modelHandle[CHAIN_MAX - 1], _pos[CHAIN_MAX - 1]);
-	MV1SetScale(_modelHandle[CHAIN_MAX - 1], VGet(3.0f, 3.0f, 3.0f));
+	_iModelHandle = MV1LoadModel("res/Character/meatball/cg_player_meatball.mv1");
+	_iPos = VAdd(_cPos[CHAIN_MAX - 1], VGet(0.0f, 10.0f, 0.0f));
+	MV1SetPosition(_iModelHandle, _iPos);
+	MV1SetScale(_iModelHandle, VGet(3.0f, 3.0f, 3.0f));
 
-	_animIndex = MV1AttachAnim(_modelHandle[CHAIN_MAX - 1], 0);
-	_animTotalTime = MV1GetAnimTotalTime(_modelHandle[CHAIN_MAX - 1], _animIndex);
+	_animIndex = MV1AttachAnim(_iModelHandle, 0);
+	_animTotalTime = MV1GetAnimTotalTime(_iModelHandle, _animIndex);
 	_playTime = 0.0f;
 
 
 
-	_mbDir = VGet(0, 0, 0);
+	_iForwardDir = VGet(0, 0, 0);
 
 
 	_attackAnimCnt = 0;
@@ -51,7 +48,7 @@ void Chain::Init() {
 void Chain::Process(VECTOR playerPos) {
 	_isSwing = _playerInstance->GetIsSwing();
 
-	_pos[0] = playerPos;
+	_cPos[0] = playerPos;
 	if (_isSwing) {
 		/* デバッグ用 */
 		{
@@ -60,11 +57,11 @@ void Chain::Process(VECTOR playerPos) {
 	
 			// 鎖と腕輪の連結点
 			m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, 217);
-			_pos[0] = VTransform(vOrigin, m);
+			_cPos[0] = VTransform(vOrigin, m);
 	
 			// 1つ目
 			m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, 218);
-			_pos[1] = VTransform(vOrigin, m);
+			_cPos[1] = VTransform(vOrigin, m);
 	
 			// 鉄球の位置
 			m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, 219);
@@ -73,30 +70,30 @@ void Chain::Process(VECTOR playerPos) {
 			//vTmp.y = 0.0f;
 			//m = MMult(m, MGetTranslate(VScale(vTmp, 1000.0f)));
 
-			_pos[CHAIN_MAX - 1] = VTransform(vOrigin, m);
+			_cPos[CHAIN_MAX - 1] = VTransform(vOrigin, m);
 		}
 		/* */
 
 		// キャラの座標から見た一つ目の鎖を配置する方向
-		VECTOR vBase = VSub(_pos[1], _pos[0]);
+		VECTOR vBase = VSub(_cPos[1], _cPos[0]);
 
 		// キャラの座標から見た鉄球を配置する方向
-		VECTOR vTarget = VSub(_pos[CHAIN_MAX - 1], _pos[0]);
+		VECTOR vTarget = VSub(_cPos[CHAIN_MAX - 1], _cPos[0]);
 
 
 		float rad = Math::CalcVectorAngle(vBase, vTarget);
 		float dist = VSize(vTarget);
 		VECTOR vCross = VCross(vBase, vTarget);
-		const float chainNum = CHAIN_MAX - 2; ////////////////// （要修正）振り回している感じを出すなら、最後の鎖がピッタリ鉄球の接続位置に来るようにせず、少し引っ張っている方向にずらす必要がある
+		const float chainNum = CHAIN_MAX - 1; ////////////////// （要修正）振り回している感じを出すなら、最後の鎖がピッタリ鉄球の接続位置に来るようにせず、少し引っ張っている方向にずらす必要がある
 		//rad /= chainNum;
-		for (int i = 1; i < CHAIN_MAX - 1; i++) {
+		for (int i = 1; i < CHAIN_MAX; i++) {
 			VECTOR vTmp = VScale(VNorm(vBase), dist * ((float)(i - 1) / chainNum));
 			MATRIX mRot = MGetRotAxis(vCross, rad * ((float)(i - 1) / chainNum));
 			vTmp = VTransform(vTmp, mRot);
-			_pos[i] = VTransform(vTmp, MGetTranslate(_pos[0]));
+			_cPos[i] = VTransform(vTmp, MGetTranslate(_cPos[0]));
 
-			if (_pos[i].y < 0.0f) {
-				_pos[i].y = 0.0f;
+			if (_cPos[i].y < 0.0f) {
+				_cPos[i].y = 0.0f;
 			}
 		}
 	
@@ -111,47 +108,51 @@ void Chain::Process(VECTOR playerPos) {
 		}
 	}
 	else {
-	// 重力処理
-	for (int i = 1; i < CHAIN_MAX - 1; i++) {
-		_pos[i].y -= 12.0f;
-		if (_pos[i].y < 0.0f) {
-			_pos[i].y = 0.0f;
+		// 重力処理
+		for (int i = 1; i < CHAIN_MAX; i++) {
+			_cPos[i].y -= 12.0f;
+			if (_cPos[i].y < 0.0f) {
+				_cPos[i].y = 0.0f;
+			}
 		}
-	}
+		_iPos.y -= 12.0f;
+		if (_iPos.y < 0.0f) {
+			_iPos.y = 0.0f;
+		}
 
 		//_length = 50.0f;
-	for (int i = 0; i < CHAIN_MAX - 1; i++) {
-		VECTOR vDelta = VSub(_pos[i + 1], _pos[i]);
-		float distance = VSize(vDelta);
-		float difference = _length - distance;
+		for (int i = 0; i < CHAIN_MAX - 1; i++) {
+			VECTOR vNext = _cPos[i + 1];
+			VECTOR vDelta = VSub(vNext, _cPos[i]);
+			float distance = VSize(vDelta);
+			float difference = _length - distance;
 
 			float offsetX = (difference * vDelta.x / distance) * 0.8f;
 			float offsetY = (difference * vDelta.y / distance) * 0.8f;
 			float offsetZ = (difference * vDelta.z / distance) * 0.8f;
 
-		if (i != 0) {
-			_pos[i].x -= offsetX;
-			_pos[i].y -= offsetY;
-			_pos[i].z -= offsetZ;
+			if (i != 0) {
+				_cPos[i].x -= offsetX;
+				_cPos[i].y -= offsetY;
+				_cPos[i].z -= offsetZ;
+			}
+			_cPos[i + 1].x += offsetX;
+			_cPos[i + 1].y += offsetY;
+			_cPos[i + 1].z += offsetZ;
 		}
-		_pos[i + 1].x += offsetX;
-		_pos[i + 1].y += offsetY;
-		_pos[i + 1].z += offsetZ;
-	}
 
 	}
 
-	// モデルに座標を反映させる
-	for (int i = 0; i < CHAIN_MAX; i++) {
-		MV1SetPosition(_modelHandle[i], _pos[i]);
-	}
 	
 
-	_mbDir = VSub(_pos[0], _pos[CHAIN_MAX - 1]);
-	if (VSize(_mbDir) > 0.0f) {
-		if (_isSwing) _mbDir = VScale(_mbDir, -1.0f);
-		_mbDir = VNorm(_mbDir);
-		Math::SetModelForward_RotationY(_modelHandle[CHAIN_MAX - 1], _mbDir);
+
+	_iPos = _cPos[CHAIN_MAX - 1];
+	MV1SetPosition(_iModelHandle, _iPos);
+	_iForwardDir = VSub(_cPos[0], _iPos);
+	if (VSize(_iForwardDir) > 0.0f) {
+		if (_isSwing) _iForwardDir = VScale(_iForwardDir, -1.0f);
+		_iForwardDir = VNorm(_iForwardDir);
+		Math::SetModelForward_RotationY(_iModelHandle, _iForwardDir);
 	}
 	_attackAnimCnt++;
 	if (90 < _attackAnimCnt) {
@@ -163,7 +164,7 @@ void Chain::Process(VECTOR playerPos) {
 
 void Chain::AnimProcess()
 {
-	MV1SetAttachAnimTime(_modelHandle[CHAIN_MAX - 1], _animIndex, _playTime);
+	MV1SetAttachAnimTime(_iModelHandle, _animIndex, _playTime);
 
 	_playTime += _attackAnimCnt < 60 ? 10.0f : 1.0f;	
 	if (_animTotalTime < _playTime) {
@@ -176,8 +177,12 @@ void Chain::AnimProcess()
 void Chain::Render()
 {
 	for (int i = 0; i < CHAIN_MAX; i++) {
-		MV1DrawModel(_modelHandle[i]);
+		// モデルに座標を反映させる
+		MV1SetPosition(_cModelHandle, _cPos[i]);
+		MV1DrawModel(_cModelHandle);
 	}
+
+	MV1DrawModel(_iModelHandle);
 }
 
 void Chain::DrawDebugInfo() {
