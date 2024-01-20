@@ -30,9 +30,20 @@ void BreakObject::Init(int modelHandle)
 {
 	_modelHandle = modelHandle;
 	for (int i = 0; i < MV1GetFrameNum(_modelHandle); i++) {
+#if 0
 		// 仮：子のフレームがないもののみ
 		int childNum = MV1GetFrameChildNum(_modelHandle, i);
-		if (childNum != 0) continue;
+		if (childNum != 0) continue; // 子のフレームの数が0子以外の場合はcontinue
+#else
+		// 仮：親子関係を利用する
+		int parentIndex = MV1GetFrameParent(_modelHandle, i);
+		if (parentIndex != 0)continue; // 親のフレームがルート出ない場合はcontinue
+#endif
+
+
+
+
+
 
 		// フレームの座標変換行列を取得する
 		MATRIX mFrameLocal = MV1GetFrameLocalMatrix(_modelHandle, i);
