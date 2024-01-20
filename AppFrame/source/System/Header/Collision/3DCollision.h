@@ -46,8 +46,6 @@ public:
 
 	//点とＯＢＢの最接近点　OBBと点が一番近いOBBの位置を返します。
 	static  VECTOR PointOBB(VECTOR point, OBB obb);
-
-	static VECTOR PointOBBToBillBoard(VECTOR point, OBB obb);
 	
 	//OBBと球の当たり判定
 	static bool OBBSphereCol(OBB obb, VECTOR point, float r);
@@ -56,6 +54,5 @@ public:
 	static bool OBBCapselCol(VECTOR line_start, VECTOR line_end, OBB obb, float r);
 	//オーバーロード
 	static bool OBBCapselCol(Capsule capsule, OBB obb);
-	static bool OBBToBillBoardCapselCol(Capsule capsule, OBB obb);
 
 };

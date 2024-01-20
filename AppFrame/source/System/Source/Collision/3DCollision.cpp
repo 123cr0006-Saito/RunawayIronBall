@@ -118,83 +118,81 @@ bool Collision3D::OBBCollision(OBB obb_1, OBB obb_2) {
 	if (L > rA + rB)
 		return false;
 
-	// ↓内積での計算を含めると重いので今回は使わない　9割の計算は上の方向ベクトルだけでもできる
+	// ↓9割の計算は上の方向ベクトルだけでもできる
 	//  OBBが辺同士ひねった関係で近づくと方向ベクトルの分離軸では判定できなくなるそうです
 
-	//  今回は複雑な処理はないので軽くするためにコメントアウトしておく
+	// 分離軸 : C11   Ae1*Be1に垂直
+	VECTOR Cross;
+	Cross = VCross(NAe1, NBe1);
+	rA = Math::LenSegOnSeparateAxis(Cross, Ae2, Ae3);
+	rB = Math::LenSegOnSeparateAxis(Cross, Be2, Be3);
+	L = fabs(VDot(Interval, Cross));
+	if (L > rA + rB)
+		return false;
 
-	//// 分離軸 : C11   Ae1*Be1に垂直
-	//VECTOR Cross;
-	//Cross = VCross(NAe1, NBe1);
-	//rA = Math::LenSegOnSeparateAxis(Cross, Ae2, Ae3);
-	//rB = Math::LenSegOnSeparateAxis(Cross, Be2, Be3);
-	//L = fabs(VDot(Interval, Cross));
-	//if (L > rA + rB)
-	//	return false;
+	// 分離軸 : C12   Ae1*Be2
+	Cross = VCross(NAe1, NBe2);
+	rA = Math::LenSegOnSeparateAxis(Cross, Ae2, Ae3);
+	rB = Math::LenSegOnSeparateAxis(Cross, Be1, Be3);
+	L = fabs(VDot(Interval, Cross));
+	if (L > rA + rB)
+		return false;
 
-	//// 分離軸 : C12   Ae1*Be2
-	//Cross = VCross(NAe1, NBe2);
-	//rA = Math::LenSegOnSeparateAxis(Cross, Ae2, Ae3);
-	//rB = Math::LenSegOnSeparateAxis(Cross, Be1, Be3);
-	//L = fabs(VDot(Interval, Cross));
-	//if (L > rA + rB)
-	//	return false;
+	// 分離軸 : C13   Ae1*Be3
+	Cross = VCross(NAe1, NBe3);
+	rA = Math::LenSegOnSeparateAxis(Cross, Ae2, Ae3);
+	rB = Math::LenSegOnSeparateAxis(Cross, Be1, Be2);
+	L = fabs(VDot(Interval, Cross));
+	if (L > rA + rB)
+		return false;
 
-	//// 分離軸 : C13   Ae1*Be3
-	//Cross = VCross(NAe1, NBe3);
-	//rA = Math::LenSegOnSeparateAxis(Cross, Ae2, Ae3);
-	//rB = Math::LenSegOnSeparateAxis(Cross, Be1, Be2);
-	//L = fabs(VDot(Interval, Cross));
-	//if (L > rA + rB)
-	//	return false;
+	// 分離軸 : C21   Ae2*Be1
+	Cross = VCross(NAe2, NBe1);
+	rA = Math::LenSegOnSeparateAxis(Cross, Ae1, Ae3);
+	rB = Math::LenSegOnSeparateAxis(Cross, Be2, Be3);
+	L = fabs(VDot(Interval, Cross));
+	if (L > rA + rB)
+		return false;
 
-	//// 分離軸 : C21   Ae2*Be1
-	//Cross = VCross(NAe2, NBe1);
-	//rA = Math::LenSegOnSeparateAxis(Cross, Ae1, Ae3);
-	//rB = Math::LenSegOnSeparateAxis(Cross, Be2, Be3);
-	//L = fabs(VDot(Interval, Cross));
-	//if (L > rA + rB)
-	//	return false;
+	// 分離軸 : C22   Ae2*Be2
+	Cross = VCross(NAe2, NBe2);
+	rA = Math::LenSegOnSeparateAxis(Cross, Ae1, Ae3);
+	rB = Math::LenSegOnSeparateAxis(Cross, Be1, Be3);
+	L = fabs(VDot(Interval, Cross));
+	if (L > rA + rB)
+		return false;
 
-	//// 分離軸 : C22   Ae2*Be2
-	//Cross = VCross(NAe2, NBe2);
-	//rA = Math::LenSegOnSeparateAxis(Cross, Ae1, Ae3);
-	//rB = Math::LenSegOnSeparateAxis(Cross, Be1, Be3);
-	//L = fabs(VDot(Interval, Cross));
-	//if (L > rA + rB)
-	//	return false;
+	// 分離軸 : C23   Ae2*Be3
+	Cross = VCross(NAe2, NBe3);
+	rA = Math::LenSegOnSeparateAxis(Cross, Ae1, Ae3);
+	rB = Math::LenSegOnSeparateAxis(Cross, Be1, Be2);
+	L = fabs(VDot(Interval, Cross));
+	if (L > rA + rB)
+		return false;
 
-	//// 分離軸 : C23   Ae2*Be3
-	//Cross = VCross(NAe2, NBe3);
-	//rA = Math::LenSegOnSeparateAxis(Cross, Ae1, Ae3);
-	//rB = Math::LenSegOnSeparateAxis(Cross, Be1, Be2);
-	//L = fabs(VDot(Interval, Cross));
-	//if (L > rA + rB)
-	//	return false;
+	// 分離軸 : C31   Ae3*Be1
+	Cross = VCross(NAe3, NBe1);
+	rA = Math::LenSegOnSeparateAxis(Cross, Ae1, Ae2);
+	rB = Math::LenSegOnSeparateAxis(Cross, Be2, Be3);
+	L = fabs(VDot(Interval, Cross));
+	if (L > rA + rB)
+		return false;
 
-	//// 分離軸 : C31   Ae3*Be1
-	//Cross = VCross(NAe3, NBe1);
-	//rA = Math::LenSegOnSeparateAxis(Cross, Ae1, Ae2);
-	//rB = Math::LenSegOnSeparateAxis(Cross, Be2, Be3);
-	//L = fabs(VDot(Interval, Cross));
-	//if (L > rA + rB)
-	//	return false;
+	// 分離軸 : C32   Ae3*Be2
+	Cross = VCross(NAe3, NBe2);
+	rA = Math::LenSegOnSeparateAxis(Cross, Ae1, Ae2);
+	rB = Math::LenSegOnSeparateAxis(Cross, Be1, Be3);
+	L = fabs(VDot(Interval, Cross));
+	if (L > rA + rB)
+		return false;
 
-	//// 分離軸 : C32   Ae3*Be2
-	//Cross = VCross(NAe3, NBe2);
-	//rA = Math::LenSegOnSeparateAxis(Cross, Ae1, Ae2);
-	//rB = Math::LenSegOnSeparateAxis(Cross, Be1, Be3);
-	//L = fabs(VDot(Interval, Cross));
-	//if (L > rA + rB)
-	//	return false;
-
-	//// 分離軸 : C33   Ae3*Be3
-	//Cross = VCross(NAe3, NBe3);
-	//rA = Math::LenSegOnSeparateAxis(Cross, Ae1, Ae2);
-	//rB = Math::LenSegOnSeparateAxis(Cross, Be1, Be2);
-	//L = fabs(VDot(Interval, Cross));
-	//if (L > rA + rB)
-	//	return false;
+	// 分離軸 : C33   Ae3*Be3
+	Cross = VCross(NAe3, NBe3);
+	rA = Math::LenSegOnSeparateAxis(Cross, Ae1, Ae2);
+	rB = Math::LenSegOnSeparateAxis(Cross, Be1, Be2);
+	L = fabs(VDot(Interval, Cross));
+	if (L > rA + rB)
+		return false;
 
 	// 分離平面が存在しないので「衝突している」
 	return true;
@@ -432,21 +430,6 @@ bool Collision3D::OBBCapselCol(Capsule capsule, OBB obb) {
 	POINT_LINE_SHORT  cap_pos = Collision3D::PointLineSegShortLength(capsule.down_pos, capsule.up_pos, obb.pos);
 
 	VECTOR obb_pos = Collision3D::PointOBB(cap_pos.hit_point, obb);
-
-	VECTOR vector = VSub(obb_pos, cap_pos.hit_point);
-
-
-	if (VDot(vector, vector) <= capsule.r * capsule.r) {
-		return true;
-	}
-
-	return false;
-}
-
-bool Collision3D::OBBToBillBoardCapselCol(Capsule capsule, OBB obb) {
-	POINT_LINE_SHORT  cap_pos = Collision3D::PointLineSegShortLength(capsule.down_pos, capsule.up_pos,obb.pos);
-
-	VECTOR obb_pos = Collision3D::PointOBBToBillBoard(cap_pos.hit_point, obb);
 
 	VECTOR vector = VSub(obb_pos, cap_pos.hit_point);
 
