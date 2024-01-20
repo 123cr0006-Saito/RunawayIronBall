@@ -20,13 +20,12 @@ bool ModeTest::Initialize() {
 
 	int objHandle = MV1LoadModel("res/Building/House_test_01.mv1");
 	for (int i = 0; i < 10; i++) {
-		VECTOR v = VGet(rand() % 2000, 0.0f, rand() % 2000);
-		v.x -= 1000.0f;
-		v.z -= 1000.0f;
+		VECTOR v = VGet(rand() % 4000, 0.0f, rand() % 4000);
+		v.x -= 2000.0f;
+		v.z -= 2000.0f;
 
 		House* building = new House();
 		building->Init(MV1DuplicateModel(objHandle), v);
-		building->ActivateBreakObject(true, VGet(0,0,-1));
 		
 		_building.push_back(building);
 
@@ -47,22 +46,21 @@ bool ModeTest::Process() {
 	_player->Process(_camera->GetCamY());
 	_chain->Process(_player->GetRightHandPos());
 
-
+	bool isSwinging = _player->GetIsSwing();
+	VECTOR pPos = _player->GetPosition();
 	for (auto itr = _building.begin(); itr != _building.end(); ++itr) {
 		(*itr)->Process();
 
 		VECTOR ibPos = _chain->GetBallPosition();
 		float ibR = _chain->GetBallRadius();
 
-		for (auto itr = _building.begin(); itr != _building.end(); ++itr) {
-			(*itr)->Process();
+		OBB houseObb = (*itr)->GetOBBCollision();
 
-			//OBB houseObb = (*itr)->GetOBBCollision();
-
-			//if (Collision3D::OBBSphereCol(houseObb, ibPos, ibR)) {
-			//	VECTOR vDir = VSub(ibPos, houseObb.pos);
-			//	(*itr)->ActivateBreakObject(true, vDir);
-			//}
+		if (Collision3D::OBBSphereCol(houseObb, ibPos, ibR)) {
+			if (isSwinging) {
+				VECTOR vDir = VSub(houseObb.pos, pPos);
+				(*itr)->ActivateBreakObject(true, vDir);
+			}
 		}
 	}
 

@@ -3,6 +3,8 @@
 BreakObject::BreakObject()
 {
 	_isActive = false;
+	_finishedBreak = false;
+
 	_modelHandle = -1;
 	_pos = VGet(0, 0, 0);
 	//MV1SetPosition(_modelHandle, _pos);
@@ -74,7 +76,7 @@ void BreakObject::Init(int modelHandle)
 
 void BreakObject::Process()
 {
-	if (_isActive) {
+	if (!_finishedBreak && _isActive) {
 		// 破片が飛び散る処理
 		for (auto itr = _frameInfo.begin(); itr != _frameInfo.end(); ++itr) {
 			// 回転行列
@@ -110,25 +112,27 @@ void BreakObject::Process()
 		//_blastDir.y -= 0.05f;
 
 		 // リセット
-		if (_breakCnt > 90) {
-			_breakCnt = 0;
+		if (_breakCnt > 120) {
+			_finishedBreak = true;
 
-			// 吹っ飛ばす方向を指定
-			SetBlastDir(VGet(0.0f, 0.0f, 1.0f));
+			//_breakCnt = 0;
 
-			// 軌跡表示用の座標情報をリセット
-			for (auto itr = _locus.begin(); itr != _locus.end(); ++itr) {
-				itr->clear();
-			}
+			//// 吹っ飛ばす方向を指定
+			//SetBlastDir(VGet(0.0f, 0.0f, 1.0f));
 
-			// パーツを初期位置に戻す
-			for (auto itr = _frameInfo.begin(); itr != _frameInfo.end(); ++itr) {
-				MV1ResetFrameUserLocalMatrix(_modelHandle, itr->frameIndex);
+			//// 軌跡表示用の座標情報をリセット
+			//for (auto itr = _locus.begin(); itr != _locus.end(); ++itr) {
+			//	itr->clear();
+			//}
 
-				MATRIX m = MV1GetFrameLocalWorldMatrix(_modelHandle, itr->frameIndex);
-				VECTOR v = VTransform(VGet(0.0f, 0.0f, 0.0f), m);
-				_locus.at(std::distance(_frameInfo.begin(), itr)).push_back(v);
-			}
+			//// パーツを初期位置に戻す
+			//for (auto itr = _frameInfo.begin(); itr != _frameInfo.end(); ++itr) {
+			//	MV1ResetFrameUserLocalMatrix(_modelHandle, itr->frameIndex);
+
+			//	MATRIX m = MV1GetFrameLocalWorldMatrix(_modelHandle, itr->frameIndex);
+			//	VECTOR v = VTransform(VGet(0.0f, 0.0f, 0.0f), m);
+			//	_locus.at(std::distance(_frameInfo.begin(), itr)).push_back(v);
+			//}
 		}
 
 		// 軌跡表示のOn/Off切り替え
@@ -159,11 +163,13 @@ void BreakObject::Activate(bool activate, VECTOR _blastDir)
 // vDir : ふっ飛ばしの中心方向
 void BreakObject::SetBlastDir(VECTOR vDir)
 {
+	vDir.y = 0.0f;
 	vDir = VNorm(vDir);
 	// パーツごとに吹っ飛ばす水平方向をvDirから ±maxRange度の間でランダムに決定する
 	const int maxRange = 45;
 	// 水平・鉛直方向における最大速度
-	const int maxVelocity = 30;
+	const int maxHorizontalVelocity = 100;
+	const int maxVerticalVelocity = 50;
 
 	// パーツごとにふっ飛ばし方向をセットする
 	for (auto itr = _frameInfo.begin(); itr != _frameInfo.end(); ++itr) {
@@ -171,10 +177,10 @@ void BreakObject::SetBlastDir(VECTOR vDir)
 		float angle = rand() % (maxRange * 2);
 		angle -= maxRange;
 		itr->horizontalDir = VTransform(vDir, MGetRotY(Math::DegToRad(angle)));
-		itr->horizontalVelocity = rand() % maxVelocity;
+		itr->horizontalVelocity = rand() % maxHorizontalVelocity;
 
 		// 鉛直方向
-		itr->verticalVelocity = (rand() % maxVelocity) + 20.0f;
+		itr->verticalVelocity = (rand() % maxVerticalVelocity) + 20.0f;
 
 		// 回転値
 		int deltaRot = 8;
