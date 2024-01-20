@@ -28,6 +28,10 @@ void BreakObject::Init(int modelHandle)
 {
 	_modelHandle = modelHandle;
 	for (int i = 0; i < MV1GetFrameNum(_modelHandle); i++) {
+		// 仮：子のフレームがないもののみ
+		int childNum = MV1GetFrameChildNum(_modelHandle, i);
+		if (childNum != 0) continue;
+
 		// フレームの座標変換行列を取得する
 		MATRIX mFrameLocal = MV1GetFrameLocalMatrix(_modelHandle, i);
 		// フレームのローカル座標を求める
