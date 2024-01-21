@@ -21,7 +21,7 @@ Crystarl::Crystarl(int model, VECTOR pos, Player* Player) :EnemyBase::EnemyBase(
 	_sartchRange = _sartchRangeSize;
 	_moveRange = 1000.0f;
 	_speed = 5.0f;
-	_r = 100.0f;
+	//_r = 100.0f;
 
 	_attackPos = VGet(0, 0, 0);
 	_attackDir = 0.0f;
@@ -170,6 +170,11 @@ bool Crystarl::SetState() {
 	return true;
 };
 
+bool Crystarl::DebugRender() {
+	DrawSphere3D(VAdd(VAdd(_pos, _diffeToCenter), _attackPos), _r, 32, GetColor(255, 0, 0), GetColor(255, 0, 0), false);
+	return true;
+};
+
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 const float CrystarlPattern2::_fixSartchSize = 500.0f;
@@ -193,7 +198,7 @@ CrystarlPattern2::CrystarlPattern2(int model, VECTOR pos, Player* player) :Enemy
 	_sartchRange = _sartchRangeSize;
 	_moveRange = 1000.0f;
 	_speed = 5.0f;
-	_r = 100.0f;
+	//_r = 100.0f;
 
 	_attackPos = VGet(0, 0, 0);
 	_attackDir = 0.0f;
@@ -255,5 +260,10 @@ bool CrystarlPattern2::SetState() {
 		MV1SetRotationXYZ(_model, VGet(0.0f, _direction + _attackDir, 0.0f));
 		MV1SetPosition(_model, VAdd(_pos, _attackPos));
 	}
+	return true;
+};
+
+bool CrystarlPattern2::DebugRender() {
+	DrawSphere3D(VAdd(VAdd(_pos, _diffeToCenter), _attackPos), _r, 32, GetColor(255, 0, 0), GetColor(255, 0, 0), false);
 	return true;
 };

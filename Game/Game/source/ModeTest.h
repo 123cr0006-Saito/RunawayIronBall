@@ -10,6 +10,8 @@
 #include "BuildingBase.h"
 #include "House.h"
 
+#include "Crystarl.h"
+
 class ModeTest : public ModeBase
 {
 	typedef ModeBase base;
@@ -28,6 +30,8 @@ protected:
 
 	Chain* _chain;
 	UIBase* ui;
+
+	EnemyBase* enemy[2];
 
 	std::vector<House*> _building;
 

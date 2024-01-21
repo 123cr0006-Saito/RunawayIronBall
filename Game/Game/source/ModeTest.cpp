@@ -18,6 +18,10 @@ bool ModeTest::Initialize() {
 	_chain = new Chain();
 	_chain->Init();
 
+	int enemyModel = MV1LoadModel("res/katatumuri/snail.mv1");
+	enemy[0] = new Crystarl(enemyModel, VGet(0, 0, 1500), _player);
+	enemy[1] = new CrystarlPattern2(enemyModel, VGet(1500, 0, 0), _player);
+
 	int objHandle = MV1LoadModel("res/Building/House_test_01.mv1");
 	for (int i = 0; i < 10; i++) {
 		VECTOR v = VGet(rand() % 4000, 0.0f, rand() % 4000);
@@ -65,7 +69,9 @@ bool ModeTest::Process() {
 	}
 
 
-
+	for (int i = 0; i < sizeof(enemy) / sizeof(enemy[0]); i++) {
+		enemy[i]->Process();
+	}
 
 
 	_camera->Process(_player->GetPosition());
@@ -98,6 +104,12 @@ bool ModeTest::Render() {
 		(*itr)->Render();
 		(*itr)->DrawDebugInfo();
 	}
+
+	for (int i = 0; i < sizeof(enemy) / sizeof(enemy[0]); i++) {
+		enemy[i]->Render();
+		enemy[i]->DebugRender();
+	}
+
 
 	DrawSphere3D(_chain->GetBallPosition(), _chain->GetBallRadius(), 16, GetColor(255, 0, 0), GetColor(255, 0, 0), false);
 

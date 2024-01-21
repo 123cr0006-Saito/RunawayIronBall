@@ -12,6 +12,8 @@ public:
 	bool Process();
 	bool Render();
 
+	virtual bool DebugRender();
+
 	virtual bool ModeSearch();
 	virtual bool ModeDisCover();
 	virtual bool ModeAttack();
@@ -21,7 +23,7 @@ public:
 
 	bool StopPos();
 
-	VECTOR GetPos() { return _pos; }
+	virtual VECTOR GetCollisionPos() { return VAdd(_pos, _diffeToCenter); }
 	float GetR() { return _r; }
 
 protected:
@@ -32,6 +34,7 @@ protected:
 	int    _speed;//移動速度
 	float _direction;//y軸の向いている方向
 	float _r;//当たり判定用の半径
+	VECTOR _diffeToCenter;//コリジョンに使用する中心点までの差分
 
 	//秒数保存用変数
 	float _stopTime;//停止している時間

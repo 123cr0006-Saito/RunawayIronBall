@@ -9,6 +9,9 @@ public:
 	bool ModeAttack()override;
 	bool ModeCoolTime()override;
 	bool SetState()override;
+
+	bool DebugRender()override;
+	VECTOR GetCollisionPos()override { return VAdd(VAdd(_pos, _diffeToCenter), _attackPos); }
 protected:
 	static const float _fixSartchSize;//õ“G”ÍˆÍ‚Ì”¼Œa
 	static const float _fixDiscoverSize;//”­Œ©A‘ÎÛ‚ÌŒ©¸‚¤‚Ü‚Å‚Ì‹——£‚Ì”¼Œa
@@ -26,6 +29,9 @@ public:
 	bool ModeAttack()override;
 	bool ModeCoolTime()override;
 	bool SetState()override;
+
+	bool DebugRender()override;
+	VECTOR GetCollisionPos()override { return VAdd(VAdd(_pos, _diffeToCenter), _attackPos); }
 protected:
 	static const float _fixSartchSize;//õ“G”ÍˆÍ‚Ì”¼Œa
 	static const float _fixDiscoverSize;//”­Œ©A‘ÎÛ‚ÌŒ©¸‚¤‚Ü‚Å‚Ì‹——£‚Ì”¼Œa
