@@ -56,15 +56,15 @@ void Chain::Process(VECTOR playerPos) {
 			MATRIX m = MGetIdent();
 	
 			// çΩÇ∆òró÷ÇÃòAåãì_
-			m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, 217);
+			m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, 76);
 			_cPos[0] = VTransform(vOrigin, m);
 	
 			// 1Ç¬ñ⁄
-			m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, 218);
+			m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, 77);
 			_cPos[1] = VTransform(vOrigin, m);
 	
 			// ìSãÖÇÃà íu
-			m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, 219);
+			m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, 78);
 			//VECTOR vTmp = VSub(VTransform(vOrigin, m), _pos[0]);
 			//vTmp = VNorm(vTmp);
 			//vTmp.y = 0.0f;
@@ -127,18 +127,20 @@ void Chain::Process(VECTOR playerPos) {
 			float distance = VSize(vDelta);
 			float difference = _length - distance;
 
-			float offsetX = (difference * vDelta.x / distance) * 0.8f;
-			float offsetY = (difference * vDelta.y / distance) * 0.8f;
-			float offsetZ = (difference * vDelta.z / distance) * 0.8f;
+			float offsetX = (difference * vDelta.x / distance) * 0.9f;
+			float offsetY = (difference * vDelta.y / distance) * 0.9f;
+			float offsetZ = (difference * vDelta.z / distance) * 0.9f;
 
 			if (i != 0) {
 				_cPos[i].x -= offsetX;
 				_cPos[i].y -= offsetY;
 				_cPos[i].z -= offsetZ;
 			}
-			_cPos[i + 1].x += offsetX;
-			_cPos[i + 1].y += offsetY;
-			_cPos[i + 1].z += offsetZ;
+			float mul = 1.0f;
+			if (i == 0) mul = 2.0f;
+			_cPos[i + 1].x += offsetX * mul;
+			_cPos[i + 1].y += offsetY * mul;
+			_cPos[i + 1].z += offsetZ * mul;
 		}
 
 	}

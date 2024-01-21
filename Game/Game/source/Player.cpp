@@ -28,7 +28,7 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 
 
 
-	_isSwing = false;
+	_isSwinging = false;
 	_instance = this;
 }
 
@@ -47,11 +47,15 @@ bool Player::Process(float camAngleY)
 
 
 	if (_input->GetTrg(XINPUT_BUTTON_X) != 0) {
-		_animStatus = STATUS::SWING02;
-		_isSwing = true;
+		_animStatus = STATUS::HORISONTAL_SWING;
+		_isSwinging = true;
 	}
 
-	if (_animStatus != STATUS::SWING02) {
+	if (!_isSwinging) {
+		_animStatus = STATUS::WAIT;
+	}
+
+	if (_animStatus != STATUS::HORISONTAL_SWING) {
 
 		// 左スティックの入力情報を取得する
 		auto lStick = _input->GetAdjustedStick_L();
@@ -80,13 +84,11 @@ bool Player::Process(float camAngleY)
 			// モデルの回転値をセットする
 			MV1SetRotationXYZ(_modelHandle, VGet(0.0f, angle, 0.0f));
 		}
-
-
-	}
-	else {
-		if (_isSwing == false) {
-			_animStatus = STATUS::RUN;
+		else {
+			_animStatus = STATUS::WAIT;
 		}
+
+
 	}
 
 	BlastOffProcess();
@@ -112,14 +114,14 @@ bool Player::AnimProcess(STATUS oldStatus)
 		}
 		// ステータスに合わせてアニメーションのアタッチ
 		switch (_animStatus) {
-		case STATUS::SWING01:
+		case STATUS::WAIT:
 			_attach_index = MV1AttachAnim(_modelHandle, 0, -1, FALSE);
 			break;
-		case STATUS::SWING02:
-			_attach_index = MV1AttachAnim(_modelHandle, 1, -1, FALSE);
+		case STATUS::HORISONTAL_SWING:
+			_attach_index = MV1AttachAnim(_modelHandle, 2, -1, FALSE);
 			break;
 		case STATUS::RUN:
-			_attach_index = MV1AttachAnim(_modelHandle, 2, -1, FALSE);
+			_attach_index = MV1AttachAnim(_modelHandle, 1, -1, FALSE);
 			break;
 		}
 		// アタッチしたアニメーションの総再生時間を取得する
@@ -132,8 +134,8 @@ bool Player::AnimProcess(STATUS oldStatus)
 	if (_play_time >= _total_time) {
 		_play_time = 0.0f;
 
-		if (_animStatus == STATUS::SWING02) {
-			_isSwing = false;
+		if (_animStatus == STATUS::HORISONTAL_SWING) {
+			_isSwinging = false;
 		}
 	}
 

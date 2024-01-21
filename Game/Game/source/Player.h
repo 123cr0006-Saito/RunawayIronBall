@@ -7,8 +7,8 @@ class Player : public CharacterBase
 private:
 	enum class STATUS {
 		NONE,
-		SWING01,
-		SWING02,
+		WAIT,
+		HORISONTAL_SWING,
 		RUN,
 		_EOT_
 	};
@@ -35,7 +35,7 @@ public:
 	VECTOR GetRightHandPos();
 
 
-	bool GetIsSwing() { return _isSwing; }
+	bool GetIsSwing() { return _isSwinging; }
 	static Player* GetInstance() { return _instance; }
 
 	void DrawDebugInfo();
@@ -62,7 +62,7 @@ private:
 	int _rightHandFrameIndex;
 	
 
-	bool _isSwing;
+	bool _isSwinging;
 
 	static Player* _instance;
 };

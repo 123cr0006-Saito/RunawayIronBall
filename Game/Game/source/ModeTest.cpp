@@ -12,7 +12,7 @@ bool ModeTest::Initialize() {
 	MV1SetPosition(_skySphere, VGet(0, 0, 0));
 	MV1SetScale(_skySphere, VGet(1, 1, 1));
 
-	int playerModelHandle = MV1LoadModel("res/Character/cg_player_girl/test28swing4.mv1");
+	int playerModelHandle = MV1LoadModel("res/Character/cg_player_girl/cg_player_girl_TEST.mv1");
 	_player = new Player(playerModelHandle, VGet(0, 0, 0));
 
 	_chain = new Chain();
