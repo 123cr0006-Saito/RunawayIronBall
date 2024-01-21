@@ -147,6 +147,32 @@ void bone::SetBoneDir(
 	MV1SetFrameUserLocalMatrix(*_model, target_frame, tmpMat);
 }
 
+void bone::DebugProcess(int transNum) {
+	if (_oldTransFlag != _transFlag) {
+		for (int i = 0; i < _frameList.size(); i++) {
+			int frameNum = _frameList.at(i);
+			MV1SetFrameVisible(*_model, frameNum, _transFlag);
+		}
+		MV1SetFrameVisible(*_model, transNum, _transFlag);
+		_oldTransFlag = _transFlag;
+	}
+};
+
+void bone::DebugRender() {
+	if (!_transFlag) {
+		int r = 5;
+		int divNum = 32;
+		int color = GetColor(255, 0, 0);
+		for (int i = 0; i < _frameList.size(); i++) {
+			int frameNum = _frameList.at(i);
+			if (!MV1GetFrameVisible(*_model, frameNum)) {
+				VECTOR pos = MV1GetFramePosition(*_model, frameNum);
+				DrawSphere3D(pos, r, divNum, color, color, true);
+			}
+		}
+	}
+};
+
 bool bone::Process() {
 
 	double _elapsedTime = global._timer->GetElapsedTime();
