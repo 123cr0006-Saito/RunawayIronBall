@@ -26,7 +26,7 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 
 	_rightHandFrameIndex = MV1SearchFrame(_modelHandle, "Character1_RightHand");
 
-
+	SetBone();
 
 	_isSwinging = false;
 	_instance = this;
@@ -38,6 +38,27 @@ Player::~Player()
 		int n = 0;
 	}
 }
+
+void Player::SetBone() {
+	//ç∂îØ
+	std::vector<int> bone_left_list(6);
+	bone_left_list[0] = MV1SearchFrame(_modelHandle,"Left_mitsuami1");
+	bone_left_list[1] = MV1SearchFrame(_modelHandle,"Left_mitsuami2");
+	bone_left_list[2] = MV1SearchFrame(_modelHandle,"Left_mitsuami3");
+	bone_left_list[3] = MV1SearchFrame(_modelHandle,"Left_mitsuami4");
+	bone_left_list[4] = MV1SearchFrame(_modelHandle,"Left_mitsuami5");
+	bone_left_list[5] = MV1SearchFrame(_modelHandle,"Left_mitsuami6");
+	_bone[0] = new bone(&_modelHandle, bone_left_list, bone_left_list.size() - 2, "res/JsonFile/hair_parameters.json");
+	//âEîØ
+	std::vector<int> bone_right_list(6);
+	bone_right_list[0] = MV1SearchFrame(_modelHandle,"Right_mitsuami1");
+	bone_right_list[1] = MV1SearchFrame(_modelHandle,"Right_mitsuami2");
+	bone_right_list[2] = MV1SearchFrame(_modelHandle,"Right_mitsuami3");
+	bone_right_list[3] = MV1SearchFrame(_modelHandle,"Right_mitsuami4");
+	bone_right_list[4] = MV1SearchFrame(_modelHandle,"Right_mitsuami5");
+	bone_right_list[5] = MV1SearchFrame(_modelHandle,"Right_mitsuami6");
+	_bone[1] = new bone(&_modelHandle, bone_right_list, bone_right_list.size() - 2, "res/JsonFile/hair_parameters.json");
+};
 
 bool Player::Process(float camAngleY)
 {
@@ -95,6 +116,7 @@ bool Player::Process(float camAngleY)
 
 	MV1SetPosition(_modelHandle, _pos);
 	UpdateCollision();
+	UpdateBone();
 
 	AnimProcess(oldStatus);
 	return true;
@@ -171,7 +193,12 @@ void Player::UpdateCollision()
 	_capsuleCollision.Update();
 }
 
-
+void Player::UpdateBone(){
+	for (int i = 0; i < sizeof(_bone) / sizeof(_bone[0]); i++) {
+		_bone[i]->Process();
+		_bone[i]->SetMain(_bone[i]->_massPosList);
+	}
+};
 
 VECTOR Player::GetRightHandPos()
 {

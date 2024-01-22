@@ -1,6 +1,7 @@
 #pragma once
 #include "appframe.h"
 #include "CharacterBase.h"
+#include "bone.h"
 
 class Player : public CharacterBase
 {
@@ -22,8 +23,8 @@ public:
 	bool BlastOffProcess();
 	bool Render() override;
 
-
-
+	void SetBone();//齋藤が作った関数です。 boneのフレームを探すために使用する関数です。後でjsonでの読み込みにするかもしれません。
+	void UpdateBone();
 	void UpdateCollision();
 
 	Capsule GetCollision() { return _capsuleCollision; };
@@ -65,4 +66,9 @@ private:
 	bool _isSwinging;
 
 	static Player* _instance;
+
+	//------------
+	//齋藤が書きました。
+	bone* _bone[2];// 0:leftHear 1:RightHear
+
 };
