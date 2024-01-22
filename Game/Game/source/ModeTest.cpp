@@ -8,6 +8,8 @@ bool ModeTest::Initialize() {
 
 	_camera = new Camera();
 
+	_vibration = new Vibration(DX_INPUT_PAD1);
+
 	_skySphere = MV1LoadModel(_T("res/SkySphere/skysphere.mv1"));
 	MV1SetPosition(_skySphere, VGet(0, 0, 0));
 	MV1SetScale(_skySphere, VGet(3, 3, 3));
@@ -60,6 +62,8 @@ bool ModeTest::Process() {
 			if (isSwinging) {
 				VECTOR vDir = VSub(houseObb.pos, pPos);
 				(*itr)->ActivateBreakObject(true, vDir);
+
+				_vibration->StartVibration(10, 5000);
 			}
 		}
 	}
@@ -69,6 +73,7 @@ bool ModeTest::Process() {
 
 
 	_camera->Process(_player->GetPosition());
+	_vibration->Process();
 	return true;
 }
 

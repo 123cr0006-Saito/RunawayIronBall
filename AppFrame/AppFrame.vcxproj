@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\System\Source\Function\Vibration.cpp" />
     <ClCompile Include="source\System\Source\Collision\MyStructure.cpp" />
     <ClCompile Include="source\System\Source\Function\DrawGauge.cpp" />
     <ClCompile Include="source\System\Source\Function\mymath.cpp" />
@@ -198,6 +199,7 @@
     <ClInclude Include="source\System\Header\Collision\MyStructure.h" />
     <ClInclude Include="source\System\Header\Function\Timer.h" />
     <ClInclude Include="source\System\Header\Function\Vector3D.h" />
+    <ClInclude Include="source\System\Header\Function\Vibration.h" />
     <ClInclude Include="source\System\Header\Resource\ResourceServer.h" />
     <ClInclude Include="source\System\Header\Sound\FadeSound.h" />
     <ClInclude Include="source\System\Header\Function\Fps.h" />

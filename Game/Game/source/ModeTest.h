@@ -24,6 +24,8 @@ public:
 
 protected:
 	Camera* _camera;
+	Vibration* _vibration;
+
 	Player* _player;
 
 	Chain* _chain;
