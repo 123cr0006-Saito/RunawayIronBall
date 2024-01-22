@@ -93,13 +93,13 @@ bool ModeTest::Render() {
 
 	_player->Render();
 	_chain->Render();
+	_chain->DrawDebugInfo();
 	ui->Draw();
 	for (auto itr = _building.begin(); itr != _building.end(); ++itr) {
 		(*itr)->Render();
 		(*itr)->DrawDebugInfo();
 	}
 
-	DrawSphere3D(_chain->GetBallPosition(), _chain->GetBallRadius(), 16, GetColor(255, 0, 0), GetColor(255, 0, 0), false);
 
 
 	SetUseZBuffer3D(FALSE);

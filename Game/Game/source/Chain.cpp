@@ -188,19 +188,12 @@ void Chain::Render()
 }
 
 void Chain::DrawDebugInfo() {
-	//for (int i = 0; i < CHAIN_MAX; i++) {
-	//	VECTOR worldPos = VGet(0, 0, 0);
-	//	int index = i != CHAIN_MAX - 1 ? 0 : 2;
-	//	MATRIX m = MV1GetFrameLocalWorldMatrix(_modelHandle[i], index);
-	//	worldPos = VTransform(worldPos, m);
-	//	//VECTOR screenPos = ConvWorldPosToScreenPos(MV1GetPosition(_modelHandle[i]));
-	//	VECTOR screenPos = ConvWorldPosToScreenPos(worldPos);
-	//	DrawFormatString(screenPos.x, screenPos.y, GetColor(255, 0, 0), "%d", i);
-	//}
+	DrawSphere3D(_iPos, _r, 16, COLOR_RED, COLOR_RED, false);
 
-	int x = 0;
-	int y = 0;
-	int line = 0;
+
+	//int x = 0;
+	//int y = 0;
+	//int line = 0;
 	//DrawFormatString(x, y + line * 16, COLOR_WHITE, "_pos: x %3.2f, y %3.2f, z  %3.2f", _pos.x, _pos.y, _pos.z); line++;
 	//DrawFormatString(x, y + line * 16, COLOR_WHITE, "_dir: x %3.2f, y %3.2f, z  %3.2f", _dir.x, _dir.y, _dir.z); line++;
 	//DrawFormatString(x, y + line * 16, COLOR_WHITE, "_speed %3.2f", _speed); line++;
