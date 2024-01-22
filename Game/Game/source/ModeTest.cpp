@@ -10,7 +10,7 @@ bool ModeTest::Initialize() {
 
 	_skySphere = MV1LoadModel(_T("res/SkySphere/skysphere.mv1"));
 	MV1SetPosition(_skySphere, VGet(0, 0, 0));
-	MV1SetScale(_skySphere, VGet(1, 1, 1));
+	MV1SetScale(_skySphere, VGet(3, 3, 3));
 
 	int playerModelHandle = MV1LoadModel("res/Character/cg_player_girl/cg_player_girl_TEST.mv1");
 	_player = new Player(playerModelHandle, VGet(0, 0, 0));

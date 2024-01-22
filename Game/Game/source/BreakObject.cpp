@@ -109,7 +109,7 @@ void BreakObject::Process()
 
 
 			// 重力処理
-			itr->verticalVelocity -= 1.5f;
+			itr->verticalVelocity -= 2.5f;
 
 			// 軌跡表示用の座標を保持
 			MATRIX mLocus = MV1GetFrameLocalWorldMatrix(_modelHandle, itr->frameIndex);
@@ -179,7 +179,7 @@ void BreakObject::SetBlastDir(VECTOR vDir)
 	// パーツごとに吹っ飛ばす水平方向をvDirから ±maxRange度の間でランダムに決定する
 	const int maxRange = 45;
 	// 水平・鉛直方向における最大速度
-	const int maxHorizontalVelocity = 100;
+	const int maxHorizontalVelocity = 80;
 	const int maxVerticalVelocity = 50;
 
 	// パーツごとにふっ飛ばし方向をセットする
