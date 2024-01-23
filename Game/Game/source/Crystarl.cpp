@@ -1,36 +1,19 @@
 #include "Crystarl.h"
 
-const float Crystarl::_fixSartchSize = 500.0f;
-const float Crystarl::_fixDiscoverSize = 3500.0f;
-const float Crystarl::_fixAttackSize = 500.0f;
+Crystarl::Crystarl() :EnemyBase::EnemyBase() {
 
-
-Crystarl::Crystarl(int model, VECTOR pos, Player* Player) :EnemyBase::EnemyBase(model, pos) {
-	//デバック時登録
-	
-	//今のモデルに貼り付けているテクスチャ
-	MV1SetTextureGraphHandle(_model, 0, ResourceServer::LoadGraph("res/katatumuri/14086_Snail_with_toy_house_for_ shell_v2_diff2.jpg"), true);
-	MV1SetTextureGraphHandle(_model, 1, ResourceServer::LoadGraph("res/katatumuri/14086_Snail_with_toy_house_for_ shell_v2_diff.jpg"), true);
-
-	_sartchRangeSize = _fixSartchSize;
-	_discoverRangeSize = _fixDiscoverSize;
-	_attackRangeSize = _fixAttackSize;
-
-	//個別でセットするもの
-	_player = Player;
-	_sartchRange = _sartchRangeSize;
-	_moveRange = 1000.0f;
-	_speed = 5.0f;
-	//_r = 100.0f;
-
-	_attackPos = VGet(0, 0, 0);
-	_attackDir = 0.0f;
-
-	MV1SetScale(_model, VGet(0.1f, 0.1f, 0.1f));//持ってきたモデルが大きかったため1/10に設定
 };
 
 Crystarl::~Crystarl() {
 	EnemyBase::~EnemyBase();
+};
+
+void Crystarl::InheritanceInit() {
+	//個別でセットするもの
+	_player = Player::GetInstance();
+	_r = 100.0f;
+	_attackPos = VGet(0, 0, 0);
+	_attackDir = 0.0f;
 };
 
 bool Crystarl::ModeSearch() {
@@ -94,7 +77,7 @@ bool Crystarl::ModeSearch() {
 		float range_dir = Math::CalcVectorAngle(ene_dir, pla_dir);
 
 		if (range_dir <= _flontAngle) {
-			_state = TYPE::attack;//状態を発見にする
+			_state = ENEMYTYPE::ATTACK;//状態を発見にする
 			_sartchRange = _discoverRangeSize;//索敵範囲を発見時の半径に変更
 			_currentTime = GetNowCount();
 			_stopTime = 0;
@@ -137,8 +120,8 @@ bool Crystarl::ModeAttack() {
 
 	//索敵処理
 	if (p_distance >= _sartchRange) {
-		_state = TYPE::search;//状態を索敵にする
-		_sartchRange = _sartchRangeSize;//索敵範囲を発見時の半径に変更
+		_state = ENEMYTYPE::SEARCH;//状態を索敵にする
+		_sartchRange = _hearingRangeSize;//索敵範囲を発見時の半径に変更
 	//	_orignPos = _nextMovePoint = VAdd(_pos, _attackPos);
 		_orignPos = _nextMovePoint = _pos;
 		_attackDir = 0.0f;
@@ -155,7 +138,7 @@ bool Crystarl::ModeCoolTime() {
 	if (GetNowCount() - _currentTime >= moveCoolTime) {
 		_attackDir = 0.0f;
 		_currentTime = GetNowCount();
-		_state = TYPE::attack;
+		_state = ENEMYTYPE::ATTACK;
 	}
 	return true;
 };
@@ -177,41 +160,24 @@ bool Crystarl::DebugRender() {
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-const float CrystarlPattern2::_fixSartchSize = 500.0f;
-const float CrystarlPattern2::_fixDiscoverSize = 3500.0f;
-const float CrystarlPattern2::_fixAttackSize = 500.0f;
+CrystarlPattern2::CrystarlPattern2() :EnemyBase::EnemyBase() {
 
-
-CrystarlPattern2::CrystarlPattern2(int model, VECTOR pos, Player* player) :EnemyBase::EnemyBase(model, pos) {
-	//デバック時登録
-
-	//今のモデルに貼り付けているテクスチャ
-	MV1SetTextureGraphHandle(_model, 0, LoadGraph("res/katatumuri/14086_Snail_with_toy_house_for_ shell_v2_diff2.jpg"), true);
-	MV1SetTextureGraphHandle(_model, 1, LoadGraph("res/katatumuri/14086_Snail_with_toy_house_for_ shell_v2_diff.jpg"), true);
-
-	_sartchRangeSize = _fixSartchSize;
-	_discoverRangeSize = _fixDiscoverSize;
-	_attackRangeSize = _fixAttackSize;
-
-	//個別でセットするもの
-	_player = player;
-	_sartchRange = _sartchRangeSize;
-	_moveRange = 1000.0f;
-	_speed = 5.0f;
-	//_r = 100.0f;
-
-	_attackPos = VGet(0, 0, 0);
-	_attackDir = 0.0f;
-
-	_nowAttackDistance = 0;
-	_attackDistanceSpeed = 3;
-
-
-	MV1SetScale(_model, VGet(0.1f, 0.1f, 0.1f));//持ってきたモデルが大きかったため1/10に設定
 };
 
 CrystarlPattern2::~CrystarlPattern2() {
 	EnemyBase::~EnemyBase();
+};
+
+void CrystarlPattern2::InheritanceInit() {
+
+	//個別でセットするもの
+	_player = Player::GetInstance();
+	_r = 100.0f;
+
+	_attackPos = VGet(0, 0, 0);
+	_attackDir = 0.0f;
+	_nowAttackDistance = 0;
+	_attackDistanceSpeed = 3;
 };
 
 bool CrystarlPattern2::ModeAttack() {
@@ -230,7 +196,7 @@ bool CrystarlPattern2::ModeAttack() {
 		if (_nowAttackDistance <= 0 || attackRange <= _nowAttackDistance) {
 			_attackDistanceSpeed = -_attackDistanceSpeed;
 			if (_nowAttackDistance <= 0) {
-				_state = TYPE::cooltime;
+				_state = ENEMYTYPE::COOLTIME;
 				_currentTime = GetNowCount();
 				_nowAttackDistance = 0;
 			}
@@ -249,7 +215,7 @@ bool CrystarlPattern2::ModeCoolTime() {
 	if (GetNowCount() - _currentTime >= moveCoolTime) {
 		_attackDir = 0.0f;
 		_currentTime = GetNowCount();
-		_state = TYPE::discover;
+		_state = ENEMYTYPE::DISCOVER;
 	}
 	return true;
 };

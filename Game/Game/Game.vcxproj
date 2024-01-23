@@ -178,6 +178,7 @@
     <ClCompile Include="source\UIHeart.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\EnemyStract.h" />
     <ClInclude Include="source\House.h" />
     <ClInclude Include="source\myJson.h" />
     <ClInclude Include="source\bone.h" />

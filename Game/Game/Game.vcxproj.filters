@@ -45,5 +45,6 @@
     <ClInclude Include="source\UIExpPoint.h" />
     <ClInclude Include="source\UIHeart.h" />
     <ClInclude Include="source\House.h" />
+    <ClInclude Include="source\EnemyStract.h" />
   </ItemGroup>
 </Project>
