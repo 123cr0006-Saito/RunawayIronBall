@@ -1,33 +1,19 @@
 #include "SlaBlock.h"
 
-const float SlaBlock::_fixSartchSize = 3000.0f;
-const float SlaBlock::_fixDiscoverSize = 10000.0f;
-const float SlaBlock::_fixAttackSize = 500.0f;
-
-SlaBlock::SlaBlock(int model, VECTOR pos, Player* Player) :EnemyBase::EnemyBase(model, pos)
+SlaBlock::SlaBlock() :EnemyBase::EnemyBase()
 {
 	//デバック時登録
-	_model = MV1LoadModel("res/katatumuri/snail.mv1");
-	//今のモデルに貼り付けているテクスチャ
-	MV1SetTextureGraphHandle(_model, 0, ResourceServer::LoadGraph("res/katatumuri/14086_Snail_with_toy_house_for_ shell_v2_diff2.jpg"), true);
-	MV1SetTextureGraphHandle(_model, 1, ResourceServer::LoadGraph("res/katatumuri/14086_Snail_with_toy_house_for_ shell_v2_diff.jpg"), true);
-
-	_sartchRangeSize = _fixSartchSize;
-	_discoverRangeSize = _fixDiscoverSize;
-	_attackRangeSize = _fixAttackSize;
-
-	//個別でセットするもの
-	_player = Player;
-	_sartchRange = _sartchRangeSize;
-	_moveRange = 1000.0f;
-	_speed = 5.0f;
-	//_r = 100.0f;
-
-	MV1SetScale(_model, VGet(0.1f, 0.1f, 0.1f));//持ってきたモデルが大きかったため1/10に設定
+	//_model = ResourceServer::MV1LoadModel("res/katatumuri/snail.mv1");
 };
 
 SlaBlock::~SlaBlock() {
 	EnemyBase::~EnemyBase();
+};
+
+void SlaBlock::InheritanceInit() {
+	//個別でセットするもの
+	_player = Player::GetInstance();
+	_r = 100.0f;
 };
 
 bool SlaBlock::ModeAttack() {
@@ -54,7 +40,7 @@ bool SlaBlock::ModeAttack() {
 			_easingFrame = 0;
 			//global.effect->SetVibration(0, 20, 20);
 			_currentTime = GetNowCount();
-			_state = TYPE::cooltime;
+			_state = ENEMYTYPE::COOLTIME;
 		}
 	}
 	return true;
@@ -67,7 +53,7 @@ bool SlaBlock::ModeCoolTime() {
 
 	if (GetNowCount() - _currentTime >= moveCoolTime) {
 		_currentTime = 0;
-		_state = TYPE::discover;
+		_state = ENEMYTYPE::DISCOVER;
 	}
 	return true;
 };

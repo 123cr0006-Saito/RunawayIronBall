@@ -2,12 +2,24 @@
 #include "appframe.h"
 #include "Player.h"
 #include "math.h"
+#include "EnemyStract.h"
+
 //エネミー各種のもとになるクラス
 class EnemyBase
 {
 public:
-	EnemyBase(int model, VECTOR pos);
+	EnemyBase();
 	~EnemyBase();
+
+	bool Create(int model, VECTOR pos, EnemyParam param);
+	virtual void Init(VECTOR pos, float scale);
+	virtual void Init(VECTOR pos);
+	virtual void InheritanceInit();
+	//---------------------------------------------------------
+	//デバッグ用の関数です。素材が来たら後で消します
+	void  DebugSnail();
+	//---------------------------------------------------------
+	void SetPos(VECTOR pos);
 
 	bool Process();
 	bool Render();
@@ -23,17 +35,37 @@ public:
 
 	bool StopPos();
 
+	bool GetUse() { return _IsUse; }
 	virtual VECTOR GetCollisionPos() { return VAdd(_pos, _diffeToCenter); }
 	float GetR() { return _r; }
 
 protected:
 	Player* _player;
+	bool _IsUse;
+
+	//Jsonで読み込むもの------------------------------------------------------------------------
+
+	int _hp;//敵の体力
+	int _exp;//敵から得られる経験値
+	float  _speed;//移動速度
+	int _coolTime;//攻撃後のクールタイム
+
+	//索敵系変数
+	float _flontAngle;//視界範囲の角度
+	float _sartchRange;//索敵範囲の半径
+	float _moveRange;//移動範囲の半径
+	float _hearingRangeSize;//聴覚範囲の半径
+	float _discoverRangeSize;//発見時、対象の見失うまでの距離の半径
+	float _attackRangeSize;//正面の攻撃範囲
+
+	//------------------------------------------------------------------------------------------------
+	
 	//主な変数
 	int    _model;//モデル
 	VECTOR _pos;//エネミーの座標
-	int    _speed;//移動速度
 	float _direction;//y軸の向いている方向
 	float _r;//当たり判定用の半径
+	float _scale;//敵のサイズ
 	VECTOR _diffeToCenter;//コリジョンに使用する中心点までの差分
 
 	//秒数保存用変数
@@ -45,14 +77,6 @@ protected:
 	VECTOR _nextMovePoint;//次の移動地点
 	VECTOR _savePos;//自分の位置を格納
 
-	//索敵系変数
-	static const float _flontAngle;//視界範囲の角度
-	float _sartchRange;//聴覚範囲の半径
-	float _moveRange;//移動範囲の半径
-	float _sartchRangeSize;//索敵範囲の半径
-	float _discoverRangeSize;//発見時、対象の見失うまでの距離の半径
-	float _attackRangeSize;//正面の攻撃範囲
-
 	//回旋させるための変数
 	float _nextDir;//回旋するときの次の角度
 	float _oldDir;//回旋する前に格納する角度
@@ -62,14 +86,16 @@ protected:
 	VECTOR _saveNextPoint;//次に移動する地点
 
 	//敵の状態
-	enum TYPE : int {
-		search,
-		discover,
-		attack,
-		cooltime
+	enum class ENEMYTYPE : int {
+		SEARCH,
+		DISCOVER,
+		ATTACK,
+		COOLTIME
 	};
 
-	TYPE _state;//今の状態
+
+
+	ENEMYTYPE _state;//今の状態
 
 };
 

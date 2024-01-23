@@ -31,8 +31,6 @@ protected:
 	Chain* _chain;
 	UIBase* ui;
 
-	EnemyBase* enemy[2];
-
 	std::vector<House*> _building;
 
 	int _skySphere;
