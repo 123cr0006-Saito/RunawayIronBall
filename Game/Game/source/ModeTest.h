@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Chain.h"
 #include "UIBase.h"
+#include "UIExpPoint.h"
 #include "uiheart.h"
 
 #include "BuildingBase.h"
@@ -29,7 +30,7 @@ protected:
 	Player* _player;
 
 	Chain* _chain;
-	UIBase* ui;
+	UIBase* ui[2];
 
 	EnemyPool* _enemyPool;
 

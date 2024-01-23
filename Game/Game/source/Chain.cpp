@@ -62,12 +62,12 @@ void Chain::SetPowerScale(std::string FileName) {
 };
 
 bool Chain::UpdateLevel() {
-	static int _oldLevel;//前フレームのレベルです。
+	static int _oldLevel = -1; //前フレームのレベルです。
 	int level = _playerInstance->GetNowLevel();
 
 	if (_oldLevel != level) {
 		_power = _powerAndScale[level].first;
-		MV1SetScale(_iModelHandle, VScale(VGet(1,1,1),_powerAndScale[level].second));
+		MV1SetScale(_iModelHandle, VScale(VGet(1, 1, 1), _powerAndScale[level].second));
 		_r = _originR * _powerAndScale[level].second;
 	}
 

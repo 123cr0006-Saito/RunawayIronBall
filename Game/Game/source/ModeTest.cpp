@@ -31,7 +31,8 @@ bool ModeTest::Initialize() {
 		_building.push_back(building);
 
 	}
-	ui = new UIHeart(VGet(0,0,0),"res/TemporaryMaterials/heart.png");
+	ui[0] = new UIHeart(VGet(0, 0, 0), "res/TemporaryMaterials/heart.png");
+	ui[1] = new UIExpPoint(VGet(0, 150, 0), "res/TemporaryMaterials/UI_EXP_01.png");
 
 	_enemyPool = new EnemyPool("res/JsonFile/EnemyData.json");
 	_enemyPool->Create();
@@ -50,13 +51,21 @@ bool ModeTest::Process() {
 	_player->Process(_camera->GetCamY());
 	_chain->Process(_player->GetRightHandPos());
 	_enemyPool->Process();
+
+	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
+		ui[i]->Process();
+	}
+
 	bool isSwinging = _player->GetIsSwing();
 	VECTOR pPos = _player->GetPosition();
+
+	VECTOR ibPos = _chain->GetBallPosition();
+	float ibR = _chain->GetBallRadius();
+
+	int ibPower = _chain->GetPower();
+
 	for (auto itr = _building.begin(); itr != _building.end(); ++itr) {
 		(*itr)->Process();
-
-		VECTOR ibPos = _chain->GetBallPosition();
-		float ibR = _chain->GetBallRadius();
 
 		OBB houseObb = (*itr)->GetOBBCollision();
 
@@ -64,10 +73,27 @@ bool ModeTest::Process() {
 			if (isSwinging) {
 				VECTOR vDir = VSub(houseObb.pos, pPos);
 				(*itr)->ActivateBreakObject(true, vDir);
+				_player->SetExp(50);
 			}
 		}
 	}
 
+	for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
+		if (isSwinging) {
+			VECTOR enPos = _enemyPool->GetEnemy(i)->GetCollisionPos();
+			float enR = _enemyPool->GetEnemy(i)->GetR();
+
+			if (Collision3D::SphereCol(ibPos, ibR, enPos, enR)) {
+				VECTOR vDir = VSub(enPos, pPos);
+				vDir = VNorm(vDir);
+				_enemyPool->GetEnemy(i)->SetKnockBack(vDir, ibPower);
+			}
+		}
+	}
+	
+	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_START)) {
+		_enemyPool->Init();
+	}
 
 
 	_camera->Process(_player->GetPosition());
@@ -97,7 +123,7 @@ bool ModeTest::Render() {
 	_enemyPool->Render();
 	_chain->Render();
 	_chain->DrawDebugInfo();
-	ui->Draw();
+
 	for (auto itr = _building.begin(); itr != _building.end(); ++itr) {
 		(*itr)->Render();
 		(*itr)->DrawDebugInfo();
@@ -108,7 +134,9 @@ bool ModeTest::Render() {
 
 	DrawSphere3D(_chain->GetBallPosition(), _chain->GetBallRadius(), 16, GetColor(255, 0, 0), GetColor(255, 0, 0), false);
 
-
+	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
+		ui[i]->Draw();
+	}
 
 	SetUseZBuffer3D(FALSE);
 	

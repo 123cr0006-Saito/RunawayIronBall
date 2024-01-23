@@ -30,7 +30,10 @@ public:
 	bool  UpdateExp();//経験値が越えていた時、レベルを上げる。
 	int GetNowLevel() { return _nowLevel; };
 	void SetExp(int getExp) { _nowExp += getExp; };
-	                                                             
+	//経験値UIで使用しています。
+	int GetNowExp() { return _nowExp; }
+	int GetNextExp() { return _nextLevel[_nowLevel]; }
+
 	void UpdateBone();
 	void UpdateCollision();
 
@@ -68,7 +71,7 @@ private:
 
 
 	int _rightHandFrameIndex;
-	
+
 
 	bool _isSwinging;
 

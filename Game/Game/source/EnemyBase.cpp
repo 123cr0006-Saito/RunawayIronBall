@@ -21,9 +21,11 @@ bool EnemyBase::Create(int model, VECTOR pos, EnemyParam param) {
 	_model = model;
 
 	Init(pos);
+	InheritanceInit();
 	DebugSnail();
 	//Param------------------
 	_hp = param._hp;
+	_maxHp = _hp;
 	_exp = param._exp;
 	_speed = param._speed;
 	_coolTime = param._coolTime;
@@ -45,7 +47,8 @@ void EnemyBase::Init(VECTOR pos) {
 	_IsUse = true;
 
 	SetPos(pos);
-	InheritanceInit();
+	_hp = _maxHp;
+	_knockBackSpeedFrame = 0;
 	_gravity = 0;
 	_state = ENEMYTYPE::SEARCH;
 	_direction = 0.0f;
@@ -249,6 +252,7 @@ void EnemyBase::SetKnockBack(VECTOR vDir, float damage) {
 			if (_knockBackSpeedFrame < 60) {
 				_knockBackSpeedFrame = 60;
 			}
+			_player->SetExp(_exp);
 			_state = ENEMYTYPE::DEAD;
 		}
 	}
