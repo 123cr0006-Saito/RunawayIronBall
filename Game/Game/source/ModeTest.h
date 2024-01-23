@@ -10,7 +10,7 @@
 #include "BuildingBase.h"
 #include "House.h"
 
-#include "Crystarl.h"
+#include "EnemyPool.h"
 
 class ModeTest : public ModeBase
 {
@@ -30,6 +30,8 @@ protected:
 
 	Chain* _chain;
 	UIBase* ui;
+
+	EnemyPool* _enemyPool;
 
 	std::vector<House*> _building;
 

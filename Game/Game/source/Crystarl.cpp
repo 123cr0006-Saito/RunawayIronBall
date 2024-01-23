@@ -154,7 +154,7 @@ bool Crystarl::SetState() {
 };
 
 bool Crystarl::DebugRender() {
-	DrawSphere3D(VAdd(VAdd(_pos, _diffeToCenter), _attackPos), _r, 32, GetColor(255, 0, 0), GetColor(255, 0, 0), false);
+	DrawSphere3D(VAdd(VAdd(_pos, _diffeToCenter), _attackPos), _r, 32, GetColor(0, 255, 0), GetColor(0, 0, 255), false);
 	return true;
 };
 
@@ -230,6 +230,6 @@ bool CrystarlPattern2::SetState() {
 };
 
 bool CrystarlPattern2::DebugRender() {
-	DrawSphere3D(VAdd(VAdd(_pos, _diffeToCenter), _attackPos), _r, 32, GetColor(255, 0, 0), GetColor(255, 0, 0), false);
+	DrawSphere3D(VAdd(VAdd(_pos, _diffeToCenter), _attackPos), _r, 32, GetColor(0, 0, 255), GetColor(0, 0, 255), false);
 	return true;
 };

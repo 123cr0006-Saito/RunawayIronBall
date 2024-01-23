@@ -34,6 +34,9 @@ bool ModeTest::Initialize() {
 
 	}
 	ui = new UIHeart(VGet(0,0,0),"res/TemporaryMaterials/heart.png");
+
+	_enemyPool = new EnemyPool("res/JsonFile/EnemyData.json");
+	_enemyPool->Create();
 	return true;
 }
 
@@ -48,7 +51,7 @@ bool ModeTest::Process() {
 
 	_player->Process(_camera->GetCamY());
 	_chain->Process(_player->GetRightHandPos());
-
+	_enemyPool->Process();
 	bool isSwinging = _player->GetIsSwing();
 	VECTOR pPos = _player->GetPosition();
 	for (auto itr = _building.begin(); itr != _building.end(); ++itr) {
@@ -93,6 +96,7 @@ bool ModeTest::Render() {
 	}
 
 	_player->Render();
+	_enemyPool->Render();
 	_chain->Render();
 	_chain->DrawDebugInfo();
 	ui->Draw();

@@ -242,6 +242,8 @@ bool EnemyBase::Process() {
 };
 
 bool  EnemyBase::DebugRender() {
+	DrawSphere3D(VAdd(_pos, _diffeToCenter), _r, 32, GetColor(255, 0, 0), GetColor(255, 0, 0), false);
+
 	//デバッグ用
 	//索敵範囲などの描画
 	// MATRIX matrix = Math::MMultXYZ(0.0f, _direction, 0.0f);
