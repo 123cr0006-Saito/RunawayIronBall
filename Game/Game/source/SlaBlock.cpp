@@ -21,7 +21,7 @@ SlaBlock::SlaBlock(int model, VECTOR pos, Player* Player) :EnemyBase::EnemyBase(
 	_sartchRange = _sartchRangeSize;
 	_moveRange = 1000.0f;
 	_speed = 5.0f;
-	_r = 100.0f;
+	//_r = 100.0f;
 
 	MV1SetScale(_model, VGet(0.1f, 0.1f, 0.1f));//‚Á‚Ä‚«‚½ƒ‚ƒfƒ‹‚ª‘å‚«‚©‚Á‚½‚½‚ß1/10‚Éİ’è
 };
