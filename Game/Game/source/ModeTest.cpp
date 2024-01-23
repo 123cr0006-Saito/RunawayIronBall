@@ -14,12 +14,10 @@ bool ModeTest::Initialize() {
 
 	int playerModelHandle = MV1LoadModel("res/Character/cg_player_girl/cg_player_girl_TEST.mv1");
 	_player = new Player(playerModelHandle, VGet(0, 0, 0));
+	_player->SetNextExp("res/JsonFile/ExpList.json");
 
 	_chain = new Chain();
 	_chain->Init();
-
-	int enemyModel = MV1LoadModel("res/katatumuri/snail.mv1");
-
 
 	int objHandle = MV1LoadModel("res/Building/House_test_01.mv1");
 	for (int i = 0; i < 10; i++) {
