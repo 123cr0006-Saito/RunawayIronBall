@@ -217,6 +217,8 @@ bool Player::BlastOffProcess()
 bool Player::Render()
 {
 	CharacterBase::Render();
+
+	DrawDebugInfo();
 	return true;
 }
 
@@ -229,10 +231,16 @@ void Player::UpdateCollision()
 	_capsuleCollision.Update();
 }
 
-void Player::UpdateBone(){
+void Player::UpdateBone() {
 	for (int i = 0; i < sizeof(_bone) / sizeof(_bone[0]); i++) {
 		_bone[i]->Process();
 		_bone[i]->SetMain(_bone[i]->_massPosList);
+	}
+	if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN)) {
+		for (int i = 0; i < sizeof(_bone) / sizeof(_bone[0]); i++) {
+			_bone[i]->SetDebugDraw();
+			_bone[i]->DebugProcess(12);
+		}
 	}
 };
 
@@ -246,5 +254,8 @@ VECTOR Player::GetRightHandPos()
 
 void Player::DrawDebugInfo()
 {
+	for (int i = 0; i < sizeof(_bone) / sizeof(_bone[0]); i++) {
+		_bone[i]->DebugRender();
+	}
 	//DrawCapsule3D(_capsuleCollision._startPos, _capsuleCollision._endPos, _capsuleCollision._r, 16, COLOR_RED, COLOR_RED, false);
 }

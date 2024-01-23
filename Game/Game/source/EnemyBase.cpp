@@ -226,9 +226,13 @@ bool EnemyBase::ModeKnockBack() {
 bool EnemyBase::ModeDead() {
 	VECTOR knockBackVecter = VScale(_knockBackDir, _knockBackSpeedFrame);
 	_pos = VAdd(_pos, knockBackVecter);
+	_pos.y += _knockBackSpeedFrame/2;
 	_knockBackSpeedFrame--;
 	if (_knockBackSpeedFrame <= 0) {
-		_IsUse = false;
+		_knockBackSpeedFrame = 0;
+		if (_pos.y <= 0) {
+			_IsUse = false;
+		}
 	}
 	return true;
 };
