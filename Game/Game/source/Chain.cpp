@@ -22,8 +22,9 @@ void Chain::Init() {
 	_animTotalTime = MV1GetAnimTotalTime(_iModelHandle, _animIndex);
 	_playTime = 0.0f;
 
-
-
+	//齋藤が書きました------------------------------------------------------------------
+	SetPowerScale("res/JsonFile/IronState.json");
+	//------------------------------------------------------------------
 	_iForwardDir = VGet(0, 0, 0);
 
 
@@ -44,6 +45,33 @@ void Chain::Init() {
 	_playerInstance = Player::GetInstance();
 	_playerModelHandle = _playerInstance->GetModelHandle();
 }
+
+void Chain::SetPowerScale(std::string FileName) {
+	myJson json(FileName);
+	int level = 0;
+	int power = 0;
+	float scale = 0;
+	for (auto& list : json._json) {
+		list.at("Level").get_to(level);
+		list.at("Power").get_to(power);
+		list.at("Magnification").get_to(scale);
+		_powerAndScale[level] = std::make_pair(power,scale);
+	}
+};
+
+bool Chain::UpdateLevel() {
+	static int _oldLevel;//前フレームのレベルです。
+	int level = _playerInstance->GetNowLevel();
+
+	if (_oldLevel != level) {
+		_power = _powerAndScale[level].first;
+		MV1SetScale(_iModelHandle, VScale(VGet(1,1,1),_powerAndScale[level].second));
+		_r = _originR * _powerAndScale[level].second;
+	}
+
+	_oldLevel = level;
+	return true;
+};
 
 void Chain::Process(VECTOR playerPos) {
 	_isSwing = _playerInstance->GetIsSwing();
@@ -146,7 +174,7 @@ void Chain::Process(VECTOR playerPos) {
 	}
 
 	
-
+	UpdateLevel();
 
 	_iPos = _cPos[CHAIN_MAX - 1];
 	MV1SetPosition(_iModelHandle, _iPos);

@@ -62,7 +62,7 @@ void Player::SetBone() {
 
 void Player::SetNextExp(std::string FileName) {
 	myJson json(FileName);
-	_maxLevel = json._size;
+	_maxLevel = json._size - 1;
 	for(auto& expList : json._json) {
 		int nowLevel = 0;
 		int exp = 0;
@@ -73,6 +73,7 @@ void Player::SetNextExp(std::string FileName) {
 };
 
 bool Player::UpdateExp() {
+	_nowExp += 30;
 	if (_nowLevel < _maxLevel) {
 		if (_nowExp >= _nextLevel[_nowLevel]) {
 			_nowExp -= _nextLevel[_nowLevel];
@@ -206,7 +207,7 @@ bool Player::BlastOffProcess()
 bool Player::Render()
 {
 	clsDx();
-	printfDx("%d", _nowLevel);
+	printfDx("\n%d", _nowLevel);
 	CharacterBase::Render();
 	return true;
 }
