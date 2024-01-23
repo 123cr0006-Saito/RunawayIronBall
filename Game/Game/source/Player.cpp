@@ -73,10 +73,20 @@ void Player::SetNextExp(std::string FileName) {
 };
 
 bool Player::UpdateExp() {
-	_nowExp += 30;
 	if (_nowLevel < _maxLevel) {
 		if (_nowExp >= _nextLevel[_nowLevel]) {
 			_nowExp -= _nextLevel[_nowLevel];
+			_nowLevel++;
+		}
+	}
+
+	if (_input->GetTrg(XINPUT_BUTTON_A)) {
+		if (_nowLevel <= _maxLevel) {
+			_nowLevel--;
+		}
+	}
+	if (_input->GetTrg(XINPUT_BUTTON_B)) {
+		if (_nowLevel < _maxLevel) {
 			_nowLevel++;
 		}
 	}
@@ -206,8 +216,6 @@ bool Player::BlastOffProcess()
 
 bool Player::Render()
 {
-	clsDx();
-	printfDx("\n%d", _nowLevel);
 	CharacterBase::Render();
 	return true;
 }

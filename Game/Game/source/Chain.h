@@ -35,7 +35,7 @@ private:
 	int _iModelHandle;
 	VECTOR _iPos;
 	VECTOR _iForwardDir;
-	float _r = 130.0f; //// 後でSphereクラスを作る
+	float _r = 55.0f; //// 後でSphereクラスを作る
 
 
 

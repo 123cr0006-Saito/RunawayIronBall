@@ -18,6 +18,8 @@ void Chain::Init() {
 	MV1SetPosition(_iModelHandle, _iPos);
 	MV1SetScale(_iModelHandle, VGet(3.0f, 3.0f, 3.0f));
 
+	MV1SetScale(_iModelHandle, VGet(1.0,1.0,1.0));
+
 	_animIndex = MV1AttachAnim(_iModelHandle, 0);
 	_animTotalTime = MV1GetAnimTotalTime(_iModelHandle, _animIndex);
 	_playTime = 0.0f;
