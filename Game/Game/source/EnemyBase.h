@@ -30,10 +30,14 @@ public:
 	virtual bool ModeDisCover();
 	virtual bool ModeAttack();
 	virtual bool ModeCoolTime();
+	virtual bool ModeKnockBack();
+	virtual bool ModeDead();
 
 	virtual bool SetState();
 
 	bool StopPos();
+
+	void SetKnockBack(VECTOR vDir, float damage);//攻撃を受けた時の処理
 
 	bool GetUse() { return _IsUse; }
 	virtual VECTOR GetCollisionPos() { return VAdd(_pos, _diffeToCenter); }
@@ -63,6 +67,7 @@ protected:
 	//主な変数
 	int    _model;//モデル
 	VECTOR _pos;//エネミーの座標
+	float _gravity;//重力加速度
 	float _direction;//y軸の向いている方向
 	float _r;//当たり判定用の半径
 	float _scale;//敵のサイズ
@@ -85,15 +90,19 @@ protected:
 	int _easingFrame;//イージングのフレーム格納変数
 	VECTOR _saveNextPoint;//次に移動する地点
 
+	//ノックバックをするときに移動する
+	VECTOR _knockBackDir;//エネミーが攻撃されたとき移動していく方向ベクトル
+	int _knockBackSpeedFrame;//エネミーが攻撃されたときに移動するspeedとフレーム
+
 	//敵の状態
 	enum class ENEMYTYPE : int {
 		SEARCH,
 		DISCOVER,
 		ATTACK,
-		COOLTIME
+		COOLTIME,
+		KNOCKBACK,
+		DEAD
 	};
-
-
 
 	ENEMYTYPE _state;//今の状態
 

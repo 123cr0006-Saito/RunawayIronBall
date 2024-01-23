@@ -143,6 +143,16 @@ bool Crystarl::ModeCoolTime() {
 	return true;
 };
 
+bool Crystarl::ModeKnockBack() {
+	VECTOR knockBackVecter = VScale(_knockBackDir, _knockBackSpeedFrame);
+	_pos = VAdd(_pos, knockBackVecter);
+	_knockBackSpeedFrame--;
+	if (_knockBackSpeedFrame <= 0) {
+		_state = ENEMYTYPE::ATTACK;
+	}
+	return true;
+};
+
 bool Crystarl::SetState() {
 	//最終的なモデルの位置や角度を調整
 	if (_model != 0) {

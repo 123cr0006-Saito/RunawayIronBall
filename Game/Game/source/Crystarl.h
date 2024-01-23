@@ -9,6 +9,7 @@ public:
 	bool ModeSearch()override;
 	bool ModeAttack()override;
 	bool ModeCoolTime()override;
+	bool ModeKnockBack()override;
 	bool SetState()override;
 
 	bool DebugRender()override;

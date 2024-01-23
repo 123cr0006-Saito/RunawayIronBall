@@ -46,7 +46,7 @@ void EnemyBase::Init(VECTOR pos) {
 
 	SetPos(pos);
 	InheritanceInit();
-
+	_gravity = 0;
 	_state = ENEMYTYPE::SEARCH;
 	_direction = 0.0f;
 };
@@ -210,6 +210,26 @@ bool EnemyBase::ModeCoolTime() {
 	return true;
 };
 
+bool EnemyBase::ModeKnockBack() {
+	VECTOR knockBackVecter = VScale(_knockBackDir, _knockBackSpeedFrame);
+	_pos = VAdd(_pos, knockBackVecter);
+	_knockBackSpeedFrame--;
+	if (_knockBackSpeedFrame <= 0) {
+		_state = ENEMYTYPE::DISCOVER;
+	}
+	return true;
+};
+
+bool EnemyBase::ModeDead() {
+	VECTOR knockBackVecter = VScale(_knockBackDir, _knockBackSpeedFrame);
+	_pos = VAdd(_pos, knockBackVecter);
+	_knockBackSpeedFrame--;
+	if (_knockBackSpeedFrame <= 0) {
+		_IsUse = false;
+	}
+	return true;
+};
+
 bool EnemyBase::SetState() {
 	//最終的なモデルの位置や角度を調整
 	if (_model != 0) {
@@ -219,24 +239,56 @@ bool EnemyBase::SetState() {
 	return true;
 };
 
-bool EnemyBase::Process() {
-
-	switch (_state) {
-	case ENEMYTYPE::SEARCH:
-		ModeSearch();
-		break;
-	case ENEMYTYPE::DISCOVER:
-		ModeDisCover();
-		break;
-	case ENEMYTYPE::ATTACK:
-		ModeAttack();
-		break;
-	case ENEMYTYPE::COOLTIME:
-		ModeCoolTime();
-		break;
+void EnemyBase::SetKnockBack(VECTOR vDir, float damage) {
+	if (_knockBackSpeedFrame <= 0) {
+		_hp -= damage;
+		_knockBackDir = vDir;
+		_knockBackSpeedFrame = damage;
+		_state = ENEMYTYPE::KNOCKBACK;
+		if (_hp <= 0) {
+			if (_knockBackSpeedFrame < 60) {
+				_knockBackSpeedFrame = 60;
+			}
+			_state = ENEMYTYPE::DEAD;
+		}
 	}
+};
 
-	SetState();
+bool EnemyBase::Process() {
+	if (_IsUse) {
+		switch (_state) {
+		case ENEMYTYPE::SEARCH:
+			ModeSearch();
+			break;
+		case ENEMYTYPE::DISCOVER:
+			ModeDisCover();
+			break;
+		case ENEMYTYPE::ATTACK:
+			ModeAttack();
+			break;
+		case ENEMYTYPE::COOLTIME:
+			ModeCoolTime();
+			break;
+		case ENEMYTYPE::KNOCKBACK:
+			ModeKnockBack();
+			break;
+		case ENEMYTYPE::DEAD:
+			ModeDead();
+			break;
+		}
+
+		//重力処理
+		if (_state != ENEMYTYPE::ATTACK) {
+			_gravity++;
+			_pos.y -= _gravity;
+			if (_pos.y < 0) {
+				_gravity = 0;
+				_pos.y = 0;
+			}
+		}
+
+		SetState();
+	}
 
 	return true;
 };
