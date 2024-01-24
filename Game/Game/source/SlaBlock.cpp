@@ -31,7 +31,7 @@ bool SlaBlock::ModeAttack() {
 
 	//‚P•b‘Ò‚Á‚Ä‚©‚ç—Ž‰º
 	if (nowTime >= enemyRigidityTime + enemyToPlayerPosFrame + fallTime) {
-		_pos.y -= _speed * 8;
+		_pos.y -= _speed * 10;
 		//‚Æ‚è‚ ‚¦‚¸y‚ª0‚É‚È‚é‚Ü‚Å—Ž‰º
 		if (_pos.y <= 0.0f) {
 			_pos.y = 0.0f;

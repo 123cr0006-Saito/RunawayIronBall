@@ -26,3 +26,9 @@ enum class ENEMYTYPE : int {
 	KNOCKBACK,
 	DEAD
 };
+
+enum class SEARCHTYPE : int {
+	TURN,
+	MOVE,
+	COOLTIME
+};

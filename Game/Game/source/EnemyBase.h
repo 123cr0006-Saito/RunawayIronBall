@@ -27,6 +27,10 @@ public:
 	virtual bool DebugRender();
 
 	virtual bool ModeSearch();
+	virtual bool ModeSearchToTurn();
+	virtual bool ModeSearchToMove();
+	virtual bool ModeSearchToCoolTime();
+
 	virtual bool ModeDisCover();
 	virtual bool ModeAttack();
 	virtual bool ModeCoolTime();
@@ -99,6 +103,8 @@ protected:
 
 
 	ENEMYTYPE _state;//ç°ÇÃèÛë‘
+	SEARCHTYPE _searchState;
+	
 
 };
 
