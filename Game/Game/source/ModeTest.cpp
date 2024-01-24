@@ -157,7 +157,7 @@ bool ModeTest::Render() {
 	SetUseZBuffer3D(FALSE);
 
 	SetFontSize(62);
-	DrawFormatString(45,200,GetColor(0,0,0),"%d", _player->GetInstance()->GetNowLevel());
+	DrawFormatString(45,200,GetColor(0,0,0),"%d", _player->GetInstance()->GetNowLevel()+1);
 	SetFontSize(16);
 	//for (auto itr = _buildingBase.begin(); itr != _buildingBase.end(); ++itr) {
 	//	(*itr)->DrawDebugInfo();
