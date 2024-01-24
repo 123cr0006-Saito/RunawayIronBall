@@ -33,6 +33,7 @@ bool ModeTest::Initialize() {
 	}
 	ui[0] = new UIHeart(VGet(0, 0, 0), "res/TemporaryMaterials/heart.png");
 	ui[1] = new UIExpPoint(VGet(0, 150, 0), "res/TemporaryMaterials/UI_EXP_01.png");
+	_sVib = new ScreenVibration();
 
 	_enemyPool = new EnemyPool("res/JsonFile/EnemyData.json");
 	_enemyPool->Create();
@@ -47,6 +48,7 @@ bool ModeTest::Terminate() {
 bool ModeTest::Process() {
 	base::Process();
 	global._timer->TimeElapsed();
+	_sVib->UpdateScreenVibration();
 
 	_player->Process(_camera->GetCamY());
 	_chain->Process(_player->GetRightHandPos());
@@ -74,6 +76,20 @@ bool ModeTest::Process() {
 				VECTOR vDir = VSub(houseObb.pos, pPos);
 				(*itr)->ActivateBreakObject(true, vDir);
 				_player->SetExp(50);
+			}
+		}
+
+		//エネミーがノックバック状態の時、建物にぶつかったら破壊する
+		for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
+			ENEMYTYPE enState = _enemyPool->GetEnemy(i)->GetEnemyState();
+			float enR = _enemyPool->GetEnemy(i)->GetR();
+			if (enState == ENEMYTYPE::KNOCKBACK || enState == ENEMYTYPE::DEAD) {
+				OBB houseObb = (*itr)->GetOBBCollision();
+				VECTOR enPos = _enemyPool->GetEnemy(i)->GetCollisionPos();
+				if (Collision3D::OBBSphereCol(houseObb, enPos, enR)) {
+					VECTOR vDir = VSub(houseObb.pos, pPos);
+					(*itr)->ActivateBreakObject(true, vDir);
+				}
 			}
 		}
 	}
@@ -139,7 +155,10 @@ bool ModeTest::Render() {
 	}
 
 	SetUseZBuffer3D(FALSE);
-	
+
+	SetFontSize(62);
+	DrawFormatString(45,200,GetColor(0,0,0),"%d", _player->GetInstance()->GetNowLevel());
+	SetFontSize(16);
 	//for (auto itr = _buildingBase.begin(); itr != _buildingBase.end(); ++itr) {
 	//	(*itr)->DrawDebugInfo();
 	//}

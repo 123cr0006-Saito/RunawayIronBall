@@ -23,6 +23,7 @@
     <ClCompile Include="source\UIHeart.cpp" />
     <ClCompile Include="source\House.cpp" />
     <ClCompile Include="source\EnemyPool.cpp" />
+    <ClCompile Include="source\ScreenVibration.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -48,5 +49,6 @@
     <ClInclude Include="source\House.h" />
     <ClInclude Include="source\EnemyStract.h" />
     <ClInclude Include="source\EnemyPool.h" />
+    <ClInclude Include="source\ScreenVibration.h" />
   </ItemGroup>
 </Project>

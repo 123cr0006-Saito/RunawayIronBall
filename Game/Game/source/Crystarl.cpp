@@ -10,8 +10,7 @@ Crystarl::~Crystarl() {
 
 void Crystarl::InheritanceInit() {
 	//個別でセットするもの
-	_player = Player::GetInstance();
-	_r = 100.0f;
+	EnemyBase::InheritanceInit();
 	_attackPos = VGet(0, 0, 0);
 	_attackDir = 0.0f;
 };
@@ -181,8 +180,7 @@ CrystarlPattern2::~CrystarlPattern2() {
 void CrystarlPattern2::InheritanceInit() {
 
 	//個別でセットするもの
-	_player = Player::GetInstance();
-	_r = 100.0f;
+	EnemyBase::InheritanceInit();
 
 	_attackPos = VGet(0, 0, 0);
 	_attackDir = 0.0f;

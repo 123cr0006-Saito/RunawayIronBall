@@ -6,6 +6,7 @@
 #include "Chain.h"
 #include "UIBase.h"
 #include "UIExpPoint.h"
+#include "ScreenVibration.h"
 #include "uiheart.h"
 
 #include "BuildingBase.h"
@@ -32,6 +33,7 @@ protected:
 	Chain* _chain;
 	UIBase* ui[2];
 
+	ScreenVibration* _sVib;
 	EnemyPool* _enemyPool;
 
 	std::vector<House*> _building;

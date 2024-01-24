@@ -11,9 +11,7 @@ SlaBlock::~SlaBlock() {
 };
 
 void SlaBlock::InheritanceInit() {
-	//ŒÂ•Ê‚ÅƒZƒbƒg‚·‚é‚à‚Ì
-	_player = Player::GetInstance();
-	_r = 100.0f;
+
 };
 
 bool SlaBlock::ModeAttack() {
@@ -38,7 +36,7 @@ bool SlaBlock::ModeAttack() {
 		if (_pos.y <= 0.0f) {
 			_pos.y = 0.0f;
 			_easingFrame = 0;
-			//global.effect->SetVibration(0, 20, 20);
+			ScreenVibration::GetInstance()->SetVibration(0, 20, 20);
 			_currentTime = GetNowCount();
 			_state = ENEMYTYPE::COOLTIME;
 		}

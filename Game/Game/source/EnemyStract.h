@@ -16,3 +16,13 @@ typedef struct {
 	float _discoverRangeSize;//”­Œ©A‘ÎÛ‚ÌŒ©¸‚¤‚Ü‚Å‚Ì‹——£‚Ì”¼Œa
 	float _attackRangeSize;//³–Ê‚ÌUŒ‚”ÍˆÍ
 }EnemyParam;
+
+//“G‚Ìó‘Ô
+enum class ENEMYTYPE : int {
+	SEARCH,
+	DISCOVER,
+	ATTACK,
+	COOLTIME,
+	KNOCKBACK,
+	DEAD
+};
