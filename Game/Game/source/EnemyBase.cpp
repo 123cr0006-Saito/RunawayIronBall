@@ -20,11 +20,13 @@ EnemyBase::~EnemyBase() {
 bool EnemyBase::Create(int model, VECTOR pos, EnemyParam param) {
 	_model = model;
 
-	Init(pos);
-	DebugSnail();
+	_player = Player::GetInstance();
+	_r = 100.0f;
+
 	//Param------------------
 	_hp = param._hp;
-	_exp = param._exp;
+	_maxHp = _hp;
+	_weightExp = param._exp;
 	_speed = param._speed;
 	_coolTime = param._coolTime;
 
@@ -34,6 +36,10 @@ bool EnemyBase::Create(int model, VECTOR pos, EnemyParam param) {
 	_sartchRange = param._sartchRange;
 	_discoverRangeSize = param._discoverRangeSize;
 	_attackRangeSize = param._attackRangeSize;
+
+	Init(pos);
+	InheritanceInit();
+	DebugSnail();
 	return true;
 };
 
@@ -45,10 +51,12 @@ void EnemyBase::Init(VECTOR pos) {
 	_IsUse = true;
 
 	SetPos(pos);
-	InheritanceInit();
+	_hp = _maxHp;
+	_knockBackSpeedFrame = 0;
 	_gravity = 0;
 	_state = ENEMYTYPE::SEARCH;
-	_rotation = VGet(0,0,0);
+	_searchState = SEARCHTYPE::COOLTIME;
+	_rotation = VGet(0, 0, 0);
 };
 
 void EnemyBase::InheritanceInit() {
@@ -59,12 +67,14 @@ void  EnemyBase::DebugSnail() {
 	//今のモデルに貼り付けているテクスチャ
 	MV1SetTextureGraphHandle(_model, 0, ResourceServer::LoadGraph("res/katatumuri/14086_Snail_with_toy_house_for_ shell_v2_diff2.jpg"), true);
 	MV1SetTextureGraphHandle(_model, 1, ResourceServer::LoadGraph("res/katatumuri/14086_Snail_with_toy_house_for_ shell_v2_diff.jpg"), true);
-	MV1SetScale(_model, VGet(0.1f, 0.1f, 0.1f));//持ってきたモデルが大きかったため1/10に設定
+	float randSize = (float)(rand() % 75) / 100 + 0.75;// 1 + 0.0 ~ 0.5
+	MV1SetScale(_model, VScale(VGet(1.0f, 1.0f, 1.0f), 0.1 * randSize));//持ってきたモデルが大きかったため1/10に設定
 
 	//---------------------------------------------
 	//個別で設定できるようにする
-	_diffeToCenter = VGet(0, 125, 0);
-	_r = 150.0f;
+	_diffeToCenter = VGet(0, 125 * randSize, 0);
+	_r = 150.0f * randSize;
+	_weightExp = _weightExp * randSize;
 	//--------------------------------------------
 
 };
