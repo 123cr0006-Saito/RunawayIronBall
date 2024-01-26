@@ -155,6 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\CrystarlPattern2.cpp" />
     <ClCompile Include="source\EnemyPool.cpp" />
     <ClCompile Include="source\House.cpp" />
     <ClCompile Include="source\myJson.cpp" />
@@ -179,6 +180,7 @@
     <ClCompile Include="source\UIHeart.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\CrystarlPattern2.h" />
     <ClInclude Include="source\EnemyPool.h" />
     <ClInclude Include="source\EnemyStract.h" />
     <ClInclude Include="source\House.h" />

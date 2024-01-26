@@ -68,7 +68,7 @@ protected:
 	int    _model;//モデル
 	VECTOR _pos;//エネミーの座標
 	float _gravity;//重力加速度
-	float _direction;//y軸の向いている方向
+	VECTOR _rotation;//y軸の向いている方向
 	float _r;//当たり判定用の半径
 	float _scale;//敵のサイズ
 	VECTOR _diffeToCenter;//コリジョンに使用する中心点までの差分

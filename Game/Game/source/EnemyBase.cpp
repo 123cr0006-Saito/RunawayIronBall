@@ -48,7 +48,7 @@ void EnemyBase::Init(VECTOR pos) {
 	InheritanceInit();
 	_gravity = 0;
 	_state = ENEMYTYPE::SEARCH;
-	_direction = 0.0f;
+	_rotation = VGet(0,0,0);
 };
 
 void EnemyBase::InheritanceInit() {
@@ -120,19 +120,19 @@ bool EnemyBase::ModeSearch() {
 
 				VECTOR dirVec = VSub(_saveNextPoint, _pos);//方向ベクトルからモデルが向く方向を計算
 				dirVec = VNorm(dirVec);
-				MATRIX matrix = Math::MMultXYZ(0.0f, _direction, 0.0f);
+				MATRIX matrix = Math::MMultXYZ(0.0f, _rotation.y, 0.0f);
 				VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
 				float range_dir = Math::CalcVectorAngle(ene_dir, dirVec);
 				VECTOR arrow = VCross(ene_dir, dirVec);
 				if (arrow.y < 0) {
 					range_dir *= -1;
 				}
-				_nextDir = _direction + range_dir;
-				_oldDir = _direction;
+				_nextDir = _rotation.y + range_dir;
+				_oldDir = _rotation.y;
 			}
 			else {
 				_easingFrame++;
-				_direction = Easing::Linear(_easingFrame, _oldDir, _nextDir, 60);
+				_rotation.y = Easing::Linear(_easingFrame, _oldDir, _nextDir, 60);
 				if (_easingFrame >= 60) {
 					_easingFrame = 0;
 					_nextDir = 0.0f;
@@ -155,7 +155,7 @@ bool EnemyBase::ModeSearch() {
 	float len = VSize(v_length);
 	if (VSize(v_length) <= _sartchRange) {
 
-		MATRIX matrix = Math::MMultXYZ(0.0f, _direction, 0.0f);
+		MATRIX matrix = Math::MMultXYZ(0.0f, _rotation.y, 0.0f);
 		VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
 		VECTOR pla_dir = VNorm(v_length);
 		float range_dir = Math::CalcVectorAngle(ene_dir, pla_dir);
@@ -179,7 +179,7 @@ bool EnemyBase::ModeDisCover() {
 
 	//移動方向に向きを変える
 	VECTOR dirVec = VScale(move, -1);//方向ベクトルからモデルが向く方向を計算
-	_direction = atan2(dirVec.x, dirVec.z);
+	_rotation.y = atan2(dirVec.x, dirVec.z);
 
 	//敵とプレイヤーの距離を算出
 	move = VSub(_player->GetCollision().down_pos, _pos);
@@ -233,7 +233,7 @@ bool EnemyBase::ModeDead() {
 bool EnemyBase::SetState() {
 	//最終的なモデルの位置や角度を調整
 	if (_model != 0) {
-		MV1SetRotationXYZ(_model, VGet(0.0f, _direction, 0.0f));
+		MV1SetRotationXYZ(_model, VGet(0.0f, _rotation.y, 0.0f));
 		MV1SetPosition(_model, _pos);
 	}
 	return true;
