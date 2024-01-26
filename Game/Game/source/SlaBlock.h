@@ -11,5 +11,6 @@ public:
 	void InheritanceInit()override;
 	bool ModeAttack()override;
 	bool ModeCoolTime()override;
+	bool SetGravity()override;
 
 };
