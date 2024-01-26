@@ -17,55 +17,18 @@ void Crystarl::InheritanceInit() {
 };
 
 bool Crystarl::ModeSearch() {
-	//-------------------------------
-	// この敵はサーチモードの後追跡状態に入らず、攻撃に入る
-	//------------------------------
-	//移動方向の設定
-	if (StopPos()) {
-		if (_stopTime == 0) {
-			_stopTime = (float)(rand() % 200) / 100.0f + 2.0f;//1秒から3秒まで止まる　小数点２桁までのランダム
-			_currentTime = GetNowCount();
-		}
-
-		if ((float)(GetNowCount() - _currentTime) / 1000 >= _stopTime) {
-			if (_nextDir == 0.0f) {
-
-				VECTOR vArrow = VGet((float)(rand() % 20 / 10.0f) - 1.0f, 1.0f, (float)(rand() % 20 / 10.0f) - 1.0f);//ランダムな方向ベクトルを取る
-				vArrow = VScale(vArrow, rand() % (int)_moveRange); vArrow.y = 0.0f;//基準点からの半径分をランダムで掛け、次に進むポイントを決める
-				_saveNextPoint = VAdd(vArrow, _orignPos);//基準点に平行移動
-
-				VECTOR dirVec = VSub(_saveNextPoint, _pos);//方向ベクトルからモデルが向く方向を計算
-				dirVec = VNorm(dirVec);
-				MATRIX matrix = Math::MMultXYZ(0.0f, _rotation.y, 0.0f);
-				VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
-				float range_dir = Math::CalcVectorAngle(ene_dir, dirVec);
-				VECTOR arrow = VCross(ene_dir, dirVec);
-				if (arrow.y < 0) {
-					range_dir *= -1;
-				}
-				_nextDir = _rotation.y + range_dir;
-				_oldDir = _rotation.y;
-			}
-			else {
-				_easingFrame++;
-				_rotation.y = Easing::Linear(_easingFrame, _oldDir, _nextDir, 60);
-				if (_easingFrame >= 60) {
-					_easingFrame = 0;
-					_nextDir = 0.0f;
-					_stopTime = 0;//時間の初期化
-					_nextMovePoint = _saveNextPoint;
-				}
-			}
-		}
+	switch (_searchState) {
+	case SEARCHTYPE::MOVE:
+		ModeSearchToMove();
+		break;
+	case SEARCHTYPE::TURN:
+		ModeSearchToTurn();
+		break;
+	case SEARCHTYPE::COOLTIME:
+		ModeSearchToCoolTime();
+		break;
 	}
-	else {
-		//移動処理
-		VECTOR move = VSub(_nextMovePoint, _pos);
-		move = VNorm(move);
-		move = VScale(move, _speed);
-		_pos = VAdd(_pos, move);
-	}
-	
+
 	//索敵処理
 	VECTOR v_length = VSub(_player->GetCollision().down_pos, _pos);
 	float len = VSize(v_length);

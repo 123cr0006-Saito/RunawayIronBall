@@ -27,6 +27,11 @@ public:
 	virtual bool DebugRender();
 
 	virtual bool ModeSearch();
+	virtual bool ModeSearchToTurn();
+	virtual bool ModeSearchToMove();
+	virtual bool ModeSearchToCoolTime();
+
+
 	virtual bool ModeDisCover();
 	virtual bool ModeAttack();
 	virtual bool ModeCoolTime();
@@ -34,6 +39,7 @@ public:
 	virtual bool ModeDead();
 
 	virtual bool SetState();
+	virtual bool SetGravity();
 
 	bool StopPos();
 
@@ -42,6 +48,9 @@ public:
 	bool GetUse() { return _IsUse; }
 	virtual VECTOR GetCollisionPos() { return VAdd(_pos, _diffeToCenter); }
 	float GetR() { return _r; }
+	ENEMYTYPE GetEnemyState() { return _state; }
+
+	void SetExtrusionPos(VECTOR movePos) { _pos = VAdd(_pos, movePos); }
 
 protected:
 	Player* _player;
@@ -94,17 +103,8 @@ protected:
 	VECTOR _knockBackDir;//エネミーが攻撃されたとき移動していく方向ベクトル
 	int _knockBackSpeedFrame;//エネミーが攻撃されたときに移動するspeedとフレーム
 
-	//敵の状態
-	enum class ENEMYTYPE : int {
-		SEARCH,
-		DISCOVER,
-		ATTACK,
-		COOLTIME,
-		KNOCKBACK,
-		DEAD
-	};
-
 	ENEMYTYPE _state;//今の状態
+	SEARCHTYPE _searchState;
 
 };
 
