@@ -13,8 +13,7 @@
 #include "House.h"
 
 #include "EnemyPool.h"
-
-
+#include "PlaneEffectManeger.h"
 
 class ModeTest : public ModeBase
 {
@@ -49,5 +48,7 @@ protected:
 	int _skySphere;
 	int _tile;
 	
+	int _effectSheet[30];
+	PlaneEffect::PlaneEffectManeger* _planeEffectManeger;
 	OBB obb;
 };

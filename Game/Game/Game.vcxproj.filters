@@ -26,6 +26,8 @@
     <ClCompile Include="source\CrystarlPattern2.cpp" />
     <ClCompile Include="source\SlaBlockPattern2.cpp" />
     <ClCompile Include="source\ScreenVibration.cpp" />
+    <ClCompile Include="source\PlaneEffectManeger.cpp" />
+    <ClCompile Include="source\BoardPolygon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -54,5 +56,7 @@
     <ClInclude Include="source\CrystarlPattern2.h" />
     <ClInclude Include="source\SlaBlockPattern2.h" />
     <ClInclude Include="source\ScreenVibration.h" />
+    <ClInclude Include="source\PlaneEffectManeger.h" />
+    <ClInclude Include="source\BoardPolygon.h" />
   </ItemGroup>
 </Project>

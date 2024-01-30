@@ -155,6 +155,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\BoardPolygon.cpp" />
+    <ClCompile Include="source\PlaneEffectManeger.cpp" />
     <ClCompile Include="source\SlaBlockPattern2.cpp" />
     <ClCompile Include="source\CrystarlPattern2.cpp" />
     <ClCompile Include="source\EnemyPool.cpp" />
@@ -182,6 +184,8 @@
     <ClCompile Include="source\UIHeart.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\BoardPolygon.h" />
+    <ClInclude Include="source\PlaneEffectManeger.h" />
     <ClInclude Include="source\SlaBlockPattern2.h" />
     <ClInclude Include="source\CrystarlPattern2.h" />
     <ClInclude Include="source\EnemyPool.h" />

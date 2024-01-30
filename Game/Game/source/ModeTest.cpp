@@ -48,6 +48,9 @@ bool ModeTest::Initialize() {
 	_enemyPool = new EnemyPool("res/JsonFile/EnemyData.json");
 	_enemyPool->Create();
 
+	_planeEffectManeger = new PlaneEffect::PlaneEffectManeger();
+	ResourceServer::LoadMultGraph("res/TemporaryMaterials/test/test", ".png", 30, _effectSheet);
+	                    
 	return true;
 }
 
@@ -116,6 +119,8 @@ bool ModeTest::Process() {
 				VECTOR vDir = VSub(enPos, pPos);
 				vDir = VNorm(vDir);
 				_enemyPool->GetEnemy(i)->SetKnockBack(vDir, ibPower);
+				PlaneEffect::BoardPolygon* effect = new PlaneEffect::BoardPolygon(VAdd(ibPos, VGet(0, 100, 0)), GetCameraBillboardMatrix(), 200, _effectSheet, 30, 1.0f / 60.0f * 1000.0f);
+				_planeEffectManeger->LoadVertical(effect);
 			}
 		}
 	}
@@ -159,7 +164,7 @@ bool ModeTest::Process() {
 	_gaugeUI[1]->Process(box_vec, 100, 100);
 
 	
-
+	_planeEffectManeger->Update();
 	_camera->Process(_player->GetPosition(), _tile);
 	return true;
 }
@@ -209,7 +214,7 @@ bool ModeTest::Render() {
 		_gaugeUI[0]->Draw(_gaugeHandle[3]);
 	}
 
-
+	_planeEffectManeger->Render();
 
 
 	SetUseZBuffer3D(FALSE);
