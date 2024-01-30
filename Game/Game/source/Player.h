@@ -53,7 +53,9 @@ public:
 private:
 	XInput* _input;
 
-
+	// ˆÚ“®‰Â”\‚©‚Ç‚¤‚©
+	bool _canMove;
+	// ˆÚ“®‘¬“x
 	float _speed;
 
 	Capsule _capsuleCollision;

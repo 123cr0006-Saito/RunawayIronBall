@@ -7,7 +7,7 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 {
 	_input = XInput::GetInstance();
 
-
+	_canMove = true;
 	_speed = 8.0f;
 	UpdateCollision();
 
@@ -103,13 +103,15 @@ bool Player::Process(float camAngleY)
 	if (_input->GetTrg(XINPUT_BUTTON_X) != 0) {
 		_animStatus = STATUS::HORISONTAL_SWING;
 		_isSwinging = true;
+		_canMove = false;
 	}
 
 	if (!_isSwinging) {
 		_animStatus = STATUS::WAIT;
+		_canMove = true;
 	}
 
-	if (_animStatus != STATUS::HORISONTAL_SWING) {
+	if (_canMove) {
 
 		// 左スティックの入力情報を取得する
 		auto lStick = _input->GetAdjustedStick_L();
