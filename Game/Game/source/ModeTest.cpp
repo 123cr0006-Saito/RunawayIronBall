@@ -160,7 +160,7 @@ bool ModeTest::Process() {
 
 	
 
-	_camera->Process(_player->GetPosition());
+	_camera->Process(_player->GetPosition(), _tile);
 	return true;
 }
 
@@ -174,7 +174,7 @@ bool ModeTest::Render() {
 	//clsDx();
 
 	MV1DrawModel(_skySphere);
-	
+	MV1DrawModel(_tile);
 	// 0,0,0‚ğ’†S‚Éü‚ğˆø‚­
 	{
 		float linelength = 1000.f;

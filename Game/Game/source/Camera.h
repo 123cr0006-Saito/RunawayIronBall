@@ -7,7 +7,12 @@ public:
 	Camera();
 	~Camera();
 
-	virtual bool Process(VECTOR pos);
+	virtual bool Process(VECTOR pos, int map);
+	virtual bool UpdateCameraToMatrix(VECTOR pos, int map);
+
+	virtual bool UpdateCameraToEvent();
+	void SetEventCamera(VECTOR pos, int time);
+	void SetReturnCamera(VECTOR pos);
 
 	float GetCamX() { return _cameraDirX; }//プレイヤーなどで使うかもしれないためゲッターとして作っておく
 	float GetCamY() { return _cameraDirY; }//プレイヤーなどで使うかもしれないためゲッターとして作っておく
@@ -26,4 +31,9 @@ protected:
 
 	VECTOR _gazeShift;//注視点をプレイヤーにしたときに基準点が足元なので腰あたりに移動させるための変数
 
+	bool _IsEvent;//イベントなどで注視点がプレイヤー以外になるときに使用
+	bool _IsReturn;//イベントフラグが立っているときにカメラをもとの座標に戻すのに使用
+	int _currentTime;//現在の時間
+	int _moveTime;//移動時間
+	VECTOR _targetPos, _keepPos;// ターゲットの座標ともともとカメラがあった位置の座標
 };

@@ -33,7 +33,7 @@ bool ModeGame::Process() {
 	
 	_player->Process(_camera->GetCamY());
 	_chain->Process(_player->GetRightHandPos());
-	_camera->Process(_player->GetPosition());
+	_camera->Process(_player->GetPosition(),0);
 	return true;
 }
 
