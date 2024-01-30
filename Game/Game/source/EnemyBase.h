@@ -27,6 +27,11 @@ public:
 	virtual bool DebugRender();
 
 	virtual bool ModeSearch();
+	virtual bool ModeSearchToTurn();
+	virtual bool ModeSearchToMove();
+	virtual bool ModeSearchToCoolTime();
+
+
 	virtual bool ModeDisCover();
 	virtual bool ModeAttack();
 	virtual bool ModeCoolTime();
@@ -34,6 +39,7 @@ public:
 	virtual bool ModeDead();
 
 	virtual bool SetState();
+	virtual bool SetGravity();
 
 	bool StopPos();
 
@@ -42,6 +48,9 @@ public:
 	bool GetUse() { return _IsUse; }
 	virtual VECTOR GetCollisionPos() { return VAdd(_pos, _diffeToCenter); }
 	float GetR() { return _r; }
+	ENEMYTYPE GetEnemyState() { return _state; }
+
+	void SetExtrusionPos(VECTOR movePos) { _pos = VAdd(_pos, movePos); }
 
 protected:
 	Player* _player;
@@ -50,7 +59,8 @@ protected:
 	//Jsonで読み込むもの------------------------------------------------------------------------
 
 	int _hp;//敵の体力
-	int _exp;//敵から得られる経験値
+	int _maxHp;//敵の体力の最大値
+	int _weightExp;//敵から得られる経験値
 	float  _speed;//移動速度
 	int _coolTime;//攻撃後のクールタイム
 
@@ -68,7 +78,7 @@ protected:
 	int    _model;//モデル
 	VECTOR _pos;//エネミーの座標
 	float _gravity;//重力加速度
-	float _direction;//y軸の向いている方向
+	VECTOR _rotation;//y軸の向いている方向
 	float _r;//当たり判定用の半径
 	float _scale;//敵のサイズ
 	VECTOR _diffeToCenter;//コリジョンに使用する中心点までの差分
@@ -94,17 +104,8 @@ protected:
 	VECTOR _knockBackDir;//エネミーが攻撃されたとき移動していく方向ベクトル
 	int _knockBackSpeedFrame;//エネミーが攻撃されたときに移動するspeedとフレーム
 
-	//敵の状態
-	enum class ENEMYTYPE : int {
-		SEARCH,
-		DISCOVER,
-		ATTACK,
-		COOLTIME,
-		KNOCKBACK,
-		DEAD
-	};
-
 	ENEMYTYPE _state;//今の状態
+	SEARCHTYPE _searchState;
 
 };
 

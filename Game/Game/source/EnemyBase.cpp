@@ -20,11 +20,13 @@ EnemyBase::~EnemyBase() {
 bool EnemyBase::Create(int model, VECTOR pos, EnemyParam param) {
 	_model = model;
 
-	Init(pos);
-	DebugSnail();
+	_player = Player::GetInstance();
+	_r = 100.0f;
+
 	//Param------------------
 	_hp = param._hp;
-	_exp = param._exp;
+	_maxHp = _hp;
+	_weightExp = param._exp;
 	_speed = param._speed;
 	_coolTime = param._coolTime;
 
@@ -34,6 +36,10 @@ bool EnemyBase::Create(int model, VECTOR pos, EnemyParam param) {
 	_sartchRange = param._sartchRange;
 	_discoverRangeSize = param._discoverRangeSize;
 	_attackRangeSize = param._attackRangeSize;
+
+	Init(pos);
+	InheritanceInit();
+	DebugSnail();
 	return true;
 };
 
@@ -45,10 +51,12 @@ void EnemyBase::Init(VECTOR pos) {
 	_IsUse = true;
 
 	SetPos(pos);
-	InheritanceInit();
+	_hp = _maxHp;
+	_knockBackSpeedFrame = 0;
 	_gravity = 0;
 	_state = ENEMYTYPE::SEARCH;
-	_direction = 0.0f;
+	_searchState = SEARCHTYPE::COOLTIME;
+	_rotation = VGet(0, 0, 0);
 };
 
 void EnemyBase::InheritanceInit() {
@@ -59,12 +67,14 @@ void  EnemyBase::DebugSnail() {
 	//今のモデルに貼り付けているテクスチャ
 	MV1SetTextureGraphHandle(_model, 0, ResourceServer::LoadGraph("res/katatumuri/14086_Snail_with_toy_house_for_ shell_v2_diff2.jpg"), true);
 	MV1SetTextureGraphHandle(_model, 1, ResourceServer::LoadGraph("res/katatumuri/14086_Snail_with_toy_house_for_ shell_v2_diff.jpg"), true);
-	MV1SetScale(_model, VGet(0.1f, 0.1f, 0.1f));//持ってきたモデルが大きかったため1/10に設定
+	float randSize = (float)(rand() % 75) / 100 + 0.75;// 1 + 0.0 ~ 0.5
+	MV1SetScale(_model, VScale(VGet(1.0f, 1.0f, 1.0f), 0.1 * randSize));//持ってきたモデルが大きかったため1/10に設定
 
 	//---------------------------------------------
 	//個別で設定できるようにする
-	_diffeToCenter = VGet(0, 125, 0);
-	_r = 150.0f;
+	_diffeToCenter = VGet(0, 125 * randSize, 0);
+	_r = 150.0f * randSize;
+	_weightExp = _weightExp * randSize;
 	//--------------------------------------------
 
 };
@@ -87,67 +97,76 @@ bool EnemyBase::StopPos() {
 	return false;
 };
 
-bool EnemyBase::ModeSearch() {
-	//移動方向の設定
-	if (StopPos()) {
-		if (_stopTime == 0) {
-			_stopTime = (float)(rand() % 200) / 100.0f + 2.0f;//1秒から3秒まで止まる　小数点２桁までのランダム
+
+bool EnemyBase::ModeSearchToTurn() {
+	_easingFrame++;
+	_rotation.y = Easing::Linear(_easingFrame, _oldDir, _nextDir, 60);
+	if (_easingFrame >= 60) {
+		_easingFrame = 0;
+		_nextMovePoint = _saveNextPoint;
+		if (rand() % 4 == 0) {
 			_currentTime = GetNowCount();
+			_stopTime = 1;
+			_searchState = SEARCHTYPE::COOLTIME;
 		}
-
-		if ((float)(GetNowCount() - _currentTime) / 1000 >= _stopTime) {
-			if (_nextDir == 0.0f) {
-
-				VECTOR vArrow = VGet((float)(rand() % 20 / 10.0f) - 1.0f, 1.0f, (float)(rand() % 20 / 10.0f) - 1.0f);//ランダムな方向ベクトルを取る
-				vArrow = VScale(vArrow, rand() % (int)_moveRange); vArrow.y = 0.0f;//基準点からの半径分をランダムで掛け、次に進むポイントを決める
-				_saveNextPoint = VAdd(vArrow, _orignPos);//基準点に平行移動
-
-				//atan2タイプ
-				//VECTOR dirVec = VSub(_nextMovePoint, _pos);//方向ベクトルからモデルが向く方向を計算
-				//_direction = atan2(dirVec.x, dirVec.z) + 180 * 3.14 / 180;//-をなくすためRadの180を足している
-
-				//フォワードベクトルタイプ
-				//VECTOR dirVec = VSub(_nextMovePoint, _pos);//方向ベクトルからモデルが向く方向を計算
-				//dirVec = VNorm(dirVec);
-				//MATRIX matrix = Math::MMultXYZ(0.0f, _direction, 0.0f);
-				//VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
-				//float range_dir = Math::CalcVectorAngle(ene_dir, dirVec);
-				//VECTOR arrow = VCross(ene_dir, dirVec);
-				//if (arrow.y < 0) {
-				//	range_dir *= -1;
-				//}
-				//_direction = _direction + range_dir;
-
-				VECTOR dirVec = VSub(_saveNextPoint, _pos);//方向ベクトルからモデルが向く方向を計算
-				dirVec = VNorm(dirVec);
-				MATRIX matrix = Math::MMultXYZ(0.0f, _direction, 0.0f);
-				VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
-				float range_dir = Math::CalcVectorAngle(ene_dir, dirVec);
-				VECTOR arrow = VCross(ene_dir, dirVec);
-				if (arrow.y < 0) {
-					range_dir *= -1;
-				}
-				_nextDir = _direction + range_dir;
-				_oldDir = _direction;
-			}
-			else {
-				_easingFrame++;
-				_direction = Easing::Linear(_easingFrame, _oldDir, _nextDir, 60);
-				if (_easingFrame >= 60) {
-					_easingFrame = 0;
-					_nextDir = 0.0f;
-					_stopTime = 0;//時間の初期化
-					_nextMovePoint = _saveNextPoint;
-				}
-			}
+		else {
+			_searchState = SEARCHTYPE::MOVE;
 		}
 	}
-	else {
-		//移動処理
-		VECTOR move = VSub(_nextMovePoint, _pos);
-		move = VNorm(move);
-		move = VScale(move, _speed);
-		_pos = VAdd(_pos, move);
+	return true;
+};
+
+bool EnemyBase::ModeSearchToMove() {
+	//移動処理
+	VECTOR move = VSub(_nextMovePoint, _pos);
+	move = VNorm(move);
+	move = VScale(move, _speed);
+	_pos = VAdd(_pos, move);
+
+	if (StopPos()) {
+		_stopTime = (float)(rand() % 200) / 100.0f + 2.0f;//1秒から3秒まで止まる　小数点２桁までのランダム
+		_currentTime = GetNowCount();
+		_searchState = SEARCHTYPE::COOLTIME;
+	}
+
+	return true;
+};
+
+bool EnemyBase::ModeSearchToCoolTime() {
+	if ((float)(GetNowCount() - _currentTime) / 1000 >= _stopTime) {
+
+		VECTOR vArrow = VGet((float)(rand() % 20 / 10.0f) - 1.0f, 1.0f, (float)(rand() % 20 / 10.0f) - 1.0f);//ランダムな方向ベクトルを取る
+		vArrow = VScale(vArrow, rand() % (int)_moveRange); vArrow.y = 0.0f;//基準点からの半径分をランダムで掛け、次に進むポイントを決める
+		_saveNextPoint = VAdd(vArrow, _orignPos);//基準点に平行移動
+
+		VECTOR dirVec = VSub(_saveNextPoint, _pos);//方向ベクトルからモデルが向く方向を計算
+		dirVec = VNorm(dirVec);
+		MATRIX matrix = Math::MMultXYZ(0.0f, _rotation.y, 0.0f);
+		VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
+		float range_dir = Math::CalcVectorAngle(ene_dir, dirVec);
+		VECTOR arrow = VCross(ene_dir, dirVec);
+		if (arrow.y < 0) {
+			range_dir *= -1;
+		}
+		_nextDir = _rotation.y + range_dir;
+		_oldDir = _rotation.y;
+		_stopTime = 0;
+		_searchState = SEARCHTYPE::TURN;
+	}
+	return true;
+};
+
+bool EnemyBase::ModeSearch() {
+	switch (_searchState) {
+	case SEARCHTYPE::MOVE:
+		ModeSearchToMove();
+		break;
+	case SEARCHTYPE::TURN:
+		ModeSearchToTurn();
+		break;
+	case SEARCHTYPE::COOLTIME:
+		ModeSearchToCoolTime();
+		break;
 	}
 
 	//索敵処理
@@ -155,7 +174,7 @@ bool EnemyBase::ModeSearch() {
 	float len = VSize(v_length);
 	if (VSize(v_length) <= _sartchRange) {
 
-		MATRIX matrix = Math::MMultXYZ(0.0f, _direction, 0.0f);
+		MATRIX matrix = Math::MMultXYZ(0.0f, _rotation.y, 0.0f);
 		VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
 		VECTOR pla_dir = VNorm(v_length);
 		float range_dir = Math::CalcVectorAngle(ene_dir, pla_dir);
@@ -179,7 +198,7 @@ bool EnemyBase::ModeDisCover() {
 
 	//移動方向に向きを変える
 	VECTOR dirVec = VScale(move, -1);//方向ベクトルからモデルが向く方向を計算
-	_direction = atan2(dirVec.x, dirVec.z);
+	_rotation.y = atan2(dirVec.x, dirVec.z);
 
 	//敵とプレイヤーの距離を算出
 	move = VSub(_player->GetCollision().down_pos, _pos);
@@ -233,8 +252,19 @@ bool EnemyBase::ModeDead() {
 bool EnemyBase::SetState() {
 	//最終的なモデルの位置や角度を調整
 	if (_model != 0) {
-		MV1SetRotationXYZ(_model, VGet(0.0f, _direction, 0.0f));
+		MV1SetRotationXYZ(_model, VGet(0.0f, _rotation.y, 0.0f));
 		MV1SetPosition(_model, _pos);
+	}
+	return true;
+};
+
+bool EnemyBase::SetGravity() {
+	//重力処理
+	_gravity++;
+	_pos.y -= _gravity;
+	if (_pos.y < 0) {
+		_gravity = 0;
+		_pos.y = 0;
 	}
 	return true;
 };
@@ -277,13 +307,23 @@ bool EnemyBase::Process() {
 			break;
 		}
 
-		//重力処理
-		if (_state != ENEMYTYPE::ATTACK) {
-			_gravity++;
-			_pos.y -= _gravity;
-			if (_pos.y < 0) {
-				_gravity = 0;
-				_pos.y = 0;
+		SetGravity();
+		//仮で作りました。後で消します。
+		if (_pos.y < 0) {
+			_pos.y = 0;
+		}
+
+		//ノックバック中のけぞり処理 仮です
+		if (_state == ENEMYTYPE::KNOCKBACK) {
+			if (_pos.y > 0) {
+				if (_rotation.x < Math::DegToRad(60)) {
+					_rotation.x += Math::DegToRad(1.2f);
+				}
+			}
+		}
+		else {
+			if (_rotation.x > Math::DegToRad(0)) {
+				_rotation.x -= Math::DegToRad(2);
 			}
 		}
 

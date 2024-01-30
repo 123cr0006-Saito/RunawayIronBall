@@ -57,3 +57,18 @@ bool SlaBlock::ModeCoolTime() {
 	}
 	return true;
 };
+
+bool SlaBlock::SetGravity() {
+	//d—Íˆ—
+	if (_state != ENEMYTYPE::ATTACK) {
+		if (_pos.y > 0) {
+			_gravity++;
+			_pos.y -= _gravity;
+			if (_pos.y < 0) {
+				_gravity = 0;
+				_pos.y = 0;
+			}
+		}
+	}
+	return true;
+}
