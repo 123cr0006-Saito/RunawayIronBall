@@ -1,8 +1,10 @@
+#define _CRT_SECURE_NO_WARNINGS 1
 #include "../../Header/Resource/ResourceServer.h"
 
 std::map<std::string, int> ResourceServer::handle_server;
 std::map<std::string, int> ResourceServer::sound_server;
 std::map<std::string, ResourceServer::Div> ResourceServer::div_server;
+std::map<std::string, ResourceServer::Div> ResourceServer::mult_server;
 std::map<std::string, int >ResourceServer::effekseer_server;
 std::map<std::string, std::vector<int> >ResourceServer::model_server;
 
@@ -66,7 +68,48 @@ int ResourceServer::LoadDivGraph(std::string handle_name, int AllNum, int XNum, 
 			div_server[handle_name].AllNum = AllNum;
 			div_server[handle_name].handle = buf;
 			//読み込んだ値を移動
-			std::swap(HandleBuf, buf);
+			//std::swap(HandleBuf, buf);
+			for (int i = 0; i < AllNum; i++) {
+				HandleBuf[i] = buf[i];
+			}
+		}
+	}
+	//返すのは成功だった場合の0 失敗だった場合の-1
+	return value;
+};
+
+int ResourceServer::LoadMultGraph(std::string handle_name, std::string extension, int AllNum, int* HandleBuf) {
+
+	int value = 0;
+	auto itr = mult_server.find(handle_name);
+
+	if (itr != mult_server.end()) {
+		//記録されたものが見つかったので値を返す
+		for (int i = 0; i < itr->second.AllNum; i++) {
+			HandleBuf[i] = itr->second.handle[i];
+		}
+	}
+	else {
+		//記録された名前がなかったので読み込み
+		//読み込む枚数がわからないためメモリを動的確保
+		int* buf = new int[AllNum];
+		char name[1024];
+		std::string fileName = handle_name + " (%d)" + extension;
+		for (int i = 1; i <= AllNum; i++) {
+			std::sprintf(name, fileName.c_str(), i);
+			buf[i - 1] = ::LoadGraph(name);
+			if (buf[i - 1] == -1) {
+				return -1;
+			}
+		}
+		//全て読み込んだ
+		//最大枚数と読み込みんだ枚数分値を確保
+		mult_server[handle_name].AllNum = AllNum;
+		mult_server[handle_name].handle = buf;
+		//読み込んだ値を移動
+
+		for (int i = 0; i < AllNum; i++) {
+			HandleBuf[i] = buf[i];
 		}
 	}
 	//返すのは成功だった場合の0 失敗だった場合の-1
