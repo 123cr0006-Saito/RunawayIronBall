@@ -14,6 +14,8 @@
 
 #include "EnemyPool.h"
 
+
+
 class ModeTest : public ModeBase
 {
 	typedef ModeBase base;
@@ -25,13 +27,19 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
+	//デバッグ用
+
 
 protected:
+
 	Camera* _camera;
 	Player* _player;
 
 	Chain* _chain;
 	UIBase* ui[2];
+	DrawGauge* _gaugeUI[2];
+	int _gaugeHandle[4];// 0フレーム 3ゲージ
+	float nowParcent = 100;
 
 	ScreenVibration* _sVib;
 	EnemyPool* _enemyPool;
@@ -39,7 +47,7 @@ protected:
 	std::vector<House*> _building;
 
 	int _skySphere;
-
-
+	int _tile;
+	
 	OBB obb;
 };

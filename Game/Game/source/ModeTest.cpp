@@ -9,8 +9,10 @@ bool ModeTest::Initialize() {
 	_camera = new Camera();
 
 	_skySphere = MV1LoadModel(_T("res/SkySphere/skysphere.mv1"));
+	_tile = MV1LoadModel(_T("res/TemporaryMaterials/stage_normal_01.mv1"));
 	MV1SetPosition(_skySphere, VGet(0, 0, 0));
 	MV1SetScale(_skySphere, VGet(3, 3, 3));
+	MV1SetPosition(_tile, VGet(0, 0, 0));
 
 	int playerModelHandle = MV1LoadModel("res/Character/cg_player_girl/cg_player_girl_TEST.mv1");
 	_player = new Player(playerModelHandle, VGet(0, 0, 0));
@@ -27,16 +29,25 @@ bool ModeTest::Initialize() {
 
 		House* building = new House();
 		building->Init(MV1DuplicateModel(objHandle), v);
-		
+
 		_building.push_back(building);
 
 	}
+	int size = 100;
 	ui[0] = new UIHeart(VGet(0, 0, 0), "res/TemporaryMaterials/heart.png");
+	//ui[0] = new UIHeart(VGet(0, 0, 0), "res/TemporaryMaterials/UI_Hp_01.png");
 	ui[1] = new UIExpPoint(VGet(0, 150, 0), "res/TemporaryMaterials/UI_EXP_01.png");
+	_gaugeUI[0] = new DrawGauge(0, 3, size, true);
+	_gaugeUI[1] = new DrawGauge(0, 3, size, true);
+	_gaugeHandle[0] = ResourceServer::LoadGraph(_T("res/UI/UI_Stamina_03.png"));
+	_gaugeHandle[1] = ResourceServer::LoadGraph(_T("res/UI/UI_Stamina_02.png"));
+	_gaugeHandle[2] = ResourceServer::LoadGraph(_T("res/UI/UI_Stamina_01.png"));
+	_gaugeHandle[3] = ResourceServer::LoadGraph(_T("res/UI/UI_Stamina_04.png"));
 	_sVib = new ScreenVibration();
 
 	_enemyPool = new EnemyPool("res/JsonFile/EnemyData.json");
 	_enemyPool->Create();
+
 	return true;
 }
 
@@ -47,6 +58,7 @@ bool ModeTest::Terminate() {
 
 bool ModeTest::Process() {
 	base::Process();
+
 	global._timer->TimeElapsed();
 	_sVib->UpdateScreenVibration();
 
@@ -83,7 +95,7 @@ bool ModeTest::Process() {
 		for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
 			ENEMYTYPE enState = _enemyPool->GetEnemy(i)->GetEnemyState();
 			float enR = _enemyPool->GetEnemy(i)->GetR();
-			if (enState == ENEMYTYPE::KNOCKBACK || enState == ENEMYTYPE::DEAD) {
+			if (enState == ENEMYTYPE::DEAD) {
 				OBB houseObb = (*itr)->GetOBBCollision();
 				VECTOR enPos = _enemyPool->GetEnemy(i)->GetCollisionPos();
 				if (Collision3D::OBBSphereCol(houseObb, enPos, enR)) {
@@ -96,6 +108,7 @@ bool ModeTest::Process() {
 
 	for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
 		if (isSwinging) {
+			if (!_enemyPool->GetEnemy(i)->GetUse()) { continue; }
 			VECTOR enPos = _enemyPool->GetEnemy(i)->GetCollisionPos();
 			float enR = _enemyPool->GetEnemy(i)->GetR();
 
@@ -106,11 +119,46 @@ bool ModeTest::Process() {
 			}
 		}
 	}
-	
+
+	//ãÛä‘ï™äÑÇçlÇ¶ÇƒÇ¢Ç»Ç¢ÇÃÇ≈ñ≥ë Ç™ëΩÇ¢Ç≈Ç∑ÅB
+	for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
+		VECTOR en1Pos = _enemyPool->GetEnemy(i)->GetCollisionPos();
+		float en1R = _enemyPool->GetEnemy(i)->GetR();
+		for (int j = 0; j < _enemyPool->ENEMY_MAX_SIZE; j++) {
+			if (i == j) { continue; }
+			VECTOR en2Pos = _enemyPool->GetEnemy(j)->GetCollisionPos();
+			float en2R = _enemyPool->GetEnemy(j)->GetR();
+			VECTOR dirVec = VSub(en2Pos, en1Pos);
+			float length = VSize(dirVec);
+			if (length <= en1R + en2R) {
+				float pushLength = length - en1R - en2R;
+				dirVec = VNorm(dirVec);
+				_enemyPool->GetEnemy(i)->SetExtrusionPos(VScale(dirVec, pushLength));
+			}
+		}
+	}
+
+
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_START)) {
 		_enemyPool->Init();
 	}
 
+	if (XInput::GetInstance()->GetKey(XINPUT_BUTTON_Y)) {
+		if (nowParcent > 0) {
+			nowParcent -= 1.0f / 120 * 100;
+		}
+	}
+	else {
+		if (nowParcent < 100) {
+			nowParcent += 1.0f / 120 * 100;
+		}
+	}
+
+	VECTOR box_vec = ConvWorldPosToScreenPos(VAdd(_player->GetPosition(), VGet(0, 170, 0)));
+	_gaugeUI[0]->Process(box_vec, nowParcent, 100);
+	_gaugeUI[1]->Process(box_vec, 100, 100);
+
+	
 
 	_camera->Process(_player->GetPosition());
 	return true;
@@ -126,6 +174,7 @@ bool ModeTest::Render() {
 	//clsDx();
 
 	MV1DrawModel(_skySphere);
+	
 	// 0,0,0ÇíÜêSÇ…ê¸Çà¯Ç≠
 	{
 		float linelength = 1000.f;
@@ -145,19 +194,28 @@ bool ModeTest::Render() {
 		(*itr)->DrawDebugInfo();
 	}
 
-
-
-
 	DrawSphere3D(_chain->GetBallPosition(), _chain->GetBallRadius(), 16, GetColor(255, 0, 0), GetColor(255, 0, 0), false);
 
+
+	//SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
 	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
 		ui[i]->Draw();
 	}
+	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+	if (nowParcent < 100) {
+		int handleNum = floorf((float)nowParcent / 33.4f);
+		_gaugeUI[1]->Draw(_gaugeHandle[handleNum]);
+		_gaugeUI[0]->Draw(_gaugeHandle[3]);
+	}
+
+
+
 
 	SetUseZBuffer3D(FALSE);
 
 	SetFontSize(62);
-	DrawFormatString(45,200,GetColor(0,0,0),"%d", _player->GetInstance()->GetNowLevel()+1);
+	DrawFormatString(45, 200, GetColor(0, 0, 0), "%d", _player->GetInstance()->GetNowLevel() + 1);
 	SetFontSize(16);
 	//for (auto itr = _buildingBase.begin(); itr != _buildingBase.end(); ++itr) {
 	//	(*itr)->DrawDebugInfo();
@@ -165,4 +223,3 @@ bool ModeTest::Render() {
 
 	return true;
 }
-
