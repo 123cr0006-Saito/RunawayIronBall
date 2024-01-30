@@ -117,3 +117,14 @@ bool DrawGauge::Draw() {
     }
     return true;
 };
+
+bool DrawGauge::Draw(int handle) {
+
+    if (_transFlag < 0) {
+        DrawPrimitiveIndexed2D(vertex, 10, _leftTraianglList, 24, DX_PRIMTYPE_TRIANGLELIST, handle, true);
+    }
+    else {
+        DrawPrimitiveIndexed2D(vertex, 10, _rightTraianglList, 24, DX_PRIMTYPE_TRIANGLELIST, handle, true);
+    }
+    return true;
+};

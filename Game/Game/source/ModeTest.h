@@ -5,10 +5,16 @@
 #include "Player.h"
 #include "Chain.h"
 #include "UIBase.h"
+#include "UIExpPoint.h"
+#include "ScreenVibration.h"
 #include "uiheart.h"
 
 #include "BuildingBase.h"
 #include "House.h"
+
+#include "EnemyPool.h"
+
+
 
 class ModeTest : public ModeBase
 {
@@ -21,20 +27,27 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
+	//デバッグ用
+
 
 protected:
-	Camera* _camera;
-	Vibration* _vibration;
 
+	Camera* _camera;
 	Player* _player;
 
 	Chain* _chain;
-	UIBase* ui;
+	UIBase* ui[2];
+	DrawGauge* _gaugeUI[2];
+	int _gaugeHandle[4];// 0フレーム 3ゲージ
+	float nowParcent = 100;
+
+	ScreenVibration* _sVib;
+	EnemyPool* _enemyPool;
 
 	std::vector<House*> _building;
 
 	int _skySphere;
-
-
+	int _tile;
+	
 	OBB obb;
 };
