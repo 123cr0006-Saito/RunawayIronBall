@@ -60,6 +60,39 @@ void Player::SetBone() {
 	_bone[1] = new bone(&_modelHandle, bone_right_list, bone_right_list.size() - 2, "res/JsonFile/hair_parameters.json");
 };
 
+void Player::SetNextExp(std::string FileName) {
+	myJson json(FileName);
+	_maxLevel = json._size - 1;
+	for(auto& expList : json._json) {
+		int nowLevel = 0;
+		int exp = 0;
+		expList.at("Level").get_to(nowLevel);
+		expList.at("Exp").get_to(exp);
+		_nextLevel[nowLevel] = exp;
+	}
+};
+
+bool Player::UpdateExp() {
+	if (_nowLevel < _maxLevel) {
+		if (_nowExp >= _nextLevel[_nowLevel]) {
+			_nowExp -= _nextLevel[_nowLevel];
+			_nowLevel++;
+		}
+	}
+
+	if (_input->GetTrg(XINPUT_BUTTON_A)) {
+		if (_nowLevel <= _maxLevel) {
+			_nowLevel--;
+		}
+	}
+	if (_input->GetTrg(XINPUT_BUTTON_B)) {
+		if (_nowLevel < _maxLevel) {
+			_nowLevel++;
+		}
+	}
+	return true;
+};
+
 bool Player::Process(float camAngleY)
 {
 	// 処理前のステータスを保存しておく
@@ -116,8 +149,11 @@ bool Player::Process(float camAngleY)
 
 	MV1SetPosition(_modelHandle, _pos);
 	UpdateCollision();
+	//-------------------
+	//齋藤が作成した関数です。
+	UpdateExp();
 	UpdateBone();
-
+	//-------------------
 	AnimProcess(oldStatus);
 	return true;
 }
@@ -181,6 +217,8 @@ bool Player::BlastOffProcess()
 bool Player::Render()
 {
 	CharacterBase::Render();
+
+	DrawDebugInfo();
 	return true;
 }
 
@@ -193,10 +231,16 @@ void Player::UpdateCollision()
 	_capsuleCollision.Update();
 }
 
-void Player::UpdateBone(){
+void Player::UpdateBone() {
 	for (int i = 0; i < sizeof(_bone) / sizeof(_bone[0]); i++) {
 		_bone[i]->Process();
 		_bone[i]->SetMain(_bone[i]->_massPosList);
+	}
+	if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN)) {
+		for (int i = 0; i < sizeof(_bone) / sizeof(_bone[0]); i++) {
+			_bone[i]->SetDebugDraw();
+			_bone[i]->DebugProcess(12);
+		}
 	}
 };
 
@@ -210,5 +254,8 @@ VECTOR Player::GetRightHandPos()
 
 void Player::DrawDebugInfo()
 {
+	for (int i = 0; i < sizeof(_bone) / sizeof(_bone[0]); i++) {
+		_bone[i]->DebugRender();
+	}
 	//DrawCapsule3D(_capsuleCollision._startPos, _capsuleCollision._endPos, _capsuleCollision._r, 16, COLOR_RED, COLOR_RED, false);
 }

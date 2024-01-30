@@ -11,9 +11,7 @@ SlaBlock::~SlaBlock() {
 };
 
 void SlaBlock::InheritanceInit() {
-	//ŒÂ•Ê‚ÅƒZƒbƒg‚·‚é‚à‚Ì
-	_player = Player::GetInstance();
-	_r = 100.0f;
+
 };
 
 bool SlaBlock::ModeAttack() {
@@ -33,12 +31,12 @@ bool SlaBlock::ModeAttack() {
 
 	//‚P•b‘Ò‚Á‚Ä‚©‚ç—Ž‰º
 	if (nowTime >= enemyRigidityTime + enemyToPlayerPosFrame + fallTime) {
-		_pos.y -= _speed * 8;
+		_pos.y -= _speed * 10;
 		//‚Æ‚è‚ ‚¦‚¸y‚ª0‚É‚È‚é‚Ü‚Å—Ž‰º
 		if (_pos.y <= 0.0f) {
 			_pos.y = 0.0f;
 			_easingFrame = 0;
-			//global.effect->SetVibration(0, 20, 20);
+			ScreenVibration::GetInstance()->SetVibration(0, 20, 20);
 			_currentTime = GetNowCount();
 			_state = ENEMYTYPE::COOLTIME;
 		}

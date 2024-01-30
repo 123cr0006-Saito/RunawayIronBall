@@ -29,6 +29,8 @@ bone::bone(
 	_orignPos = new Vector3D[_listSize + 2];
 	_transMatrixList = new MATRIX[_listSize];
 
+	_transFlag = 1;
+	_oldTransFlag = _transFlag;
 
 	for (int i = 0; i < _listSize; i++) {
 		_transMatrixList[i] = MV1GetFrameLocalMatrix(*_model, _frameList[i + 1]);//Ž©•ªiej‚ÌêŠ
@@ -161,7 +163,7 @@ void bone::DebugProcess(int transNum) {
 void bone::DebugRender() {
 	if (!_transFlag) {
 		int r = 5;
-		int divNum = 32;
+		int divNum = 16;
 		int color = GetColor(255, 0, 0);
 		for (int i = 0; i < _frameList.size(); i++) {
 			int frameNum = _frameList.at(i);

@@ -175,6 +175,7 @@
     <ClCompile Include="source\ModeTitle.cpp" />
     <ClCompile Include="source\Player.cpp" />
     <ClCompile Include="source\Chain.cpp" />
+    <ClCompile Include="source\ScreenVibration.cpp" />
     <ClCompile Include="source\SlaBlock.cpp" />
     <ClCompile Include="source\UIBase.cpp" />
     <ClCompile Include="source\UIExpPoint.cpp" />
@@ -202,6 +203,7 @@
     <ClInclude Include="source\ModeTitle.h" />
     <ClInclude Include="source\Player.h" />
     <ClInclude Include="source\Chain.h" />
+    <ClInclude Include="source\ScreenVibration.h" />
     <ClInclude Include="source\SlaBlock.h" />
     <ClInclude Include="source\UIBase.h" />
     <ClInclude Include="source\UIExpPoint.h" />

@@ -4,7 +4,8 @@ Camera::Camera() {
 
 	_cameraDirX = 0.53f;
 	_cameraDirY = 0.0f;
-	_pointDistance = VGet(0, 0, -2360);
+	//_pointDistance = VGet(0, 0, -2360);
+	_pointDistance = VGet(0, 0, -1200);
 	_gazeShift = VGet(0, 80, 0);
 	_reverseX = -1;
 	_reverseY = 1;

@@ -25,6 +25,7 @@
     <ClCompile Include="source\EnemyPool.cpp" />
     <ClCompile Include="source\CrystarlPattern2.cpp" />
     <ClCompile Include="source\SlaBlockPattern2.cpp" />
+    <ClCompile Include="source\ScreenVibration.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -52,5 +53,6 @@
     <ClInclude Include="source\EnemyPool.h" />
     <ClInclude Include="source\CrystarlPattern2.h" />
     <ClInclude Include="source\SlaBlockPattern2.h" />
+    <ClInclude Include="source\ScreenVibration.h" />
   </ItemGroup>
 </Project>
