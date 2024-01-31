@@ -10,6 +10,7 @@ public:
 	DrawGauge(const char* name, int start_pos, float size, bool flag);
 	bool Process(VECTOR pos, float parcent, float parcent_max);//今の値と最大の値
 	bool Draw();
+	bool Draw(int handle);
 
 	static  const unsigned short _rightTraianglList[];//右回転から始めえるための描画の時に使う各頂点のリスト
 	static  const unsigned short _leftTraianglList[];//左回転から始めえるための描画の時に使う各頂点のリスト
