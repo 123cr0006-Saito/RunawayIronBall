@@ -4,6 +4,7 @@
 #include "ModeTitle.h"
 #include "ModeGame.h"
 #include "ModeTest.h"
+#include "ModePause.h"
 #include "math.h"
 
 
@@ -26,7 +27,7 @@ void ModeTitle::SelectGameStart() {
 };
 
 void ModeTitle::SelectOption() {
-
+	ModeServer::GetInstance()->Add(new ModePause(), 1, "Pause");
 };
 
 void ModeTitle::SelectGameEnd() {

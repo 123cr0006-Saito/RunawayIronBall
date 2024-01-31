@@ -112,7 +112,7 @@ bool ModePause::Render() {
 	int x = 1920 / 2;
 	int y = 1080 / 2;
 
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < MAX_MODE; i++) {
 		int color = GetColor(255, 0, 0);
 		int length = 50;
 		switch (i) {
@@ -126,7 +126,8 @@ bool ModePause::Render() {
 			_isVibration ? color = GetColor(0, 255, 0) : NULL;
 			break;
 		}
-		DrawBox(x - 122, y - 50 + i * 200, x - 122 + length, y + 50 + i * 200, color, true);
+		if (_selectItem == i) color = GetColor(0, 0, 255);
+		DrawBox(x - 122, y - 50 + i * 100, x - 122 + length, y + 50 + i * 100, color, true);
 	}
 
 	return true;

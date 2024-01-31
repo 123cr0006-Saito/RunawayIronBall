@@ -28,6 +28,7 @@
     <ClCompile Include="source\ScreenVibration.cpp" />
     <ClCompile Include="source\PlaneEffectManeger.cpp" />
     <ClCompile Include="source\BoardPolygon.cpp" />
+    <ClCompile Include="source\ModePause.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -58,5 +59,6 @@
     <ClInclude Include="source\ScreenVibration.h" />
     <ClInclude Include="source\PlaneEffectManeger.h" />
     <ClInclude Include="source\BoardPolygon.h" />
+    <ClInclude Include="source\ModePause.h" />
   </ItemGroup>
 </Project>
