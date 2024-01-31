@@ -40,12 +40,38 @@ struct TWOLINE_SHORT {
 	float length = 0.0f;
 };
 
-struct OBB {
-	VECTOR pos = VGet(0, 0, 0);
-	VECTOR Misalignment = VGet(0, 0, 0);//モデルのずれ修正用
-	VECTOR dir_vec[3] = { VGet(0,0,0),VGet(0,0,0),VGet(0,0,0) };//xv,yv,zv
-	float direction[3] = { 0,0,0 };//0:x 1:y 2:z
-	float length[3] = {0.0f,0.0f,0.0f}; //0:w 1:h 3:d
+//struct OBB {
+//	VECTOR pos = VGet(0, 0, 0);
+//	VECTOR dir_vec[3] = { VGet(0,0,0),VGet(0,0,0),VGet(0,0,0) };//xv,yv,zv
+//	float length[3] = {0.0f,0.0f,0.0f}; //0:w 1:h 3:d
+//};
+
+class OBB
+{
+public:
+	OBB() {
+		pos = VGet(0.0f, 0.0f, 0.0f);
+
+		// 初期状態ではワールドの軸と平行な状態にする（AABB）
+		dir_vec[0] = VGet(1.0f, 0.0f, 0.0f);
+		dir_vec[1] = VGet(0.0f, 1.0f, 0.0f);
+		dir_vec[2] = VGet(0.0f, 0.0f, 1.0f);
+
+		for (int i = 0; i < 3; ++i) {			
+			length[i] = 0.0f;
+		}
+	}
+
+	// 回転処理
+	// x軸->y軸->z軸の順番で, 各軸を回転させる
+	void Rotate(VECTOR vRot);
+
+	// 描画処理
+	void Render(unsigned int color);
+
+	VECTOR pos;
+	VECTOR dir_vec[3];//xv,yv,zv
+	float length[3]; //0:w 1:h 3:d
 };
 
 class Capsule {

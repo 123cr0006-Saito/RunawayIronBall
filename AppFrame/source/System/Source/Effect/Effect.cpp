@@ -19,13 +19,12 @@ void Effect::SetVibration(float x, float y, float time) {
 	max_x = x;
 	max_y = y;
 	this->time = time;
+	use_flag = true;
 };
 
 void Effect::ScreenVibration() {
 	if (use_flag) {
 		//zŽ²‚É‘Î‚µ‚Ä
-		max_x -= max_x / time;
-		max_y -= max_y / time;
 		if (max_y <= 0) {
 			if (max_x <= 0) {
 				vibration_x = 0;
@@ -33,9 +32,16 @@ void Effect::ScreenVibration() {
 				use_flag = false;
 			}
 		}
-		else {
-			vibration_x = rand() % (int)ceil(max_x) - ceil(max_x / 2);
-			vibration_y = rand() % (int)ceil(max_y) - ceil(max_y / 2);
+
+		{
+			if (max_x != 0) {
+				max_x -= max_x / time;
+				vibration_x = rand() % (int)ceil(max_x) - ceil(max_x / 2);
+			}
+			if (max_y != 0) {
+				max_y -= max_y / time;
+				vibration_y = rand() % (int)ceil(max_y) - ceil(max_y / 2);
+			}
 		}
 		SetCameraScreenCenter((Effect::DispSizeW() / 2) + vibration_x, (Effect::DispSizeH() / 2) + vibration_y);
 	}
