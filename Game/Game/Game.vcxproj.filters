@@ -29,6 +29,7 @@
     <ClCompile Include="source\PlaneEffectManeger.cpp" />
     <ClCompile Include="source\BoardPolygon.cpp" />
     <ClCompile Include="source\ModePause.cpp" />
+    <ClCompile Include="source\ModeInstructions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -60,5 +61,6 @@
     <ClInclude Include="source\PlaneEffectManeger.h" />
     <ClInclude Include="source\BoardPolygon.h" />
     <ClInclude Include="source\ModePause.h" />
+    <ClInclude Include="source\ModeInstructions.h" />
   </ItemGroup>
 </Project>

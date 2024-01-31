@@ -40,7 +40,12 @@ void ModePause::SelectSetVibration() {
 };
 
 void ModePause::SelectOperationInstructions() {
-
+	if (_input->GetTrg(XINPUT_BUTTON_A)) {
+		//操作説明用のサーバーを作成
+		//操作説明が終了した時ようにこのサーバーは削除しない
+		//削除しても良いが、操作説明でこのサーバーを作成してから削除する　※ガウスの背景はおかしくなると思われる
+		ModeServer::GetInstance()->Add(new ModeInstructions(), 100, "Instructions");
+	}
 };
 
 void ModePause::SelectGameEnd() {
@@ -103,7 +108,6 @@ bool ModePause::Process() {
 bool ModePause::Render() {
 	base::Render();
 	//ゲーム本編を描画しない
-	ModeServer::GetInstance()->SkipRenderUnderLayer();
 	//背景の描画
 	DrawGraph(0, 0, gauss_handle, true);
 

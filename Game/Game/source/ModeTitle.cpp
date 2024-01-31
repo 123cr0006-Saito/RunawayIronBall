@@ -27,7 +27,7 @@ void ModeTitle::SelectGameStart() {
 };
 
 void ModeTitle::SelectOption() {
-	ModeServer::GetInstance()->Add(new ModePause(), 1, "Pause");
+	ModeServer::GetInstance()->Add(new ModePause(), 10, "Pause");
 };
 
 void ModeTitle::SelectGameEnd() {

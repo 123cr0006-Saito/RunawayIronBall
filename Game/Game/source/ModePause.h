@@ -1,5 +1,6 @@
 #pragma once
 #include "appframe.h"
+#include "ModeInstructions.h"
 class ModePause : public ModeBase
 {
 	typedef ModeBase base;

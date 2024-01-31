@@ -156,6 +156,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="source\BoardPolygon.cpp" />
+    <ClCompile Include="source\ModeInstructions.cpp" />
     <ClCompile Include="source\ModePause.cpp" />
     <ClCompile Include="source\PlaneEffectManeger.cpp" />
     <ClCompile Include="source\SlaBlockPattern2.cpp" />
@@ -186,6 +187,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\BoardPolygon.h" />
+    <ClInclude Include="source\ModeInstructions.h" />
     <ClInclude Include="source\ModePause.h" />
     <ClInclude Include="source\PlaneEffectManeger.h" />
     <ClInclude Include="source\SlaBlockPattern2.h" />
