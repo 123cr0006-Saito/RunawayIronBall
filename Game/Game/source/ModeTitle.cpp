@@ -3,6 +3,7 @@
 #include "ApplicationMain.h"
 #include "ModeTitle.h"
 #include "ModeGame.h"
+#include "ModeTest.h"
 #include "math.h"
 
 
@@ -21,7 +22,7 @@ bool ModeTitle::Terminate() {
 
 void ModeTitle::SelectGameStart() {
 	ModeServer::GetInstance()->Del(this);
-	ModeServer::GetInstance()->Add(new ModeGame(), 1, "game");
+	ModeServer::GetInstance()->Add(new ModeTest(), 1, "test");
 };
 
 void ModeTitle::SelectOption() {
