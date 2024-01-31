@@ -1,99 +1,62 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="ソース ファイル">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="ヘッダー ファイル">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="リソース ファイル">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="ソース ファイル\Mode">
-      <UniqueIdentifier>{e65c1e48-29cc-409d-93c1-cba6780dd0c9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\Mode">
-      <UniqueIdentifier>{f4a6a95a-33b2-48a4-9ee8-db5bba777e98}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\System">
-      <UniqueIdentifier>{c4acc69d-b3c7-4b2f-a474-8b76180ead6c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\Player">
-      <UniqueIdentifier>{2d20c0ad-f188-4d0e-b07b-34dca3b9a2e7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\Player">
-      <UniqueIdentifier>{e2c51b7e-a57c-481b-9371-27a3201911b1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\System">
-      <UniqueIdentifier>{234593ec-10fd-44cc-9be0-9308b3cc9f8e}</UniqueIdentifier>
-    </Filter>
+    <ClCompile Include="source\myJson.cpp" />
+    <ClCompile Include="source\bone.cpp" />
+    <ClCompile Include="source\BreakObject.cpp" />
+    <ClCompile Include="source\BuildingBase.cpp" />
+    <ClCompile Include="source\CharacterBase.cpp" />
+    <ClCompile Include="source\Crystarl.cpp" />
+    <ClCompile Include="source\EnemyBase.cpp" />
+    <ClCompile Include="source\ModeGameOver.cpp" />
+    <ClCompile Include="source\ModeClear.cpp" />
+    <ClCompile Include="source\Camera.cpp" />
+    <ClCompile Include="source\ApplicationMain.cpp" />
+    <ClCompile Include="source\ModeGame.cpp" />
+    <ClCompile Include="source\ModeTest.cpp" />
+    <ClCompile Include="source\ModeTitle.cpp" />
+    <ClCompile Include="source\Player.cpp" />
+    <ClCompile Include="source\Chain.cpp" />
+    <ClCompile Include="source\SlaBlock.cpp" />
+    <ClCompile Include="source\UIBase.cpp" />
+    <ClCompile Include="source\UIExpPoint.cpp" />
+    <ClCompile Include="source\UIHeart.cpp" />
+    <ClCompile Include="source\House.cpp" />
+    <ClCompile Include="source\EnemyPool.cpp" />
+    <ClCompile Include="source\CrystarlPattern2.cpp" />
+    <ClCompile Include="source\SlaBlockPattern2.cpp" />
+    <ClCompile Include="source\ScreenVibration.cpp" />
+    <ClCompile Include="source\PlaneEffectManeger.cpp" />
+    <ClCompile Include="source\BoardPolygon.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\ModeGame.cpp">
-      <Filter>ソース ファイル\Mode</Filter>
-    </ClCompile>
-    <ClCompile Include="source\ModeTitle.cpp">
-      <Filter>ソース ファイル\Mode</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Camera.cpp">
-      <Filter>ソース ファイル\System</Filter>
-    </ClCompile>
-    <ClCompile Include="source\ApplicationMain.cpp">
-      <Filter>ソース ファイル\Mode</Filter>
-    </ClCompile>
-    <ClCompile Include="source\ModeClear.cpp">
-      <Filter>ソース ファイル\Mode</Filter>
-    </ClCompile>
-    <ClCompile Include="source\ModeGameOver.cpp">
-      <Filter>ソース ファイル\Mode</Filter>
-    </ClCompile>
-    <ClCompile Include="source\bone.cpp">
-      <Filter>ソース ファイル\Player</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Player.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\CharacterBase.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Chain.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="source\ModeGame.h">
-      <Filter>ヘッダー ファイル\Mode</Filter>
-    </ClInclude>
-    <ClInclude Include="source\ModeTitle.h">
-      <Filter>ヘッダー ファイル\Mode</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Camera.h">
-      <Filter>ヘッダー ファイル\System</Filter>
-    </ClInclude>
-    <ClInclude Include="source\ApplicationMain.h">
-      <Filter>ヘッダー ファイル\Mode</Filter>
-    </ClInclude>
-    <ClInclude Include="source\ModeClear.h">
-      <Filter>ヘッダー ファイル\Mode</Filter>
-    </ClInclude>
-    <ClInclude Include="source\ModeGameOver.h">
-      <Filter>ヘッダー ファイル\Mode</Filter>
-    </ClInclude>
-    <ClInclude Include="source\bone.h">
-      <Filter>ヘッダー ファイル\Player</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Player.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\CharacterBase.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Chain.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
+    <ClInclude Include="source\myJson.h" />
+    <ClInclude Include="source\bone.h" />
+    <ClInclude Include="source\BreakObject.h" />
+    <ClInclude Include="source\BuildingBase.h" />
+    <ClInclude Include="source\CharacterBase.h" />
+    <ClInclude Include="source\Crystarl.h" />
+    <ClInclude Include="source\EnemyBase.h" />
+    <ClInclude Include="source\ModeGameOver.h" />
+    <ClInclude Include="source\ModeClear.h" />
+    <ClInclude Include="source\Camera.h" />
+    <ClInclude Include="source\ApplicationMain.h" />
+    <ClInclude Include="source\ModeGame.h" />
+    <ClInclude Include="source\ModeTest.h" />
+    <ClInclude Include="source\ModeTitle.h" />
+    <ClInclude Include="source\Player.h" />
+    <ClInclude Include="source\Chain.h" />
+    <ClInclude Include="source\SlaBlock.h" />
+    <ClInclude Include="source\UIBase.h" />
+    <ClInclude Include="source\UIExpPoint.h" />
+    <ClInclude Include="source\UIHeart.h" />
+    <ClInclude Include="source\House.h" />
+    <ClInclude Include="source\EnemyStract.h" />
+    <ClInclude Include="source\EnemyPool.h" />
+    <ClInclude Include="source\CrystarlPattern2.h" />
+    <ClInclude Include="source\SlaBlockPattern2.h" />
+    <ClInclude Include="source\ScreenVibration.h" />
+    <ClInclude Include="source\PlaneEffectManeger.h" />
+    <ClInclude Include="source\BoardPolygon.h" />
   </ItemGroup>
 </Project>

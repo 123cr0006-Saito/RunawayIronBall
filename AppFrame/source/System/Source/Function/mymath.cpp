@@ -119,24 +119,21 @@ bool Math::CheckVerticalRelation(VECTOR line_1_start, VECTOR line_1_end, VECTOR 
 // 戻り値: 角度(radian) 
 float Math::CalcVectorAngle(VECTOR v1, VECTOR v2)
 {
-	float v1Size = VSize(v1);
-	float v2Size = VSize(v2);
-	if (v1Size > 0.000000f && v2Size > 0.000000f) {
-		float cos = VDot(v1, v2) / VSize(v1) * VSize(v2);
+	float v1SquareSize = VSquareSize(v1);
+	float v2SquareSize = VSquareSize(v2);
+	if (v1SquareSize > 0.000000f && v2SquareSize > 0.000000f) {
+		float cos = VDot(v1, v2) / (sqrt(v1SquareSize) * sqrt(v2SquareSize));
 		return acos(cos);
 	}
 	return 0;
 }
 
-// 3Dモデルを引数vForwardの方に向ける
+// 3Dモデルを引数vForwardの方向が正面になるように回転させる
 void Math::SetModelForward_RotationY(int modelHandle, VECTOR vForwad)
 {
 	VECTOR vBase = VGet(0.0f, 0.0f, -1.0f);
 	vForwad.y = 0.0f;
 	float angle = CalcVectorAngle(vBase, vForwad);
 	angle *= vForwad.x < 0.0f ? 1.0f : -1.0f;
-
-	MATRIX mRot = MGetRotVec2(vBase, vForwad);
-	VECTOR vRot = VTransform(vBase, mRot);
 	MV1SetRotationXYZ(modelHandle, VGet(0, angle, 0));
 }

@@ -1,6 +1,6 @@
 #pragma once
 #include "appframe.h"
-
+#include "Player.h"
 
 #define CHAIN_MAX 12
 
@@ -13,22 +13,34 @@ public:
 
 	void Render();
 
-	VECTOR GetBallPosition() { return _pos[CHAIN_MAX - 1]; }
+	VECTOR GetBallPosition() { return _iPos; }
+	float GetBallRadius() { return _r; }
 
 	void DrawDebugInfo();
+
+	//齋藤が作成した関数です------------------------
+	void SetPowerScale(std::string FileName);//ファイル読み込みでレベルに合わせた攻撃力と拡大率を取得
+	bool UpdateLevel();//プレイヤーから取得した、レベルで攻撃力と拡大率を設定
+	int GetPower() { return _power; }//ノックバック用の力を返します。
+	//----------------------------------------------------------
 
 
 private:
 	XInput* _input;
 
-	int _modelHandle[CHAIN_MAX];
+	// 鎖
+	int _cModelHandle;
+	VECTOR _cPos[CHAIN_MAX];
 
-	VECTOR _pos[CHAIN_MAX];
-	VECTOR _mbDir;
+	// 鉄球
+	int _iModelHandle;
+	VECTOR _iPos;
+	VECTOR _iForwardDir;
+	float _r = 55.0f; //// 後でSphereクラスを作る
 
 
 
-	int _attackCnt;
+	int _attackAnimCnt;
 
 
 	int _animIndex;
@@ -37,10 +49,21 @@ private:
 
 
 	float _cnt;
+	int _attackDir;
 
 	MATRIX _m[CHAIN_MAX];
 
 	float _length;
 
 	bool _isSwing;
+
+
+	Player* _playerInstance;
+	int _playerModelHandle;
+
+	//-------------------
+	// 齋藤が作成した変数です。
+	const int _originR = 50;
+	int _power;//吹っ飛ばす力です。
+	std::map<int, std::pair<int, float>> _powerAndScale;//攻撃力と拡大率を格納したコンテナです。
 };

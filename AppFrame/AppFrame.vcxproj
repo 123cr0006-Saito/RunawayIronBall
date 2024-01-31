@@ -159,6 +159,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\System\Source\Function\Vibration.cpp" />
+    <ClCompile Include="source\System\Source\Collision\MyStructure.cpp" />
+    <ClCompile Include="source\System\Source\Function\DrawGauge.cpp" />
     <ClCompile Include="source\System\Source\Function\mymath.cpp" />
     <ClCompile Include="source\Application\Global.cpp" />
     <ClCompile Include="source\System\Source\Effect\Effect.cpp" />
@@ -170,6 +173,7 @@
     <ClCompile Include="source\Mode\ModeBase.cpp" />
     <ClCompile Include="source\Mode\ModeServer.cpp" />
     <ClCompile Include="source\System\Source\Collision\2DCollision.cpp" />
+    <ClCompile Include="source\System\Source\Function\Timer.cpp" />
     <ClCompile Include="source\System\Source\Resource\ResourceServer.cpp" />
     <ClCompile Include="source\System\Source\Sound\FadeSound.cpp" />
     <ClCompile Include="source\System\Source\Function\Fps.cpp" />
@@ -179,6 +183,7 @@
     <ClCompile Include="source\System\Source\Function\Easing.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\System\Header\Function\DrawGauge.h" />
     <ClInclude Include="source\System\Header\Function\mymath.h" />
     <ClInclude Include="source\Application\Global.h" />
     <ClInclude Include="source\System\Header\Effect\Effect.h" />
@@ -192,6 +197,9 @@
     <ClInclude Include="source\Mode\ModeServer.h" />
     <ClInclude Include="source\System\Header\Collision\2DCollision.h" />
     <ClInclude Include="source\System\Header\Collision\MyStructure.h" />
+    <ClInclude Include="source\System\Header\Function\Timer.h" />
+    <ClInclude Include="source\System\Header\Function\Vector3D.h" />
+    <ClInclude Include="source\System\Header\Function\Vibration.h" />
     <ClInclude Include="source\System\Header\Resource\ResourceServer.h" />
     <ClInclude Include="source\System\Header\Sound\FadeSound.h" />
     <ClInclude Include="source\System\Header\Function\Fps.h" />

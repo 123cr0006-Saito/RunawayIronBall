@@ -4,235 +4,191 @@
 void Chain::Init() {
 	_input = XInput::GetInstance();
 
-	_modelHandle[0] = MV1LoadModel("res/Chain/Chain02.mv1");
-	_pos[0] = VGet(0.0f, 0.0f, 0.0f);
-	MV1SetPosition(_modelHandle[0], _pos[0]);
-	MV1SetScale(_modelHandle[0], VGet(0.5f, 0.5f, 0.5f));
+	_cModelHandle = MV1LoadModel("res/Chain/Chain02.mv1");
+	_cPos[0] = VGet(0.0f, 0.0f, 0.0f);
+	MV1SetPosition(_cModelHandle, _cPos[0]);
+	MV1SetScale(_cModelHandle, VGet(0.5f, 0.5f, 0.5f));
 
-	for (int i = 1; i < CHAIN_MAX - 1; i++) {
-		_modelHandle[i] = MV1DuplicateModel(_modelHandle[0]);
-		_pos[i] = VAdd(_pos[i - 1], VGet(0.0f, 0.0f, -100.0f));
-		MV1SetPosition(_modelHandle[i], _pos[i]);
-		MV1SetScale(_modelHandle[i], VGet(0.5f, 0.5f, 0.5f));
+	for (int i = 1; i < CHAIN_MAX; i++) {
+		_cPos[i] = VAdd(_cPos[i - 1], VGet(0.0f, 0.0f, -100.0f));
 	}
 
-	_modelHandle[CHAIN_MAX - 1] = MV1LoadModel("res/Character/meatball/cg_player_meatball.mv1");
-	_pos[CHAIN_MAX - 1] = VAdd(_pos[CHAIN_MAX - 1 - 1], VGet(0.0f, 10.0f, 0.0f));
-	MV1SetPosition(_modelHandle[CHAIN_MAX - 1], _pos[CHAIN_MAX - 1]);
-	MV1SetScale(_modelHandle[CHAIN_MAX - 1], VGet(3.0f, 3.0f, 3.0f));
+	_iModelHandle = MV1LoadModel("res/Character/meatball/cg_player_meatball.mv1");
+	_iPos = VAdd(_cPos[CHAIN_MAX - 1], VGet(0.0f, 10.0f, 0.0f));
+	MV1SetPosition(_iModelHandle, _iPos);
+	MV1SetScale(_iModelHandle, VGet(3.0f, 3.0f, 3.0f));
 
-	_animIndex = MV1AttachAnim(_modelHandle[CHAIN_MAX - 1], 0);
-	_animTotalTime = MV1GetAnimTotalTime(_modelHandle[CHAIN_MAX - 1], _animIndex);
+	MV1SetScale(_iModelHandle, VGet(1.0,1.0,1.0));
+
+	_animIndex = MV1AttachAnim(_iModelHandle, 0);
+	_animTotalTime = MV1GetAnimTotalTime(_iModelHandle, _animIndex);
 	_playTime = 0.0f;
 
+	//齋藤が書きました------------------------------------------------------------------
+	SetPowerScale("res/JsonFile/IronState.json");
+	//------------------------------------------------------------------
+	_iForwardDir = VGet(0, 0, 0);
 
 
-	_mbDir = VGet(0, 0, 0);
-
-
-	_attackCnt = 0;
+	_attackAnimCnt = 0;
 
 	_cnt = 0.0f;
+	_attackDir = 1;
 
 	for (int i = 0; i < CHAIN_MAX; i++) {
 		_m[i] = MGetIdent();
 	}
 
-	_length = 80.0f;
+	_length = 50.0f;
 
 	_isSwing = false;
+
+
+	_playerInstance = Player::GetInstance();
+	_playerModelHandle = _playerInstance->GetModelHandle();
 }
 
+void Chain::SetPowerScale(std::string FileName) {
+	myJson json(FileName);
+	int level = 0;
+	int power = 0;
+	float scale = 0;
+	for (auto& list : json._json) {
+		list.at("Level").get_to(level);
+		list.at("Power").get_to(power);
+		list.at("Magnification").get_to(scale);
+		_powerAndScale[level] = std::make_pair(power,scale);
+	}
+};
+
+bool Chain::UpdateLevel() {
+	static int _oldLevel = -1; //前フレームのレベルです。
+	int level = _playerInstance->GetNowLevel();
+
+	if (_oldLevel != level) {
+		_power = _powerAndScale[level].first;
+		MV1SetScale(_iModelHandle, VScale(VGet(1, 1, 1), _powerAndScale[level].second));
+		_r = _originR * _powerAndScale[level].second;
+	}
+
+	_oldLevel = level;
+	return true;
+};
+
 void Chain::Process(VECTOR playerPos) {
-//	float gravity = 8.0f;
-//
-//
-//	VECTOR vOld = VSub(_pos[1], _pos[0]);
-//	VECTOR vBase = VGet(0.0f, 0.0f, -100.0f);
-//
-//#if 0
-//	vBase = VTransform(vBase, MGetRotY(DegToRad(40.0f) * sin(_cnt)));  // wave
-//	_pos[1] = vBase;
-//	_cnt += (2 * DX_PI) / (60.0f); // wave
-//#else
-//	vBase = VTransform(vBase, MGetRotY(DegToRad(_cnt))); // swing
-//	//_pos[1] = vBase;
-//	_cnt += 8.0f;					 // swing
-//#endif	
+	_isSwing = _playerInstance->GetIsSwing();
 
-
-
-	//VECTOR vDir = VSub(_pos[1], _pos[0]);
-	//MATRIX mRot = MGetRotY(DegToRad(_cnt))/*MGetRotVec2(VGet(0.0f, 0.0f, -100.0f), vDir)*/;
-	
-	
-	
-	_pos[0] = playerPos;
+	_cPos[0] = playerPos;
 	if (_isSwing) {
-		MATRIX mRot = MGetRotY(Math::DegToRad(_cnt));
+		/* デバッグ用 */
+		{
+			VECTOR vOrigin = VGet(0.0f, 0.0f, 0.0f);
+			MATRIX m = MGetIdent();
+	
+			// 鎖と腕輪の連結点
+			m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, 76);
+			_cPos[0] = VTransform(vOrigin, m);
+	
+			// 1つ目
+			m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, 77);
+			_cPos[1] = VTransform(vOrigin, m);
+	
+			// 鉄球の位置
+			m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, 78);
+			//VECTOR vTmp = VSub(VTransform(vOrigin, m), _pos[0]);
+			//vTmp = VNorm(vTmp);
+			//vTmp.y = 0.0f;
+			//m = MMult(m, MGetTranslate(VScale(vTmp, 1000.0f)));
 
-		for (int i = CHAIN_MAX - 1; 0 < i; i--) {
-			_m[i] = _m[i - 1];
+			_cPos[CHAIN_MAX - 1] = VTransform(vOrigin, m);
 		}
-		_m[0] = mRot;
+		/* */
 
+		// キャラの座標から見た一つ目の鎖を配置する方向
+		VECTOR vBase = VSub(_cPos[1], _cPos[0]);
+
+		// キャラの座標から見た鉄球を配置する方向
+		VECTOR vTarget = VSub(_cPos[CHAIN_MAX - 1], _cPos[0]);
+
+
+		float rad = Math::CalcVectorAngle(vBase, vTarget);
+		float dist = VSize(vTarget);
+		VECTOR vCross = VCross(vBase, vTarget);
+		const float chainNum = CHAIN_MAX - 1; ////////////////// （要修正）振り回している感じを出すなら、最後の鎖がピッタリ鉄球の接続位置に来るようにせず、少し引っ張っている方向にずらす必要がある
+		//rad /= chainNum;
 		for (int i = 1; i < CHAIN_MAX; i++) {
-			VECTOR vTmp = VGet(0.0f, 0.0f, -100.0f * i);
-			_pos[i] = VTransform(vTmp, MMult(_m[i], MGetTranslate(_pos[0])));
-		}
+			VECTOR vTmp = VScale(VNorm(vBase), dist * ((float)(i - 1) / chainNum));
+			MATRIX mRot = MGetRotAxis(vCross, rad * ((float)(i - 1) / chainNum));
+			vTmp = VTransform(vTmp, mRot);
+			_cPos[i] = VTransform(vTmp, MGetTranslate(_cPos[0]));
 
-		_cnt += 5.0f;
-	}
-	else {
-		//MATRIX mRot = MGetRotY(Math::DegToRad(_cnt));
-		//MATRIX mIdentity = MGetIdent();
-		//for (int i = CHAIN_MAX - 1; 0 < i; i--) {
-		//	_m[i] = _m[i - 1];
-		//}
-		//_m[0] = mRot;
-
-		//for (int i = 1; i < CHAIN_MAX; i++) {
-		//	VECTOR vTmp = VGet(0.0f, 0.0f, -100.0f * i);
-		//	_pos[i] = VTransform(vTmp, MMult(_m[i], MGetTranslate(_pos[0])));
-		//}
-		//_cnt -= 5.0f;
-		//if (_cnt < 0.0f) { _cnt = 0.0f; }
-	}
-
-	// ストップ
-	if (_input->GetTrg(XINPUT_BUTTON_BACK) != 0) {
-		_isSwing = !(_isSwing);
-	}
-
-	if (CheckHitKey(KEY_INPUT_Z) != 0) {
-		_pos[0] = VGet(0, 0, 0);
-		for (int i = 0; i < CHAIN_MAX; i++) {
-			_m[i] = MGetIdent();
-			if (i > 0) {
-				_pos[i] = VAdd(_pos[i - 1], VGet(0.0f, 0.0f, -100.0f));
+			if (_cPos[i].y < 0.0f) {
+				_cPos[i].y = 0.0f;
 			}
 		}
-		_cnt = 0.0f;
-	}
 	
 
-	//for (int i = 1; i < CHAIN_MAX; i++) {
-	//	if (_cnt / 60.0f < i) break;
-	//	VECTOR vDir = VSub(_pos[i], _pos[i - 1]);
-	//	vDir.y = 0.0f;
-	//	if (VSize(vDir) > 0.0f) {
-	//		vDir = VNorm(vDir);
-	//		vDir = VTransform(vDir, MGetRotY(90));
-	//		_pos[i] = VAdd(_pos[i], VScale(vDir, 60.0f));
-	//	}		
-	//}
-	//_cnt++;
 
-	//VECTOR vTmp = VGet(0, 0, 0);
-	//MATRIX mTranslate = MGetTranslate(VGet())
-
-
-	//bool isMove = false;
-	//VECTOR vDir = VGet(gamePad._lStick.x, -gamePad._lStick.y, 0);
-	//if (VSize(vDir) > 0.0f) {
-	//	vDir = VNorm(vDir);
-	//	_pos[0] = VAdd(_pos[0], VScale(vDir, 10.0f));
-	//	isMove = true;
-	//}
-
-	//_pos[0] = VGet(0, 500, 0);
-
-	//VECTOR vTmp[CHAIN_MAX];
-	//for (int i = 1; i < CHAIN_MAX; i++) {
-	//	vTmp[i] = _pos[i];
-
-	//	//if (i != 1 || isMove == true) {
-	//		VECTOR vSub = VSub(_pos[i], _oldPos[i]);
-	//		if (VSize(vSub) > 0.0f) {
-	//			_pos[i] = VAdd(_pos[i], vSub);
-
-	//		}
-	//	//}
-
-	//		//_pos[i].y -= 1.0f;
-	//	_oldPos[i] = vTmp[i];
-	//}
-
-	// 重力処理
-	for (int i = 1; i < CHAIN_MAX - 1; i++) {
-		_pos[i].y -= 12.0f;
-		if (_pos[i].y < 0.0f) {
-			_pos[i].y = 0.0f;
+		_cnt += 3.5f * (float)_attackDir;
+		if (_cnt > 80.0f) {
+			_attackDir = -1;
+		}
+		else if (_cnt < -80.0f) {
+			_attackDir = 1;
 		}
 	}
-
-	_length = 50.0f;
-	for (int i = 0; i < CHAIN_MAX - 1; i++) {
-		VECTOR vDelta = VSub(_pos[i + 1], _pos[i]);
-		float distance = VSize(vDelta);
-		float difference = _length - distance;
-
-		float offsetX = (difference * vDelta.x / distance) * 0.5f;
-		float offsetY = (difference * vDelta.y / distance) * 0.5f;
-		float offsetZ = (difference * vDelta.z / distance) * 0.5f;
-
-		if (i != 0) {
-			_pos[i].x -= offsetX;
-			_pos[i].y -= offsetY;
-			_pos[i].z -= offsetZ;
+	else {
+		// 重力処理
+		for (int i = 1; i < CHAIN_MAX; i++) {
+			_cPos[i].y -= 12.0f;
+			if (_cPos[i].y < 0.0f) {
+				_cPos[i].y = 0.0f;
+			}
 		}
-		_pos[i + 1].x += offsetX;
-		_pos[i + 1].y += offsetY;
-		_pos[i + 1].z += offsetZ;
+		_iPos.y -= 12.0f;
+		if (_iPos.y < 0.0f) {
+			_iPos.y = 0.0f;
+		}
+
+		//_length = 50.0f;
+		for (int i = 0; i < CHAIN_MAX - 1; i++) {
+			VECTOR vNext = _cPos[i + 1];
+			VECTOR vDelta = VSub(vNext, _cPos[i]);
+			float distance = VSize(vDelta);
+			float difference = _length - distance;
+
+			float offsetX = (difference * vDelta.x / distance) * 0.9f;
+			float offsetY = (difference * vDelta.y / distance) * 0.9f;
+			float offsetZ = (difference * vDelta.z / distance) * 0.9f;
+
+			if (i != 0) {
+				_cPos[i].x -= offsetX;
+				_cPos[i].y -= offsetY;
+				_cPos[i].z -= offsetZ;
+			}
+			float mul = 1.0f;
+			if (i == 0) mul = 2.0f;
+			_cPos[i + 1].x += offsetX * mul;
+			_cPos[i + 1].y += offsetY * mul;
+			_cPos[i + 1].z += offsetZ * mul;
+		}
+
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	//// 外側から1つ内側のモデルを引っ張る
-	//for (int i = CHAIN_MAX - 1; 1 < i; i--) {
-	//	VECTOR sub = VSub(_pos[i], _pos[i - 1]);
-	//	while (VSize(sub) > 100.0f) {
-	//		_pos[i - 1] = VAdd(_pos[i - 1], VNorm(sub));
-	//		sub = VSub(_pos[i], _pos[i - 1]);
-	//	}
-	//}
-
-	//// 内側から1つ外側のモデルを引っ張る
-	//for (int i = 0; i < CHAIN_MAX - 1; i++) {
-	//	VECTOR sub = VSub(_pos[i + 1], _pos[i]);
-	//	while (VSize(sub) > 100.0f) {
-	//		_pos[i + 1] = VAdd(_pos[i + 1], VNorm(sub));
-	//		sub = VSub(_pos[i], _pos[i + 1]);
-	//	}
-	//}
-
-	// モデルに座標を反映させる
-	for (int i = 0; i < CHAIN_MAX; i++) {
-		MV1SetPosition(_modelHandle[i], _pos[i]);
-	}
 	
+	UpdateLevel();
 
-	_mbDir = VSub(_pos[0], _pos[CHAIN_MAX - 1]);
-	if (VSize(_mbDir) > 0.0f) {
-		if (_isSwing) _mbDir = VScale(_mbDir, -1.0f);
-		_mbDir = VNorm(_mbDir);
-		Math::SetModelForward_RotationY(_modelHandle[CHAIN_MAX - 1], _mbDir);
+	_iPos = _cPos[CHAIN_MAX - 1];
+	MV1SetPosition(_iModelHandle, _iPos);
+	_iForwardDir = VSub(_cPos[0], _iPos);
+	if (VSize(_iForwardDir) > 0.0f) {
+		if (_isSwing) _iForwardDir = VScale(_iForwardDir, -1.0f);
+		_iForwardDir = VNorm(_iForwardDir);
+		Math::SetModelForward_RotationY(_iModelHandle, _iForwardDir);
 	}
-	_attackCnt++;
-	if (90 < _attackCnt) {
-		_attackCnt = 0;
+	_attackAnimCnt++;
+	if (90 < _attackAnimCnt) {
+		_attackAnimCnt = 0;
 	}
 
 	AnimProcess();
@@ -240,9 +196,9 @@ void Chain::Process(VECTOR playerPos) {
 
 void Chain::AnimProcess()
 {
-	MV1SetAttachAnimTime(_modelHandle[CHAIN_MAX - 1], _animIndex, _playTime);
+	MV1SetAttachAnimTime(_iModelHandle, _animIndex, _playTime);
 
-	_playTime += _attackCnt < 60 ? 10.0f : 1.0f;	
+	_playTime += _attackAnimCnt < 60 ? 10.0f : 1.0f;	
 	if (_animTotalTime < _playTime) {
 		_playTime = 0.0f;
 	}
@@ -253,24 +209,21 @@ void Chain::AnimProcess()
 void Chain::Render()
 {
 	for (int i = 0; i < CHAIN_MAX; i++) {
-		MV1DrawModel(_modelHandle[i]);
+		// モデルに座標を反映させる
+		MV1SetPosition(_cModelHandle, _cPos[i]);
+		MV1DrawModel(_cModelHandle);
 	}
+
+	MV1DrawModel(_iModelHandle);
 }
 
 void Chain::DrawDebugInfo() {
-	//for (int i = 0; i < CHAIN_MAX; i++) {
-	//	VECTOR worldPos = VGet(0, 0, 0);
-	//	int index = i != CHAIN_MAX - 1 ? 0 : 2;
-	//	MATRIX m = MV1GetFrameLocalWorldMatrix(_modelHandle[i], index);
-	//	worldPos = VTransform(worldPos, m);
-	//	//VECTOR screenPos = ConvWorldPosToScreenPos(MV1GetPosition(_modelHandle[i]));
-	//	VECTOR screenPos = ConvWorldPosToScreenPos(worldPos);
-	//	DrawFormatString(screenPos.x, screenPos.y, GetColor(255, 0, 0), "%d", i);
-	//}
+	DrawSphere3D(_iPos, _r, 16, COLOR_RED, COLOR_RED, false);
 
-	int x = 0;
-	int y = 0;
-	int line = 0;
+
+	//int x = 0;
+	//int y = 0;
+	//int line = 0;
 	//DrawFormatString(x, y + line * 16, COLOR_WHITE, "_pos: x %3.2f, y %3.2f, z  %3.2f", _pos.x, _pos.y, _pos.z); line++;
 	//DrawFormatString(x, y + line * 16, COLOR_WHITE, "_dir: x %3.2f, y %3.2f, z  %3.2f", _dir.x, _dir.y, _dir.z); line++;
 	//DrawFormatString(x, y + line * 16, COLOR_WHITE, "_speed %3.2f", _speed); line++;
