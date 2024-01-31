@@ -2,6 +2,7 @@
 
 BuildingBase::BuildingBase()
 {
+	_useCollision = true;
 	_modelHandle = -1;
 	_breakObj = nullptr;
 }
@@ -41,6 +42,7 @@ bool BuildingBase::Render()
 void BuildingBase::ActivateBreakObject(bool activate, VECTOR vDir)
 {
 	_breakObj->Activate(activate, vDir);
+	SetUseCollision(false);
 }
 
 bool BuildingBase::DrawDebugInfo()

@@ -83,27 +83,28 @@ bool ModeTest::Process() {
 
 	for (auto itr = _building.begin(); itr != _building.end(); ++itr) {
 		(*itr)->Process();
+		
+		if ((*itr)->GetUseCollision()) {
+			OBB houseObb = (*itr)->GetOBBCollision();
 
-		OBB houseObb = (*itr)->GetOBBCollision();
-
-		if (Collision3D::OBBSphereCol(houseObb, ibPos, ibR)) {
-			if (isSwinging) {
-				VECTOR vDir = VSub(houseObb.pos, pPos);
-				(*itr)->ActivateBreakObject(true, vDir);
-				_player->SetExp(50);
-			}
-		}
-
-		//エネミーがノックバック状態の時、建物にぶつかったら破壊する
-		for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
-			ENEMYTYPE enState = _enemyPool->GetEnemy(i)->GetEnemyState();
-			float enR = _enemyPool->GetEnemy(i)->GetR();
-			if (enState == ENEMYTYPE::DEAD) {
-				OBB houseObb = (*itr)->GetOBBCollision();
-				VECTOR enPos = _enemyPool->GetEnemy(i)->GetCollisionPos();
-				if (Collision3D::OBBSphereCol(houseObb, enPos, enR)) {
+			if (Collision3D::OBBSphereCol(houseObb, ibPos, ibR)) {
+				if (isSwinging) {
 					VECTOR vDir = VSub(houseObb.pos, pPos);
 					(*itr)->ActivateBreakObject(true, vDir);
+					_player->SetExp(50);
+				}
+			}
+
+			//エネミーがノックバック状態の時、建物にぶつかったら破壊する
+			for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
+				ENEMYTYPE enState = _enemyPool->GetEnemy(i)->GetEnemyState();
+				float enR = _enemyPool->GetEnemy(i)->GetR();
+				if (enState == ENEMYTYPE::DEAD) {
+					VECTOR enPos = _enemyPool->GetEnemy(i)->GetCollisionPos();
+					if (Collision3D::OBBSphereCol(houseObb, enPos, enR)) {
+						VECTOR vDir = VSub(houseObb.pos, pPos);
+						(*itr)->ActivateBreakObject(true, vDir);
+					}
 				}
 			}
 		}
