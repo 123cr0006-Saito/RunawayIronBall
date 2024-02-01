@@ -73,7 +73,7 @@ bool ModeTest::Process() {
 		ui[i]->Process();
 	}
 
-	bool isSwinging = _player->GetIsSwing();
+	bool isAttackState = _player->GetIsAttackState();
 	VECTOR pPos = _player->GetPosition();
 
 	VECTOR ibPos = _chain->GetBallPosition();
@@ -88,7 +88,7 @@ bool ModeTest::Process() {
 			OBB houseObb = (*itr)->GetOBBCollision();
 
 			if (Collision3D::OBBSphereCol(houseObb, ibPos, ibR)) {
-				if (isSwinging) {
+				if (isAttackState) {
 					VECTOR vDir = VSub(houseObb.pos, pPos);
 					(*itr)->ActivateBreakObject(true, vDir);
 					_player->SetExp(50);
@@ -111,7 +111,7 @@ bool ModeTest::Process() {
 	}
 
 	for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
-		if (isSwinging) {
+		if (isAttackState) {
 			if (!_enemyPool->GetEnemy(i)->GetUse()) { continue; }
 			VECTOR enPos = _enemyPool->GetEnemy(i)->GetCollisionPos();
 			float enR = _enemyPool->GetEnemy(i)->GetR();

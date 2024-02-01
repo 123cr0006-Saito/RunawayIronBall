@@ -9,9 +9,12 @@ class Player : public CharacterBase
 private:
 	enum class STATUS {
 		NONE,
-		WAIT,
-		HORISONTAL_SWING,
+		WAIT,		
 		RUN,
+
+		HORISONTAL_SWING,
+		SPIN_SWING,
+
 		_EOT_
 	};
 
@@ -45,8 +48,9 @@ public:
 
 	VECTOR GetRightHandPos();
 
+	bool GetIBFollowingMode() { return _ibFollowingMode; }
 
-	bool GetIsSwing() { return _isSwinging; }
+	bool GetIsAttackState() { return _isAttackState; }
 	static Player* GetInstance() { return _instance; }
 
 	void DrawDebugInfo();
@@ -60,7 +64,11 @@ private:
 
 	Capsule _capsuleCollision;
 
+	// ìSãÖÇ™í«è]èÛë‘Ç©Ç«Ç§Ç©
+	bool _ibFollowingMode;
 
+	// çUåÇèÛë‘Ç©Ç«Ç§Ç©
+	bool _isAttackState;
 
 	STATUS _animStatus;
 	int _attach_index;
@@ -76,6 +84,8 @@ private:
 
 
 	bool _isSwinging;
+	bool _isSpinning;
+	int _spinCnt;
 
 	static Player* _instance;
 

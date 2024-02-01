@@ -20,6 +20,10 @@ void Chain::Init() {
 
 	MV1SetScale(_iModelHandle, VGet(1.0,1.0,1.0));
 
+
+
+
+
 	_animIndex = MV1AttachAnim(_iModelHandle, 0);
 	_animTotalTime = MV1GetAnimTotalTime(_iModelHandle, _animIndex);
 	_playTime = 0.0f;
@@ -41,11 +45,15 @@ void Chain::Init() {
 
 	_length = 50.0f;
 
-	_isSwing = false;
+	_followingMode = false;
 
 
 	_playerInstance = Player::GetInstance();
 	_playerModelHandle = _playerInstance->GetModelHandle();
+	_socketNo[0] = MV1SearchFrame(_playerModelHandle, "chain1");
+	_socketNo[1] = MV1SearchFrame(_playerModelHandle, "chain2");
+	_socketNo[2] = MV1SearchFrame(_playerModelHandle, "chain3");
+
 }
 
 void Chain::SetPowerScale(std::string FileName) {
@@ -76,25 +84,25 @@ bool Chain::UpdateLevel() {
 };
 
 void Chain::Process(VECTOR playerPos) {
-	_isSwing = _playerInstance->GetIsSwing();
+	_followingMode = _playerInstance->GetIBFollowingMode();
 
 	_cPos[0] = playerPos;
-	if (_isSwing) {
+	if (!_followingMode) {
 		/* デバッグ用 */
 		{
 			VECTOR vOrigin = VGet(0.0f, 0.0f, 0.0f);
 			MATRIX m = MGetIdent();
 	
 			// 鎖と腕輪の連結点
-			m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, 76);
+			m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, _socketNo[0]);
 			_cPos[0] = VTransform(vOrigin, m);
 	
 			// 1つ目
-			m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, 77);
+			m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, _socketNo[1]);
 			_cPos[1] = VTransform(vOrigin, m);
 	
 			// 鉄球の位置
-			m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, 78);
+			m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, _socketNo[2]);
 			//VECTOR vTmp = VSub(VTransform(vOrigin, m), _pos[0]);
 			//vTmp = VNorm(vTmp);
 			//vTmp.y = 0.0f;
@@ -182,7 +190,7 @@ void Chain::Process(VECTOR playerPos) {
 	MV1SetPosition(_iModelHandle, _iPos);
 	_iForwardDir = VSub(_cPos[0], _iPos);
 	if (VSize(_iForwardDir) > 0.0f) {
-		if (_isSwing) _iForwardDir = VScale(_iForwardDir, -1.0f);
+		if (!_followingMode) _iForwardDir = VScale(_iForwardDir, -1.0f);
 		_iForwardDir = VNorm(_iForwardDir);
 		Math::SetModelForward_RotationY(_iModelHandle, _iForwardDir);
 	}

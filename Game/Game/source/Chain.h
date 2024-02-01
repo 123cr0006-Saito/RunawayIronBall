@@ -39,6 +39,9 @@ private:
 	float _r = 55.0f; //// 後でSphereクラスを作る
 
 
+	// 配置ソケット
+	int _socketNo[3];
+
 
 	int _attackAnimCnt;
 
@@ -55,7 +58,7 @@ private:
 
 	float _length;
 
-	bool _isSwing;
+	bool _followingMode;
 
 
 	Player* _playerInstance;

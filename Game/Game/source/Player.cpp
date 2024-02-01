@@ -11,6 +11,8 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	_speed = 8.0f;
 	UpdateCollision();
 
+	_ibFollowingMode = true;
+	_isAttackState = false;
 
 	// アニメーションアタッチはされていない
 	_attach_index = -1;
@@ -29,6 +31,10 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	SetBone();
 
 	_isSwinging = false;
+	_isSpinning = false;
+	_spinCnt = 0;
+
+
 	_instance = this;
 }
 
@@ -99,24 +105,45 @@ bool Player::Process(float camAngleY)
 	STATUS oldStatus = _animStatus;
 	//_animStatus = STATUS::NONE;
 
+	if (_input->GetKey(XINPUT_BUTTON_X) != 0) {
+		_spinCnt++;
+		_canMove = false;
+	}
+	else {
+		_spinCnt = 0;
+		_isSpinning = false;
+	}
 
-	if (_input->GetTrg(XINPUT_BUTTON_X) != 0) {
+	// 回転攻撃
+	if (_spinCnt > 90) {
+		_animStatus = STATUS::SPIN_SWING;
+		_isSpinning = true;
+		_canMove = true;
+	}
+	// 通常攻撃
+	else if (_input->GetRel(XINPUT_BUTTON_X) != 0) {
 		_animStatus = STATUS::HORISONTAL_SWING;
 		_isSwinging = true;
 		_canMove = false;
 	}
 
-	if (!_isSwinging) {
+	if (!_isSwinging && !_isSpinning) {
 		_animStatus = STATUS::WAIT;
 		_canMove = true;
+
+		_ibFollowingMode = true;
+		_isAttackState = false;
+	}
+	else {
+		_ibFollowingMode = false;
+		_isAttackState = true;
 	}
 
+	bool _isMoved = false;
+	// 左スティックの入力情報を取得する
+	auto lStick = _input->GetAdjustedStick_L();
+	VECTOR vDir = VGet(lStick.x, 0, lStick.y);
 	if (_canMove) {
-
-		// 左スティックの入力情報を取得する
-		auto lStick = _input->GetAdjustedStick_L();
-		//auto rStick = _input->GetAdjustedStick_R();
-		VECTOR vDir = VGet(lStick.x, 0, lStick.y);
 		// 左スティックの入力があったら
 		if (VSize(vDir) > 0.000000f) {
 			// 移動処理
@@ -126,26 +153,39 @@ bool Player::Process(float camAngleY)
 			// 移動方向ベクトルを回転させる
 			vDir = VTransform(vDir, mRot);
 			_pos = VAdd(_pos, VScale(vDir, _speed));
+
+			_isMoved = true;
+
+			
+		}
+	}
+
+	if (!_isAttackState) {
+		if (_isMoved) {
 			_animStatus = STATUS::RUN;
 
-			// 回転処理
-			// 基準のベクトル
-			VECTOR vBase = VGet(0.0f, 0.0f, -1.0f);
-			// 基準のベクトルと移動方向のベクトルのなす角を計算する
-			float angle = Math::CalcVectorAngle(vDir, vBase);
-			// 反時計回りの場合
-			if (vDir.x > 0.0f) {
-				angle *= -1;
+			// キャラクターを滑らかに回転させる
+			float angle = Math::CalcVectorAngle(_forwardDir, vDir);
+			float rotRad = (2.0f * DX_PI_F) / 30.0f;
+			if (rotRad > angle) {
+				_forwardDir = vDir;
 			}
-			// モデルの回転値をセットする
-			MV1SetRotationXYZ(_modelHandle, VGet(0.0f, angle, 0.0f));
+			else {
+				VECTOR vN = VCross(_forwardDir, vDir);
+				_forwardDir = VTransform(_forwardDir, MGetRotAxis(vN, rotRad));
+			}
 		}
 		else {
 			_animStatus = STATUS::WAIT;
 		}
-
-
 	}
+
+	if (_isSpinning) {
+		_forwardDir = VTransform(_forwardDir, MGetRotY((2.0f * DX_PI_F) / 30.0f));
+	}
+
+	// 回転処理
+	Math::SetModelForward_RotationY(_modelHandle, _forwardDir);
 
 	BlastOffProcess();
 
@@ -179,6 +219,9 @@ bool Player::AnimProcess(STATUS oldStatus)
 			break;
 		case STATUS::HORISONTAL_SWING:
 			_attach_index = MV1AttachAnim(_modelHandle, 2, -1, FALSE);
+			break;
+		case STATUS::SPIN_SWING:
+			_attach_index = MV1AttachAnim(_modelHandle, 5, -1, FALSE);
 			break;
 		case STATUS::RUN:
 			_attach_index = MV1AttachAnim(_modelHandle, 1, -1, FALSE);
