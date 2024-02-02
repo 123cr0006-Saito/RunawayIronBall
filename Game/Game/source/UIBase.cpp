@@ -22,7 +22,9 @@ UIBase::UIBase(VECTOR pos, std::string handleName, int AllNum, int XNum, int YNu
 };
 
 UIBase::~UIBase() {
-	//“Á‚É‚È‚µ
+	if (_handle != nullptr) {
+		delete[] _handle; _handle = nullptr;
+	}
 };
 
 bool UIBase::Process() {

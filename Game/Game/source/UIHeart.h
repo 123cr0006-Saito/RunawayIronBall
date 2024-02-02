@@ -9,7 +9,7 @@ public:
 	UIHeart(VECTOR pos, std::string handleName);
 	UIHeart(VECTOR pos, std::string handleName, int AllNum, int XNum, int YNum, int XSize, int YSize, int* HandleBuf);
 
-	~UIHeart();
+	~UIHeart()override;
 
 	void SetDamage();
 	virtual bool  Process()override;

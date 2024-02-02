@@ -46,6 +46,9 @@ DrawGauge::DrawGauge(const char* name, int start_pos, float size, bool flag)
         vertex[i].dif = GetColorU8(255, 255, 255, 255);
     }
 };
+DrawGauge::~DrawGauge() {
+    //“Á‚É‚È‚µ
+};
 
 bool DrawGauge::Process(VECTOR pos, float parcent, float parcent_max) {
     vertex[0].pos = pos;

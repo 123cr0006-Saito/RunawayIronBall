@@ -4,7 +4,10 @@ PlaneEffect::PlaneEffectManeger::PlaneEffectManeger(){
 };
 
 PlaneEffect::PlaneEffectManeger::~PlaneEffectManeger() {
-
+	for (int i = 0; i < _vertical.size(); i++) {
+		_vertical.at(i)->~BoardPolygon();
+	}
+	_vertical.clear();
 };
 
 void PlaneEffect::PlaneEffectManeger::LoadVertical(BoardPolygon* effect) {

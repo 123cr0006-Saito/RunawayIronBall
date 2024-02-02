@@ -43,6 +43,9 @@ Player::~Player()
 	if (_modelHandle != -1) {
 		int n = 0;
 	}
+	for (int i = 0; i < sizeof(_bone) / sizeof(_bone[0]); i++) {
+		delete _bone[i];
+	}
 }
 
 void Player::SetBone() {
@@ -279,7 +282,6 @@ void Player::UpdateCollision()
 void Player::UpdateBone() {
 	for (int i = 0; i < sizeof(_bone) / sizeof(_bone[0]); i++) {
 		_bone[i]->Process();
-		_bone[i]->SetMain(_bone[i]->_massPosList);
 	}
 	if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN)) {
 		for (int i = 0; i < sizeof(_bone) / sizeof(_bone[0]); i++) {

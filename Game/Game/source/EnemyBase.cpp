@@ -15,6 +15,7 @@ EnemyBase::EnemyBase() {
 
 EnemyBase::~EnemyBase() {
 	MV1DeleteModel(_model);
+	_player = nullptr;
 };
 
 bool EnemyBase::Create(int model, VECTOR pos, EnemyParam param) {

@@ -92,8 +92,7 @@ PlaneEffect::BoardPolygon::BoardPolygon(VECTOR pos, MATRIX matrix, int sizeX, in
 };
 
 PlaneEffect::BoardPolygon::~BoardPolygon() {
-	
-	
+	delete[] _handle; _handle = nullptr;	
 };
 
 bool PlaneEffect::BoardPolygon::Update(){

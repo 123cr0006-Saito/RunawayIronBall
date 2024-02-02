@@ -91,7 +91,9 @@ bone::bone(
 };
 
 bone::~bone() {
+	_frameList.clear();
 	_model = nullptr;
+
 	delete[] _vecDirList;         _vecDirList = nullptr;
 	delete[] _orignPos;           _orignPos = nullptr;
 	delete[] _transMatrixList; _transMatrixList = nullptr;
@@ -185,6 +187,7 @@ bool bone::Process() {
 		_elapsedTime -= _processInterval;
 		UpdatePosAndAccel(_processInterval);
 	}
+	SetMain(_massPosList);
 
 	return true;
 };

@@ -32,9 +32,7 @@ private:
 
 	// ↓ ここから下は物理演算で使う変数や関数
 public:
-	Vector3D* _massPosList; // 質点の座標リスト
-	Vector3D* _massAccelList; // 質点の速度リスト
-
+	
 	void UpdatePosAndAccel(double _elapsedTime);
 	Vector3D ForceWorksToMassPoint(int i, Vector3D* posList, Vector3D* accelList); //質点に働く力を計算 F=ma
 	bool Process();
@@ -42,6 +40,9 @@ public:
 	void PositionReset();
 
 private:
+
+	Vector3D* _massPosList; // 質点の座標リスト
+	Vector3D* _massAccelList; // 質点の速度リスト
 
 	// 今回は髪の毛だけなので定数宣言しているがほかのに使うときは
 	//変数として宣言し重力などの値をクラスを作るときの引数として入力するとできる

@@ -62,7 +62,7 @@ UIExpPoint::UIExpPoint(VECTOR pos, std::string handleName, int AllNum, int XNum,
 }
 
 UIExpPoint::~UIExpPoint() {
-	//“Á‚É‚È‚µ
+	_player = nullptr;
 };
 
 bool UIExpPoint::Process() {

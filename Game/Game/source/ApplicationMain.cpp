@@ -24,6 +24,8 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance) {
 bool ApplicationMain::Terminate() {
 	base::Terminate();
 	ResourceServer::DeleteResourceAll();
+	delete _fpsController;
+	delete _input;
 	return true;
 }
 

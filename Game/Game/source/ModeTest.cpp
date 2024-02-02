@@ -56,6 +56,19 @@ bool ModeTest::Initialize() {
 
 bool ModeTest::Terminate() {
 	base::Terminate();
+	delete _enemyPool;
+	delete _sVib;
+	delete _camera;
+	delete _player;
+	delete _chain;
+	for (int i = 0; i != _building.size(); i++) {
+		delete _building.at(i);
+	}
+	for (int i = 0; i < 2; i++) {
+		delete ui[i];
+		delete _gaugeUI[i];
+	}
+	delete _planeEffectManeger;
 	return true;
 }
 

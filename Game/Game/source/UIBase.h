@@ -9,7 +9,7 @@ public:
 
 	UIBase(VECTOR pos, std::string handleName);
 	UIBase(VECTOR pos, std::string handleName, int AllNum, int XNum, int YNum, int XSize, int YSize, int* HandleBuf);
-	~UIBase();
+	virtual ~UIBase();
 
 	virtual bool Process();
 	virtual bool Draw();

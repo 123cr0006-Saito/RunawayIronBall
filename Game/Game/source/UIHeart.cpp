@@ -27,7 +27,7 @@ UIHeart::UIHeart(VECTOR pos, std::string handleName, int AllNum, int XNum, int Y
 
 
 UIHeart::~UIHeart() {
-	//“Á‚É‚È‚µ
+	delete _heart;
 };
 
 void UIHeart::SetDamage() {

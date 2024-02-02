@@ -8,6 +8,7 @@ class DrawGauge
 public:
 	DrawGauge(int image, int start_pos, float size, bool flag);
 	DrawGauge(const char* name, int start_pos, float size, bool flag);
+	~DrawGauge();
 	bool Process(VECTOR pos, float parcent, float parcent_max);//¡‚Ì’l‚ÆÅ‘å‚Ì’l
 	bool Draw();
 	bool Draw(int handle);

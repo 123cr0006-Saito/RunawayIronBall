@@ -21,7 +21,9 @@ EnemyPool::EnemyPool(std::string paramJsonFile){
 
 EnemyPool::~EnemyPool() {
 	_enemyParametersMap.clear();
-	delete[] _enemy; 
+	for (int i = 0; i < ENEMY_MAX_SIZE; i++) {
+		delete _enemy[i];
+	}
 };
 
 void EnemyPool::Create(std::string createJsonFile){
