@@ -22,7 +22,7 @@ bool BuildingBase::Init(int modelHandle, VECTOR startPos)
 	_pos = startPos;
 	MV1SetPosition(_modelHandle, _pos);
 
-	_breakObj = new BreakObject();
+	_breakObj = NEW BreakObject();
 	_breakObj->Init(_modelHandle);
 
 	return true;

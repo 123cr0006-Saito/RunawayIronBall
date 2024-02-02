@@ -6,7 +6,7 @@ bool ModeTest::Initialize() {
 	if (!base::Initialize()) { return false; }
 
 
-	_camera = new Camera();
+	_camera = NEW Camera();
 
 	_skySphere = MV1LoadModel(_T("res/SkySphere/skysphere.mv1"));
 	_tile = MV1LoadModel(_T("res/TemporaryMaterials/stage_normal_01.mv1"));
@@ -15,10 +15,10 @@ bool ModeTest::Initialize() {
 	MV1SetPosition(_tile, VGet(0, 0, 0));
 
 	int playerModelHandle = MV1LoadModel("res/Character/cg_player_girl/cg_player_girl_TEST.mv1");
-	_player = new Player(playerModelHandle, VGet(0, 0, 0));
+	_player = NEW Player(playerModelHandle, VGet(0, 0, 0));
 	_player->SetNextExp("res/JsonFile/ExpList.json");
 
-	_chain = new Chain();
+	_chain = NEW Chain();
 	_chain->Init();
 
 	int objHandle = MV1LoadModel("res/Building/House_test_01.mv1");
@@ -27,28 +27,28 @@ bool ModeTest::Initialize() {
 		v.x -= 2000.0f;
 		v.z -= 2000.0f;
 
-		House* building = new House();
+		House* building = NEW House();
 		building->Init(MV1DuplicateModel(objHandle), v);
 
 		_building.push_back(building);
 
 	}
 	int size = 100;
-	ui[0] = new UIHeart(VGet(0, 0, 0), "res/TemporaryMaterials/heart.png");
-	//ui[0] = new UIHeart(VGet(0, 0, 0), "res/TemporaryMaterials/UI_Hp_01.png");
-	ui[1] = new UIExpPoint(VGet(0, 150, 0), "res/TemporaryMaterials/UI_EXP_01.png");
-	_gaugeUI[0] = new DrawGauge(0, 3, size, true);
-	_gaugeUI[1] = new DrawGauge(0, 3, size, true);
+	ui[0] = NEW UIHeart(VGet(0, 0, 0), "res/TemporaryMaterials/heart.png");
+	//ui[0] = NEW UIHeart(VGet(0, 0, 0), "res/TemporaryMaterials/UI_Hp_01.png");
+	ui[1] = NEW UIExpPoint(VGet(0, 150, 0), "res/TemporaryMaterials/UI_EXP_01.png");
+	_gaugeUI[0] = NEW DrawGauge(0, 3, size, true);
+	_gaugeUI[1] = NEW DrawGauge(0, 3, size, true);
 	_gaugeHandle[0] = ResourceServer::LoadGraph(_T("res/UI/UI_Stamina_03.png"));
 	_gaugeHandle[1] = ResourceServer::LoadGraph(_T("res/UI/UI_Stamina_02.png"));
 	_gaugeHandle[2] = ResourceServer::LoadGraph(_T("res/UI/UI_Stamina_01.png"));
 	_gaugeHandle[3] = ResourceServer::LoadGraph(_T("res/UI/UI_Stamina_04.png"));
-	_sVib = new ScreenVibration();
+	_sVib = NEW ScreenVibration();
 
-	_enemyPool = new EnemyPool("res/JsonFile/EnemyData.json");
+	_enemyPool = NEW EnemyPool("res/JsonFile/EnemyData.json");
 	_enemyPool->Create();
 
-	_planeEffectManeger = new PlaneEffect::PlaneEffectManeger();
+	_planeEffectManeger = NEW PlaneEffect::PlaneEffectManeger();
 	ResourceServer::LoadMultGraph("res/TemporaryMaterials/test/test", ".png", 30, _effectSheet);
 	                    
 	return true;
@@ -120,7 +120,7 @@ bool ModeTest::Process() {
 				VECTOR vDir = VSub(enPos, pPos);
 				vDir = VNorm(vDir);
 				_enemyPool->GetEnemy(i)->SetKnockBack(vDir, ibPower);
-				PlaneEffect::BoardPolygon* effect = new PlaneEffect::BoardPolygon(VAdd(ibPos, VGet(0, 100, 0)), GetCameraBillboardMatrix(), 200, _effectSheet, 30, 1.0f / 60.0f * 1000.0f);
+				PlaneEffect::BoardPolygon* effect = NEW PlaneEffect::BoardPolygon(VAdd(ibPos, VGet(0, 100, 0)), GetCameraBillboardMatrix(), 200, _effectSheet, 30, 1.0f / 60.0f * 1000.0f);
 				_planeEffectManeger->LoadVertical(effect);
 			}
 		}

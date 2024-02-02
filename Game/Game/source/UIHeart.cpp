@@ -7,7 +7,7 @@ UIHeart::UIHeart(VECTOR pos, std::string handleName) : UIBase::UIBase(pos, handl
 	_hp = 4;
 	float _x, _y;
 	GetGraphSizeF(_handle[_handleNum], &_x, &_y);
-	_heart = new DrawGauge(_handle[0], 3, _x, true);
+	_heart = NEW DrawGauge(_handle[0], 3, _x, true);
 	_currentTime = 0;
 	_oldHp = 4;
 	_IsDamage = false;
@@ -19,7 +19,7 @@ UIHeart::UIHeart(VECTOR pos, std::string handleName, int AllNum, int XNum, int Y
 	_hp = 4;
 	float _x, _y;
 	GetGraphSizeF(_handle[_handleNum], &_x, &_y);
-	_heart = new DrawGauge(_handle[0], 3, _x, true);
+	_heart = NEW DrawGauge(_handle[0], 3, _x, true);
 	_currentTime = 0;
 	_oldHp = 4;
 	_IsDamage = false;

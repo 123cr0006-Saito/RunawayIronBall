@@ -23,11 +23,11 @@ bool ModeTitle::Terminate() {
 
 void ModeTitle::SelectGameStart() {
 	ModeServer::GetInstance()->Del(this);
-	ModeServer::GetInstance()->Add(new ModeTest(), 1, "test");
+	ModeServer::GetInstance()->Add(NEW ModeTest(), 1, "test");
 };
 
 void ModeTitle::SelectOption() {
-	ModeServer::GetInstance()->Add(new ModePause(), 10, "Pause");
+	ModeServer::GetInstance()->Add(NEW ModePause(), 10, "Pause");
 };
 
 void ModeTitle::SelectGameEnd() {

@@ -11,13 +11,13 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance) {
 	if (!base::Initialize(hInstance)) { return false; }
 
 	// ƒ‚[ƒh‚Ì“o˜^
-	//ModeServer::GetInstance()->Add(new ModeTitle(), 1, "Title");
-	ModeServer::GetInstance()->Add(new ModeTest(), 1, "Game");
+	//ModeServer::GetInstance()->Add(NEW ModeTitle(), 1, "Title");
+	ModeServer::GetInstance()->Add(NEW ModeTest(), 1, "Game");
 
 	global.Init();
 
-	_input = new XInput(DX_INPUT_PAD1);
-	_fpsController = new Fps();
+	_input = NEW XInput(DX_INPUT_PAD1);
+	_fpsController = NEW Fps();
 	return true;
 }
 

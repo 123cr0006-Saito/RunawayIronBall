@@ -5,7 +5,7 @@ const unsigned short PlaneEffect::BoardPolygon::vertexOrder[6] = { 0,1,2,2,1,3};
 PlaneEffect::BoardPolygon::BoardPolygon(VECTOR pos, VECTOR dir, int sizeX, int* handle, int handleMax, int speed) {
 	_animCount = 0;
 	_animMax = handleMax;
-	_handle = new int[_animMax];
+	_handle = NEW int[_animMax];
 	std::swap(_handle,handle);
 	_speed = speed;
 	_currentTime = GetNowCount();
@@ -50,7 +50,7 @@ PlaneEffect::BoardPolygon::BoardPolygon(VECTOR pos, VECTOR dir, int sizeX, int* 
 PlaneEffect::BoardPolygon::BoardPolygon(VECTOR pos, MATRIX matrix, int sizeX, int* handle,int handleMax, int speed) {
 	_animCount = 0;
 	_animMax = handleMax;
-	_handle = new int[_animMax];
+	_handle = NEW int[_animMax];
 	std::swap(_handle, handle);
 	_speed = speed;
 	_currentTime = GetNowCount();

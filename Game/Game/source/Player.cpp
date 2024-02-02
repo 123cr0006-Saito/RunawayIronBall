@@ -33,7 +33,7 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	_isSwinging = false;
 	_isSpinning = false;
 	_spinCnt = 0;
-
+	_nowLevel = 0;
 
 	_instance = this;
 }
@@ -54,7 +54,7 @@ void Player::SetBone() {
 	bone_left_list[3] = MV1SearchFrame(_modelHandle,"Left_mitsuami4");
 	bone_left_list[4] = MV1SearchFrame(_modelHandle,"Left_mitsuami5");
 	bone_left_list[5] = MV1SearchFrame(_modelHandle,"Left_mitsuami6");
-	_bone[0] = new bone(&_modelHandle, bone_left_list, bone_left_list.size() - 2, "res/JsonFile/hair_parameters.json");
+	_bone[0] = NEW bone(&_modelHandle, bone_left_list, bone_left_list.size() - 2, "res/JsonFile/hair_parameters.json");
 	//‰E”¯
 	std::vector<int> bone_right_list(6);
 	bone_right_list[0] = MV1SearchFrame(_modelHandle,"Right_mitsuami1");
@@ -63,7 +63,7 @@ void Player::SetBone() {
 	bone_right_list[3] = MV1SearchFrame(_modelHandle,"Right_mitsuami4");
 	bone_right_list[4] = MV1SearchFrame(_modelHandle,"Right_mitsuami5");
 	bone_right_list[5] = MV1SearchFrame(_modelHandle,"Right_mitsuami6");
-	_bone[1] = new bone(&_modelHandle, bone_right_list, bone_right_list.size() - 2, "res/JsonFile/hair_parameters.json");
+	_bone[1] = NEW bone(&_modelHandle, bone_right_list, bone_right_list.size() - 2, "res/JsonFile/hair_parameters.json");
 };
 
 void Player::SetNextExp(std::string FileName) {

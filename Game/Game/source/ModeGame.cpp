@@ -7,16 +7,16 @@ bool ModeGame::Initialize() {
 	if (!base::Initialize()) { return false; }
 
 
-	_camera = new Camera();
+	_camera = NEW Camera();
 
 	_skySphere = MV1LoadModel(_T("res/SkySphere/skysphere.mv1"));
 	MV1SetPosition(_skySphere, VGet(0, 0, 0));
 	MV1SetScale(_skySphere, VGet(1,1,1));
 
 	int playerModelHandle = MV1LoadModel("res/Character/cg_player_girl/test28swing4.mv1");
-	_player = new Player(playerModelHandle, VGet(0,0,0));
+	_player = NEW Player(playerModelHandle, VGet(0,0,0));
 
-	_chain = new Chain();
+	_chain = NEW Chain();
 	_chain->Init();
 
 	return true;

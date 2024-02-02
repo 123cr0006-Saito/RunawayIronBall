@@ -37,15 +37,15 @@ void EnemyPool::Create() {
 		VECTOR vPos = VGet(rand() % range - range/2, 0, rand() % range - range/2);
 		switch (enemyNum) {
 		case 0:
-			_enemy[i] = new SlaBlock();
+			_enemy[i] = NEW SlaBlock();
 			_enemy[i]->Create(ResourceServer::MV1LoadModel("res/katatumuri/snail.mv1"), vPos, _enemyParametersMap["Slablock"]);
 			break;
 		case 1:
-			_enemy[i] = new Crystarl();
+			_enemy[i] = NEW Crystarl();
 			_enemy[i]->Create(ResourceServer::MV1LoadModel("res/katatumuri/snail.mv1"), vPos, _enemyParametersMap["Crystarl"]);
 			break;
 		case 2:
-			_enemy[i] = new CrystarlPattern2();
+			_enemy[i] = NEW CrystarlPattern2();
 			_enemy[i]->Create(ResourceServer::MV1LoadModel("res/katatumuri/snail.mv1"), vPos, _enemyParametersMap["CrystarlPattern2"]);
 			break;
 		}
