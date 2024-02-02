@@ -9,6 +9,7 @@ exit_count = false;
 };
 
 Global::~Global() {
+	delete _timer;
 };
 
 bool Global::Init() {

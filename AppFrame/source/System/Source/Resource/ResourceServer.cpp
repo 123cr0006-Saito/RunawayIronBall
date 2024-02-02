@@ -167,11 +167,19 @@ void ResourceServer::DeleteResourceAll() {
 	for (auto itr = handle_server.begin(); itr != handle_server.end(); itr++) {
 		DeleteGraph((*itr).second);
 	}
-	//構造体の画像の削除
+	//分割した画像の削除
 	for (auto itr = div_server.begin(); itr != div_server.end(); itr++) {
 		for (int i = 0; i < (*itr).second.AllNum; i++) {
 			DeleteGraph((*itr).second.handle[i]);
 		}
+		delete[](*itr).second.handle;
+	}
+	//読み込んだ複数の画像の削除
+	for (auto itr = mult_server.begin(); itr != mult_server.end(); itr++) {
+		for (int i = 0; i < (*itr).second.AllNum; i++) {
+			DeleteGraph((*itr).second.handle[i]);
+		}
+		delete[](*itr).second.handle;
 	}
 	//エフェクシアのエフェクトの削除
 	for (auto itr = effekseer_server.begin(); itr != effekseer_server.end(); itr++) {
