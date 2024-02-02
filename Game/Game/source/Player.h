@@ -46,6 +46,8 @@ public:
 
 	void SetBlastOffPower(VECTOR dir, float power) { _blastOffDir = dir; _blastOffPower = power; };
 
+	bool UpdateNextComboAnim();
+
 
 	VECTOR GetRightHandPos();
 
@@ -75,6 +77,10 @@ private:
 	bool _playNextComboAnim;
 	// 次のコンボモーションのステータスを保持する
 	STATUS _nextComboAnim;
+
+	int _comboInputAcceptanceFrame;
+
+
 
 	STATUS _animStatus;
 	int _attach_index;

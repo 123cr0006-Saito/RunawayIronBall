@@ -14,7 +14,7 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	_ibFollowingMode = true;
 	_isAttackState = false;
 
-	_playNextComboAnim = false;
+	_playNextComboAnim = true;
 	_nextComboAnim = STATUS::NONE;
 
 	// アニメーションアタッチはされていない
@@ -118,9 +118,12 @@ bool Player::Process(float camAngleY)
 	}
 	// 通常攻撃
 	else if (_input->GetRel(XINPUT_BUTTON_X) != 0) {
-		_animStatus = STATUS::HORISONTAL_SWING_01;
-		_isSwinging = true;
-		_canMove = false;
+		if (_nextComboAnim != STATUS::NONE) {
+			_playNextComboAnim = true;
+
+			_isSwinging = true;
+			_canMove = false;
+		}
 	}
 
 	if (_input->GetKey(XINPUT_BUTTON_X) != 0) {
@@ -135,7 +138,8 @@ bool Player::Process(float camAngleY)
 
 	if (!_isSwinging && !_isSpinning) {
 		_animStatus = STATUS::WAIT;
-		_nextComboAnim = STATUS::NONE;
+
+
 		_canMove = true;
 
 		_ibFollowingMode = true;
@@ -144,6 +148,20 @@ bool Player::Process(float camAngleY)
 	else {
 		_ibFollowingMode = false;
 		_isAttackState = true;
+	}
+
+	if (_playNextComboAnim) {
+		if (_animStatus == STATUS::HORISONTAL_SWING_01 || _animStatus == STATUS::HORISONTAL_SWING_02) {
+			if (_play_time >= 94.0f) {
+				_animStatus = _nextComboAnim;
+				_playNextComboAnim = false;
+			}
+		}
+		else {
+			_animStatus = _nextComboAnim;
+			_playNextComboAnim = false;
+		}
+		
 	}
 
 	bool _isMoved = false;
@@ -204,6 +222,7 @@ bool Player::Process(float camAngleY)
 	UpdateBone();
 	//-------------------
 	AnimProcess(oldStatus);
+	UpdateNextComboAnim();
 	return true;
 }
 
@@ -250,7 +269,7 @@ bool Player::AnimProcess(STATUS oldStatus)
 	if (_play_time >= _total_time) {
 		_play_time = 0.0f;
 
-		if (_animStatus == STATUS::HORISONTAL_SWING_01) {
+		if (_animStatus == STATUS::HORISONTAL_SWING_01 || _animStatus == STATUS::HORISONTAL_SWING_02) {
 			_isSwinging = false;
 		}
 	}
@@ -301,6 +320,24 @@ void Player::UpdateBone() {
 		}
 	}
 };
+
+bool Player::UpdateNextComboAnim()
+{
+	switch (_animStatus)
+	{
+	case STATUS::HORISONTAL_SWING_01:
+		_nextComboAnim = STATUS::HORISONTAL_SWING_02;
+		break;
+	case STATUS::HORISONTAL_SWING_02:
+		_nextComboAnim = STATUS::NONE;
+		break;
+
+	default:
+		_nextComboAnim = STATUS::HORISONTAL_SWING_01;
+		break;
+	}
+	return true;
+}
 
 VECTOR Player::GetRightHandPos()
 {
