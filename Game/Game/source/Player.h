@@ -12,7 +12,8 @@ private:
 		WAIT,		
 		RUN,
 
-		HORISONTAL_SWING,
+		HORISONTAL_SWING_01,
+		HORISONTAL_SWING_02,
 		SPIN_SWING,
 
 		_EOT_
@@ -69,6 +70,11 @@ private:
 
 	// 攻撃状態かどうか
 	bool _isAttackState;
+
+	// 次のコンボモーションを再生するかどうか
+	bool _playNextComboAnim;
+	// 次のコンボモーションのステータスを保持する
+	STATUS _nextComboAnim;
 
 	STATUS _animStatus;
 	int _attach_index;

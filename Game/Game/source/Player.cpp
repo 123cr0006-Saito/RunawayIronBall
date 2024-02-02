@@ -14,6 +14,9 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	_ibFollowingMode = true;
 	_isAttackState = false;
 
+	_playNextComboAnim = false;
+	_nextComboAnim = STATUS::NONE;
+
 	// アニメーションアタッチはされていない
 	_attach_index = -1;
 	// ステータスを「無し」に設定
@@ -105,14 +108,7 @@ bool Player::Process(float camAngleY)
 	STATUS oldStatus = _animStatus;
 	//_animStatus = STATUS::NONE;
 
-	if (_input->GetKey(XINPUT_BUTTON_X) != 0) {
-		_spinCnt++;
-		_canMove = false;
-	}
-	else {
-		_spinCnt = 0;
-		_isSpinning = false;
-	}
+
 
 	// 回転攻撃
 	if (_spinCnt > 90) {
@@ -122,13 +118,24 @@ bool Player::Process(float camAngleY)
 	}
 	// 通常攻撃
 	else if (_input->GetRel(XINPUT_BUTTON_X) != 0) {
-		_animStatus = STATUS::HORISONTAL_SWING;
+		_animStatus = STATUS::HORISONTAL_SWING_01;
 		_isSwinging = true;
 		_canMove = false;
 	}
 
+	if (_input->GetKey(XINPUT_BUTTON_X) != 0) {
+		_spinCnt++;
+		//_canMove = false;
+	}
+	else {
+		_spinCnt = 0;
+		_isSpinning = false;
+	}
+
+
 	if (!_isSwinging && !_isSpinning) {
 		_animStatus = STATUS::WAIT;
+		_nextComboAnim = STATUS::NONE;
 		_canMove = true;
 
 		_ibFollowingMode = true;
@@ -214,18 +221,24 @@ bool Player::AnimProcess(STATUS oldStatus)
 		}
 		// ステータスに合わせてアニメーションのアタッチ
 		switch (_animStatus) {
+
 		case STATUS::WAIT:
 			_attach_index = MV1AttachAnim(_modelHandle, 0, -1, FALSE);
-			break;
-		case STATUS::HORISONTAL_SWING:
-			_attach_index = MV1AttachAnim(_modelHandle, 2, -1, FALSE);
-			break;
-		case STATUS::SPIN_SWING:
-			_attach_index = MV1AttachAnim(_modelHandle, 5, -1, FALSE);
 			break;
 		case STATUS::RUN:
 			_attach_index = MV1AttachAnim(_modelHandle, 1, -1, FALSE);
 			break;
+
+		case STATUS::HORISONTAL_SWING_01:
+			_attach_index = MV1AttachAnim(_modelHandle, 2, -1, FALSE);
+			break;
+		case STATUS::HORISONTAL_SWING_02:
+			_attach_index = MV1AttachAnim(_modelHandle, 3, -1, FALSE);
+			break;
+		case STATUS::SPIN_SWING:
+			_attach_index = MV1AttachAnim(_modelHandle, 5, -1, FALSE);
+			break;
+
 		}
 		// アタッチしたアニメーションの総再生時間を取得する
 		_total_time = MV1GetAttachAnimTotalTime(_modelHandle, _attach_index);
@@ -237,7 +250,7 @@ bool Player::AnimProcess(STATUS oldStatus)
 	if (_play_time >= _total_time) {
 		_play_time = 0.0f;
 
-		if (_animStatus == STATUS::HORISONTAL_SWING) {
+		if (_animStatus == STATUS::HORISONTAL_SWING_01) {
 			_isSwinging = false;
 		}
 	}
