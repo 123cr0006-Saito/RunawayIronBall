@@ -30,6 +30,7 @@
     <ClCompile Include="source\BoardPolygon.cpp" />
     <ClCompile Include="source\ModePause.cpp" />
     <ClCompile Include="source\ModeInstructions.cpp" />
+    <ClCompile Include="source\Tower.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -62,5 +63,6 @@
     <ClInclude Include="source\BoardPolygon.h" />
     <ClInclude Include="source\ModePause.h" />
     <ClInclude Include="source\ModeInstructions.h" />
+    <ClInclude Include="source\Tower.h" />
   </ItemGroup>
 </Project>
