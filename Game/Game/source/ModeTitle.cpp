@@ -13,6 +13,13 @@ bool ModeTitle::Initialize() {
 
 	_input = XInput::GetInstance();
 	_modeCount = 0;
+	_titleLogo = ResourceServer::LoadGraph(_T("res/TemporaryMaterials/Title/title.png"));
+	_comandHandlle[0] = ResourceServer::LoadGraph(_T("res/TemporaryMaterials/Title/UI_starta_select.png"));
+	_comandHandlle[1] = ResourceServer::LoadGraph(_T("res/TemporaryMaterials/Title/UI_option_select.png"));
+	_comandHandlle[2] = ResourceServer::LoadGraph(_T("res/TemporaryMaterials/Title/UI_quit.png"));
+	_comandHandlle[3] = ResourceServer::LoadGraph(_T("res/TemporaryMaterials/Title/UI_start.png"));
+	_comandHandlle[4] = ResourceServer::LoadGraph(_T("res/TemporaryMaterials/Title/UI_option.png"));
+	_comandHandlle[5] = ResourceServer::LoadGraph(_T("res/TemporaryMaterials/Title/UI_quit_selelct.png"));
 	return true;
 }
 
@@ -72,14 +79,22 @@ bool ModeTitle::Process() {
 bool ModeTitle::Render() {
 	base::Render();
 	clsDx();
-	printfDx("%d", _modeCount);
-	int x = 1920 / 2;
-	int y = 1080 / 2;
+	printfDx("\n\n%d", _modeCount);
+	int x, y;
+	//É^ÉCÉgÉãÉçÉSÇÃï`âÊ
+	GetGraphSize(_titleLogo, &x, &y);
+	x = 1920 / 2 - x / 2;
+	DrawGraph(x, 100, _titleLogo, true);
+
+	//ÇªÇÍÇºÇÍÇÃçÄñ⁄ÇÃï`âÊ
+	GetGraphSize(_comandHandlle[0], &x, &y);
+	x = 1920 / 2 - x / 2;
+	y = 1080 / 2 - y / 2;
 
 	for (int i = 0; i < 3; i++) {
-		int color = GetColor(255, 0, 0);
-		if (i == _modeCount) { color = GetColor(0, 255, 0); }
-		DrawBox(x - 200, y - 50 + i * 200, x + 200, y + 50 + i * 200, color, true);
+		int handleNum = i;
+		if (i == _modeCount) { handleNum += 3; }
+		DrawGraph(x , y + 100 + i * 150, _comandHandlle[handleNum],true);
 	}
 
 	return true;
