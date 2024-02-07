@@ -83,18 +83,20 @@ bool ModeTitle::Render() {
 	int x, y;
 	//ƒ^ƒCƒgƒ‹ƒƒS‚Ì•`‰æ
 	GetGraphSize(_titleLogo, &x, &y);
-	x = 1920 / 2 - x / 2;
-	DrawGraph(x, 100, _titleLogo, true);
+	//x = 1920 / 2 - x / 2;
+	x = 840;
+	DrawGraph(x, 145, _titleLogo, true);
 
 	//‚»‚ê‚¼‚ê‚Ì€–Ú‚Ì•`‰æ
 	GetGraphSize(_comandHandlle[0], &x, &y);
-	x = 1920 / 2 - x / 2;
-	y = 1080 / 2 - y / 2;
+	int centerX,centerY;
+	centerX = 1340; 
+	centerY = 555;
 
 	for (int i = 0; i < 3; i++) {
 		int handleNum = i;
 		if (i == _modeCount) { handleNum += 3; }
-		DrawGraph(x , y + 100 + i * 150, _comandHandlle[handleNum],true);
+		DrawExtendGraph(centerX , centerY  + i * (72 + y / 2), centerX + x , centerY + y+ i * (72+y/2), _comandHandlle[handleNum], true);
 	}
 
 	return true;
