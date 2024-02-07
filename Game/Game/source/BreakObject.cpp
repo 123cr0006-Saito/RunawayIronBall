@@ -91,9 +91,9 @@ void BreakObject::Process()
 		// ”j•Ð‚ª”ò‚ÑŽU‚éˆ—
 		for (auto itr = _frameInfo.begin(); itr != _frameInfo.end(); ++itr) {
 			// ‰ñ“]s—ñ
-			MATRIX mRot = MGetRotX(itr->rotVector.x);
-			mRot = MMult(mRot, MGetRotY(itr->rotVector.y));
-			mRot = MMult(mRot, MGetRotZ(itr->rotVector.z));
+			MATRIX mRot = MGetRotX(itr->vRot.x);
+			mRot = MMult(mRot, MGetRotY(itr->vRot.y));
+			mRot = MMult(mRot, MGetRotZ(itr->vRot.z));
 
 			// ˆÚ“®‘O‚Ìs—ñ
 			MATRIX mBefor = MV1GetFrameLocalMatrix(_modelHandle, itr->frameIndex);
@@ -201,7 +201,7 @@ void BreakObject::SetBlastDir(VECTOR vDir)
 		angleY = Math::DegToRad(angleY);
 		float angleZ = rand() % deltaRot;
 		angleZ = Math::DegToRad(angleZ);
-		itr->rotVector = VGet(angleX, angleY, angleZ);
+		itr->vRot = VGet(angleX, angleY, angleZ);
 	}
 	//_blastPower = 20.0f;
 	_blastDir = vDir;
