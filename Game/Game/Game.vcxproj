@@ -155,6 +155,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\AnimationItem.cpp" />
+    <ClCompile Include="source\AnimationManager.cpp" />
     <ClCompile Include="source\BoardPolygon.cpp" />
     <ClCompile Include="source\ModeInstructions.cpp" />
     <ClCompile Include="source\ModePause.cpp" />
@@ -186,6 +188,8 @@
     <ClCompile Include="source\UIHeart.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\AnimationItem.h" />
+    <ClInclude Include="source\AnimationManager.h" />
     <ClInclude Include="source\BoardPolygon.h" />
     <ClInclude Include="source\ModeInstructions.h" />
     <ClInclude Include="source\ModePause.h" />
