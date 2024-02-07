@@ -5,13 +5,6 @@
 #include <map>
 #include <vector>
 
-// アニメーション情報
-struct ANIMATION_INFO {
-	// アニメーションのインデックス番号
-	int _animIndex;
-	// ループ回数（0なら無限ループ）
-	int _loopTimes;
-};
 
 
 class AnimationManager
@@ -20,8 +13,14 @@ public:
 	AnimationManager();
 	~AnimationManager();
 
-	// ANIMATION_INFO型のアニメーション情報を追加する
+	// ANIMATION_INFO型のアニメーション情報の初期設定を行う
 	void SetupAnimationInfo(int statusNo, int animIndex, int loopTimes);
+
+	// アニメーションアイテムを追加する
+	void AddAnimationItem(int statusNo);
+
+	// アニメーションの再生処理
+	void Process();
 
 private:
 	// モデルハンドル
@@ -40,4 +39,5 @@ private:
 
 	// アニメーションの再生時間
 	float _playTime;
+
 };
