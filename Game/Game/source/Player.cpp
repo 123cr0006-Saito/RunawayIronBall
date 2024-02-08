@@ -255,7 +255,7 @@ bool Player::AnimProcess(STATUS oldStatus)
 			_attach_index = MV1AttachAnim(_modelHandle, 3, -1, FALSE);
 			break;
 		case STATUS::SPIN_SWING:
-			_attach_index = MV1AttachAnim(_modelHandle, 5, -1, FALSE);
+			_attach_index = MV1AttachAnim(_modelHandle, 4, -1, FALSE);
 			break;
 
 		}
