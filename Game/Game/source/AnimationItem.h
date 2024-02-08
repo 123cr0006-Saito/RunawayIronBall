@@ -10,7 +10,7 @@ struct ANIMATION_INFO {
 
 class AnimationItem
 {
-public:
+private:
 	friend class AnimationManager;
 	AnimationItem();
 	~AnimationItem();
@@ -18,7 +18,6 @@ public:
 	// アニメーションアイテムの初期設定
 	void Setup(int attachIndex, float totalTime, int loopTimes);
 
-private: 
 	// アニメーションのアタッチインデックス
 	int _attachIndex;
 	// アニメーションの総再生時間

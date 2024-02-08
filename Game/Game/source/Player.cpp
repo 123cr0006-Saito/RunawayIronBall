@@ -39,13 +39,19 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 
 
 	_instance = this;
+
+	_animManager = new AnimationManager(_modelHandle);
+	_animManager->SetupAnimationInfo(static_cast<int>(STATUS::WAIT), MV1GetAnimIndex(_modelHandle, "MO_PL_Stay"), 0);
+	_animManager->SetupAnimationInfo(static_cast<int>(STATUS::RUN), MV1GetAnimIndex(_modelHandle, "MO_PL_Run"), 0);
+	_animManager->SetupAnimationInfo(static_cast<int>(STATUS::HORISONTAL_SWING_01), MV1GetAnimIndex(_modelHandle, "MO_PL_Horizontal_first"), 1);
+	_animManager->SetupAnimationInfo(static_cast<int>(STATUS::HORISONTAL_SWING_02), MV1GetAnimIndex(_modelHandle, "MO_PL_Horizontal_second"), 1);
+	_animManager->SetupAnimationInfo(static_cast<int>(STATUS::SPIN_SWING), MV1GetAnimIndex(_modelHandle, "MO_PL_roteate_loop"), 1);
 }
 
 Player::~Player()
 {
-	if (_modelHandle != -1) {
-		int n = 0;
-	}
+	_instance = nullptr;
+	delete _animManager;
 }
 
 void Player::SetBone() {
@@ -221,7 +227,8 @@ bool Player::Process(float camAngleY)
 	UpdateExp();
 	UpdateBone();
 	//-------------------
-	AnimProcess(oldStatus);
+	//AnimProcess(oldStatus);
+	_animManager->Process(static_cast<int>(_animStatus));
 	UpdateNextComboAnim();
 	return true;
 }

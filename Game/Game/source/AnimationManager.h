@@ -10,7 +10,7 @@
 class AnimationManager
 {
 public:
-	AnimationManager();
+	AnimationManager(int modelHandle);
 	~AnimationManager();
 
 	// ANIMATION_INFO型のアニメーション情報の初期設定を行う
@@ -20,7 +20,7 @@ public:
 	void AddAnimationItem(int statusNo);
 
 	// アニメーションの再生処理
-	void Process();
+	void Process(int StatusNo);
 
 private:
 	// モデルハンドル
