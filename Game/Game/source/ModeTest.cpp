@@ -49,7 +49,7 @@ bool ModeTest::Initialize() {
 	_enemyPool->Create();
 
 	_planeEffectManeger = new PlaneEffect::PlaneEffectManeger();
-	ResourceServer::LoadMultGraph("res/TemporaryMaterials/test/test", ".png", 30, _effectSheet);
+	ResourceServer::LoadMultGraph("res/TemporaryMaterials/split/test", ".png", 30, _effectSheet);
 	                    
 	return true;
 }

@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "math.h"
 #include "EnemyStract.h"
+#include "PlaneEffectManeger.h"
 
 //エネミー各種のもとになるクラス
 class EnemyBase

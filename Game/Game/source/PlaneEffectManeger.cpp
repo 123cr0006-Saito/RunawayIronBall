@@ -1,6 +1,10 @@
 #include "PlaneEffectManeger.h"
-PlaneEffect::PlaneEffectManeger::PlaneEffectManeger(){
 
+PlaneEffect::PlaneEffectManeger* PlaneEffect::PlaneEffectManeger::_instance = nullptr;
+
+PlaneEffect::PlaneEffectManeger::PlaneEffectManeger(){
+	_instance = this;
+	_vertical.clear();
 };
 
 PlaneEffect::PlaneEffectManeger::~PlaneEffectManeger() {

@@ -270,14 +270,25 @@ bool EnemyBase::SetGravity() {
 
 void EnemyBase::SetKnockBack(VECTOR vDir, float damage) {
 	if (_knockBackSpeedFrame <= 0) {
+		InheritanceInit();
+		_rotation.y = atan2(vDir.x, vDir.z);
 		_hp -= damage;
 		_knockBackDir = vDir;
-		_knockBackSpeedFrame = damage;
+		_knockBackSpeedFrame = damage - _weightExp;
+
+		VECTOR effectPos = VAdd(VAdd(_pos, _diffeToCenter), VScale(vDir, -50));
+
+		int effectHandle[30];
+		ResourceServer::LoadMultGraph("res/TemporaryMaterials/split/test", ".png", 30, effectHandle);
+		PlaneEffect::BoardPolygon* effect = new PlaneEffect::BoardPolygon(effectPos, GetCameraBillboardMatrix(), 200, effectHandle, 30, 0.5f / 60.0f * 1000.0f);
+
+		PlaneEffect::PlaneEffectManeger::GetInstance()->LoadVertical(effect);
 		_state = ENEMYTYPE::KNOCKBACK;
 		if (_hp <= 0) {
-			if (_knockBackSpeedFrame < 60) {
-				_knockBackSpeedFrame = 60;
-			}
+
+			_knockBackSpeedFrame = damage;
+
+			_player->SetExp(_weightExp);
 			_state = ENEMYTYPE::DEAD;
 		}
 	}
