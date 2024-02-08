@@ -36,6 +36,8 @@ bool House::Render()
 bool House::DrawDebugInfo()
 {
 	if (!base::DrawDebugInfo()) { return false; }
-	obb.Render(GetColor(255, 255, 255));
+	if (_useCollision) {
+		obb.Render(GetColor(255, 255, 255));
+	}
 	return true;
 }

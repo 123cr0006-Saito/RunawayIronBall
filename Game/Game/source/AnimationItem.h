@@ -1,0 +1,35 @@
+#pragma once
+
+// アニメーション情報
+struct ANIMATION_INFO {
+	// アニメーションのインデックス番号
+	int animIndex;
+	// ループ回数（0なら無限ループ）
+	int loopTimes;
+};
+
+class AnimationItem
+{
+public:
+	friend class AnimationManager;
+	AnimationItem();
+	~AnimationItem();
+
+	// アニメーションアイテムの初期設定
+	void Setup(int attachIndex, float totalTime, int loopTimes);
+
+private: 
+	// アニメーションのアタッチインデックス
+	int _attachIndex;
+	// アニメーションの総再生時間
+	float _totalTime;
+	// アニメーションの再生時間
+	float _playTime;
+
+	// モーションブレンド用
+	float _closeTotalTime;
+	float _closeTime;
+
+	// ループカウント用
+	int _loopCnt;
+};

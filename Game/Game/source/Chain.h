@@ -18,6 +18,12 @@ public:
 
 	void DrawDebugInfo();
 
+	//齋藤が作成した関数です------------------------
+	void SetPowerScale(std::string FileName);//ファイル読み込みでレベルに合わせた攻撃力と拡大率を取得
+	bool UpdateLevel();//プレイヤーから取得した、レベルで攻撃力と拡大率を設定
+	int GetPower() { return _power; }//ノックバック用の力を返します。
+	//----------------------------------------------------------
+
 
 private:
 	XInput* _input;
@@ -30,8 +36,11 @@ private:
 	int _iModelHandle;
 	VECTOR _iPos;
 	VECTOR _iForwardDir;
-	float _r = 130.0f; //// 後でSphereクラスを作る
+	float _r = 55.0f; //// 後でSphereクラスを作る
 
+
+	// 配置ソケット
+	int _socketNo[3];
 
 
 	int _attackAnimCnt;
@@ -49,9 +58,15 @@ private:
 
 	float _length;
 
-	bool _isSwing;
+	bool _followingMode;
 
 
 	Player* _playerInstance;
 	int _playerModelHandle;
+
+	//-------------------
+	// 齋藤が作成した変数です。
+	const int _originR = 50;
+	int _power;//吹っ飛ばす力です。
+	std::map<int, std::pair<int, float>> _powerAndScale;//攻撃力と拡大率を格納したコンテナです。
 };

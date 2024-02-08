@@ -53,7 +53,7 @@ private:
 		float horizontalVelocity; // 水平方向の速度
 		float verticalVelocity; // 鉛直方向の速度
 
-		VECTOR rotVector; // 各軸における1フレームの回転値
+		VECTOR vRot; // 各軸における1フレームの回転値
 	};
 
 	std::vector<FRAME_INFO> _frameInfo;

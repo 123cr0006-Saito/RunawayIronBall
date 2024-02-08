@@ -32,8 +32,9 @@ public:
 	bool Process();
 	bool Render();
 
-private:
+	EnemyBase* GetEnemy(int i) { return _enemy[i]; }
 	static const int ENEMY_MAX_SIZE = 10;
+private:
 	EnemyBase* _enemy[ENEMY_MAX_SIZE];
 	std::map<std::string, EnemyParam> _enemyParametersMap;
 };

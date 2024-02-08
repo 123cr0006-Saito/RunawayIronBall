@@ -21,6 +21,7 @@ public:
 protected:
 	int _modelHandle;
 	VECTOR _pos;
+	VECTOR _forwardDir;
 };
 
 

@@ -7,10 +7,15 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 {
 	_input = XInput::GetInstance();
 
-
+	_canMove = true;
 	_speed = 8.0f;
 	UpdateCollision();
 
+	_ibFollowingMode = true;
+	_isAttackState = false;
+
+	_playNextComboAnim = true;
+	_nextComboAnim = STATUS::NONE;
 
 	// アニメーションアタッチはされていない
 	_attach_index = -1;
@@ -29,6 +34,10 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	SetBone();
 
 	_isSwinging = false;
+	_isSpinning = false;
+	_spinCnt = 0;
+
+
 	_instance = this;
 }
 
@@ -60,6 +69,39 @@ void Player::SetBone() {
 	_bone[1] = new bone(&_modelHandle, bone_right_list, bone_right_list.size() - 2, "res/JsonFile/hair_parameters.json");
 };
 
+void Player::SetNextExp(std::string FileName) {
+	myJson json(FileName);
+	_maxLevel = json._size - 1;
+	for(auto& expList : json._json) {
+		int nowLevel = 0;
+		int exp = 0;
+		expList.at("Level").get_to(nowLevel);
+		expList.at("Exp").get_to(exp);
+		_nextLevel[nowLevel] = exp;
+	}
+};
+
+bool Player::UpdateExp() {
+	if (_nowLevel < _maxLevel) {
+		if (_nowExp >= _nextLevel[_nowLevel]) {
+			_nowExp -= _nextLevel[_nowLevel];
+			_nowLevel++;
+		}
+	}
+
+	if (_input->GetTrg(XINPUT_BUTTON_A)) {
+		if (_nowLevel <= _maxLevel) {
+			_nowLevel--;
+		}
+	}
+	if (_input->GetTrg(XINPUT_BUTTON_B)) {
+		if (_nowLevel < _maxLevel) {
+			_nowLevel++;
+		}
+	}
+	return true;
+};
+
 bool Player::Process(float camAngleY)
 {
 	// 処理前のステータスを保存しておく
@@ -67,21 +109,66 @@ bool Player::Process(float camAngleY)
 	//_animStatus = STATUS::NONE;
 
 
-	if (_input->GetTrg(XINPUT_BUTTON_X) != 0) {
-		_animStatus = STATUS::HORISONTAL_SWING;
-		_isSwinging = true;
+
+	// 回転攻撃
+	if (_spinCnt > 90) {
+		_animStatus = STATUS::SPIN_SWING;
+		_isSpinning = true;
+		_canMove = true;
+	}
+	// 通常攻撃
+	else if (_input->GetRel(XINPUT_BUTTON_X) != 0) {
+		if (_nextComboAnim != STATUS::NONE) {
+			_playNextComboAnim = true;
+
+			_isSwinging = true;
+			_canMove = false;
+		}
 	}
 
-	if (!_isSwinging) {
+	if (_input->GetKey(XINPUT_BUTTON_X) != 0) {
+		_spinCnt++;
+		//_canMove = false;
+	}
+	else {
+		_spinCnt = 0;
+		_isSpinning = false;
+	}
+
+
+	if (!_isSwinging && !_isSpinning) {
 		_animStatus = STATUS::WAIT;
+
+
+		_canMove = true;
+
+		_ibFollowingMode = true;
+		_isAttackState = false;
+	}
+	else {
+		_ibFollowingMode = false;
+		_isAttackState = true;
 	}
 
-	if (_animStatus != STATUS::HORISONTAL_SWING) {
+	if (_playNextComboAnim) {
+		if (_animStatus == STATUS::HORISONTAL_SWING_01 || _animStatus == STATUS::HORISONTAL_SWING_02) {
+			if (_play_time >= 94.0f) {
+				_animStatus = _nextComboAnim;
+				_playNextComboAnim = false;
+			}
+		}
+		else {
+			_animStatus = _nextComboAnim;
+			_playNextComboAnim = false;
+		}
+		
+	}
 
-		// 左スティックの入力情報を取得する
-		auto lStick = _input->GetAdjustedStick_L();
-		//auto rStick = _input->GetAdjustedStick_R();
-		VECTOR vDir = VGet(lStick.x, 0, lStick.y);
+	bool _isMoved = false;
+	// 左スティックの入力情報を取得する
+	auto lStick = _input->GetAdjustedStick_L();
+	VECTOR vDir = VGet(lStick.x, 0, lStick.y);
+	if (_canMove) {
 		// 左スティックの入力があったら
 		if (VSize(vDir) > 0.000000f) {
 			// 移動処理
@@ -91,34 +178,51 @@ bool Player::Process(float camAngleY)
 			// 移動方向ベクトルを回転させる
 			vDir = VTransform(vDir, mRot);
 			_pos = VAdd(_pos, VScale(vDir, _speed));
+
+			_isMoved = true;
+
+			
+		}
+	}
+
+	if (!_isAttackState) {
+		if (_isMoved) {
 			_animStatus = STATUS::RUN;
 
-			// 回転処理
-			// 基準のベクトル
-			VECTOR vBase = VGet(0.0f, 0.0f, -1.0f);
-			// 基準のベクトルと移動方向のベクトルのなす角を計算する
-			float angle = Math::CalcVectorAngle(vDir, vBase);
-			// 反時計回りの場合
-			if (vDir.x > 0.0f) {
-				angle *= -1;
+			// キャラクターを滑らかに回転させる
+			float angle = Math::CalcVectorAngle(_forwardDir, vDir);
+			float rotRad = (2.0f * DX_PI_F) / 30.0f;
+			if (rotRad > angle) {
+				_forwardDir = vDir;
 			}
-			// モデルの回転値をセットする
-			MV1SetRotationXYZ(_modelHandle, VGet(0.0f, angle, 0.0f));
+			else {
+				VECTOR vN = VCross(_forwardDir, vDir);
+				_forwardDir = VTransform(_forwardDir, MGetRotAxis(vN, rotRad));
+			}
 		}
 		else {
 			_animStatus = STATUS::WAIT;
 		}
-
-
 	}
+
+	if (_isSpinning) {
+		_forwardDir = VTransform(_forwardDir, MGetRotY((2.0f * DX_PI_F) / 30.0f));
+	}
+
+	// 回転処理
+	Math::SetModelForward_RotationY(_modelHandle, _forwardDir);
 
 	BlastOffProcess();
 
 	MV1SetPosition(_modelHandle, _pos);
 	UpdateCollision();
+	//-------------------
+	//齋藤が作成した関数です。
+	UpdateExp();
 	UpdateBone();
-
+	//-------------------
 	AnimProcess(oldStatus);
+	UpdateNextComboAnim();
 	return true;
 }
 
@@ -136,15 +240,24 @@ bool Player::AnimProcess(STATUS oldStatus)
 		}
 		// ステータスに合わせてアニメーションのアタッチ
 		switch (_animStatus) {
+
 		case STATUS::WAIT:
 			_attach_index = MV1AttachAnim(_modelHandle, 0, -1, FALSE);
-			break;
-		case STATUS::HORISONTAL_SWING:
-			_attach_index = MV1AttachAnim(_modelHandle, 2, -1, FALSE);
 			break;
 		case STATUS::RUN:
 			_attach_index = MV1AttachAnim(_modelHandle, 1, -1, FALSE);
 			break;
+
+		case STATUS::HORISONTAL_SWING_01:
+			_attach_index = MV1AttachAnim(_modelHandle, 2, -1, FALSE);
+			break;
+		case STATUS::HORISONTAL_SWING_02:
+			_attach_index = MV1AttachAnim(_modelHandle, 3, -1, FALSE);
+			break;
+		case STATUS::SPIN_SWING:
+			_attach_index = MV1AttachAnim(_modelHandle, 5, -1, FALSE);
+			break;
+
 		}
 		// アタッチしたアニメーションの総再生時間を取得する
 		_total_time = MV1GetAttachAnimTotalTime(_modelHandle, _attach_index);
@@ -156,7 +269,7 @@ bool Player::AnimProcess(STATUS oldStatus)
 	if (_play_time >= _total_time) {
 		_play_time = 0.0f;
 
-		if (_animStatus == STATUS::HORISONTAL_SWING) {
+		if (_animStatus == STATUS::HORISONTAL_SWING_01 || _animStatus == STATUS::HORISONTAL_SWING_02) {
 			_isSwinging = false;
 		}
 	}
@@ -181,6 +294,8 @@ bool Player::BlastOffProcess()
 bool Player::Render()
 {
 	CharacterBase::Render();
+
+	DrawDebugInfo();
 	return true;
 }
 
@@ -193,12 +308,36 @@ void Player::UpdateCollision()
 	_capsuleCollision.Update();
 }
 
-void Player::UpdateBone(){
+void Player::UpdateBone() {
 	for (int i = 0; i < sizeof(_bone) / sizeof(_bone[0]); i++) {
 		_bone[i]->Process();
 		_bone[i]->SetMain(_bone[i]->_massPosList);
 	}
+	if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN)) {
+		for (int i = 0; i < sizeof(_bone) / sizeof(_bone[0]); i++) {
+			_bone[i]->SetDebugDraw();
+			_bone[i]->DebugProcess(12);
+		}
+	}
 };
+
+bool Player::UpdateNextComboAnim()
+{
+	switch (_animStatus)
+	{
+	case STATUS::HORISONTAL_SWING_01:
+		_nextComboAnim = STATUS::HORISONTAL_SWING_02;
+		break;
+	case STATUS::HORISONTAL_SWING_02:
+		_nextComboAnim = STATUS::NONE;
+		break;
+
+	default:
+		_nextComboAnim = STATUS::HORISONTAL_SWING_01;
+		break;
+	}
+	return true;
+}
 
 VECTOR Player::GetRightHandPos()
 {
@@ -210,5 +349,8 @@ VECTOR Player::GetRightHandPos()
 
 void Player::DrawDebugInfo()
 {
+	for (int i = 0; i < sizeof(_bone) / sizeof(_bone[0]); i++) {
+		_bone[i]->DebugRender();
+	}
 	//DrawCapsule3D(_capsuleCollision._startPos, _capsuleCollision._endPos, _capsuleCollision._r, 16, COLOR_RED, COLOR_RED, false);
 }
