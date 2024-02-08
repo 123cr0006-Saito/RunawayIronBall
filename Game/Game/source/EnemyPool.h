@@ -11,6 +11,7 @@
 #include "SlaBlock.h"
 #include "Crystarl.h"
 #include "CrystarlPattern2.h"
+#include "SlaBlockPattern2.h"
 
 // create Å®model param 
 // init Å®pos

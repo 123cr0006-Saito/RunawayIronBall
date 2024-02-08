@@ -40,6 +40,7 @@ bool EnemyBase::Create(int model, VECTOR pos, EnemyParam param) {
 	Init(pos);
 	InheritanceInit();
 	DebugSnail();
+
 	return true;
 };
 
@@ -57,6 +58,16 @@ void EnemyBase::Init(VECTOR pos) {
 	_state = ENEMYTYPE::SEARCH;
 	_searchState = SEARCHTYPE::COOLTIME;
 	_rotation = VGet(0, 0, 0);
+
+	float randSize = (float)(rand() % 75) / 100 + 0.75;// 1 + 0.0 ~ 0.5
+	MV1SetScale(_model, VScale(VGet(1.0f, 1.0f, 1.0f), 2 * randSize));//スラブロックの借りが小さかったため2倍に設定
+
+	_diffeToCenter = VGet(0, 125 * randSize, 0);
+	_r = 150.0f * randSize;
+	_weightExp = _weightExp * randSize;
+
+	DebugSnail();
+
 };
 
 void EnemyBase::InheritanceInit() {
@@ -64,18 +75,6 @@ void EnemyBase::InheritanceInit() {
 };
 
 void  EnemyBase::DebugSnail() {
-	//今のモデルに貼り付けているテクスチャ
-	MV1SetTextureGraphHandle(_model, 0, ResourceServer::LoadGraph("res/katatumuri/14086_Snail_with_toy_house_for_ shell_v2_diff2.jpg"), true);
-	MV1SetTextureGraphHandle(_model, 1, ResourceServer::LoadGraph("res/katatumuri/14086_Snail_with_toy_house_for_ shell_v2_diff.jpg"), true);
-	float randSize = (float)(rand() % 75) / 100 + 0.75;// 1 + 0.0 ~ 0.5
-	MV1SetScale(_model, VScale(VGet(1.0f, 1.0f, 1.0f), 0.1 * randSize));//持ってきたモデルが大きかったため1/10に設定
-
-	//---------------------------------------------
-	//個別で設定できるようにする
-	_diffeToCenter = VGet(0, 125 * randSize, 0);
-	_r = 150.0f * randSize;
-	_weightExp = _weightExp * randSize;
-	//--------------------------------------------
 
 };
 

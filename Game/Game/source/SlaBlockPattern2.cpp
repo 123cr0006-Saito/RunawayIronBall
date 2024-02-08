@@ -55,6 +55,7 @@ bool SlaBlockPattern2::ModeAttack() {
 			_rotation.y = atan2(dirVec.x, dirVec.z);
 			_savePos = _pos;
 			_saveNextPoint = VAdd(_player->GetPosition(), VGet(0, 500, 0));
+			ScreenVibration::GetInstance()->SetVibration(0, 20*(_fallCount+1), 20);
 			if (_fallCount > 2) {
 				_fallCount = 0;
 				_state = ENEMYTYPE::COOLTIME;

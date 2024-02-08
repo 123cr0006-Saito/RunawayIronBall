@@ -16,6 +16,25 @@ void Crystarl::InheritanceInit() {
 	_attackDir = 0.0f;
 };
 
+void  Crystarl::DebugSnail() {
+	//今のモデルに貼り付けているテクスチャ
+	MV1SetTextureGraphHandle(_model, 0, ResourceServer::LoadGraph("res/katatumuri/14086_Snail_with_toy_house_for_ shell_v2_diff2.jpg"), true);
+	MV1SetTextureGraphHandle(_model, 1, ResourceServer::LoadGraph("res/katatumuri/14086_Snail_with_toy_house_for_ shell_v2_diff.jpg"), true);
+
+
+	MV1SetScale(_model, VScale(VGet(1.0f, 1.0f, 1.0f), 0.1));
+	//---------------------------------------------
+
+	float randSize = (float)(rand() % 75) / 100 + 0.75;// 1 + 0.0 ~ 0.5
+	MV1SetScale(_model, VScale(VGet(1.0f, 1.0f, 1.0f), 0.1 * randSize));//持ってきたモデルが大きかったため1/10に設定
+
+	_diffeToCenter = VGet(0, 125 * randSize, 0);
+	_r = 150.0f * randSize;
+	_weightExp = _weightExp * randSize;
+
+	//--------------------------------------------
+};
+
 bool Crystarl::ModeSearch() {
 	switch (_searchState) {
 	case SEARCHTYPE::MOVE:

@@ -17,7 +17,7 @@ public:
 	virtual void InheritanceInit();
 	//---------------------------------------------------------
 	//デバッグ用の関数です。素材が来たら後で消します
-	void  DebugSnail();
+	virtual void  DebugSnail();
 	//---------------------------------------------------------
 	void SetPos(VECTOR pos);
 

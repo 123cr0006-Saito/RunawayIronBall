@@ -1,5 +1,6 @@
 #pragma once
 #include "EnemyBase.h"
+#include "ScreenVibration.h"
 #include "Player.h"
 #include <string>
 class SlaBlockPattern2 : public EnemyBase

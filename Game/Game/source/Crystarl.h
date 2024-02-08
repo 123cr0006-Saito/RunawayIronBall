@@ -5,6 +5,8 @@ class Crystarl : public EnemyBase
 public:
 	Crystarl();
 	~Crystarl();
+	void  DebugSnail()override;
+
 	void InheritanceInit()override;
 	bool ModeSearch()override;
 	bool ModeAttack()override;

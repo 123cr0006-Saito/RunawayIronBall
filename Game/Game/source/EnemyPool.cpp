@@ -38,15 +38,15 @@ void EnemyPool::Create() {
 		switch (enemyNum) {
 		case 0:
 			_enemy[i] = new SlaBlock();
-			_enemy[i]->Create(ResourceServer::MV1LoadModel("res/katatumuri/snail.mv1"), vPos, _enemyParametersMap["Slablock"]);
+			_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/SlaBlock/SlaBlock.mv1"), vPos, _enemyParametersMap["Slablock"]);
 			break;
 		case 1:
 			_enemy[i] = new Crystarl();
 			_enemy[i]->Create(ResourceServer::MV1LoadModel("res/katatumuri/snail.mv1"), vPos, _enemyParametersMap["Crystarl"]);
 			break;
 		case 2:
-			_enemy[i] = new CrystarlPattern2();
-			_enemy[i]->Create(ResourceServer::MV1LoadModel("res/katatumuri/snail.mv1"), vPos, _enemyParametersMap["CrystarlPattern2"]);
+			_enemy[i] = new SlaBlockPattern2();
+			_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/SlaBlock/SlaBlock.mv1"), vPos, _enemyParametersMap["Slablock"]);
 			break;
 		}
 	}
