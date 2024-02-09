@@ -16,12 +16,12 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	_isAttackState = false;
 
 	_playNextComboAnim = true;
-	_nextComboAnim = STATUS::NONE;
+	_nextComboAnim = STATUS::STAY;
 
 	// アニメーションアタッチはされていない
 	_attach_index = -1;
 	// ステータスを「無し」に設定
-	_animStatus = STATUS::NONE;
+	_animStatus = STATUS::STAY;
 	// 再生時間の初期化
 	_total_time = 0.f;
 	_play_time = 0.0f;
@@ -129,18 +129,18 @@ bool Player::Process(float camAngleY)
 
 	// 回転攻撃
 	if (_spinCnt > 90) {
-		_animStatus = STATUS::SPIN_SWING;
+		_animStatus = STATUS::Rotation_SWING;
 		_isSpinning = true;
 		_canMove = true;
 	}
 	// 通常攻撃
 	else if (_input->GetRel(XINPUT_BUTTON_X) != 0) {
-		if (_nextComboAnim != STATUS::NONE) {
+		//if (_nextComboAnim != STATUS::NONE) {
 			_playNextComboAnim = true;
 
 			_isSwinging = true;
 			_canMove = false;
-		}
+		//}
 	}
 
 	if (_input->GetKey(XINPUT_BUTTON_X) != 0) {
@@ -154,7 +154,7 @@ bool Player::Process(float camAngleY)
 
 
 	if (!_isSwinging && !_isSpinning) {
-		_animStatus = STATUS::WAIT;
+		_animStatus = STATUS::STAY;
 
 
 		_canMove = true;
@@ -218,7 +218,7 @@ bool Player::Process(float camAngleY)
 			}
 		}
 		else {
-			_animStatus = STATUS::WAIT;
+			_animStatus = STATUS::STAY;
 		}
 	}
 
@@ -259,7 +259,7 @@ bool Player::AnimProcess(STATUS oldStatus)
 		// ステータスに合わせてアニメーションのアタッチ
 		switch (_animStatus) {
 
-		case STATUS::WAIT:
+		case STATUS::STAY:
 			_attach_index = MV1AttachAnim(_modelHandle, 0, -1, FALSE);
 			break;
 		case STATUS::RUN:
@@ -272,7 +272,7 @@ bool Player::AnimProcess(STATUS oldStatus)
 		case STATUS::HORISONTAL_SWING_02:
 			_attach_index = MV1AttachAnim(_modelHandle, 3, -1, FALSE);
 			break;
-		case STATUS::SPIN_SWING:
+		case STATUS::Rotation_SWING:
 			_attach_index = MV1AttachAnim(_modelHandle, 4, -1, FALSE);
 			break;
 
@@ -347,7 +347,7 @@ bool Player::UpdateNextComboAnim()
 		_nextComboAnim = STATUS::HORISONTAL_SWING_02;
 		break;
 	case STATUS::HORISONTAL_SWING_02:
-		_nextComboAnim = STATUS::NONE;
+		//_nextComboAnim = STATUS::NONE;
 		break;
 
 	default:
