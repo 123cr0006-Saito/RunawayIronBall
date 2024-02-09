@@ -15,10 +15,11 @@ public:
 
 	FrameData();
 	~FrameData();
+
 	bool LoadData(std::string, std::vector<std::pair<int, std::string>> frameData);
 
 	void Process(int state, int animTime);
-	
+	std::vector<CommandParam> GetCommandData() { return _nextCommandList; };
 	static std::map<std::string,std::map<int, std::unordered_multimap<int, CommandParam>>> _kindFrameData;//キャラクターの種類別に持つデータ
 
 protected:
