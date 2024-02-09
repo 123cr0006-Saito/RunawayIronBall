@@ -13,15 +13,27 @@ class Player : public CharacterBase
 {
 private:
 	enum class STATUS {
-		NONE,
-		WAIT,		
+		STAY,		
 		RUN,
 
 		HORISONTAL_SWING_01,
 		HORISONTAL_SWING_02,
-		SPIN_SWING,
+		HORISONTAL_SWING_03,
 
-		_EOT_
+		MANYTIME_SWING,
+		Rotation_SWING,
+
+		FIGHTING_IDLE,
+
+		LONG_JUMP_AIR,
+		LONG_JUMP_NOSEDIVE,
+		LONG_JUMP_LANDING,
+
+		GAMEOVER,
+
+		AVOIDANCE,
+		HIT,
+		NO_STRENGTH
 	};
 
 public:

@@ -61,12 +61,13 @@ void AnimationManager::InitMap(CHARA_NAME charaName, int modelHandle, std::strin
 				info.loopTimes = loopTimes;
 				_animMap[charaName][stateNo] = info;
 				stateNo++;
-
+#ifdef _DEBUG
 				if (info.animIndex == -1) {
 					std::string message = "[" + motionName + "] アニメーションが見つかりませんでした";
 
 					MessageBox(NULL, message.c_str(), "エラー", MB_OK);
 				}
+#endif // _DEBUG
 			}
 		}
 #ifdef _DEBUG
@@ -74,9 +75,10 @@ void AnimationManager::InitMap(CHARA_NAME charaName, int modelHandle, std::strin
 			// ファイルが開けなかった場合
 			MessageBox(NULL, "ファイルが開けませんでした", "エラー", MB_OK);
 		}
-#endif // DEBUG	
+#endif // _DEBUG
 	}
 	_charaAnimMapPtr = &_animMap[charaName];
+	_modelHandle = modelHandle;
 }
 
 // ANIMATION_INFO型のアニメーション情報の初期設定を行う
@@ -91,6 +93,7 @@ void AnimationManager::SetupAnimationInfo(int statusNo, int animIndex, int loopT
 		info.loopTimes = loopTimes;
 		(*_charaAnimMapPtr)[statusNo] = info;
 	}
+
 }
 
 // アニメーションアイテムを追加する
