@@ -1,11 +1,13 @@
 #include "AnimationManager.h"
 
-AnimationManager::AnimationManager(int modelHandle)
+std::map<CHARA_NAME, ANIM_MAP> AnimationManager::_animMap;
+
+AnimationManager::AnimationManager()
 {
-	_modelHandle = modelHandle;
+	_modelHandle = -1;
 	_animNo = -1;
 	_playTime = 0.0f;
-	_animMap = nullptr;
+	_charaAnimMapPtr = nullptr;
 }
 
 AnimationManager::~AnimationManager()
@@ -16,38 +18,87 @@ AnimationManager::~AnimationManager()
 		(*itr) = nullptr;
 	}
 	_animContainer.clear();
-	_animMap = nullptr;
+	_charaAnimMapPtr = nullptr;
 }
 
 // アニメーション情報用マップコンテナを追加する
 //	引数: mapコンテナへのポインタ（各クラスの静的メンバ変数）
 void AnimationManager::InitMap(std::map<int, ANIMATION_INFO>* animMap)
 {
-	if (this->_animMap == nullptr) {
-		this->_animMap = animMap;
+	if (this->_charaAnimMapPtr == nullptr) {
+		this->_charaAnimMapPtr = animMap;
 	}
+}
+
+void AnimationManager::InitMap(CHARA_NAME charaName, int modelHandle, std::string fileName)
+{
+	auto itr = _animMap.find(charaName);
+	if (itr == _animMap.end()) {
+		std::string filePath = "Data/MotionList/" + fileName;
+
+		// csvファイルを読み込む
+		CFile file(filePath);
+		// ファイルが開けた場合
+		if (file.Success()) {
+			const char* data = (const char*)file.Data();
+			int c = 0;
+			int size = file.Size();
+			int stateNo = 0;
+			while (c < size) {
+				std::string motionName;
+				int loopTimes = 0;
+				// モーション名を取得
+				c += GetString(&data[c], &motionName);
+				// カンマの位置を見つける
+				c += FindString(&data[c], ',', &data[size]); c++;
+				// ループ回数を取得
+				c += GetDecNum(&data[c], &loopTimes);
+				// 改行などスキップ
+				c += SkipSpace(&data[c], &data[size]);
+
+				ANIMATION_INFO info;
+				info.animIndex = MV1GetAnimIndex(modelHandle, motionName.c_str());
+				info.loopTimes = loopTimes;
+				_animMap[charaName][stateNo] = info;
+				stateNo++;
+
+				if (info.animIndex == -1) {
+					std::string message = "[" + motionName + "] アニメーションが見つかりませんでした";
+
+					MessageBox(NULL, message.c_str(), "エラー", MB_OK);
+				}
+			}
+		}
+#ifdef _DEBUG
+		else {
+			// ファイルが開けなかった場合
+			MessageBox(NULL, "ファイルが開けませんでした", "エラー", MB_OK);
+		}
+#endif // DEBUG	
+	}
+	_charaAnimMapPtr = &_animMap[charaName];
 }
 
 // ANIMATION_INFO型のアニメーション情報の初期設定を行う
 void AnimationManager::SetupAnimationInfo(int statusNo, int animIndex, int loopTimes)
 {
 	// 引数statusNoに対応するアニメーション情報が存在するか調べる
-	auto itr = (*_animMap).find(statusNo);
+	auto itr = (*_charaAnimMapPtr).find(statusNo);
 	// アニメーション情報が存在しない場合のみ、アニメーション情報を追加する
-	if (itr == (*_animMap).end()) {
+	if (itr == (*_charaAnimMapPtr).end()) {
 		ANIMATION_INFO info;
 		info.animIndex = animIndex;
 		info.loopTimes = loopTimes;
-		(*_animMap)[statusNo] = info;
+		(*_charaAnimMapPtr)[statusNo] = info;
 	}
 }
 
 // アニメーションアイテムを追加する
 void AnimationManager::AddAnimationItem(int statusNo)
 {
-	auto itr = (*_animMap).find(statusNo);
+	auto itr = (*_charaAnimMapPtr).find(statusNo);
 	// アニメーション情報が存在する場合
-	if (itr != (*_animMap).end())
+	if (itr != (*_charaAnimMapPtr).end())
 	{
 		AnimationItem* anim = new AnimationItem();
 
