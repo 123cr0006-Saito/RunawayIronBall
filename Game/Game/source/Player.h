@@ -4,6 +4,11 @@
 #include "bone.h"
 #include "myJson.h"
 
+#include "AnimationManager.h"
+#include "AnimationItem.h"
+
+#include <map>
+
 class Player : public CharacterBase
 {
 private:
@@ -80,7 +85,10 @@ private:
 
 	int _comboInputAcceptanceFrame;
 
-
+	// アニメーションマネージャ
+	AnimationManager* _animManager;
+	// アニメーション情報のマップコンテナ
+	static std::map<int, ANIMATION_INFO> _animMap;
 
 	STATUS _animStatus;
 	int _attach_index;
@@ -108,5 +116,5 @@ private:
 	int _nowExp; //現在持っている経験値を格納します。
 	int _maxLevel;//レベルの最大値
 	std::map<int, int> _nextLevel;// first 現在のレベル  second  次のレベルが上がるまでの経験値
-
+	//------------
 };
