@@ -61,6 +61,12 @@ void AnimationManager::InitMap(CHARA_NAME charaName, int modelHandle, std::strin
 				info.loopTimes = loopTimes;
 				_animMap[charaName][stateNo] = info;
 				stateNo++;
+
+				if (info.animIndex == -1) {
+					std::string message = "[" + motionName + "] アニメーションが見つかりませんでした";
+
+					MessageBox(NULL, message.c_str(), "エラー", MB_OK);
+				}
 			}
 		}
 #ifdef _DEBUG

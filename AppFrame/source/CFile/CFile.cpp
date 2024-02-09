@@ -91,17 +91,15 @@ int SkipSpace(const char* p, const void* last)
 	return c;
 }
 
-// 文字列を取得する
+// ","までの文字列を取得する
+// csv用
 int GetString(const char* p, std::string* out)
 {
 	int c = 0;
-	c += FindString(&p[c], '"', NULL);	// 1つ目の"まで進める
-	c++;	// "の次へ
-	int len = FindString(&p[c], '"', NULL);	// 2つ目の"までの長さを得る
-	std::string s(&p[c], &p[c + len]);	// "～"をstring化
+	int len = FindString(&p[c], ',', NULL);	// ","までの長さを得る
+	std::string s(&p[c], &p[c + len]);	// 文字列をstring化
 	*out = s;
-	c += len;	// 2つ目の"まで進める
-	c++;	// "の次へ
+	c += len;	// ","まで進める
 	return c;
 }
 

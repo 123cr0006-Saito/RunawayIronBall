@@ -37,7 +37,8 @@ private:
 int FindString(const char* p, const char find, const void* last);
 // 空白やコントロールコードをスキップする
 int SkipSpace(const char* p, const void* last);
-// 文字列を取得する
+// ","までの文字列を取得する
+// csv用
 int GetString(const char* p, std::string* out);
 // 10進数の整数値を取得する
 int GetDecNum(const char* p, int* answer, int* digits = nullptr);
