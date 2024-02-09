@@ -74,3 +74,58 @@ void CFile::Init() {
 	_filename = "";
 	_success = false;
 }
+
+// 指定の文字を見つけるまで進める
+int FindString(const char* p, const char find, const void* last)
+{
+	int c = 0;
+	while (p[c] != find && (!last || &p[c] < last)) { c++; }
+	return c;
+}
+
+// 空白やコントロールコードをスキップする
+int SkipSpace(const char* p, const void* last)
+{
+	int c = 0;
+	while (p[c] != '\0' && p[c] <= ' ' && (!last || &p[c] < last)) { c++; }
+	return c;
+}
+
+// 文字列を取得する
+int GetString(const char* p, std::string* out)
+{
+	int c = 0;
+	c += FindString(&p[c], '"', NULL);	// 1つ目の"まで進める
+	c++;	// "の次へ
+	int len = FindString(&p[c], '"', NULL);	// 2つ目の"までの長さを得る
+	std::string s(&p[c], &p[c + len]);	// "～"をstring化
+	*out = s;
+	c += len;	// 2つ目の"まで進める
+	c++;	// "の次へ
+	return c;
+}
+
+// 10進数の整数値を取得する
+int GetDecNum(const char* p, int* answer)
+{
+	int c = 0;
+	c += SkipSpace(&p[c], NULL);	// 空白をスキップ
+
+	// マイナス値など記号を取得
+	int mul = 1;
+	if (p[c] == '-') { mul = -1; c++; }
+	else if (p[c] == '+') { mul = 1; c++; }
+
+	// 10進数を取得する
+	int n = 0;
+	while ('0' <= p[c] && p[c] <= '9') {
+		n = n * 10 + (p[c] - '0');
+		c++;
+	}
+
+	// 記号をかけて答えに格納
+	*answer = n * mul;
+
+	// 読み進んだ文字数を返す
+	return c;
+}
