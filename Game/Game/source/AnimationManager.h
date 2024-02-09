@@ -5,17 +5,22 @@
 #include <map>
 #include <vector>
 
+typedef std::map<int, ANIMATION_INFO> ANIM_MAP;
+typedef std::string CHARA_NAME;
 
 // アニメーション管理クラス
 class AnimationManager
 {
 public:
-	AnimationManager(int modelHandle);
+	
+
+	AnimationManager();
 	~AnimationManager();
 
 	// アニメーション情報用マップコンテナを追加する
 	// 引数: mapコンテナへのポインタ（各クラスの静的メンバ変数）
 	void InitMap(std::map<int, ANIMATION_INFO>* animMap);
+	void InitMap(CHARA_NAME charaName, int modelHandle, std::string fileName);
 
 	// ANIMATION_INFO型のアニメーション情報の初期設定を行う
 	void SetupAnimationInfo(int statusNo, int animIndex, int loopTimes);
@@ -27,6 +32,8 @@ public:
 	void Process(int StatusNo);
 
 private:
+	static std::map<CHARA_NAME, ANIM_MAP> _animMap;
+
 	// モデルハンドル
 	int _modelHandle;
 
@@ -36,7 +43,9 @@ private:
 	// アニメーション情報用マップコンテナ
 	// キー : int型 キャラクターのステータス番号
 	// バリュー : ANIMATION_INFO型 アニメーション情報
-	std::map<int, ANIMATION_INFO>* _animMap;
+	ANIM_MAP* _charaAnimMapPtr;
+
+	ANIM_MAP::iterator _animMapItr;
 
 	// アニメーションアイテム
 	std::vector<AnimationItem*> _animContainer;
