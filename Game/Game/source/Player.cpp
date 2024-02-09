@@ -42,19 +42,20 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	_instance = this;
 
 	// アニメーションマネージャーの初期設定
-	_animManager = new AnimationManager(_modelHandle);
-	_animManager->InitMap(&_animMap);
+	_animManager = new AnimationManager();
+	_animManager->InitMap("Player", _modelHandle, "MotionList_Player.csv");
+	//_animManager->InitMap(&_animMap);
 
-	// _animMapが空の場合、アニメーション情報を設定する
-	// _animMapは静的メンバ変数なので、インスタンス間で共有する
-	if (_animMap.empty() ){
-		// _animMapの初期設定
-		_animManager->SetupAnimationInfo(static_cast<int>(STATUS::WAIT), MV1GetAnimIndex(_modelHandle, "MO_PL_Stay"), 0);
-		_animManager->SetupAnimationInfo(static_cast<int>(STATUS::RUN), MV1GetAnimIndex(_modelHandle, "MO_PL_Run"), 0);
-		_animManager->SetupAnimationInfo(static_cast<int>(STATUS::HORISONTAL_SWING_01), MV1GetAnimIndex(_modelHandle, "MO_PL_Horizontal_first"), 1);
-		_animManager->SetupAnimationInfo(static_cast<int>(STATUS::HORISONTAL_SWING_02), MV1GetAnimIndex(_modelHandle, "MO_PL_Horizontal_second"), 1);
-		_animManager->SetupAnimationInfo(static_cast<int>(STATUS::SPIN_SWING), MV1GetAnimIndex(_modelHandle, "MO_PL_roteate_loop"), 1);
-	}
+	//// _animMapが空の場合、アニメーション情報を設定する
+	//// _animMapは静的メンバ変数なので、インスタンス間で共有する
+	//if (_animMap.empty() ){
+	//	// _animMapの初期設定
+	//	_animManager->SetupAnimationInfo(static_cast<int>(STATUS::WAIT), MV1GetAnimIndex(_modelHandle, "MO_PL_Stay"), 0);
+	//	_animManager->SetupAnimationInfo(static_cast<int>(STATUS::RUN), MV1GetAnimIndex(_modelHandle, "MO_PL_Run"), 0);
+	//	_animManager->SetupAnimationInfo(static_cast<int>(STATUS::HORISONTAL_SWING_01), MV1GetAnimIndex(_modelHandle, "MO_PL_Horizontal_first"), 1);
+	//	_animManager->SetupAnimationInfo(static_cast<int>(STATUS::HORISONTAL_SWING_02), MV1GetAnimIndex(_modelHandle, "MO_PL_Horizontal_second"), 1);
+	//	_animManager->SetupAnimationInfo(static_cast<int>(STATUS::SPIN_SWING), MV1GetAnimIndex(_modelHandle, "MO_PL_roteate_loop"), 1);
+	//}
 
 }
 
