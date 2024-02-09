@@ -5,28 +5,49 @@ AnimationManager::AnimationManager(int modelHandle)
 	_modelHandle = modelHandle;
 	_animNo = -1;
 	_playTime = 0.0f;
+	_animMap = nullptr;
 }
 
 AnimationManager::~AnimationManager()
 {
+	for (auto itr = _animContainer.begin(); itr != _animContainer.end(); ++itr)
+	{
+		delete (*itr);
+		(*itr) = nullptr;
+	}
+	_animContainer.clear();
+	_animMap = nullptr;
+}
+
+// アニメーション情報用マップコンテナを追加する
+//	引数: mapコンテナへのポインタ（各クラスの静的メンバ変数）
+void AnimationManager::InitMap(std::map<int, ANIMATION_INFO>* animMap)
+{
+	if (this->_animMap == nullptr) {
+		this->_animMap = animMap;
+	}
 }
 
 // ANIMATION_INFO型のアニメーション情報の初期設定を行う
 void AnimationManager::SetupAnimationInfo(int statusNo, int animIndex, int loopTimes)
 {
-	ANIMATION_INFO info;
-	info.animIndex = animIndex;
-	info.loopTimes = loopTimes;
-
-	_animInfo[statusNo] = info;
+	// 引数statusNoに対応するアニメーション情報が存在するか調べる
+	auto itr = (*_animMap).find(statusNo);
+	// アニメーション情報が存在しない場合のみ、アニメーション情報を追加する
+	if (itr == (*_animMap).end()) {
+		ANIMATION_INFO info;
+		info.animIndex = animIndex;
+		info.loopTimes = loopTimes;
+		(*_animMap)[statusNo] = info;
+	}
 }
 
 // アニメーションアイテムを追加する
 void AnimationManager::AddAnimationItem(int statusNo)
 {
-	auto itr = _animInfo.find(statusNo);
+	auto itr = (*_animMap).find(statusNo);
 	// アニメーション情報が存在する場合
-	if (itr != _animInfo.end())
+	if (itr != (*_animMap).end())
 	{
 		AnimationItem* anim = new AnimationItem();
 
@@ -36,16 +57,17 @@ void AnimationManager::AddAnimationItem(int statusNo)
 		int loopTimes = info.loopTimes;
 
 		anim->Setup(attachIndex, totalTime, loopTimes);
-		_anim.push_back(anim);
+		_animContainer.push_back(anim);
 	}
 }
 
+// アニメーションの再生処理
 void AnimationManager::Process(int StatusNo)
 {
 	// 再生するアニメーションが変わった場合
 	if (_animNo != StatusNo) {
 		// アタッチされているアニメーションに閉じ時間を設定する
-		for (auto itrItem = _anim.begin(); itrItem != _anim.end(); ++itrItem)
+		for (auto itrItem = _animContainer.begin(); itrItem != _animContainer.end(); ++itrItem)
 		{
 			if ((*itrItem)->_closeTime == 0.0f) {
 				// 閉じ時間を設定する
@@ -60,7 +82,7 @@ void AnimationManager::Process(int StatusNo)
 		AddAnimationItem(StatusNo);
 	}
 
-	for (auto itrItem = _anim.begin(); itrItem != _anim.end(); )
+	for (auto itrItem = _animContainer.begin(); itrItem != _animContainer.end(); )
 	{
 		if ((*itrItem)->_closeTime == 0.0f) {
 			// 再生時間を進める
@@ -90,7 +112,7 @@ void AnimationManager::Process(int StatusNo)
 				MV1DetachAnim(_modelHandle, (*itrItem)->_attachIndex);
 				// このアニメーションを削除
 				delete (*itrItem);
-				itrItem = _anim.erase(itrItem);
+				itrItem = _animContainer.erase(itrItem);
 				continue;
 			}
 			// ブレンド率を変更する

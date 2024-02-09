@@ -5,6 +5,9 @@
 #include "myJson.h"
 
 #include "AnimationManager.h"
+#include "AnimationItem.h"
+
+#include <map>
 
 class Player : public CharacterBase
 {
@@ -82,8 +85,11 @@ private:
 
 	int _comboInputAcceptanceFrame;
 
-
+	// アニメーションマネージャ
 	AnimationManager* _animManager;
+	// アニメーション情報のマップコンテナ
+	static std::map<int, ANIMATION_INFO> _animMap;
+
 	STATUS _animStatus;
 	int _attach_index;
 	float _total_time;

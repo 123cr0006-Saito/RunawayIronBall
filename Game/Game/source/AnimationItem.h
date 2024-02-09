@@ -8,6 +8,7 @@ struct ANIMATION_INFO {
 	int loopTimes;
 };
 
+// アニメーションアイテムクラス
 class AnimationItem
 {
 private:
