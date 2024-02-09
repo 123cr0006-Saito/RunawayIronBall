@@ -106,8 +106,37 @@ int GetString(const char* p, std::string* out)
 }
 
 // 10進数の整数値を取得する
-int GetDecNum(const char* p, int* answer)
-{
+int GetDecNum(const char* p, int* answer, int* digits) {
+	int c = 0;
+	c += SkipSpace(&p[c], NULL);	// 空白をスキップ
+
+	// マイナス値など記号を取得
+	int mul = 1;
+	int dig = 1;
+	if (p[c] == '-') { mul = -1; c++; }
+	else if (p[c] == '+') { mul = 1; c++; }
+
+	// 10進数を取得する
+	int n = 0;
+	while ('0' <= p[c] && p[c] <= '9') {
+		n = n * 10 + (p[c] - '0');
+		dig *= 10;
+		c++;
+	}
+
+	// 記号をかけて答えに格納
+	*answer = n * mul;
+
+	if (digits != nullptr) {
+		*digits = dig;
+	}
+
+	// 読み進んだ文字数を返す
+	return c;
+}
+
+// 10進数の浮動小数点数を含めた値を取得する
+int GetFloatNum(const char* p, float* answer) {
 	int c = 0;
 	c += SkipSpace(&p[c], NULL);	// 空白をスキップ
 
@@ -123,9 +152,15 @@ int GetDecNum(const char* p, int* answer)
 		c++;
 	}
 
+	//小数点があった場合の処理
+	int decimalPoint = 0;
+	int digits = 0;
+	if (p[c] == '.') { c++; GetDecNum(&p[c], &decimalPoint, &digits); }
+
 	// 記号をかけて答えに格納
-	*answer = n * mul;
+	*answer = (n + static_cast<float>(decimalPoint) / digits) * mul;
 
 	// 読み進んだ文字数を返す
 	return c;
 }
+

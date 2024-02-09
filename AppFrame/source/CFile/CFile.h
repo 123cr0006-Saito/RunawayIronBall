@@ -40,4 +40,6 @@ int SkipSpace(const char* p, const void* last);
 // 文字列を取得する
 int GetString(const char* p, std::string* out);
 // 10進数の整数値を取得する
-int GetDecNum(const char* p, int* answer);
+int GetDecNum(const char* p, int* answer, int* digits = nullptr);
+// 10進数の浮動小数点数を含めた値を取得する
+int GetFloatNum(const char* p, float* answer);
