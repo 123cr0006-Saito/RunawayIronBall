@@ -138,14 +138,22 @@ void AnimationManager::Process(int StatusNo)
 		AddAnimationItem(StatusNo);
 	}
 
+	// 最新のアニメーションアイテムの再生時間を取得する
+	_playTime = _latestAnimItem->_playTime;
+
 	for (auto itrItem = _animContainer.begin(); itrItem != _animContainer.end(); )
 	{
+		// 再生時間をセットする
+		MV1SetAttachAnimTime(_modelHandle, (*itrItem)->_attachIndex, (*itrItem)->_playTime);
+
+		/* 再生時間の更新処理 */
+		// 閉じ時間が設定されていない場合
 		if ((*itrItem)->_closeTime == 0.0f) {
 			// 再生時間を進める
 			(*itrItem)->_playTime += 1.0f;
 			
 			// 再生時間がアニメーションの総再生時間に達したら再生時間を０に戻す
-			if ((*itrItem)->_playTime >= (*itrItem)->_totalTime) {
+			if ((*itrItem)->_playTime > (*itrItem)->_totalTime) {
 				if ((*itrItem)->_loopCnt > 1 || (*itrItem)->_loopCnt == 0) {
 					if ((*itrItem)->_loopCnt > 1) {
 						(*itrItem)->_loopCnt--;
@@ -174,8 +182,6 @@ void AnimationManager::Process(int StatusNo)
 			// ブレンド率を変更する
 			MV1SetAttachAnimBlendRate(_modelHandle, (*itrItem)->_attachIndex, (*itrItem)->_closeTime / (*itrItem)->_closeTotalTime);
 		}
-		// 再生時間をセットする
-		MV1SetAttachAnimTime(_modelHandle, (*itrItem)->_attachIndex, (*itrItem)->_playTime);
 		// 次のアニメーションアイテムへ
 		++itrItem;
 	}

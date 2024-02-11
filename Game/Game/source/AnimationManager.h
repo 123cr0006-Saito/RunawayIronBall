@@ -31,7 +31,8 @@ public:
 	// アニメーションの再生処理
 	void Process(int StatusNo);
 
-	float GetPlayTime() { return _latestAnimItem->_playTime; }
+	// 最後に追加されたアニメーションの再生時間を取得する
+	float GetPlayTime() { return _playTime; }
 
 private:
 	static std::map<CHARA_NAME, ANIM_MAP> _animMap;
@@ -51,9 +52,9 @@ private:
 	std::vector<AnimationItem*> _animContainer;
 
 
-	// 最新のアニメーションアイテム
+	// 最後に追加されたのアニメーションアイテム
 	AnimationItem* _latestAnimItem;
-	// アニメーションの再生時間
+	// 最後に追加されたアニメーションの再生時間
 	float _playTime;
 
 };
