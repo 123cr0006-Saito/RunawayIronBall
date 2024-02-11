@@ -247,6 +247,7 @@ bool Player::Process(float camAngleY)
 	//-------------------
 	//AnimProcess(oldStatus);
 	_animManager->Process(static_cast<int>(_animStatus));
+	_frameData->Process(static_cast<int>(_animStatus), _animManager->GetPlayTime());
 	UpdateNextComboAnim();
 	return true;
 }

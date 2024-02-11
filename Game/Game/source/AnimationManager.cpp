@@ -138,7 +138,7 @@ void AnimationManager::Process(int StatusNo)
 		AddAnimationItem(StatusNo);
 	}
 
-	// 最新のアニメーションアイテムの再生時間を取得する
+	// 最後に追加されたアニメーションアイテムの再生時間を取得する
 	_playTime = _latestAnimItem->_playTime;
 
 	for (auto itrItem = _animContainer.begin(); itrItem != _animContainer.end(); )
