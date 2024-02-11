@@ -103,6 +103,14 @@ bool SoundServer::DirectPlay(std::string name) {
 	return false;
 };
 
+bool SoundServer::RandomPlay(std::vector<std::string> name) {
+	int random = rand() % name.size();
+	if (DirectPlay(name.at(random))) {
+		return true;
+	}
+	return false;
+};
+
 std::vector<SoundItemBase*> SoundServer::NowPlayingSearch() {
 	std::vector<SoundItemBase*> nowPlaying;
 	for (auto&& e : _v) {

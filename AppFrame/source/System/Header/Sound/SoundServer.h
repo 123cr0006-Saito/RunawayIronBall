@@ -27,6 +27,7 @@ public:
 	std::vector<SoundItemBase*> NowPlayingSearchType(SoundItemBase::TYPE type);
 
 	bool DirectPlay(std::string name);
+	bool RandomPlay(std::vector<std::string> name);
 
 	void StopAll();
 	void StopType(SoundItemBase::TYPE type);
