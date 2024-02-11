@@ -1,5 +1,5 @@
-#include "SoundServer.h"
-#include "SoundItem.h"
+#include "../../Header/Sound/SoundItem.h"
+#include "../../Header/Sound/SoundServer.h"
 
 SoundServer::SoundServer() {
 	_isUpdate = false;

@@ -1,7 +1,8 @@
 #pragma once
-#include "appframe.h"
+
 #include "SoundItem.h"
 
+#include <vector>
 #include <string>
 #include <map>
 

@@ -1,5 +1,7 @@
 #pragma once
-#include "appframe.h"
+
+#include "dxlib.h"
+#include "../../Header/Function/Easing.h"
 #include <string>
 
 class SoundServer;

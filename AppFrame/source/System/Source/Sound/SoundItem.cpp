@@ -1,8 +1,8 @@
-#include "SoundItem.h"
-#include "SoundServer.h"
+#include "../../Header/Sound/SoundItem.h"
+#include "../../Header/Sound/SoundServer.h"
 
-const char FADE_IN = 1;
-const char FADE_OUT = 2;
+const char SoundItemBase::FADE_IN = 1;
+const char SoundItemBase::FADE_OUT = 2;
 
 SoundItemBase::SoundItemBase(std::string filename) {
 	_filename = filename;
