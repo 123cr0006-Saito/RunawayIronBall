@@ -132,7 +132,8 @@ bool Player::Process(float camAngleY)
 	STATUS oldStatus = _animStatus;
 	//_animStatus = STATUS::NONE;
 
-
+	// フレームデータの実行コマンドをチェックする
+	CheckFrameDataCommand();
 
 	// 回転攻撃
 	if (_spinCnt > 90) {
@@ -371,6 +372,40 @@ VECTOR Player::GetRightHandPos()
 	MATRIX m = MV1GetFrameLocalWorldMatrix(_modelHandle, _rightHandFrameIndex);
 	handPos = VTransform(handPos, m);
 	return handPos;
+}
+
+void Player::CheckFrameDataCommand()
+{
+	// 実行コマンドリストを取得する
+	std::vector<CommandParam> commandList = _frameData->GetCommandData();
+
+	for (auto itr = commandList.begin(); itr != commandList.end(); ++itr) {
+		// コマンドを取得する
+		int command = itr->first;
+		// パラメータを取得する
+		float param = itr->second;
+
+		// コマンドによって処理を分岐する
+		switch (command)
+		{
+		case C_P_CHANGE_MOTION:
+			break;
+		case C_P_ENABLE_MOVE:
+			break;
+		case C_P_MOVE_SPEED:
+			break;
+		case C_P_ACCEPT_COMBO_INPUT:
+			break;
+		case C_P_CHECK_CHANGE_COMBO:
+			break;
+		case C_P_ENABLE_IB_ATTACK_COLLISION:
+			break;
+		case C_P_ENABLE_IB_FOLLOWING_MODE:
+			break;
+		case C_P_ENABLE_IB_INTERPOLATION:
+			break;
+		}
+	}
 }
 
 void Player::DrawDebugInfo()

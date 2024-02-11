@@ -1,6 +1,6 @@
 #include "FrameData.h"
 
-std::map<std::string, std::map<int, std::multimap<int, FrameData::CommandParam>>>  FrameData::_kindFrameData;//キャラクターの種類別に持つデータ
+std::map<std::string, std::map<int, std::multimap<int, CommandParam>>>  FrameData::_kindFrameData;//キャラクターの種類別に持つデータ
 
 FrameData::FrameData(){
 
