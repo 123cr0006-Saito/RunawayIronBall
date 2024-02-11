@@ -44,6 +44,13 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	// アニメーションマネージャーの初期設定
 	_animManager = new AnimationManager();
 	_animManager->InitMap("Player", _modelHandle, "MotionList_Player.csv");
+
+
+	_frameData = new FrameData();
+	std::vector<std::pair<int, std::string>> fdFileName;
+	fdFileName.push_back(std::make_pair(static_cast<int>(STATUS::HORISONTAL_SWING_01), "FD_MO_PL_Horizontal_first.csv"));
+	_frameData->LoadData("Player", fdFileName);
+
 	//_animManager->InitMap(&_animMap);
 
 	//// _animMapが空の場合、アニメーション情報を設定する

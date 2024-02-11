@@ -7,7 +7,19 @@
 #include "AnimationManager.h"
 #include "AnimationItem.h"
 
-#include <map>
+#include "FrameData.h"
+
+
+// テスト用
+// フレームデータのコマンド
+#define C_P_CHANGE_MOTION 0
+#define	C_P_ENABLE_MOVE 1
+#define C_P_MOVE_SPEED 2
+#define C_P_ACCEPT_COMBO_INPUT 3
+#define C_P_CHECK_CHANGE_COMBO 4
+#define C_P_ENABLE_IB_ATTACK_COLLISION 5
+#define C_P_ENABLE_IB_FOLLOWING_MODE 6
+#define C_P_ENABLE_IB_INTERPOLATION 7
 
 class Player : public CharacterBase
 {
@@ -71,6 +83,13 @@ public:
 	bool GetIBFollowingMode() { return _ibFollowingMode; }
 
 	bool GetIsAttackState() { return _isAttackState; }
+
+
+	// フレームデータのコマンドをチェックする
+	void CheckFrameDataCommand();
+	// フレームデータのコマンドを実行する
+	void ExecuteFrameDataCommand(int command, float param);
+
 	static Player* GetInstance() { return _instance; }
 
 	void DrawDebugInfo();
@@ -106,6 +125,9 @@ private:
 	int _attach_index;
 	float _total_time;
 	float _play_time;
+
+	// フレームデータ
+	FrameData* _frameData;
 
 
 	VECTOR _blastOffDir;
