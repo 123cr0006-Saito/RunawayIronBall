@@ -36,13 +36,7 @@
     <ClCompile Include="source\CFile\CFile.cpp">
       <Filter>CFile</Filter>
     </ClCompile>
-    <ClCompile Include="source\System\Source\Sound\FadeSound.cpp">
-      <Filter>System\Source</Filter>
-    </ClCompile>
     <ClCompile Include="source\System\Source\Input\XInput.cpp">
-      <Filter>System\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="source\System\Source\Sound\music.cpp">
       <Filter>System\Source</Filter>
     </ClCompile>
     <ClCompile Include="source\System\Source\Function\mydraw.cpp">
@@ -89,12 +83,6 @@
       <Filter>System\Header</Filter>
     </ClInclude>
     <ClInclude Include="source\System\Header\Input\XInput.h">
-      <Filter>System\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="source\System\Header\Sound\music.h">
-      <Filter>System\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="source\System\Header\Sound\FadeSound.h">
       <Filter>System\Header</Filter>
     </ClInclude>
     <ClInclude Include="source\appframe.h" />

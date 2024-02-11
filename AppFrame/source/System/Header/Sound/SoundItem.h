@@ -36,7 +36,7 @@ public:
 
 	virtual TYPE	GetType() = 0;
 	virtual char GetFade() { return IsFade; }
-	virtual char SetFade(int param, int time) { IsFade = param; _fadeTime = time; _currentTime = GetNowCount(); }
+	virtual void SetFade(int param, int time) { IsFade = param; _fadeTime = time; _currentTime = GetNowCount(); }
 	virtual std::string GetFileName() { return _filename; }
 	virtual int		GetSoundHandle() { return _snd; }
 
