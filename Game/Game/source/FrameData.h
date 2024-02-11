@@ -4,10 +4,11 @@
 #include <string>
 #include <vector>
 
+typedef std::pair<int, float> CommandParam;
+
 class FrameData
 {
 public:
-	typedef std::pair<int, float> CommandParam;
 	//コマンド
 	//プレイヤー　0番台
     //エネミー　   100番台
