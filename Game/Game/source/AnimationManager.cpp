@@ -8,6 +8,7 @@ AnimationManager::AnimationManager()
 	_animNo = -1;
 	_playTime = 0.0f;
 	_charaAnimMapPtr = nullptr;
+	_latestAnimItem = nullptr;
 }
 
 AnimationManager::~AnimationManager()
@@ -112,6 +113,7 @@ void AnimationManager::AddAnimationItem(int statusNo)
 
 		anim->Setup(attachIndex, totalTime, loopTimes);
 		_animContainer.push_back(anim);
+		_latestAnimItem = anim;
 	}
 }
 
