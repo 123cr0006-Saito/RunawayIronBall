@@ -133,7 +133,9 @@ bool ModePause::Render() {
 	for (int i = 0; i < MAX_MODE; i++) {
 		int _selectedItems = 0;
 		int _gameEnd = 0;
-		if (_selectItem == i) _selectedItems = 50;
+		float extRate = 1.0f;
+		int handleX, handleY;
+		if (_selectItem == i)  extRate = 1.1f; 
 		int length = 50;
 		switch (i) {
 		case 0:
@@ -143,17 +145,17 @@ bool ModePause::Render() {
 			length = _bgmVolum;
 			break;
 		case 2:
-			int x, y;
-			GetGraphSize(_checkHandle, &x, &y);
-			if (_isVibration)  DrawGraph(900 + (70 - x) / 2, 460 + (70 - y) / 2, _checkHandle, true);
+			GetGraphSize(_checkHandle, &handleX, &handleY);
+			if (_isVibration)  DrawGraph(900 + (70 - handleX) / 2, 460 + (70 - handleY) / 2, _checkHandle, true);
 			break;
 		case 4:
 			_gameEnd = 190;
 			break;
 		}
+		GetGraphSize(_itemHandle[i], &handleX, &handleY);
 		
-		
-		DrawGraph(180 + _selectedItems, 250 + 110 * i + _gameEnd, _itemHandle[i], true);
+	//	DrawGraph(180 + _selectedItems, 250 + 110 * i + _gameEnd, _itemHandle[i], true);
+		DrawRotaGraph(180 + handleX/2, 250 + handleY/2 + 110 * i + _gameEnd, extRate, 0.0f, _itemHandle[i], true);
 	}
 
 	return true;

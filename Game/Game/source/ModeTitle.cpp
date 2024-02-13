@@ -39,7 +39,7 @@ bool ModeTitle::Initialize() {
 		 _rotVec[i].x = rand() % 100 - 50;
 		 _rotVec[i].y = rand() % 100 - 50;
 		 _rotVec[i].z = rand() % 100 - 50;
-		 _rotVec[i] = VScale(_rotVec[i], 0.001f);
+		 _rotVec[i] = VScale(_rotVec[i], 0.0002f);
 	 }
 
 	 MV1SetPosition(_modelHandle, VGet(0, 0, 0)); 
@@ -130,23 +130,24 @@ void ModeTitle::UpdateCrackedScreen(){
 
 void ModeTitle::DrawTitleItems(){
 	DrawFillBox(0, 0, 1920, 1080, GetColor(0, 0, 0));
-	int x, y;
+	int handleX, handleY;
 	//É^ÉCÉgÉãÉçÉSÇÃï`âÊ
-	GetGraphSize(_titleLogo, &x, &y);
+	GetGraphSize(_titleLogo, &handleX, &handleY);
 	//x = 1920 / 2 - x / 2;
-	x = 840;
-	DrawGraph(x, 145, _titleLogo, true);
+	handleX = 840;
+	DrawGraph(handleX, 145, _titleLogo, true);
 
 	//ÇªÇÍÇºÇÍÇÃçÄñ⁄ÇÃï`âÊ
-	GetGraphSize(_comandHandlle[0], &x, &y);
+	GetGraphSize(_comandHandlle[0], &handleX, &handleY);
 	int centerX, centerY;
 	centerX = 1340;
 	centerY = 555;
 
 	for (int i = 0; i < 3; i++) {
 		int handleNum = i;
-		if (i == _modeCount) { handleNum += 3; }
-		DrawExtendGraph(centerX, centerY + i * (72 + y / 2), centerX + x, centerY + y + i * (72 + y / 2), _comandHandlle[handleNum], true);
+		float extRate = 1.0f;
+		if (i == _modeCount) { extRate = 1.1f; }
+		DrawRotaGraph(centerX + handleX / 2, centerY + handleY / 2 + i * (72 + handleY / 2), extRate, 0.0f, _comandHandlle[handleNum], true);
 	}
 };
 
