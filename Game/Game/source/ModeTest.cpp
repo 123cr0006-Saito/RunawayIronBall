@@ -66,7 +66,7 @@ bool ModeTest::Process() {
 	_sVib->UpdateScreenVibration();
 
 	_player->Process(_camera->GetCamY());
-	_chain->Process(_player->GetRightHandPos());
+	_chain->Process();
 	_enemyPool->Process();
 
 	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
@@ -191,7 +191,7 @@ bool ModeTest::Render() {
 	}
 
 	_player->Render();
-	_enemyPool->Render();
+	//_enemyPool->Render();
 	_chain->Render();
 	_chain->DrawDebugInfo();
 

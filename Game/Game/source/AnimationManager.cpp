@@ -127,7 +127,7 @@ void AnimationManager::Process(int StatusNo)
 		{
 			if ((*itrItem)->_closeTime == 0.0f) {
 				// •Â‚¶ŽžŠÔ‚ðÝ’è‚·‚é
-				(*itrItem)->_closeTotalTime = 6.0f;
+				(*itrItem)->_closeTotalTime = 4.0f;
 				(*itrItem)->_closeTime = (*itrItem)->_closeTotalTime;
 			}
 		}

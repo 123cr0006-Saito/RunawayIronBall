@@ -32,7 +32,7 @@ bool ModeGame::Process() {
 	global._timer->TimeElapsed();
 	
 	_player->Process(_camera->GetCamY());
-	_chain->Process(_player->GetRightHandPos());
+	_chain->Process();
 	_camera->Process(_player->GetPosition(),0);
 	return true;
 }

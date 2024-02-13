@@ -8,7 +8,13 @@ class Chain {
 public:
 
 	void Init();
-	void Process(VECTOR playerPos);
+	void Process();
+
+	void MoveProcess();
+	void FollowingProcess();
+	void PuttingOnSocketProcess();
+	void InterpolationProcess();
+
 	void AnimProcess();
 
 	void Render();
@@ -59,6 +65,8 @@ private:
 	float _length;
 
 	bool _followingMode;
+	
+	IB_MOVE_STATE _moveState;
 
 
 	Player* _playerInstance;

@@ -12,20 +12,27 @@
 
 // テスト用
 // フレームデータのコマンド
-#define C_P_CHANGE_MOTION 0
-#define	C_P_ENABLE_MOVE 1
-#define C_P_MOVE_SPEED 2
-#define C_P_ACCEPT_COMBO_INPUT 3
-#define C_P_CHECK_CHANGE_COMBO 4
-#define C_P_ENABLE_IB_ATTACK_COLLISION 5
-#define C_P_ENABLE_IB_FOLLOWING_MODE 6
-#define C_P_ENABLE_IB_INTERPOLATION 7
+#define C_P_CHANGE_MOTION							0
+#define	C_P_ENABLE_MOVE								1
+#define C_P_MOVE_SPEED									2
+#define C_P_ACCEPT_COMBO_INPUT					3
+#define C_P_CHECK_CHANGE_COMBO				4
+
+#define C_P_ENABLE_IB_ATTACK_COLLISION		100
+#define C_P_ENABLE_IB_FOLLOWING_MODE		101
+#define C_P_ENABLE_IB_INTERPOLATION			102
+
+enum IB_MOVE_STATE {
+	FOLLOWING,
+	PUTTING_ON_SOCKET,
+	INTERPOLATION,
+};
 
 class Player : public CharacterBase
 {
 private:
-	enum class STATUS {
-		STAY,		
+	enum class ANIM_STATE {
+		IDLE,		
 		RUN,
 
 		HORISONTAL_SWING_01,
@@ -33,9 +40,9 @@ private:
 		HORISONTAL_SWING_03,
 
 		MANYTIME_SWING,
-		Rotation_SWING,
+		ROTATION_SWING,
 
-		FIGHTING_IDLE,
+		IDLE_FIGHTING,
 
 		LONG_JUMP_AIR,
 		LONG_JUMP_NOSEDIVE,
@@ -45,7 +52,8 @@ private:
 
 		AVOIDANCE,
 		HIT,
-		NO_STRENGTH
+		IDLE_TIRED,
+		WALK_TIRED,
 	};
 
 public:
@@ -53,7 +61,6 @@ public:
 	~Player() override;
 
 	bool Process(float camAngleY);
-	bool AnimProcess(STATUS oldStatus);
 	bool BlastOffProcess();
 	bool Render() override;
 
@@ -75,25 +82,26 @@ public:
 
 	void SetBlastOffPower(VECTOR dir, float power) { _blastOffDir = dir; _blastOffPower = power; };
 
-	bool UpdateNextComboAnim();
 
 
 	VECTOR GetRightHandPos();
 
 	bool GetIBFollowingMode() { return _ibFollowingMode; }
 
+	IB_MOVE_STATE GetIBMoveState() { return _ibMoveState; }
+
+
 	bool GetIsAttackState() { return _isAttackState; }
 
 
 	// フレームデータのコマンドをチェックする
 	void CheckFrameDataCommand();
-	// フレームデータのコマンドを実行する
-	void ExecuteFrameDataCommand(int command, float param);
 
 	static Player* GetInstance() { return _instance; }
 
 	void DrawDebugInfo();
 private:
+	// 入力情報
 	XInput* _input;
 
 	// 移動可能かどうか
@@ -105,26 +113,22 @@ private:
 
 	// 鉄球が追従状態かどうか
 	bool _ibFollowingMode;
+	IB_MOVE_STATE _ibMoveState;
 
 	// 攻撃状態かどうか
 	bool _isAttackState;
 
 	// 次のコンボモーションを再生するかどうか
 	bool _playNextComboAnim;
-	// 次のコンボモーションのステータスを保持する
-	STATUS _nextComboAnim;
-
-	int _comboInputAcceptanceFrame;
 
 	// アニメーションマネージャ
 	AnimationManager* _animManager;
 	// アニメーション情報のマップコンテナ
 	static std::map<int, ANIMATION_INFO> _animMap;
+	// 戦闘待機状態の残りフレーム数
+	float _idleFightingRemainingCnt;
 
-	STATUS _animStatus;
-	int _attach_index;
-	float _total_time;
-	float _play_time;
+	ANIM_STATE _animStatus;
 
 	// フレームデータ
 	FrameData* _frameData;

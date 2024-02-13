@@ -13,12 +13,9 @@ void Chain::Init() {
 		_cPos[i] = VAdd(_cPos[i - 1], VGet(0.0f, 0.0f, -100.0f));
 	}
 
-	_iModelHandle = MV1LoadModel("res/Character/meatball/cg_player_meatball.mv1");
+	_iModelHandle = MV1LoadModel("res/Character/Tetuo/cg_player_tetuo.mv1");
 	_iPos = VAdd(_cPos[CHAIN_MAX - 1], VGet(0.0f, 10.0f, 0.0f));
 	MV1SetPosition(_iModelHandle, _iPos);
-	MV1SetScale(_iModelHandle, VGet(3.0f, 3.0f, 3.0f));
-
-	MV1SetScale(_iModelHandle, VGet(1.0,1.0,1.0));
 
 
 
@@ -46,7 +43,7 @@ void Chain::Init() {
 	_length = 50.0f;
 
 	_followingMode = false;
-
+	_moveState = IB_MOVE_STATE::FOLLOWING;
 
 	_playerInstance = Player::GetInstance();
 	_playerModelHandle = _playerInstance->GetModelHandle();
@@ -83,105 +80,13 @@ bool Chain::UpdateLevel() {
 	return true;
 };
 
-void Chain::Process(VECTOR playerPos) {
+void Chain::Process() {
 	_followingMode = _playerInstance->GetIBFollowingMode();
+	_moveState = _playerInstance->GetIBMoveState();
 
-	_cPos[0] = playerPos;
-	if (!_followingMode) {
-		/* デバッグ用 */
-		{
-			VECTOR vOrigin = VGet(0.0f, 0.0f, 0.0f);
-			MATRIX m = MGetIdent();
-	
-			// 鎖と腕輪の連結点
-			m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, _socketNo[0]);
-			_cPos[0] = VTransform(vOrigin, m);
-	
-			// 1つ目
-			m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, _socketNo[1]);
-			_cPos[1] = VTransform(vOrigin, m);
-	
-			// 鉄球の位置
-			m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, _socketNo[2]);
-			//VECTOR vTmp = VSub(VTransform(vOrigin, m), _pos[0]);
-			//vTmp = VNorm(vTmp);
-			//vTmp.y = 0.0f;
-			//m = MMult(m, MGetTranslate(VScale(vTmp, 1000.0f)));
+	_cPos[0] = _playerInstance->GetRightHandPos();
 
-			_cPos[CHAIN_MAX - 1] = VTransform(vOrigin, m);
-		}
-		/* */
-
-		// キャラの座標から見た一つ目の鎖を配置する方向
-		VECTOR vBase = VSub(_cPos[1], _cPos[0]);
-
-		// キャラの座標から見た鉄球を配置する方向
-		VECTOR vTarget = VSub(_cPos[CHAIN_MAX - 1], _cPos[0]);
-
-
-		float rad = Math::CalcVectorAngle(vBase, vTarget);
-		float dist = VSize(vTarget);
-		VECTOR vCross = VCross(vBase, vTarget);
-		const float chainNum = CHAIN_MAX - 1; ////////////////// （要修正）振り回している感じを出すなら、最後の鎖がピッタリ鉄球の接続位置に来るようにせず、少し引っ張っている方向にずらす必要がある
-		//rad /= chainNum;
-		for (int i = 1; i < CHAIN_MAX; i++) {
-			VECTOR vTmp = VScale(VNorm(vBase), dist * ((float)(i - 1) / chainNum));
-			MATRIX mRot = MGetRotAxis(vCross, rad * ((float)(i - 1) / chainNum));
-			vTmp = VTransform(vTmp, mRot);
-			_cPos[i] = VTransform(vTmp, MGetTranslate(_cPos[0]));
-
-			if (_cPos[i].y < 0.0f) {
-				_cPos[i].y = 0.0f;
-			}
-		}
-	
-
-
-		_cnt += 3.5f * (float)_attackDir;
-		if (_cnt > 80.0f) {
-			_attackDir = -1;
-		}
-		else if (_cnt < -80.0f) {
-			_attackDir = 1;
-		}
-	}
-	else {
-		// 重力処理
-		for (int i = 1; i < CHAIN_MAX; i++) {
-			_cPos[i].y -= 12.0f;
-			if (_cPos[i].y < 0.0f) {
-				_cPos[i].y = 0.0f;
-			}
-		}
-		_iPos.y -= 12.0f;
-		if (_iPos.y < 0.0f) {
-			_iPos.y = 0.0f;
-		}
-
-		//_length = 50.0f;
-		for (int i = 0; i < CHAIN_MAX - 1; i++) {
-			VECTOR vNext = _cPos[i + 1];
-			VECTOR vDelta = VSub(vNext, _cPos[i]);
-			float distance = VSize(vDelta);
-			float difference = _length - distance;
-
-			float offsetX = (difference * vDelta.x / distance) * 0.9f;
-			float offsetY = (difference * vDelta.y / distance) * 0.9f;
-			float offsetZ = (difference * vDelta.z / distance) * 0.9f;
-
-			if (i != 0) {
-				_cPos[i].x -= offsetX;
-				_cPos[i].y -= offsetY;
-				_cPos[i].z -= offsetZ;
-			}
-			float mul = 1.0f;
-			if (i == 0) mul = 2.0f;
-			_cPos[i + 1].x += offsetX * mul;
-			_cPos[i + 1].y += offsetY * mul;
-			_cPos[i + 1].z += offsetZ * mul;
-		}
-
-	}
+	MoveProcess();
 
 	
 	UpdateLevel();
@@ -202,11 +107,146 @@ void Chain::Process(VECTOR playerPos) {
 	AnimProcess();
 }
 
+void Chain::MoveProcess()
+{
+	switch (_moveState)
+	{
+	case FOLLOWING:
+		FollowingProcess();
+		break;
+	case PUTTING_ON_SOCKET:
+		PuttingOnSocketProcess();
+		break;
+	case INTERPOLATION:
+		InterpolationProcess();
+		break;
+	}
+}
+
+void Chain::FollowingProcess()
+{
+	// 重力処理
+	for (int i = 1; i < CHAIN_MAX; i++) {
+		_cPos[i].y -= 12.0f;
+		if (_cPos[i].y < 0.0f) {
+			_cPos[i].y = 0.0f;
+		}
+	}
+	_iPos.y -= 12.0f;
+	if (_iPos.y < 0.0f) {
+		_iPos.y = 0.0f;
+	}
+
+	//_length = 50.0f;
+	for (int i = 0; i < CHAIN_MAX - 1; i++) {
+		VECTOR vNext = _cPos[i + 1];
+		VECTOR vDelta = VSub(vNext, _cPos[i]);
+		float distance = VSize(vDelta);
+		float difference = _length - distance;
+
+		float offsetX = (difference * vDelta.x / distance) * 0.9f;
+		float offsetY = (difference * vDelta.y / distance) * 0.9f;
+		float offsetZ = (difference * vDelta.z / distance) * 0.9f;
+
+		//if (i != 0) {
+		//	_cPos[i].x -= offsetX;
+		//	_cPos[i].y -= offsetY;
+		//	_cPos[i].z -= offsetZ;
+		//}
+		float mul = 1.0f;
+		if (i == 0) mul = 2.0f;
+		_cPos[i + 1].x += offsetX * mul;
+		_cPos[i + 1].y += offsetY * mul;
+		_cPos[i + 1].z += offsetZ * mul;
+	}
+}
+
+void Chain::PuttingOnSocketProcess()
+{
+	// 各ソケットへの配置
+	{
+		VECTOR vOrigin = VGet(0.0f, 0.0f, 0.0f);
+		MATRIX m = MGetIdent();
+
+		// 鎖と腕輪の連結点
+		m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, _socketNo[0]);
+		_cPos[0] = VTransform(vOrigin, m);
+
+		// 1つ目
+		m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, _socketNo[1]);
+		_cPos[1] = VTransform(vOrigin, m);
+
+		// 鉄球の位置
+		m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, _socketNo[2]);
+		//VECTOR vTmp = VSub(VTransform(vOrigin, m), _pos[0]);
+		//vTmp = VNorm(vTmp);
+		//vTmp.y = 0.0f;
+		//m = MMult(m, MGetTranslate(VScale(vTmp, 1000.0f)));
+
+		_cPos[CHAIN_MAX - 1] = VTransform(vOrigin, m);
+	}
+
+	// キャラの座標から見た一つ目の鎖を配置する方向
+	VECTOR vBase = VSub(_cPos[1], _cPos[0]);
+
+	// キャラの座標から見た鉄球を配置する方向
+	VECTOR vTarget = VSub(_cPos[CHAIN_MAX - 1], _cPos[0]);
+
+
+	float rad = Math::CalcVectorAngle(vBase, vTarget);
+	float dist = VSize(vTarget);
+	VECTOR vCross = VCross(vBase, vTarget);
+	const float chainNum = CHAIN_MAX - 1; ////////////////// （要修正）振り回している感じを出すなら、最後の鎖がピッタリ鉄球の接続位置に来るようにせず、少し引っ張っている方向にずらす必要がある
+	//rad /= chainNum;
+	for (int i = 1; i < CHAIN_MAX; i++) {
+		VECTOR vTmp = VScale(VNorm(vBase), dist * ((float)(i - 1) / chainNum));
+		MATRIX mRot = MGetRotAxis(vCross, rad * ((float)(i - 1) / chainNum));
+		vTmp = VTransform(vTmp, mRot);
+		_cPos[i] = VTransform(vTmp, MGetTranslate(_cPos[0]));
+
+		if (_cPos[i].y < 0.0f) {
+			_cPos[i].y = 0.0f;
+		}
+	}
+
+
+
+	_cnt += 3.5f * (float)_attackDir;
+	if (_cnt > 80.0f) {
+		_attackDir = -1;
+	}
+	else if (_cnt < -80.0f) {
+		_attackDir = 1;
+	}
+}
+
+void Chain::InterpolationProcess()
+{
+	// 各ソケットへの配置
+	{
+		VECTOR vOrigin = VGet(0.0f, 0.0f, 0.0f);
+		MATRIX m = MGetIdent();
+
+		// 鎖と腕輪の連結点
+		m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, _socketNo[0]);
+		_cPos[0] = VTransform(vOrigin, m);
+
+		// 1つ目
+		m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, _socketNo[1]);
+		_cPos[1] = VTransform(vOrigin, m);
+
+		// 鉄球の位置
+		m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, _socketNo[2]);
+
+		_cPos[CHAIN_MAX - 1] = VTransform(vOrigin, m);
+	}
+}
+
 void Chain::AnimProcess()
 {
 	MV1SetAttachAnimTime(_iModelHandle, _animIndex, _playTime);
 
-	_playTime += _attackAnimCnt < 60 ? 10.0f : 1.0f;	
+	_playTime += 1.0f;	
 	if (_animTotalTime < _playTime) {
 		_playTime = 0.0f;
 	}
