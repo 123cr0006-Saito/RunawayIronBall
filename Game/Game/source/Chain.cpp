@@ -13,7 +13,7 @@ void Chain::Init() {
 		_cPos[i] = VAdd(_cPos[i - 1], VGet(0.0f, 0.0f, -100.0f));
 	}
 
-	_iModelHandle = MV1LoadModel("res/Character/Tetuo/cg_player_tetuo.mv1");
+	_iModelHandle = MV1LoadModel("res/Character/Tetsuo/cg_tetsuo.mv1");
 	_iPos = VAdd(_cPos[CHAIN_MAX - 1], VGet(0.0f, 10.0f, 0.0f));
 	MV1SetPosition(_iModelHandle, _iPos);
 
