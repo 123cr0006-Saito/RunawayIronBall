@@ -14,7 +14,7 @@
 // フレームデータのコマンド
 #define C_P_CHANGE_MOTION							0
 #define	C_P_ENABLE_MOVE								1
-#define C_P_MOVE_SPEED									2
+#define C_P_MOVE_FORWARD									2
 #define C_P_ACCEPT_COMBO_INPUT					3
 #define C_P_CHECK_CHANGE_COMBO				4
 #define C_P_CHECK_CHANGE_ATTACK_STATE		5
@@ -109,7 +109,9 @@ private:
 	// 移動可能かどうか
 	bool _canMove;
 	// 移動速度
-	float _speed;
+	float _moveSpeed;
+	// 移動速度（フレームデータを使った移動）
+	float _moveSpeedFD;
 
 	Capsule _capsuleCollision;
 
@@ -143,7 +145,7 @@ private:
 
 
 	bool _isSwinging;
-	bool _isSpinning;
+	bool _isRotationSwinging;
 	int _spinCnt;
 
 	static Player* _instance;
