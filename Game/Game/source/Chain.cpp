@@ -81,7 +81,6 @@ bool Chain::UpdateLevel() {
 };
 
 void Chain::Process() {
-	_followingMode = _playerInstance->GetIBFollowingMode();
 	_moveState = _playerInstance->GetIBMoveState();
 
 	_cPos[0] = _playerInstance->GetRightHandPos();

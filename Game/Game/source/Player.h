@@ -87,8 +87,6 @@ public:
 
 	VECTOR GetRightHandPos();
 
-	bool GetIBFollowingMode() { return _ibFollowingMode; }
-
 	IB_MOVE_STATE GetIBMoveState() { return _ibMoveState; }
 
 
@@ -113,7 +111,6 @@ private:
 	Capsule _capsuleCollision;
 
 	// “S‹…‚ª’Ç]ó‘Ô‚©‚Ç‚¤‚©
-	bool _ibFollowingMode;
 	IB_MOVE_STATE _ibMoveState;
 
 	// UŒ‚ó‘Ô‚©‚Ç‚¤‚©

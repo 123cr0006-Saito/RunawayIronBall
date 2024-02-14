@@ -12,7 +12,6 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	_speed = 8.0f;
 	UpdateCollision();
 
-	_ibFollowingMode = true;
 	// ìSãÖÇÃà⁄ìÆèÛë‘ÇÅuí«è]ÅvÇ…ê›íË
 	_ibMoveState = IB_MOVE_STATE::FOLLOWING;
 
@@ -377,7 +376,7 @@ void Player::CheckFrameDataCommand()
 			_ibMoveState = static_cast<int>(param) == 0 ? IB_MOVE_STATE::PUTTING_ON_SOCKET : IB_MOVE_STATE::FOLLOWING;
 			break;
 		case C_P_ENABLE_IB_INTERPOLATION:
-			_ibFollowingMode = IB_MOVE_STATE::INTERPOLATION;
+			_ibMoveState = IB_MOVE_STATE::INTERPOLATION;
 			break;
 		}
 	}
