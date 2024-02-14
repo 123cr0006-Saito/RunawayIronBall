@@ -261,7 +261,7 @@ bool Player::Process(float camAngleY)
 					_idleFightingRemainingCnt -= 1;
 				}
 				else {
-					_animStatus = ANIM_STATE::IDLE;
+					_animStatus = ANIM_STATE::IDLE_FIGHTING;
 				}
 			}
 		}
@@ -306,7 +306,7 @@ bool Player::Process(float camAngleY)
 
 
 	if (_isRotationSwinging) {
-		_forwardDir = VTransform(_forwardDir, MGetRotY((2.0f * DX_PI_F) / 30.0f));
+		_forwardDir = VTransform(_forwardDir, MGetRotY(-(2.0f * DX_PI_F) / 30.0f));
 	}
 
 	// âÒì]èàóù
