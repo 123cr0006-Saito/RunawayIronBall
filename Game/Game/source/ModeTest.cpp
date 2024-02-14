@@ -35,7 +35,7 @@ bool ModeTest::Initialize() {
 	//}
 
 
-	int objHandle = MV1LoadModel("res/Building/House_test_01.mv1");
+	int objHandle = MV1LoadModel("res/Building/House_test_03.mv1");
 	myJson json("Data/ObjectList/Stage_03.json");
 	std::vector<std::string> loadName{ "House_Iron","House_Rock","House_Glass" };
 	for (auto&& nameList : loadName) {
