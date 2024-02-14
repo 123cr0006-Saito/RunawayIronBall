@@ -4,6 +4,22 @@
 Player* Player::_instance = NULL;
 std::map<int, ANIMATION_INFO> Player::_animMap;
 
+namespace {
+	// 移動速度
+	// 最大値
+	constexpr float MOVE_SPEED_MAX = 8.0f;
+	// 最小値
+	constexpr float MOVE_SPEED_MIN = 1.0f;
+
+	// スティック入力ベクトルの大きさの最大値
+	// この値を最大値として、入力の大きさを割合を計算する（割合は0~1の範囲にクランプする）
+	constexpr float MOVE_DIR_SIZE_MAX = 0.8f;
+
+	// 「走り」状態と「歩き」状態を切り替える閾値
+	// 「スティック入力ベクトルの大きさ」がこの値を超えたら「走り」状態になる
+	constexpr float MOVE_RUN_THRESHOLD = 0.6f;
+}
+
 Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 {
 	_input = XInput::GetInstance();
@@ -182,22 +198,35 @@ bool Player::Process(float camAngleY)
 	{
 		// 移動処理
 
+		// 移動フラグ
 		bool _isMoved = false;
+
+		bool _isRunnning = false;
+
 		// 左スティックの入力情報を取得する
 		auto lStick = _input->GetAdjustedStick_L();
-		VECTOR vDir = VGet(lStick.x, 0, lStick.y);
+		VECTOR vMoveDir = VGet(lStick.x, 0, lStick.y);
 		if (_canMove) {
 			// 左スティックの入力があったら
-			if (VSize(vDir) > 0.000000f) {
-				// 移動処理
-				vDir = VNorm(vDir);				
+			if (VSize(vMoveDir) > 0.000000f) {
 
+				float size = VSize(vMoveDir);
+
+				float rate = size / MOVE_DIR_SIZE_MAX;
+				_moveSpeed = MOVE_SPEED_MAX * rate;
+				rate = Math::Clamp(0.0f, 1.0f, rate);
+				_moveSpeed = Easing::Linear(rate, MOVE_SPEED_MIN, MOVE_SPEED_MAX, 1.0f);
+				if(rate > MOVE_RUN_THRESHOLD) _isRunnning = true;
+
+				// 入力方向ベクトルを正規化する
+				vMoveDir = VScale(vMoveDir, 1.0f / size);
+				// 入力方向ベクトルにカメラの向きの補正をかけて移動方向を決定する
 				MATRIX mRot = MGetRotY(camAngleY);
-				// 移動方向ベクトルを回転させる
-				vDir = VTransform(vDir, mRot);
-				_pos = VAdd(_pos, VScale(vDir, _moveSpeed));
+				vMoveDir = VTransform(vMoveDir, mRot);
 
-				_stickDir = vDir;
+				_pos = VAdd(_pos, VScale(vMoveDir, _moveSpeed));
+
+				_stickDir = vMoveDir;
 				_isMoved = true;
 			}
 		}
@@ -208,16 +237,21 @@ bool Player::Process(float camAngleY)
 
 		if (!_isAttackState && _animStatus != ANIM_STATE::AVOIDANCE) {
 			if (_isMoved) {
-				_animStatus = ANIM_STATE::RUN;
-
-				// キャラクターを滑らかに回転させる
-				float angle = Math::CalcVectorAngle(_forwardDir, vDir);
-				float rotRad = (2.0f * DX_PI_F) / 30.0f;
-				if (rotRad > angle) {
-					_forwardDir = vDir;
+				if (_isRunnning) {
+					_animStatus = ANIM_STATE::RUN;
 				}
 				else {
-					VECTOR vN = VCross(_forwardDir, vDir);
+					_animStatus = ANIM_STATE::WALK;
+				}
+
+				// キャラクターを滑らかに回転させる
+				float angle = Math::CalcVectorAngle(_forwardDir, vMoveDir);
+				float rotRad = (2.0f * DX_PI_F) / 30.0f;
+				if (rotRad > angle) {
+					_forwardDir = vMoveDir;
+				}
+				else {
+					VECTOR vN = VCross(_forwardDir, vMoveDir);
 					_forwardDir = VTransform(_forwardDir, MGetRotAxis(vN, rotRad));
 				}
 			}

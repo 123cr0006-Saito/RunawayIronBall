@@ -55,6 +55,8 @@ private:
 		HIT,
 		IDLE_TIRED,
 		WALK_TIRED,
+
+		WALK,
 	};
 
 public:
