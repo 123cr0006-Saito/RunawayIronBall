@@ -95,7 +95,7 @@ void Chain::Process() {
 	MV1SetPosition(_iModelHandle, _iPos);
 	_iForwardDir = VSub(_cPos[0], _iPos);
 	if (VSize(_iForwardDir) > 0.0f) {
-		if (!_followingMode) _iForwardDir = VScale(_iForwardDir, -1.0f);
+		if (_moveState != IB_MOVE_STATE::FOLLOWING) _iForwardDir = VScale(_iForwardDir, -1.0f);
 		_iForwardDir = VNorm(_iForwardDir);
 		Math::SetModelForward_RotationY(_iModelHandle, _iForwardDir);
 	}

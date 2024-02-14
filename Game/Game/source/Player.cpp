@@ -39,6 +39,7 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 
 	_instance = this;
 
+	_idleFightingRemainingCnt = 0;
 	// アニメーションマネージャーの初期設定
 	_animManager = new AnimationManager();
 	_animManager->InitMap("Player", _modelHandle, "MotionList_Player.csv");
@@ -49,6 +50,9 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::HORISONTAL_SWING_01), "FD_MO_PL_Horizontal_first.csv"));
 	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::HORISONTAL_SWING_02), "FD_MO_PL_Horizontal_second.csv"));
 	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::HORISONTAL_SWING_03), "FD_MO_PL_Horizontal_third.csv"));
+	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::IDLE), "FD_MO_PL_Idle.csv"));
+	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::IDLE_FIGHTING), "FD_MO_PL_Idle_Fighting.csv"));
+	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::ROTATION_SWING), "FD_MO_PL_Rotate_Loop.csv"));
 	_frameData->LoadData("Player", fdFileName);
 
 	//_animManager->InitMap(&_animMap);
@@ -128,10 +132,6 @@ bool Player::UpdateExp() {
 
 bool Player::Process(float camAngleY)
 {
-	// 処理前のステータスを保存しておく
-	ANIM_STATE oldStatus = _animStatus;
-	//_animStatus = STATUS::NONE;
-
 	// フレームデータの実行コマンドをチェックする
 	CheckFrameDataCommand();
 
@@ -160,45 +160,23 @@ bool Player::Process(float camAngleY)
 	//	_isSpinning = false;
 	//}
 
-	if (_input->GetTrg(XINPUT_BUTTON_X)) {
-		_isSwinging = true;
-		_canMove = false;
-
-		_playNextComboAnim = true;
-
-		if (!_isAttackState) {
-			_animStatus = ANIM_STATE::HORISONTAL_SWING_01;
-		}
-	}
 
 
-	if (!_isSwinging && !_isSpinning) {
-		_animStatus = ANIM_STATE::IDLE;
+
+	//if (!_isSwinging && !_isSpinning) {
+	//	_animStatus = ANIM_STATE::IDLE;
 
 
-		_canMove = true;
+	//	_canMove = true;
 
-		_ibFollowingMode = true;
-		_isAttackState = false;
-	}
-	else {
-		_ibFollowingMode = false;
-		_isAttackState = true;
-	}
-
-	//if (_playNextComboAnim) {
-	//	if (_animStatus == STATUS::HORISONTAL_SWING_01 || _animStatus == STATUS::HORISONTAL_SWING_02) {
-	//		if (_play_time >= 94.0f) {
-	//			_animStatus = _nextComboAnim;
-	//			_playNextComboAnim = false;
-	//		}
-	//	}
-	//	else {
-	//		_animStatus = _nextComboAnim;
-	//		_playNextComboAnim = false;
-	//	}
-	//	
+	//	_ibFollowingMode = true;
+	//	_isAttackState = false;
 	//}
+	//else {
+	//	_ibFollowingMode = false;
+	//	_isAttackState = true;
+	//}
+
 
 	bool _isMoved = false;
 	// 左スティックの入力情報を取得する
@@ -217,11 +195,11 @@ bool Player::Process(float camAngleY)
 
 			_isMoved = true;
 
-			
+
 		}
 	}
 
-	if (!_isAttackState) {
+	if (!_isAttackState && !_isSpinning) {
 		if (_isMoved) {
 			_animStatus = ANIM_STATE::RUN;
 
@@ -237,8 +215,39 @@ bool Player::Process(float camAngleY)
 			}
 		}
 		else {
-			_animStatus = ANIM_STATE::IDLE;
+			if (_idleFightingRemainingCnt > 0) {
+				_animStatus = ANIM_STATE::IDLE_FIGHTING;
+				_idleFightingRemainingCnt -= 1;
+			}
+			else {
+				_animStatus = ANIM_STATE::IDLE;
+			}
 		}
+	}
+
+	// 回転攻撃
+	if (_spinCnt > 90) {
+		_animStatus = ANIM_STATE::ROTATION_SWING;
+		_isSpinning = true;
+	}
+	// 通常攻撃
+	else if (_input->GetRel(XINPUT_BUTTON_X) != 0) {
+		_isSwinging = true;
+		_playNextComboAnim = true;
+		if (!_isAttackState) {
+			_animStatus = ANIM_STATE::HORISONTAL_SWING_01;
+		}
+	}
+
+	if (_input->GetKey(XINPUT_BUTTON_X) != 0) {
+		_spinCnt++;
+	}
+	else {
+		_spinCnt = 0;
+		if (_isSpinning) {
+			_animStatus = ANIM_STATE::HORISONTAL_SWING_03;
+		}
+		_isSpinning = false;
 	}
 
 	if (_isSpinning) {
@@ -260,7 +269,7 @@ bool Player::Process(float camAngleY)
 
 	_animManager->Process(static_cast<int>(_animStatus));
 	_frameData->Process(static_cast<int>(_animStatus), _animManager->GetPlayTime());
-	
+
 	return true;
 }
 
@@ -330,6 +339,7 @@ void Player::CheckFrameDataCommand()
 		switch (command)
 		{
 		case C_P_CHANGE_MOTION:
+			_animStatus = static_cast<ANIM_STATE>(param);
 			break;
 		case C_P_ENABLE_MOVE:
 			_canMove = static_cast<bool>(param);
@@ -352,6 +362,15 @@ void Player::CheckFrameDataCommand()
 				}
 			}
 			break;
+		case C_P_CHECK_CHANGE_ATTACK_STATE:
+		{
+			bool nextState = static_cast<bool>(param);
+			if (_isAttackState && !nextState) {
+				_idleFightingRemainingCnt = 240;
+			}
+			_isAttackState = nextState;
+			break;
+		}
 		case C_P_ENABLE_IB_ATTACK_COLLISION:
 			break;
 		case C_P_ENABLE_IB_FOLLOWING_MODE:

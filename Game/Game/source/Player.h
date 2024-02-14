@@ -17,6 +17,7 @@
 #define C_P_MOVE_SPEED									2
 #define C_P_ACCEPT_COMBO_INPUT					3
 #define C_P_CHECK_CHANGE_COMBO				4
+#define C_P_CHECK_CHANGE_ATTACK_STATE		5
 
 #define C_P_ENABLE_IB_ATTACK_COLLISION		100
 #define C_P_ENABLE_IB_FOLLOWING_MODE		101
@@ -126,7 +127,7 @@ private:
 	// アニメーション情報のマップコンテナ
 	static std::map<int, ANIMATION_INFO> _animMap;
 	// 戦闘待機状態の残りフレーム数
-	float _idleFightingRemainingCnt;
+	int _idleFightingRemainingCnt;
 
 	ANIM_STATE _animStatus;
 
