@@ -7,6 +7,7 @@ std::map<int, ANIMATION_INFO> Player::_animMap;
 Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 {
 	_input = XInput::GetInstance();
+	_stickDir = VGet(0, 0, 0);
 
 	_canMove = true;
 	_speed = 8.0f;
@@ -176,50 +177,50 @@ bool Player::Process(float camAngleY)
 	//	_isAttackState = true;
 	//}
 
+	{
+		bool _isMoved = false;
+		// 左スティックの入力情報を取得する
+		auto lStick = _input->GetAdjustedStick_L();
+		VECTOR vDir = VGet(lStick.x, 0, lStick.y);
+		if (_canMove) {
+			// 左スティックの入力があったら
+			if (VSize(vDir) > 0.000000f) {
+				// 移動処理
+				vDir = VNorm(vDir);
+				_stickDir = vDir;
 
-	bool _isMoved = false;
-	// 左スティックの入力情報を取得する
-	auto lStick = _input->GetAdjustedStick_L();
-	VECTOR vDir = VGet(lStick.x, 0, lStick.y);
-	if (_canMove) {
-		// 左スティックの入力があったら
-		if (VSize(vDir) > 0.000000f) {
-			// 移動処理
-			vDir = VNorm(vDir);
+				MATRIX mRot = MGetRotY(camAngleY);
+				// 移動方向ベクトルを回転させる
+				vDir = VTransform(vDir, mRot);
+				_pos = VAdd(_pos, VScale(vDir, _speed));
 
-			MATRIX mRot = MGetRotY(camAngleY);
-			// 移動方向ベクトルを回転させる
-			vDir = VTransform(vDir, mRot);
-			_pos = VAdd(_pos, VScale(vDir, _speed));
-
-			_isMoved = true;
-
-
-		}
-	}
-
-	if (!_isAttackState && !_isSpinning) {
-		if (_isMoved) {
-			_animStatus = ANIM_STATE::RUN;
-
-			// キャラクターを滑らかに回転させる
-			float angle = Math::CalcVectorAngle(_forwardDir, vDir);
-			float rotRad = (2.0f * DX_PI_F) / 30.0f;
-			if (rotRad > angle) {
-				_forwardDir = vDir;
-			}
-			else {
-				VECTOR vN = VCross(_forwardDir, vDir);
-				_forwardDir = VTransform(_forwardDir, MGetRotAxis(vN, rotRad));
+				_isMoved = true;
 			}
 		}
-		else {
-			if (_idleFightingRemainingCnt > 0) {
-				_animStatus = ANIM_STATE::IDLE_FIGHTING;
-				_idleFightingRemainingCnt -= 1;
+
+		if (!_isAttackState && !_isSpinning) {
+			if (_isMoved) {
+				_animStatus = ANIM_STATE::RUN;
+
+				// キャラクターを滑らかに回転させる
+				float angle = Math::CalcVectorAngle(_forwardDir, vDir);
+				float rotRad = (2.0f * DX_PI_F) / 30.0f;
+				if (rotRad > angle) {
+					_forwardDir = vDir;
+				}
+				else {
+					VECTOR vN = VCross(_forwardDir, vDir);
+					_forwardDir = VTransform(_forwardDir, MGetRotAxis(vN, rotRad));
+				}
 			}
 			else {
-				_animStatus = ANIM_STATE::IDLE;
+				if (_idleFightingRemainingCnt > 0) {
+					_animStatus = ANIM_STATE::IDLE_FIGHTING;
+					_idleFightingRemainingCnt -= 1;
+				}
+				else {
+					_animStatus = ANIM_STATE::IDLE;
+				}
 			}
 		}
 	}
@@ -245,6 +246,11 @@ bool Player::Process(float camAngleY)
 		_spinCnt = 0;
 		if (_isSpinning) {
 			_animStatus = ANIM_STATE::HORISONTAL_SWING_03;
+
+			MATRIX mRot = MGetRotY(camAngleY);
+			// 移動方向ベクトルを回転させる
+			VECTOR vDir = VTransform(_stickDir, mRot);
+			_forwardDir = vDir;
 		}
 		_isSpinning = false;
 	}

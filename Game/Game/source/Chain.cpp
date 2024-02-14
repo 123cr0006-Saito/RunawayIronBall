@@ -239,6 +239,29 @@ void Chain::InterpolationProcess()
 
 		_cPos[CHAIN_MAX - 1] = VTransform(vOrigin, m);
 	}
+
+	// キャラの座標から見た一つ目の鎖を配置する方向
+	VECTOR vBase = VSub(_cPos[1], _cPos[0]);
+
+	// キャラの座標から見た鉄球を配置する方向
+	VECTOR vTarget = VSub(_cPos[CHAIN_MAX - 1], _cPos[0]);
+
+
+	float rad = Math::CalcVectorAngle(vBase, vTarget);
+	float dist = VSize(vTarget);
+	VECTOR vCross = VCross(vBase, vTarget);
+	const float chainNum = CHAIN_MAX - 1; ////////////////// （要修正）振り回している感じを出すなら、最後の鎖がピッタリ鉄球の接続位置に来るようにせず、少し引っ張っている方向にずらす必要がある
+	//rad /= chainNum;
+	for (int i = 1; i < CHAIN_MAX; i++) {
+		VECTOR vTmp = VScale(VNorm(vBase), dist * ((float)(i - 1) / chainNum));
+		MATRIX mRot = MGetRotAxis(vCross, rad * ((float)(i - 1) / chainNum));
+		vTmp = VTransform(vTmp, mRot);
+		_cPos[i] = VTransform(vTmp, MGetTranslate(_cPos[0]));
+
+		if (_cPos[i].y < 0.0f) {
+			_cPos[i].y = 0.0f;
+		}
+	}
 }
 
 void Chain::AnimProcess()

@@ -102,6 +102,9 @@ public:
 private:
 	// 入力情報
 	XInput* _input;
+	// Lスティックの入力方向
+	// Lスティック入力があった場合に更新する
+	VECTOR _stickDir;
 
 	// 移動可能かどうか
 	bool _canMove;
