@@ -234,6 +234,7 @@ bool ModeTest::Process() {
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_START)) {
 		_enemyPool->Init();
 		_player->SetDamage();
+		ModeServer::GetInstance()->Add(new ModePause(), 10, "Pause");
 	}
 
 	//if (XInput::GetInstance()->GetKey(XINPUT_BUTTON_Y)) {
