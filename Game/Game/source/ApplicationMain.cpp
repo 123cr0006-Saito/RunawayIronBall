@@ -3,6 +3,7 @@
 #include "ModeGame.h"
 #include "ModeTest.h"
 #include "ModeTitle.h"
+#include "ModeGameOver.h"
 
 // ŽÀ‘Ì
 ApplicationMain				g_oApplicationMain;
@@ -11,7 +12,8 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance) {
 	if (!base::Initialize(hInstance)) { return false; }
 
 	// ƒ‚[ƒh‚Ì“o˜^
-	ModeServer::GetInstance()->Add(new ModeTitle(), 1, "Title");
+	//ModeServer::GetInstance()->Add(new ModeTitle(), 1, "Title");
+	ModeServer::GetInstance()->Add(new ModeGameOver(), 1, "Title");
 	//ModeServer::GetInstance()->Add(new ModeTest(), 1, "Game");
 
 	global.Init();
