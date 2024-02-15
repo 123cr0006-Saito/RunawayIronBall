@@ -30,17 +30,23 @@ void BreakObject::Init(int modelHandle)
 {
 	_modelHandle = modelHandle;
 	for (int i = 0; i < MV1GetFrameNum(_modelHandle); i++) {
-#if 0
-		// 仮：子のフレームがないもののみ
-		int childNum = MV1GetFrameChildNum(_modelHandle, i);
-		if (childNum != 0) continue; // 子のフレームの数が0子以外の場合はcontinue
-#else
-		// 仮：親子関係を利用する
-		int parentIndex = MV1GetFrameParent(_modelHandle, i);
-		if (parentIndex != 0)continue; // 親のフレームがルート出ない場合はcontinue
-#endif
+//#if 0
+//		// 仮：子のフレームがないもののみ
+//		int childNum = MV1GetFrameChildNum(_modelHandle, i);
+//		if (childNum != 0) continue; // 子のフレームの数が0子以外の場合はcontinue
+//#else
+//		// 仮：親子関係を利用する
+//		int parentIndex = MV1GetFrameParent(_modelHandle, i);
+//		if (parentIndex != 0)continue; // 親のフレームがルート出ない場合はcontinue
+//#endif
 
-
+		// フレームの名前を取得する
+		std::string frameName = MV1GetFrameName(_modelHandle, i);
+		std::string checkName = "BRK";
+		// フレーム名がBRKで始まらない場合はcontinue
+		if (frameName.substr(0, 3) != checkName) {
+			continue;
+		}
 
 
 
@@ -109,7 +115,7 @@ void BreakObject::Process()
 
 
 			// 重力処理
-			itr->verticalVelocity -= 2.5f;
+			itr->verticalVelocity -= 2.f;
 
 			// 軌跡表示用の座標を保持
 			MATRIX mLocus = MV1GetFrameLocalWorldMatrix(_modelHandle, itr->frameIndex);
@@ -123,7 +129,7 @@ void BreakObject::Process()
 		//_blastDir.y -= 0.05f;
 
 		 // リセット
-		if (_breakCnt > 120) {
+		if (_breakCnt > 180) {
 			_finishedBreak = true;
 
 			//_breakCnt = 0;
@@ -177,7 +183,7 @@ void BreakObject::SetBlastDir(VECTOR vDir)
 	vDir.y = 0.0f;
 	vDir = VNorm(vDir);
 	// パーツごとに吹っ飛ばす水平方向をvDirから ±maxRange度の間でランダムに決定する
-	const int maxRange = 45;
+	const int maxRange = 35;
 	// 水平・鉛直方向における最大速度
 	const int maxHorizontalVelocity = 80;
 	const int maxVerticalVelocity = 50;
@@ -194,7 +200,7 @@ void BreakObject::SetBlastDir(VECTOR vDir)
 		itr->verticalVelocity = (rand() % maxVerticalVelocity) + 20.0f;
 
 		// 回転値
-		int deltaRot = 8;
+		int deltaRot = 4;
 		float angleX = rand() % deltaRot;
 		angleX = Math::DegToRad(angleX);
 		float angleY = rand() % deltaRot;

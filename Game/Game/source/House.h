@@ -27,4 +27,6 @@ protected:
 	// 配置座標からモデルの中心座標までの差分ベクトル
 	// obbの位置を求めるために使用
 	VECTOR vDiffToCenter;
+
+	static std::vector<int> _breakFrame;
 };
