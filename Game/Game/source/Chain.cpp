@@ -15,6 +15,8 @@ void Chain::Init() {
 
 	_iModelHandle = MV1LoadModel("res/Character/Tetsuo/cg_tetsuo.mv1");
 	_iPos = VAdd(_cPos[CHAIN_MAX - 1], VGet(0.0f, 10.0f, 0.0f));
+	_ibDefaultScale = VGet(2.5f, 2.5f, 2.5f);
+	MV1SetScale(_iModelHandle, _ibDefaultScale);
 	MV1SetPosition(_iModelHandle, _iPos);
 
 
@@ -72,7 +74,7 @@ bool Chain::UpdateLevel() {
 
 	if (_oldLevel != level) {
 		_power = _powerAndScale[level].first;
-		MV1SetScale(_iModelHandle, VScale(VGet(1, 1, 1), _powerAndScale[level].second));
+		MV1SetScale(_iModelHandle, VScale(_ibDefaultScale, _powerAndScale[level].second));
 		_r = _originR * _powerAndScale[level].second;
 	}
 
@@ -101,6 +103,10 @@ void Chain::Process() {
 	_attackAnimCnt++;
 	if (90 < _attackAnimCnt) {
 		_attackAnimCnt = 0;
+	}
+
+	if (_iPos.y - _r < 0.0f) {
+		_iPos.y = 0.0f + _r;
 	}
 
 	AnimProcess();
@@ -278,18 +284,21 @@ void Chain::AnimProcess()
 
 void Chain::Render()
 {
+	// ½‚Ì•`‰æ
 	for (int i = 0; i < CHAIN_MAX; i++) {
 		// ƒ‚ƒfƒ‹‚ÉÀ•W‚ð”½‰f‚³‚¹‚é
 		MV1SetPosition(_cModelHandle, _cPos[i]);
+		// ƒ‚ƒfƒ‹‚Ì•`‰æ
 		MV1DrawModel(_cModelHandle);
 	}
 
+	// “S‹…‚Ì•`‰æ
+	MV1SetPosition(_iModelHandle, _iPos);
 	MV1DrawModel(_iModelHandle);
 }
 
 void Chain::DrawDebugInfo() {
 	DrawSphere3D(_iPos, _r, 16, COLOR_RED, COLOR_RED, false);
-
 
 	//int x = 0;
 	//int y = 0;

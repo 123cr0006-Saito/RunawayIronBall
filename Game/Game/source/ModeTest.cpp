@@ -309,6 +309,7 @@ bool ModeTest::Render() {
 
 
 	_player->DrawDebugInfo();
+	_chain->DrawDebugInfo();
 
 	SetUseZBuffer3D(FALSE);
 
