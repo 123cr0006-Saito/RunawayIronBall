@@ -29,6 +29,7 @@ protected:
 	int _backHandle;
 	int _optionHandle;
 	int _itemHandle[MAX_MODE];
+	int _volumBarHandle;
 	int _checkBoxHandle;
 	int _checkHandle;
 

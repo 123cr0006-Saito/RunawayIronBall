@@ -13,8 +13,9 @@ bool ModePause::Initialize() {
 	 _optionHandle = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_operation_gide.png");
 	 _checkHandle = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_check.png");
 	 _checkBoxHandle = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/munu_ui_check_box.png");
-	_itemHandle[0] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_bgm.png");
-	_itemHandle[1] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_se.png");
+	 _volumBarHandle = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/UI_Menu_Bar.png");
+	_itemHandle[0] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_se.png");
+	_itemHandle[1] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_bgm.png");
 	_itemHandle[2] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_controller_vibration.png");
 	_itemHandle[3] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_operation_gide.png");
 	_itemHandle[4] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_title_return.png");
@@ -25,8 +26,8 @@ bool ModePause::Initialize() {
 
 	//初期化
 	_selectItem = 0;
-	_seVolum = 255;
-	_bgmVolum = 255;
+	_seVolum = global._soundServer->GetSeVolume();
+	_bgmVolum = global._soundServer->GetBgmVolume();
 	return true;
 };
 
@@ -37,10 +38,10 @@ bool ModePause::Terminate() {
 };
 
 void ModePause::SelectSetVolum(int& setVolum) {
-	if (_input->GetLx() > 0) {
+	if (_input->GetKey(XINPUT_BUTTON_DPAD_RIGHT)) {
 		if (setVolum < 255) setVolum++;
 	}
-	else if (_input->GetLx() < 0) {
+	else if (_input->GetKey(XINPUT_BUTTON_DPAD_LEFT)) {
 		if (setVolum > 0) setVolum--;
 	}
 };
@@ -117,6 +118,8 @@ bool ModePause::Process() {
 
 	//オプションの終了
 	if (_input->GetTrg(XINPUT_BUTTON_START)) {
+		global._soundServer->SetSeVolume(_seVolum);
+		global._soundServer->SetBgmVolume(_bgmVolum);
 		ModeServer::GetInstance()->Del(this);
 	}
 	return true;
@@ -130,25 +133,26 @@ bool ModePause::Render() {
 
 	//----------------------------------------------------------------------------------
 	//ボリュームとかとかの描画（仮）
+	int handleX, handleY;
 
 	DrawGraph(100, 65, _backHandle, true);
 	DrawGraph(180, 110, _optionHandle, true);
 	DrawGraph(900, 460, _checkBoxHandle, true);
 
+	int length[] = { _seVolum,_bgmVolum };
+	GetGraphSize(_volumBarHandle, &handleX, &handleY);
+	for (int i = 0; i < 2; i++) {
+		DrawExtendGraph(500, 250 + 110 * i, 500 + (handleX / 255 * length[i]), 250 + 110 * i + handleY,_volumBarHandle,true);
+	}
+
 	for (int i = 0; i < MAX_MODE; i++) {
 		int _selectedItems = 0;
 		int _gameEnd = 0;
 		float extRate = 1.0f;
-		int handleX, handleY;
+		
 		if (_selectItem == i)  extRate = 1.1f; 
 		int length = 50;
 		switch (i) {
-		case 0:
-			length = _seVolum;
-			break;
-		case 1:
-			length = _bgmVolum;
-			break;
 		case 2:
 			GetGraphSize(_checkHandle, &handleX, &handleY);
 			if (_isVibration)  DrawGraph(900 + (70 - handleX) / 2, 460 + (70 - handleY) / 2, _checkHandle, true);
