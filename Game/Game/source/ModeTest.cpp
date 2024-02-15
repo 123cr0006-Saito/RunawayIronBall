@@ -51,7 +51,7 @@ bool ModeTest::Initialize() {
 	int size = 100;
 	int heartHandle[3];
 	ResourceServer::LoadMultGraph("res/UI/UI_Heart", ".png", 3, heartHandle);
-	ui[0] = new UIHeart(VGet(0, 0, 0), 3,heartHandle,2);
+	ui[0] = new UIHeart(VGet(20, 20, 0), 3,heartHandle,2);
 	//ui[0] = new UIHeart(VGet(0, 0, 0), "res/TemporaryMaterials/UI_Hp_01.png");
 	ui[1] = new UIExpPoint(VGet(0, 150, 0), "res/TemporaryMaterials/UI_EXP_01.png");
 	_gaugeUI[0] = new DrawGauge(0, 3, size, true);
