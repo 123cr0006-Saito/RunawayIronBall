@@ -34,7 +34,10 @@ class Player : public CharacterBase
 {
 private:
 	enum class ANIM_STATE {
-		IDLE,		
+		IDLE,	
+		IDLE_TIRED,
+		WALK,
+		WALK_TIRED,
 		RUN,
 
 		HORISONTAL_SWING_01,
@@ -42,6 +45,8 @@ private:
 		HORISONTAL_SWING_03,
 
 		MANYTIME_SWING,
+
+		TO_ROTATION_SWING,
 		ROTATION_SWING,
 
 		IDLE_FIGHTING,
@@ -54,10 +59,6 @@ private:
 
 		AVOIDANCE,
 		HIT,
-		IDLE_TIRED,
-		WALK_TIRED,
-
-		WALK,
 	};
 
 public:
