@@ -51,17 +51,23 @@ void UIHeart::SetDamage() {
 };
 
 bool  UIHeart::Process() {
-	SetDamage();
 
-	if(XInput::GetInstance()->GetTrg(XINPUT_BUTTON_X) ){
+	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_X)) {
 		DecreaseHP();
 	}
+
+	SetDamage();
 
 	if (_IsDamage) {
 		float _x, _y;
 		GetGraphSizeF(_handle[_handleNum], &_x, &_y);
+		int nowTime = GetNowCount() - _currentTime;
 		VECTOR gaugePos = VAdd(_pos, VGet(_x * _hp + _x / 2, _y / 2, 0));
-		_heart->Process(gaugePos, _damageSeconds - (GetNowCount() - _currentTime), _damageSeconds);
+		//_heart->Process(gaugePos, _damageSeconds - nowTime, _damageSeconds);
+		_heart->Process(gaugePos, _damageSeconds, _damageSeconds);
+		if (_damageSeconds < nowTime) {
+			_IsDamage = false;
+		}
 	}
 	return true;
 };
@@ -72,11 +78,16 @@ bool  UIHeart::Draw() {
 	GetGraphSize(_handle[_handleNum], &_x, &_y);
 	for (int i = 0; i < _maxHp; i++) {
 		i >= _hp ? _handleNum = 1 : _handleNum = 0;
-		DrawGraph(_pos.x + _x * i, _pos.y, _handle[_handleNum], true);
+		if (i != _hp || !_IsDamage) {
+			DrawGraph(_pos.x + _x * i, _pos.y, _handle[_handleNum], true);
+		}
 	}
 	//Œ¸‚Á‚Ä‚¢‚é‘Ì—Í‚Ì•\Ž¦
 	if (_IsDamage) {
-		_heart->Draw();
+		int nowTime = GetNowCount() - _currentTime;
+		if (nowTime % 500 < 250) {
+			_heart->Draw();
+		}
 	};
 
 	return true;
