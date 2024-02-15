@@ -44,6 +44,7 @@ bool	ModeBase::Terminate() {
 // --------------------------------------------------------------------------
 bool	ModeBase::Process()
 {
+	global._soundServer->Update();
 	return	true;
 }
 

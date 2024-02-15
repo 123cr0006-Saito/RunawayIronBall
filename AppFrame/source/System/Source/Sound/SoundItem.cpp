@@ -75,7 +75,7 @@ void SoundItemBase::SetFadeVolume() {
 	if (IsFade == 1) {
 	// FadeIn
 		int nowTime = GetNowCount() - _currentTime;
-		_volume = Easing::Linear(nowTime, _sndServer->GetBgmVolume(), 0,_fadeTime);
+		_volume = Easing::Linear(nowTime, 0, _sndServer->GetBgmVolume(), _fadeTime);
 		if (nowTime >= _fadeTime) {
 			IsFade = 0;
 		}
@@ -83,10 +83,14 @@ void SoundItemBase::SetFadeVolume() {
 	else if (IsFade == 2) {
 	// FadeOut
 		int nowTime = GetNowCount() - _currentTime;
-		_volume = Easing::Linear(nowTime, 0, _sndServer->GetBgmVolume(), _fadeTime);
+		_volume = Easing::Linear(nowTime, _sndServer->GetBgmVolume(), 0, _fadeTime);
 		if (nowTime >= _fadeTime) {
 			IsFade = 0;
 		}
+	}
+	
+	if (_snd != -1) {
+		ChangeVolumeSoundMem(_volume, _snd);
 	}
 };
 

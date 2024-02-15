@@ -105,7 +105,7 @@ protected:
 			}
 		}
 	}
-	virtual void	Update() {
+	virtual void	Update()override {
 		if (_snd != -1) {
 			SetFadeVolume();
 			if (IsPlay() == false) {

@@ -45,6 +45,7 @@ bool ModeTitle::Initialize() {
 	 MV1SetPosition(_modelHandle, VGet(0, 0, 0)); 
 	 MV1SetScale(_modelHandle, VScale(VGet(1, 1, 1), 0.1));
 	 SetCameraPositionAndTarget_UpVecY(VGet(0, 0, -1870), VGet(0, 0, 0));
+	 global._soundServer->DirectPlay("Title");
 	return true;
 }
 

@@ -22,7 +22,8 @@ bool Global::SoundLoad() {
 	// ”ñ“¯Šú“Ç‚Ýž‚ÝÝ’è
 	SetUseASyncLoadFlag(TRUE);
 	//BGM
-	_soundServer->Add("Stage03", new SoundItemBGM("Sound/BGM/BGM_Stage03.wav"));
+	_soundServer->Add("Title", new SoundItemBGM("Sound/BGM/Bgm_title.mp3"));
+	_soundServer->Add("Stage03", new SoundItemBGM("Sound/BGM/Bgm_Stage.mp3"));
 	//SE
 	//Object
 	_soundServer->Add("OBJ_GlassBreak", new SoundItemSE("Sound/SE/Object/SE_HO_Glass_Break.wav"));
