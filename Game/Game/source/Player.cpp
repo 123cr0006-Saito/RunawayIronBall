@@ -109,15 +109,24 @@ Player::~Player()
 }
 
 // ñ≥ìGèÛë‘ÇÃçXêV
-void Player::ChangeIsInvincible(bool b)
+void Player::ChangeIsInvincible(bool b, int frame)
 {
 	_isInvincible = b;
 	if (b) {
-		_invincibleRemainingCnt = INVINCIBLE_CNT_MAX;
+		_invincibleRemainingCnt = frame;
 	}
 	else {
 		_invincibleRemainingCnt = 0;
 	}
+}
+
+void Player::SetDamage()
+{
+	_hp -= 1;
+	if (_hp < 0) {
+		_hp = 0;
+	}
+	ChangeIsInvincible(true, INVINCIBLE_CNT_MAX);
 }
 
 void Player::SetBone() {

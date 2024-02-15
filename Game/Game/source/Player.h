@@ -72,7 +72,10 @@ public:
 	int GetHP() { return _hp; }
 	bool GetIsInvincible() { return _isInvincible; }
 	// 無敵状態の更新
-	void ChangeIsInvincible(bool b);
+	void ChangeIsInvincible(bool b, int frame);
+
+	void SetDamage();
+
 
 	// キャラモデルの点滅処理
 	void FlickerProcess();
