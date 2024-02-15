@@ -76,9 +76,11 @@ void ModeTitle::UpdateSelectItems(){
 	//モード選択の切り替え
 	if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP)) {
 		count--;
+		global._soundServer->DirectPlay("SE_Select");
 	}
 	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN)) {
 		count++;
+		global._soundServer->DirectPlay("SE_Select");
 	}
 
 	_modeCount += count;
@@ -86,6 +88,7 @@ void ModeTitle::UpdateSelectItems(){
 
 	//モードの選択
 	if (_input->GetTrg(XINPUT_BUTTON_A)) {
+		global._soundServer->DirectPlay("SE_Press");
 		int textureHandle = MakeGraph(1920, 1080);
 		switch (_modeCount) {
 		case 0:
