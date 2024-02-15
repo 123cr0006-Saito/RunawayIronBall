@@ -8,7 +8,7 @@ namespace {
 	// Å‘åHP
 	constexpr int HP_MAX = 4;
 	// Å‘å–³“GŠÔ
-	constexpr int INVINCIBLE_CNT_MAX = 30;
+	constexpr int INVINCIBLE_CNT_MAX = 90;
 
 	// ˆÚ“®‘¬“x
 	// Å‘å’l
@@ -95,6 +95,8 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	//	_animManager->SetupAnimationInfo(static_cast<int>(STATUS::SPIN_SWING), MV1GetAnimIndex(_modelHandle, "MO_PL_roteate_loop"), 1);
 	//}
 
+	_modelColor = new ModelColor();
+	_modelColor->Init(_modelHandle);
 }
 
 Player::~Player()
@@ -177,11 +179,17 @@ bool Player::Process(float camAngleY)
 
 	// –³“Gó‘ÔŠÖ˜A‚Ìˆ—
 	if (_isInvincible) {
+		int cnt = 10;
+
+		bool b = (INVINCIBLE_CNT_MAX - _invincibleRemainingCnt) % (cnt * 2) < cnt;
+		_modelColor->ChangeFlickerTexture(b);
+
 		// –³“GŠÔ‚ğŒ¸‚ç‚·
 		_invincibleRemainingCnt -= 1;
 		// –³“GŠÔ‚ª0ˆÈ‰º‚É‚È‚Á‚½‚ç–³“Gó‘Ô‚ğ‰ğœ‚·‚é
 		if (_invincibleRemainingCnt < 0) {
 			_isInvincible = false;
+			_modelColor->ChangeFlickerTexture(false);
 		}
 	}
 
@@ -314,6 +322,10 @@ bool Player::Process(float camAngleY)
 
 	_animManager->Process(static_cast<int>(_animStatus));
 	_frameData->Process(static_cast<int>(_animStatus), _animManager->GetPlayTime());
+
+
+
+
 
 	return true;
 }

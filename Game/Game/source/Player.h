@@ -9,6 +9,7 @@
 
 #include "FrameData.h"
 
+#include "ModelColor.h"
 
 // テスト用
 // フレームデータのコマンド
@@ -165,6 +166,10 @@ private:
 	bool _isSwinging;
 	bool _isRotationSwinging;
 	int _spinCnt;
+
+
+	ModelColor* _modelColor;
+
 
 	static Player* _instance;
 
