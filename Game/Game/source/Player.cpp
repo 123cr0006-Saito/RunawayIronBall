@@ -82,6 +82,7 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::IDLE), "FD_MO_PL_Idle.csv"));
 	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::IDLE_FIGHTING), "FD_MO_PL_Idle_Fighting.csv"));
 	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::ROTATION_SWING), "FD_MO_PL_Rotate_Loop.csv"));
+	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::TO_ROTATION_SWING), "FD_MO_PL_To_Rotate.csv"));
 	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::AVOIDANCE), "FD_MO_PL_Avoidance.csv"));
 	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::HIT), "FD_MO_PL_Hit.csv"));
 	_frameData->LoadData("Player", fdFileName);
@@ -283,7 +284,9 @@ bool Player::Process(float camAngleY)
 	if (_animStatus != ANIM_STATE::AVOIDANCE) {
 		// âÒì]çUåÇ
 		if (_spinCnt > 90) {
-			_animStatus = ANIM_STATE::ROTATION_SWING;
+			if (!_isRotationSwinging) {
+				_animStatus = ANIM_STATE::TO_ROTATION_SWING;
+			}
 		}
 		// í èÌçUåÇ
 		else if (_input->GetRel(XINPUT_BUTTON_X) != 0) {
@@ -319,7 +322,8 @@ bool Player::Process(float camAngleY)
 
 
 	if (_isRotationSwinging) {
-		_forwardDir = VTransform(_forwardDir, MGetRotY(-(2.0f * DX_PI_F) / 30.0f));
+		float angle = _animStatus == ANIM_STATE::TO_ROTATION_SWING ? -(2.0f * DX_PI_F) / 80.0f : -(2.0f * DX_PI_F) / 30.0f;
+		_forwardDir = VTransform(_forwardDir, MGetRotY(angle));
 	}
 
 	// âÒì]èàóù
@@ -453,7 +457,7 @@ void Player::CheckFrameDataCommand()
 			}
 			else {
 				// âÒì]çUåÇÇÃèÍçáÅAâÒì]çUåÇÉtÉâÉOÇóßÇƒÇÈ
-				if (_animStatus == ANIM_STATE::ROTATION_SWING) {
+				if (_animStatus == ANIM_STATE::TO_ROTATION_SWING || _animStatus == ANIM_STATE::ROTATION_SWING) {
 					_isRotationSwinging = true;
 					_isSwinging = false;
 				}
@@ -493,5 +497,7 @@ void Player::DrawDebugInfo()
 	DrawFormatString(x, y + line * 16, COLOR_RED, "HP:%d", _hp); line++;
 	DrawFormatString(x, y + line * 16, COLOR_RED, "isInvincible:%d", _isInvincible); line++;
 	DrawFormatString(x, y + line * 16, COLOR_RED, "invincibleCnt:%d", _invincibleRemainingCnt); line++;
+
+	DrawFormatString(x, y + line * 16, COLOR_RED, "ANIM:%d", _animStatus); line++;
 	//DrawCapsule3D(_capsuleCollision._startPos, _capsuleCollision._endPos, _capsuleCollision._r, 16, COLOR_RED, COLOR_RED, false);
 }
