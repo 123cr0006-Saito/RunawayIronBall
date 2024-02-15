@@ -5,6 +5,11 @@ Player* Player::_instance = NULL;
 std::map<int, ANIMATION_INFO> Player::_animMap;
 
 namespace {
+	// 最大HP
+	constexpr int HP_MAX = 4;
+	// 最大無敵時間
+	constexpr int INVINCIBLE_CNT_MAX = 30;
+
 	// 移動速度
 	// 最大値
 	constexpr float MOVE_SPEED_MAX = 8.0f;
@@ -24,6 +29,10 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 {
 	_input = XInput::GetInstance();
 	_stickDir = VGet(0, 0, -1);
+
+	_hp = HP_MAX;
+	_isInvincible = false;
+	_invincibleRemainingCnt = 0;
 
 	_canMove = true;
 	_moveSpeed = 8.0f;
@@ -94,6 +103,18 @@ Player::~Player()
 	delete _animManager;
 }
 
+// 無敵状態の更新
+void Player::ChangeIsInvincible(bool b)
+{
+	_isInvincible = b;
+	if (b) {
+		_invincibleRemainingCnt = INVINCIBLE_CNT_MAX;
+	}
+	else {
+		_invincibleRemainingCnt = 0;
+	}
+}
+
 void Player::SetBone() {
 	//左髪
 	std::vector<int> bone_left_list(6);
@@ -153,47 +174,16 @@ bool Player::Process(float camAngleY)
 	// フレームデータの実行コマンドをチェックする
 	CheckFrameDataCommand();
 
-	//// 回転攻撃
-	//if (_spinCnt > 90) {
-	//	_animStatus = STATUS::Rotation_SWING;
-	//	_isSpinning = true;
-	//	_canMove = true;
-	//}
-	//// 通常攻撃
-	//else if (_input->GetRel(XINPUT_BUTTON_X) != 0) {
-	//	//if (_nextComboAnim != STATUS::NONE) {
-	//		_playNextComboAnim = true;
 
-	//		_isSwinging = true;
-	//		_canMove = false;
-	//	//}
-	//}
-
-	//if (_input->GetKey(XINPUT_BUTTON_X) != 0) {
-	//	_spinCnt++;
-	//	//_canMove = false;
-	//}
-	//else {
-	//	_spinCnt = 0;
-	//	_isSpinning = false;
-	//}
-
-
-
-
-	//if (!_isSwinging && !_isSpinning) {
-	//	_animStatus = ANIM_STATE::IDLE;
-
-
-	//	_canMove = true;
-
-	//	_ibFollowingMode = true;
-	//	_isAttackState = false;
-	//}
-	//else {
-	//	_ibFollowingMode = false;
-	//	_isAttackState = true;
-	//}
+	// 無敵状態関連の処理
+	if (_isInvincible) {
+		// 無敵時間を減らす
+		_invincibleRemainingCnt -= 1;
+		// 無敵時間が0以下になったら無敵状態を解除する
+		if (_invincibleRemainingCnt < 0) {
+			_isInvincible = false;
+		}
+	}
 
 	{
 		// 移動処理
@@ -344,8 +334,6 @@ bool Player::BlastOffProcess()
 bool Player::Render()
 {
 	CharacterBase::Render();
-
-	DrawDebugInfo();
 	return true;
 }
 
@@ -470,5 +458,11 @@ void Player::DrawDebugInfo()
 	for (int i = 0; i < sizeof(_bone) / sizeof(_bone[0]); i++) {
 		_bone[i]->DebugRender();
 	}
+	int x = 0;
+	int y = 100;
+	int line = 0;
+	DrawFormatString(x, y + line * 16, COLOR_RED, "HP:%d", _hp); line++;
+	DrawFormatString(x, y + line * 16, COLOR_RED, "isInvincible:%d", _isInvincible); line++;
+	DrawFormatString(x, y + line * 16, COLOR_RED, "invincibleCnt:%d", _invincibleRemainingCnt); line++;
 	//DrawCapsule3D(_capsuleCollision._startPos, _capsuleCollision._endPos, _capsuleCollision._r, 16, COLOR_RED, COLOR_RED, false);
 }

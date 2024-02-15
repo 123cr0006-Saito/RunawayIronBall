@@ -67,6 +67,15 @@ public:
 	bool BlastOffProcess();
 	bool Render() override;
 
+
+	int GetHP() { return _hp; }
+	bool GetIsInvincible() { return _isInvincible; }
+	// 無敵状態の更新
+	void ChangeIsInvincible(bool b);
+
+	// キャラモデルの点滅処理
+	void FlickerProcess();
+
 	void SetBone();//齋藤が作った関数です。 boneのフレームを探すために使用する関数です。後でjsonでの読み込みにするかもしれません。
 	//↓齋藤が作った関数です。どこにjson読み込みをどこに書けばよいのかわからなかったので、コンストラクタの次に呼び出す関数として実装しました。
 	void SetNextExp(std::string FileName);//経験値データの読み込み
@@ -107,6 +116,13 @@ private:
 	// Lスティックの入力方向
 	// Lスティック入力があった場合に更新する
 	VECTOR _stickDir;
+
+	// HP
+	int _hp;
+	// 無敵かどうか
+	bool _isInvincible;
+	// 残りの無敵時間
+	int _invincibleRemainingCnt;
 
 	// 移動可能かどうか
 	bool _canMove;
