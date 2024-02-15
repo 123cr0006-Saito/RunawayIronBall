@@ -252,7 +252,10 @@ bool ModeTest::Process() {
 		_drawDebug = !_drawDebug;
 	}
 
-
+	if (_player->GetHP() <= 0) {
+		ModeServer::GetInstance()->Del(this);
+		ModeServer::GetInstance()->Add(new ModeGameOver(), 1, "gameover");
+	}
 
 	VECTOR box_vec = ConvWorldPosToScreenPos(VAdd(_player->GetPosition(), VGet(0, 170, 0)));
 	_gaugeUI[0]->Process(box_vec, nowParcent, 100);
