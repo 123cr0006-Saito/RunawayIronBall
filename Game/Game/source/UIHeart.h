@@ -12,23 +12,20 @@ public:
 
 	~UIHeart();
 
-	void SetDamage();
+	void SetDamage(int hp);
 	virtual bool  Process()override;
 	virtual bool  Draw()override;
 
 	//デバッグ用
-	void DecreaseHP() { _hp--; };
+	//void DecreaseHP() { _hp--; };
 
 private:
 	DrawGauge* _heart;
+	Player* _player;
 	int _oldHp;
 	bool _IsDamage;
 	int _currentTime;
 
 	static const int _damageSeconds;
-	static const int _maxHp;
-	//--------------------------------
-	//後で消します
-	int _hp;//プレイヤークラスでｈｐができるまでの仮
 };
 
