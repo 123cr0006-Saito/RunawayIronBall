@@ -83,6 +83,7 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::IDLE_FIGHTING), "FD_MO_PL_Idle_Fighting.csv"));
 	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::ROTATION_SWING), "FD_MO_PL_Rotate_Loop.csv"));
 	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::AVOIDANCE), "FD_MO_PL_Avoidance.csv"));
+	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::HIT), "FD_MO_PL_Hit.csv"));
 	_frameData->LoadData("Player", fdFileName);
 
 	//_animManager->InitMap(&_animMap);
@@ -111,13 +112,16 @@ Player::~Player()
 // ñ≥ìGèÛë‘ÇÃçXêV
 void Player::ChangeIsInvincible(bool b, int frame)
 {
-	_isInvincible = b;
 	if (b) {
-		_invincibleRemainingCnt = frame;
+		if (!_isInvincible) {
+			_invincibleRemainingCnt = frame;
+			_animStatus = ANIM_STATE::HIT;
+		}
 	}
 	else {
 		_invincibleRemainingCnt = 0;
 	}
+	_isInvincible = b;
 }
 
 void Player::SetDamage()
@@ -192,7 +196,6 @@ bool Player::Process(float camAngleY)
 	// ñ≥ìGèÛë‘ä÷òAÇÃèàóù
 	if (_isInvincible) {
 		int cnt = 10;
-
 		bool b = (INVINCIBLE_CNT_MAX - _invincibleRemainingCnt) % (cnt * 2) < cnt;
 		_modelColor->ChangeFlickerTexture(b);
 
@@ -245,7 +248,7 @@ bool Player::Process(float camAngleY)
 			_pos = VAdd(_pos, VScale(VNorm(_forwardDir), _moveSpeedFD));
 		}
 
-		if (!_isAttackState && _animStatus != ANIM_STATE::AVOIDANCE) {
+		if (!_isAttackState && _animStatus != ANIM_STATE::AVOIDANCE && _animStatus != ANIM_STATE::HIT) {
 			if (_isMoved) {
 				if (_isRunnning) {
 					_animStatus = ANIM_STATE::RUN;
