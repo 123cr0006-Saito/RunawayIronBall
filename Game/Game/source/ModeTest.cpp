@@ -236,16 +236,22 @@ bool ModeTest::Process() {
 		_player->SetDamage();
 	}
 
-	if (XInput::GetInstance()->GetKey(XINPUT_BUTTON_Y)) {
-		if (nowParcent > 0) {
-			nowParcent -= 1.0f / 120 * 100;
-		}
+	//if (XInput::GetInstance()->GetKey(XINPUT_BUTTON_Y)) {
+	//	if (nowParcent > 0) {
+	//		nowParcent -= 1.0f / 120 * 100;
+	//	}
+	//}
+	//else {
+	//	if (nowParcent < 100) {
+	//		nowParcent += 1.0f / 120 * 100;
+	//	}
+	//}
+
+	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_BACK)) {
+		_drawDebug = !_drawDebug;
 	}
-	else {
-		if (nowParcent < 100) {
-			nowParcent += 1.0f / 120 * 100;
-		}
-	}
+
+
 
 	VECTOR box_vec = ConvWorldPosToScreenPos(VAdd(_player->GetPosition(), VGet(0, 170, 0)));
 	_gaugeUI[0]->Process(box_vec, nowParcent, 100);
@@ -284,13 +290,12 @@ bool ModeTest::Render() {
 
 	for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
 		(*itr)->Render();
-		(*itr)->DrawDebugInfo();
 	}
 
-	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
-		(*itr)->Render();
-		(*itr)->DrawDebugInfo();
-	}
+	//for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
+	//	(*itr)->Render();
+	//	(*itr)->DrawDebugInfo();
+	//}
 
 
 	//SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
@@ -308,8 +313,14 @@ bool ModeTest::Render() {
 	_planeEffectManeger->Render();
 
 
-	_player->DrawDebugInfo();
-	_chain->DrawDebugInfo();
+	if (_drawDebug) {
+		_player->DrawDebugInfo();
+		_chain->DrawDebugInfo();
+		for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
+			(*itr)->DrawDebugInfo();
+		}
+	}
+
 
 	SetUseZBuffer3D(FALSE);
 
