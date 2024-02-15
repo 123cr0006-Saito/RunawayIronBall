@@ -14,6 +14,8 @@ public:
 
 	void ActivateBreakObject(bool activate, VECTOR vDir = VGet(0.0f, 0.0f, 0.0f));
 
+	VECTOR GetPos() { return _pos; }
+
 	bool GetUseCollision() { return _useCollision; }
 	void SetUseCollision(bool b) { _useCollision = b; }
 

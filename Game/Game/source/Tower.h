@@ -14,6 +14,12 @@ public:
 	bool Process() override;
 	bool Render() override;
 
+	void BlastOffProcess();
+
+	void SetFalling(VECTOR vDir);
+
+	void UpdateCollision();
+
 	// デバッグ情報の表示
 	bool DrawDebugInfo() override;
 
@@ -22,6 +28,10 @@ protected:
 	struct TOWER_PARTS_INFO {
 		// この要素が使用中かどうか
 		bool use;
+
+		bool blast;
+		VECTOR blastDir;
+
 		// パーツのモデルハンドル
 		int modelHandle;
 		// パーツの位置
@@ -32,4 +42,16 @@ protected:
 
 	// パーツの情報
 	std::vector<TOWER_PARTS_INFO*> _partsInfo;
+	
+	bool _isFalling;
+	int _prevFallCnt;
+	int _fallCnt;
+
+
+	int _bottomIndex;
+	VECTOR _endPos;
+
+	float _r;
+	float _up;
+	std::vector<Sphere*> _sphereCollision;
 };
