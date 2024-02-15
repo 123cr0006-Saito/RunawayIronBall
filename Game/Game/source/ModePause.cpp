@@ -8,6 +8,18 @@ bool ModePause::Initialize() {
 	GetDrawScreenGraph(0, 0, 1920, 1080, gauss_handle);
 	GraphFilter(gauss_handle, DX_GRAPH_FILTER_GAUSS, 16, 1800);
 
+	SetUseASyncLoadFlag(TRUE);
+	 _backHandle = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu.png");
+	 _optionHandle = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_operation_gide.png");
+	 _checkHandle = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_check.png");
+	 _checkBoxHandle = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/munu_ui_check_box.png");
+	_itemHandle[0] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_bgm.png");
+	_itemHandle[1] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_se.png");
+	_itemHandle[2] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_controller_vibration.png");
+	_itemHandle[3] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_operation_gide.png");
+	_itemHandle[4] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_title_return.png");
+	SetUseASyncLoadFlag(FALSE);
+
 	//inputを作成
 	_input = XInput::GetInstance();
 
@@ -113,11 +125,17 @@ bool ModePause::Render() {
 
 	//----------------------------------------------------------------------------------
 	//ボリュームとかとかの描画（仮）
-	int x = 1920 / 2;
-	int y = 1080 / 2;
+
+	DrawGraph(100, 65, _backHandle, true);
+	DrawGraph(180, 110, _optionHandle, true);
+	DrawGraph(900, 460, _checkBoxHandle, true);
 
 	for (int i = 0; i < MAX_MODE; i++) {
-		int color = GetColor(255, 0, 0);
+		int _selectedItems = 0;
+		int _gameEnd = 0;
+		float extRate = 1.0f;
+		int handleX, handleY;
+		if (_selectItem == i)  extRate = 1.1f; 
 		int length = 50;
 		switch (i) {
 		case 0:
@@ -127,11 +145,17 @@ bool ModePause::Render() {
 			length = _bgmVolum;
 			break;
 		case 2:
-			_isVibration ? color = GetColor(0, 255, 0) : NULL;
+			GetGraphSize(_checkHandle, &handleX, &handleY);
+			if (_isVibration)  DrawGraph(900 + (70 - handleX) / 2, 460 + (70 - handleY) / 2, _checkHandle, true);
+			break;
+		case 4:
+			_gameEnd = 190;
 			break;
 		}
-		if (_selectItem == i) color = GetColor(0, 0, 255);
-		DrawBox(x - 122, y - 50 + i * 100, x - 122 + length, y + 50 + i * 100, color, true);
+		GetGraphSize(_itemHandle[i], &handleX, &handleY);
+		
+	//	DrawGraph(180 + _selectedItems, 250 + 110 * i + _gameEnd, _itemHandle[i], true);
+		DrawRotaGraph(180 + handleX/2, 250 + handleY/2 + 110 * i + _gameEnd, extRate, 0.0f, _itemHandle[i], true);
 	}
 
 	return true;

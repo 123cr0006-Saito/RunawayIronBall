@@ -19,6 +19,13 @@ class ModeTest : public ModeBase
 {
 	typedef ModeBase base;
 
+	struct OBJECTDATA {
+		std::string _name;
+		VECTOR _pos;
+		VECTOR _rotate;
+		VECTOR _scale;
+	};
+
 public:
 
 	virtual bool Initialize();
@@ -27,9 +34,11 @@ public:
 	virtual bool Render();
 
 	//デバッグ用
-
+	std::vector<OBJECTDATA> LoadJsonObject(nlohmann::json json,std::string loadName);//引数 読み込みたいオブジェクトの名前
 
 protected:
+
+
 
 	Camera* _camera;
 	Player* _player;

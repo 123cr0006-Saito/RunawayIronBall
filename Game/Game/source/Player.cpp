@@ -4,27 +4,42 @@
 Player* Player::_instance = NULL;
 std::map<int, ANIMATION_INFO> Player::_animMap;
 
+namespace {
+	// 移動速度
+	// 最大値
+	constexpr float MOVE_SPEED_MAX = 8.0f;
+	// 最小値
+	constexpr float MOVE_SPEED_MIN = 1.0f;
+
+	// スティック入力ベクトルの大きさの最大値
+	// この値を最大値として、入力の大きさを割合を計算する（割合は0~1の範囲にクランプする）
+	constexpr float MOVE_DIR_SIZE_MAX = 0.8f;
+
+	// 「走り」状態と「歩き」状態を切り替える閾値
+	// 「スティック入力ベクトルの大きさ」がこの値を超えたら「走り」状態になる
+	constexpr float MOVE_RUN_THRESHOLD = 0.6f;
+}
+
 Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 {
 	_input = XInput::GetInstance();
+	_stickDir = VGet(0, 0, -1);
 
 	_canMove = true;
-	_speed = 8.0f;
+	_moveSpeed = 8.0f;
+	_moveSpeedFD = 0.0f;
 	UpdateCollision();
 
-	_ibFollowingMode = true;
+	// 鉄球の移動状態を「追従」に設定
+	_ibMoveState = IB_MOVE_STATE::FOLLOWING;
+
 	_isAttackState = false;
 
 	_playNextComboAnim = true;
-	_nextComboAnim = STATUS::STAY;
 
-	// アニメーションアタッチはされていない
-	_attach_index = -1;
-	// ステータスを「無し」に設定
-	_animStatus = STATUS::STAY;
-	// 再生時間の初期化
-	_total_time = 0.f;
-	_play_time = 0.0f;
+
+	// ステートを「待機」に設定
+	_animStatus = ANIM_STATE::IDLE;
 
 
 	_blastOffDir = VGet(0, 0, 0);
@@ -35,15 +50,29 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	SetBone();
 
 	_isSwinging = false;
-	_isSpinning = false;
+	_isRotationSwinging = false;
 	_spinCnt = 0;
 
 
 	_instance = this;
 
+	_idleFightingRemainingCnt = 0;
 	// アニメーションマネージャーの初期設定
 	_animManager = new AnimationManager();
 	_animManager->InitMap("Player", _modelHandle, "MotionList_Player.csv");
+
+
+	_frameData = new FrameData();
+	std::vector<std::pair<int, std::string>> fdFileName;
+	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::HORISONTAL_SWING_01), "FD_MO_PL_Horizontal_first.csv"));
+	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::HORISONTAL_SWING_02), "FD_MO_PL_Horizontal_second.csv"));
+	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::HORISONTAL_SWING_03), "FD_MO_PL_Horizontal_third.csv"));
+	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::IDLE), "FD_MO_PL_Idle.csv"));
+	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::IDLE_FIGHTING), "FD_MO_PL_Idle_Fighting.csv"));
+	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::ROTATION_SWING), "FD_MO_PL_Rotate_Loop.csv"));
+	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::AVOIDANCE), "FD_MO_PL_Avoidance.csv"));
+	_frameData->LoadData("Player", fdFileName);
+
 	//_animManager->InitMap(&_animMap);
 
 	//// _animMapが空の場合、アニメーション情報を設定する
@@ -121,109 +150,163 @@ bool Player::UpdateExp() {
 
 bool Player::Process(float camAngleY)
 {
-	// 処理前のステータスを保存しておく
-	STATUS oldStatus = _animStatus;
-	//_animStatus = STATUS::NONE;
+	// フレームデータの実行コマンドをチェックする
+	CheckFrameDataCommand();
+
+	//// 回転攻撃
+	//if (_spinCnt > 90) {
+	//	_animStatus = STATUS::Rotation_SWING;
+	//	_isSpinning = true;
+	//	_canMove = true;
+	//}
+	//// 通常攻撃
+	//else if (_input->GetRel(XINPUT_BUTTON_X) != 0) {
+	//	//if (_nextComboAnim != STATUS::NONE) {
+	//		_playNextComboAnim = true;
+
+	//		_isSwinging = true;
+	//		_canMove = false;
+	//	//}
+	//}
+
+	//if (_input->GetKey(XINPUT_BUTTON_X) != 0) {
+	//	_spinCnt++;
+	//	//_canMove = false;
+	//}
+	//else {
+	//	_spinCnt = 0;
+	//	_isSpinning = false;
+	//}
 
 
 
-	// 回転攻撃
-	if (_spinCnt > 90) {
-		_animStatus = STATUS::Rotation_SWING;
-		_isSpinning = true;
-		_canMove = true;
-	}
-	// 通常攻撃
-	else if (_input->GetRel(XINPUT_BUTTON_X) != 0) {
-		//if (_nextComboAnim != STATUS::NONE) {
-			_playNextComboAnim = true;
 
-			_isSwinging = true;
-			_canMove = false;
-		//}
-	}
-
-	if (_input->GetKey(XINPUT_BUTTON_X) != 0) {
-		_spinCnt++;
-		//_canMove = false;
-	}
-	else {
-		_spinCnt = 0;
-		_isSpinning = false;
-	}
+	//if (!_isSwinging && !_isSpinning) {
+	//	_animStatus = ANIM_STATE::IDLE;
 
 
-	if (!_isSwinging && !_isSpinning) {
-		_animStatus = STATUS::STAY;
+	//	_canMove = true;
 
+	//	_ibFollowingMode = true;
+	//	_isAttackState = false;
+	//}
+	//else {
+	//	_ibFollowingMode = false;
+	//	_isAttackState = true;
+	//}
 
-		_canMove = true;
+	{
+		// 移動処理
 
-		_ibFollowingMode = true;
-		_isAttackState = false;
-	}
-	else {
-		_ibFollowingMode = false;
-		_isAttackState = true;
-	}
+		// 移動フラグ
+		bool _isMoved = false;
 
-	if (_playNextComboAnim) {
-		if (_animStatus == STATUS::HORISONTAL_SWING_01 || _animStatus == STATUS::HORISONTAL_SWING_02) {
-			if (_play_time >= 94.0f) {
-				_animStatus = _nextComboAnim;
-				_playNextComboAnim = false;
+		bool _isRunnning = false;
+
+		// 左スティックの入力情報を取得する
+		auto lStick = _input->GetAdjustedStick_L();
+		VECTOR vMoveDir = VGet(lStick.x, 0, lStick.y);
+		if (_canMove) {
+			// 左スティックの入力があったら
+			if (VSize(vMoveDir) > 0.000000f) {
+
+				float size = VSize(vMoveDir);
+
+				float rate = size / MOVE_DIR_SIZE_MAX;
+				_moveSpeed = MOVE_SPEED_MAX * rate;
+				rate = Math::Clamp(0.0f, 1.0f, rate);
+				_moveSpeed = Easing::Linear(rate, MOVE_SPEED_MIN, MOVE_SPEED_MAX, 1.0f);
+				if(rate > MOVE_RUN_THRESHOLD) _isRunnning = true;
+
+				// 入力方向ベクトルを正規化する
+				vMoveDir = VScale(vMoveDir, 1.0f / size);
+				// 入力方向ベクトルにカメラの向きの補正をかけて移動方向を決定する
+				MATRIX mRot = MGetRotY(camAngleY);
+				vMoveDir = VTransform(vMoveDir, mRot);
+
+				_pos = VAdd(_pos, VScale(vMoveDir, _moveSpeed));
+
+				_stickDir = vMoveDir;
+				_isMoved = true;
 			}
 		}
-		else {
-			_animStatus = _nextComboAnim;
-			_playNextComboAnim = false;
+
+		if (_moveSpeedFD != 0.f) {
+			_pos = VAdd(_pos, VScale(VNorm(_forwardDir), _moveSpeedFD));
 		}
-		
-	}
 
-	bool _isMoved = false;
-	// 左スティックの入力情報を取得する
-	auto lStick = _input->GetAdjustedStick_L();
-	VECTOR vDir = VGet(lStick.x, 0, lStick.y);
-	if (_canMove) {
-		// 左スティックの入力があったら
-		if (VSize(vDir) > 0.000000f) {
-			// 移動処理
-			vDir = VNorm(vDir);
+		if (!_isAttackState && _animStatus != ANIM_STATE::AVOIDANCE) {
+			if (_isMoved) {
+				if (_isRunnning) {
+					_animStatus = ANIM_STATE::RUN;
+				}
+				else {
+					_animStatus = ANIM_STATE::WALK;
+				}
 
-			MATRIX mRot = MGetRotY(camAngleY);
-			// 移動方向ベクトルを回転させる
-			vDir = VTransform(vDir, mRot);
-			_pos = VAdd(_pos, VScale(vDir, _speed));
-
-			_isMoved = true;
-
-			
-		}
-	}
-
-	if (!_isAttackState) {
-		if (_isMoved) {
-			_animStatus = STATUS::RUN;
-
-			// キャラクターを滑らかに回転させる
-			float angle = Math::CalcVectorAngle(_forwardDir, vDir);
-			float rotRad = (2.0f * DX_PI_F) / 30.0f;
-			if (rotRad > angle) {
-				_forwardDir = vDir;
+				// キャラクターを滑らかに回転させる
+				float angle = Math::CalcVectorAngle(_forwardDir, vMoveDir);
+				float rotRad = (2.0f * DX_PI_F) / 30.0f;
+				if (rotRad > angle) {
+					_forwardDir = vMoveDir;
+				}
+				else {
+					VECTOR vN = VCross(_forwardDir, vMoveDir);
+					_forwardDir = VTransform(_forwardDir, MGetRotAxis(vN, rotRad));
+				}
 			}
 			else {
-				VECTOR vN = VCross(_forwardDir, vDir);
-				_forwardDir = VTransform(_forwardDir, MGetRotAxis(vN, rotRad));
+				if (_idleFightingRemainingCnt > 0) {
+					_animStatus = ANIM_STATE::IDLE_FIGHTING;
+					_idleFightingRemainingCnt -= 1;
+				}
+				else {
+					_animStatus = ANIM_STATE::IDLE_FIGHTING;
+				}
 			}
-		}
-		else {
-			_animStatus = STATUS::STAY;
 		}
 	}
 
-	if (_isSpinning) {
-		_forwardDir = VTransform(_forwardDir, MGetRotY((2.0f * DX_PI_F) / 30.0f));
+	if (_animStatus != ANIM_STATE::AVOIDANCE) {
+		// 回転攻撃
+		if (_spinCnt > 90) {
+			_animStatus = ANIM_STATE::ROTATION_SWING;
+		}
+		// 通常攻撃
+		else if (_input->GetRel(XINPUT_BUTTON_X) != 0) {
+			_playNextComboAnim = true;
+			if (!_isAttackState) {
+				_animStatus = ANIM_STATE::HORISONTAL_SWING_01;
+			}
+		}
+
+		if (_input->GetKey(XINPUT_BUTTON_X) != 0) {
+			_spinCnt++;
+		}
+		else {
+			_spinCnt = 0;
+			if (_isRotationSwinging) {
+				_animStatus = ANIM_STATE::HORISONTAL_SWING_03;
+
+				// モデルの正面方向を更新する
+				_forwardDir = _stickDir;
+			}
+		}
+
+		// 回避
+		if (_input->GetTrg(XINPUT_BUTTON_A)) {
+			if (!_isSwinging || _isRotationSwinging) {
+				_animStatus = ANIM_STATE::AVOIDANCE;
+				// モデルの正面方向を更新する
+				_forwardDir = _stickDir;
+				_spinCnt = 0;
+			}
+		}
+	}
+
+
+	if (_isRotationSwinging) {
+		_forwardDir = VTransform(_forwardDir, MGetRotY(-(2.0f * DX_PI_F) / 30.0f));
 	}
 
 	// 回転処理
@@ -238,64 +321,13 @@ bool Player::Process(float camAngleY)
 	UpdateExp();
 	UpdateBone();
 	//-------------------
-	//AnimProcess(oldStatus);
+
 	_animManager->Process(static_cast<int>(_animStatus));
-	UpdateNextComboAnim();
+	_frameData->Process(static_cast<int>(_animStatus), _animManager->GetPlayTime());
+
 	return true;
 }
 
-bool Player::AnimProcess(STATUS oldStatus)
-{
-	if (oldStatus == _animStatus) {
-		// 再生時間を進める
-		_play_time += 1.0f;
-	}
-	else {
-		// アニメーションがアタッチされていたら、デタッチする
-		if (_attach_index != -1) {
-			MV1DetachAnim(_modelHandle, _attach_index);
-			_attach_index = -1;
-		}
-		// ステータスに合わせてアニメーションのアタッチ
-		switch (_animStatus) {
-
-		case STATUS::STAY:
-			_attach_index = MV1AttachAnim(_modelHandle, 0, -1, FALSE);
-			break;
-		case STATUS::RUN:
-			_attach_index = MV1AttachAnim(_modelHandle, 1, -1, FALSE);
-			break;
-
-		case STATUS::HORISONTAL_SWING_01:
-			_attach_index = MV1AttachAnim(_modelHandle, 2, -1, FALSE);
-			break;
-		case STATUS::HORISONTAL_SWING_02:
-			_attach_index = MV1AttachAnim(_modelHandle, 3, -1, FALSE);
-			break;
-		case STATUS::Rotation_SWING:
-			_attach_index = MV1AttachAnim(_modelHandle, 4, -1, FALSE);
-			break;
-
-		}
-		// アタッチしたアニメーションの総再生時間を取得する
-		_total_time = MV1GetAttachAnimTotalTime(_modelHandle, _attach_index);
-		// 再生時間を初期化
-		_play_time = 0.0f;
-	}
-
-	// 再生時間がアニメーションの総再生時間に達したら再生時間を０に戻す
-	if (_play_time >= _total_time) {
-		_play_time = 0.0f;
-
-		if (_animStatus == STATUS::HORISONTAL_SWING_01 || _animStatus == STATUS::HORISONTAL_SWING_02) {
-			_isSwinging = false;
-		}
-	}
-
-	// 再生時間をセットする
-	MV1SetAttachAnimTime(_modelHandle, _attach_index, _play_time);
-	return true;
-}
 
 bool Player::BlastOffProcess()
 {
@@ -339,30 +371,98 @@ void Player::UpdateBone() {
 	}
 };
 
-bool Player::UpdateNextComboAnim()
-{
-	switch (_animStatus)
-	{
-	case STATUS::HORISONTAL_SWING_01:
-		_nextComboAnim = STATUS::HORISONTAL_SWING_02;
-		break;
-	case STATUS::HORISONTAL_SWING_02:
-		//_nextComboAnim = STATUS::NONE;
-		break;
-
-	default:
-		_nextComboAnim = STATUS::HORISONTAL_SWING_01;
-		break;
-	}
-	return true;
-}
-
 VECTOR Player::GetRightHandPos()
 {
 	VECTOR handPos = VGet(0.0f, 0.0f, 0.0f);
 	MATRIX m = MV1GetFrameLocalWorldMatrix(_modelHandle, _rightHandFrameIndex);
 	handPos = VTransform(handPos, m);
 	return handPos;
+}
+
+void Player::CheckFrameDataCommand()
+{
+	// 実行コマンドリストを取得する
+	std::vector<CommandParam> commandList = _frameData->GetCommandData();
+
+	for (auto itr = commandList.begin(); itr != commandList.end(); ++itr) {
+		// コマンドを取得する
+		int command = itr->first;
+		// パラメータを取得する
+		float param = itr->second;
+
+		// コマンドによって処理を分岐する
+		switch (command)
+		{
+		// モーションを変更する
+		case C_P_CHANGE_MOTION:
+			_animStatus = static_cast<ANIM_STATE>(param);
+			break;
+		// 移動可能状態を変更する
+		case C_P_ENABLE_MOVE:
+			_canMove = static_cast<bool>(param);
+			break;
+		case C_P_MOVE_FORWARD:
+			_moveSpeedFD = param;
+			break;
+		// コンボの入力受付を開始する
+		// C_P_CHECK_CHANGE_COMBOが実行されるタイミングで_playNextComboAnimがtrueの場合に次のコンボモーションを再生する
+		case C_P_ACCEPT_COMBO_INPUT:
+			_playNextComboAnim = false;
+			break;
+		// コンボモーションの変更をチェックする
+		case C_P_CHECK_CHANGE_COMBO:
+			if (_playNextComboAnim) {
+				switch (_animStatus)
+				{
+				case Player::ANIM_STATE::HORISONTAL_SWING_01:
+					_animStatus = ANIM_STATE::HORISONTAL_SWING_02;
+					break;
+				case Player::ANIM_STATE::HORISONTAL_SWING_02:
+					_animStatus = ANIM_STATE::HORISONTAL_SWING_03;
+					break;
+				}
+			}
+			break;
+		// 攻撃状態の変更をチェックする	
+		case C_P_CHECK_CHANGE_ATTACK_STATE:
+		{
+			// 次の攻撃状態を取得する
+			bool nextState = static_cast<bool>(param);
+			// 次の攻撃状態がfalseの場合、攻撃状態を解除する
+			if (!nextState){
+				_isSwinging = false;
+				_isRotationSwinging = false;
+				// 前の攻撃状態がtrueの場合、戦闘待機状態に遷移する
+				if (_isAttackState) {
+					_idleFightingRemainingCnt = 240;
+				}
+			}
+			else {
+				// 回転攻撃の場合、回転攻撃フラグを立てる
+				if (_animStatus == ANIM_STATE::ROTATION_SWING) {
+					_isRotationSwinging = true;
+					_isSwinging = false;
+				}
+				// 通常攻撃の場合、通常攻撃フラグを立てる
+				else {
+					_isRotationSwinging = false;
+					_isSwinging = true;
+				}
+			}
+			// 攻撃状態を更新する
+			_isAttackState = nextState;
+			break;
+		}
+		case C_P_ENABLE_IB_ATTACK_COLLISION:
+			break;
+		case C_P_ENABLE_IB_FOLLOWING_MODE:
+			_ibMoveState = static_cast<int>(param) == 0 ? IB_MOVE_STATE::PUTTING_ON_SOCKET : IB_MOVE_STATE::FOLLOWING;
+			break;
+		case C_P_ENABLE_IB_INTERPOLATION:
+			_ibMoveState = IB_MOVE_STATE::INTERPOLATION;
+			break;
+		}
+	}
 }
 
 void Player::DrawDebugInfo()

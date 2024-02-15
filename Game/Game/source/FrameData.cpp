@@ -1,6 +1,6 @@
 #include "FrameData.h"
 
-std::map<std::string, std::map<int, std::multimap<int, FrameData::CommandParam>>>  FrameData::_kindFrameData;//キャラクターの種類別に持つデータ
+std::map<std::string, std::map<int, std::multimap<int, CommandParam>>>  FrameData::_kindFrameData;//キャラクターの種類別に持つデータ
 
 FrameData::FrameData(){
 
@@ -16,7 +16,7 @@ bool FrameData::LoadData(std::string kindName, std::vector<std::pair<int, std::s
 		//パラメータを保存しておくリストを作成
 		for (auto it = frameData.begin(); it != frameData.end(); ++it) {
 			// ファイルパスの作成
-			std::string filePath = "Data/FrameData/" + it->second;
+			std::string filePath = "Data/FrameData/" + kindName + "/" + it->second;
 			//ファイル読み込み
 			CFile csvFile(filePath);
 			//ファイルが開いた場合実行
@@ -31,6 +31,7 @@ bool FrameData::LoadData(std::string kindName, std::vector<std::pair<int, std::s
 					c += GetDecNum(&p[c], &key);//アニメーションフレームを検索
 					c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &param.first);//コマンドを検索
 					c += FindString(&p[c], ',', &p[size]); c++; c += GetFloatNum(&p[c], &param.second);//パラメータを検索
+					c += SkipSpace(&p[c], &p[size]); // 空白やコントロールコードをスキップする
 					paramList.insert(std::make_pair(key, param));//リストにため込む
 				}
 				//終わったので本リストに代入

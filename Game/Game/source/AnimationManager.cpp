@@ -8,6 +8,7 @@ AnimationManager::AnimationManager()
 	_animNo = -1;
 	_playTime = 0.0f;
 	_charaAnimMapPtr = nullptr;
+	_latestAnimItem = nullptr;
 }
 
 AnimationManager::~AnimationManager()
@@ -112,6 +113,7 @@ void AnimationManager::AddAnimationItem(int statusNo)
 
 		anim->Setup(attachIndex, totalTime, loopTimes);
 		_animContainer.push_back(anim);
+		_latestAnimItem = anim;
 	}
 }
 
@@ -125,7 +127,7 @@ void AnimationManager::Process(int StatusNo)
 		{
 			if ((*itrItem)->_closeTime == 0.0f) {
 				// 閉じ時間を設定する
-				(*itrItem)->_closeTotalTime = 6.0f;
+				(*itrItem)->_closeTotalTime = 4.0f;
 				(*itrItem)->_closeTime = (*itrItem)->_closeTotalTime;
 			}
 		}
@@ -136,14 +138,22 @@ void AnimationManager::Process(int StatusNo)
 		AddAnimationItem(StatusNo);
 	}
 
+	// 最後に追加されたアニメーションアイテムの再生時間を取得する
+	_playTime = _latestAnimItem->_playTime;
+
 	for (auto itrItem = _animContainer.begin(); itrItem != _animContainer.end(); )
 	{
+		// 再生時間をセットする
+		MV1SetAttachAnimTime(_modelHandle, (*itrItem)->_attachIndex, (*itrItem)->_playTime);
+
+		/* 再生時間の更新処理 */
+		// 閉じ時間が設定されていない場合
 		if ((*itrItem)->_closeTime == 0.0f) {
 			// 再生時間を進める
 			(*itrItem)->_playTime += 1.0f;
 			
 			// 再生時間がアニメーションの総再生時間に達したら再生時間を０に戻す
-			if ((*itrItem)->_playTime >= (*itrItem)->_totalTime) {
+			if ((*itrItem)->_playTime > (*itrItem)->_totalTime) {
 				if ((*itrItem)->_loopCnt > 1 || (*itrItem)->_loopCnt == 0) {
 					if ((*itrItem)->_loopCnt > 1) {
 						(*itrItem)->_loopCnt--;
@@ -172,8 +182,6 @@ void AnimationManager::Process(int StatusNo)
 			// ブレンド率を変更する
 			MV1SetAttachAnimBlendRate(_modelHandle, (*itrItem)->_attachIndex, (*itrItem)->_closeTime / (*itrItem)->_closeTotalTime);
 		}
-		// 再生時間をセットする
-		MV1SetAttachAnimTime(_modelHandle, (*itrItem)->_attachIndex, (*itrItem)->_playTime);
 		// 次のアニメーションアイテムへ
 		++itrItem;
 	}

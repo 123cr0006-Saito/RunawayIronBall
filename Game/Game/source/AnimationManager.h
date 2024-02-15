@@ -31,6 +31,9 @@ public:
 	// アニメーションの再生処理
 	void Process(int StatusNo);
 
+	// 最後に追加されたアニメーションの再生時間を取得する
+	float GetPlayTime() { return _playTime; }
+
 private:
 	static std::map<CHARA_NAME, ANIM_MAP> _animMap;
 
@@ -45,12 +48,13 @@ private:
 	// バリュー : ANIMATION_INFO型 アニメーション情報
 	ANIM_MAP* _charaAnimMapPtr;
 
-	ANIM_MAP::iterator _animMapItr;
-
 	// アニメーションアイテム
 	std::vector<AnimationItem*> _animContainer;
 
-	// アニメーションの再生時間
+
+	// 最後に追加されたのアニメーションアイテム
+	AnimationItem* _latestAnimItem;
+	// 最後に追加されたアニメーションの再生時間
 	float _playTime;
 
 };

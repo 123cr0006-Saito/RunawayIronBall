@@ -24,5 +24,12 @@ protected:
 	int _bgmVolum;
 	int _seVolum;
 	bool _isVibration;
-	const int MAX_MODE = 5;
+	static const int MAX_MODE = 5;
+
+	int _backHandle;
+	int _optionHandle;
+	int _itemHandle[MAX_MODE];
+	int _checkBoxHandle;
+	int _checkHandle;
+
 };

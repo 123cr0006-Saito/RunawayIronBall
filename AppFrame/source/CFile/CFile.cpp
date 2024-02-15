@@ -152,7 +152,7 @@ int GetFloatNum(const char* p, float* answer) {
 
 	//¬”“_‚ª‚ ‚Á‚½ê‡‚Ìˆ—
 	int decimalPoint = 0;
-	int digits = 0;
+	int digits = 1;
 	if (p[c] == '.') { c++; c += GetDecNum(&p[c], &decimalPoint, &digits); }
 
 	// ‹L†‚ğ‚©‚¯‚Ä“š‚¦‚ÉŠi”[

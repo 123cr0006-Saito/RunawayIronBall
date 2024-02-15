@@ -21,18 +21,33 @@ bool ModeTest::Initialize() {
 	_chain = new Chain();
 	_chain->Init();
 
-	int objHandle = MV1LoadModel("res/Building/House_test_01.mv1");
-	for (int i = 0; i < 10; i++) {
-		VECTOR v = VGet(rand() % 4000, 0.0f, rand() % 4000);
-		v.x -= 2000.0f;
-		v.z -= 2000.0f;
+	//int objHandle = MV1LoadModel("res/Building/House_test_01.mv1");
+	//for (int i = 0; i < 10; i++) {
+	//	VECTOR v = VGet(rand() % 4000, 0.0f, rand() % 4000);
+	//	v.x -= 2000.0f;
+	//	v.z -= 2000.0f;
 
-		House* building = new House();
-		building->Init(MV1DuplicateModel(objHandle), v);
+	//	House* building = new House();
+	//	building->Init(MV1DuplicateModel(objHandle), v);
 
-		_building.push_back(building);
+	//	_building.push_back(building);
 
+	//}
+
+
+	int objHandle = MV1LoadModel("res/Building/House_test_03.mv1");
+	myJson json("Data/ObjectList/Stage_03.json");
+	std::vector<std::string> loadName{ "House_Iron","House_Rock","House_Glass" };
+	for (auto&& nameList : loadName) {
+		std::vector<ModeTest::OBJECTDATA> objectData = LoadJsonObject(json._json, nameList);
+		for (auto&& objectList : objectData) {
+			House* building = new House();
+			building->Init(MV1DuplicateModel(objHandle), objectList._pos);
+			_building.push_back(building);
+		}
 	}
+
+
 	int size = 100;
 	ui[0] = new UIHeart(VGet(0, 0, 0), "res/TemporaryMaterials/heart.png");
 	//ui[0] = new UIHeart(VGet(0, 0, 0), "res/TemporaryMaterials/UI_Hp_01.png");
@@ -50,7 +65,7 @@ bool ModeTest::Initialize() {
 
 	_planeEffectManeger = new PlaneEffect::PlaneEffectManeger();
 	ResourceServer::LoadMultGraph("res/TemporaryMaterials/split/test", ".png", 30, _effectSheet);
-	                    
+
 	return true;
 }
 
@@ -59,6 +74,32 @@ bool ModeTest::Terminate() {
 	return true;
 }
 
+std::vector<ModeTest::OBJECTDATA> ModeTest::LoadJsonObject(nlohmann::json json, std::string loadName) {
+	nlohmann::json loadObject = json.at(loadName);
+	std::vector<ModeTest::OBJECTDATA> _objectList;
+	for (auto& list : loadObject) {
+		OBJECTDATA object;
+		list.at("objectName").get_to(object._name);
+		list.at("translate").at("x").get_to(object._pos.x);
+		list.at("translate").at("y").get_to(object._pos.z);
+		list.at("translate").at("z").get_to(object._pos.y);
+		list.at("rotate").at("x").get_to(object._rotate.x);
+		list.at("rotate").at("y").get_to(object._rotate.z);
+		list.at("rotate").at("z").get_to(object._rotate.y);
+		list.at("scale").at("x").get_to(object._scale.x);
+		list.at("scale").at("y").get_to(object._scale.z);
+		list.at("scale").at("z").get_to(object._scale.y);
+		//À•WC³
+		object._pos.x *= -1;
+		//degree->radian
+		object._rotate.x = object._rotate.x * DX_PI_F / 180;
+		object._rotate.y = (object._rotate.y + 180) * DX_PI_F / 180;
+		object._rotate.z = object._rotate.z * DX_PI_F / 180;
+		_objectList.push_back(object);
+	}
+	return _objectList;
+};
+
 bool ModeTest::Process() {
 	base::Process();
 
@@ -66,8 +107,8 @@ bool ModeTest::Process() {
 	_sVib->UpdateScreenVibration();
 
 	_player->Process(_camera->GetCamY());
-	_chain->Process(_player->GetRightHandPos());
-	_enemyPool->Process();
+	_chain->Process();
+	//_enemyPool->Process();
 
 	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
 		ui[i]->Process();
@@ -191,16 +232,15 @@ bool ModeTest::Render() {
 	}
 
 	_player->Render();
-	_enemyPool->Render();
+	//_enemyPool->Render();
 	_chain->Render();
-	_chain->DrawDebugInfo();
+	//_chain->DrawDebugInfo();
 
 	for (auto itr = _building.begin(); itr != _building.end(); ++itr) {
 		(*itr)->Render();
 		(*itr)->DrawDebugInfo();
 	}
 
-	DrawSphere3D(_chain->GetBallPosition(), _chain->GetBallRadius(), 16, GetColor(255, 0, 0), GetColor(255, 0, 0), false);
 
 
 	//SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
