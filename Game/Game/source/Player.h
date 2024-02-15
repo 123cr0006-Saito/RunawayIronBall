@@ -9,6 +9,7 @@
 
 #include "FrameData.h"
 
+#include "ModelColor.h"
 
 // テスト用
 // フレームデータのコマンド
@@ -33,7 +34,10 @@ class Player : public CharacterBase
 {
 private:
 	enum class ANIM_STATE {
-		IDLE,		
+		IDLE,	
+		IDLE_TIRED,
+		WALK,
+		WALK_TIRED,
 		RUN,
 
 		HORISONTAL_SWING_01,
@@ -41,6 +45,8 @@ private:
 		HORISONTAL_SWING_03,
 
 		MANYTIME_SWING,
+
+		TO_ROTATION_SWING,
 		ROTATION_SWING,
 
 		IDLE_FIGHTING,
@@ -53,10 +59,6 @@ private:
 
 		AVOIDANCE,
 		HIT,
-		IDLE_TIRED,
-		WALK_TIRED,
-
-		WALK,
 	};
 
 public:
@@ -66,6 +68,18 @@ public:
 	bool Process(float camAngleY);
 	bool BlastOffProcess();
 	bool Render() override;
+
+
+	int GetHP() { return _hp; }
+	bool GetIsInvincible() { return _isInvincible; }
+	// 無敵状態の更新
+	void ChangeIsInvincible(bool b, int frame);
+
+	void SetDamage();
+
+
+	// キャラモデルの点滅処理
+	void FlickerProcess();
 
 	void SetBone();//齋藤が作った関数です。 boneのフレームを探すために使用する関数です。後でjsonでの読み込みにするかもしれません。
 	//↓齋藤が作った関数です。どこにjson読み込みをどこに書けばよいのかわからなかったので、コンストラクタの次に呼び出す関数として実装しました。
@@ -108,6 +122,13 @@ private:
 	// Lスティック入力があった場合に更新する
 	VECTOR _stickDir;
 
+	// HP
+	int _hp;
+	// 無敵かどうか
+	bool _isInvincible;
+	// 残りの無敵時間
+	int _invincibleRemainingCnt;
+
 	// 移動可能かどうか
 	bool _canMove;
 	// 移動速度
@@ -149,6 +170,10 @@ private:
 	bool _isSwinging;
 	bool _isRotationSwinging;
 	int _spinCnt;
+
+
+	ModelColor* _modelColor;
+
 
 	static Player* _instance;
 

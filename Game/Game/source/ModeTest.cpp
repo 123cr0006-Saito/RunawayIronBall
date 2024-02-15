@@ -66,7 +66,9 @@ bool ModeTest::Initialize() {
 
 
 	int size = 100;
-	ui[0] = new UIHeart(VGet(0, 0, 0), "res/TemporaryMaterials/heart.png");
+	int heartHandle[3];
+	ResourceServer::LoadMultGraph("res/UI/UI_Heart", ".png", 3, heartHandle);
+	ui[0] = new UIHeart(VGet(20, 20, 0), 3,heartHandle,2);
 	//ui[0] = new UIHeart(VGet(0, 0, 0), "res/TemporaryMaterials/UI_Hp_01.png");
 	ui[1] = new UIExpPoint(VGet(0, 150, 0), "res/TemporaryMaterials/UI_EXP_01.png");
 	_gaugeUI[0] = new DrawGauge(0, 3, size, true);
@@ -125,13 +127,14 @@ bool ModeTest::Process() {
 
 	_player->Process(_camera->GetCamY());
 	_chain->Process();
-	//_enemyPool->Process();
+	_enemyPool->Process();
 
 	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
 		ui[i]->Process();
 	}
 
 	bool isAttackState = _player->GetIsAttackState();
+	bool isInvincible = _player->GetIsInvincible();
 	VECTOR pPos = _player->GetPosition();
 
 	VECTOR ibPos = _chain->GetBallPosition();
@@ -182,6 +185,31 @@ bool ModeTest::Process() {
 				_planeEffectManeger->LoadVertical(effect);
 			}
 		}
+
+
+		// 敵とプレイヤーの当たり判定
+		EnemyBase* enemy = _enemyPool->GetEnemy(i);
+		Sphere eCol = { enemy->GetCollisionPos(), enemy->GetR() };
+		Capsule pCol = _player->GetCollision();
+		if (Collision3D::SphereCapsuleCol(eCol, pCol)) {
+			if (!isInvincible) {
+				_player->SetDamage();
+			}
+			VECTOR tmpPos = enemy->GetCollisionPos();
+			tmpPos.y = 0.0f;
+
+			VECTOR vDir = VSub(pCol.down_pos, tmpPos);
+			vDir.y = 0.0f;
+			float squareLength = VSquareSize(vDir);
+			if (squareLength >= 0.0001f) {
+				vDir = VNorm(vDir);
+				tmpPos = VAdd(tmpPos, VScale(vDir, eCol.r + pCol.r));
+				_player->SetPos(tmpPos);
+			}
+			enemy = nullptr;
+
+
+		}
 	}
 
 	//空間分割を考えていないので無駄が多いです。
@@ -205,18 +233,25 @@ bool ModeTest::Process() {
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_START)) {
 		_enemyPool->Init();
+		_player->SetDamage();
 	}
 
-	if (XInput::GetInstance()->GetKey(XINPUT_BUTTON_Y)) {
-		if (nowParcent > 0) {
-			nowParcent -= 1.0f / 120 * 100;
-		}
+	//if (XInput::GetInstance()->GetKey(XINPUT_BUTTON_Y)) {
+	//	if (nowParcent > 0) {
+	//		nowParcent -= 1.0f / 120 * 100;
+	//	}
+	//}
+	//else {
+	//	if (nowParcent < 100) {
+	//		nowParcent += 1.0f / 120 * 100;
+	//	}
+	//}
+
+	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_BACK)) {
+		_drawDebug = !_drawDebug;
 	}
-	else {
-		if (nowParcent < 100) {
-			nowParcent += 1.0f / 120 * 100;
-		}
-	}
+
+
 
 	VECTOR box_vec = ConvWorldPosToScreenPos(VAdd(_player->GetPosition(), VGet(0, 170, 0)));
 	_gaugeUI[0]->Process(box_vec, nowParcent, 100);
@@ -249,19 +284,18 @@ bool ModeTest::Render() {
 	}
 
 	_player->Render();
-	//_enemyPool->Render();
+	_enemyPool->Render();
 	_chain->Render();
 	//_chain->DrawDebugInfo();
 
 	for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
 		(*itr)->Render();
-		(*itr)->DrawDebugInfo();
 	}
 
-	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
-		(*itr)->Render();
-		(*itr)->DrawDebugInfo();
-	}
+	//for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
+	//	(*itr)->Render();
+	//	(*itr)->DrawDebugInfo();
+	//}
 
 
 	//SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
@@ -277,6 +311,15 @@ bool ModeTest::Render() {
 	}
 
 	_planeEffectManeger->Render();
+
+
+	if (_drawDebug) {
+		_player->DrawDebugInfo();
+		_chain->DrawDebugInfo();
+		for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
+			(*itr)->DrawDebugInfo();
+		}
+	}
 
 
 	SetUseZBuffer3D(FALSE);

@@ -5,6 +5,11 @@ Player* Player::_instance = NULL;
 std::map<int, ANIMATION_INFO> Player::_animMap;
 
 namespace {
+	// ç≈ëÂHP
+	constexpr int HP_MAX = 4;
+	// ç≈ëÂñ≥ìGéûä‘
+	constexpr int INVINCIBLE_CNT_MAX = 90;
+
 	// à⁄ìÆë¨ìx
 	// ç≈ëÂíl
 	constexpr float MOVE_SPEED_MAX = 8.0f;
@@ -25,9 +30,16 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	_input = XInput::GetInstance();
 	_stickDir = VGet(0, 0, -1);
 
+	_hp = HP_MAX;
+	_isInvincible = false;
+	_invincibleRemainingCnt = 0;
+
 	_canMove = true;
 	_moveSpeed = 8.0f;
 	_moveSpeedFD = 0.0f;
+
+	_capsuleCollision.r = 30.0f;
+	_capsuleCollision.up = 65.0f;
 	UpdateCollision();
 
 	// ìSãÖÇÃà⁄ìÆèÛë‘ÇÅuí«è]ÅvÇ…ê›íË
@@ -70,7 +82,9 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::IDLE), "FD_MO_PL_Idle.csv"));
 	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::IDLE_FIGHTING), "FD_MO_PL_Idle_Fighting.csv"));
 	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::ROTATION_SWING), "FD_MO_PL_Rotate_Loop.csv"));
+	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::TO_ROTATION_SWING), "FD_MO_PL_To_Rotate.csv"));
 	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::AVOIDANCE), "FD_MO_PL_Avoidance.csv"));
+	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::HIT), "FD_MO_PL_Hit.csv"));
 	_frameData->LoadData("Player", fdFileName);
 
 	//_animManager->InitMap(&_animMap);
@@ -86,12 +100,38 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	//	_animManager->SetupAnimationInfo(static_cast<int>(STATUS::SPIN_SWING), MV1GetAnimIndex(_modelHandle, "MO_PL_roteate_loop"), 1);
 	//}
 
+	_modelColor = new ModelColor();
+	_modelColor->Init(_modelHandle);
 }
 
 Player::~Player()
 {
 	_instance = nullptr;
 	delete _animManager;
+}
+
+// ñ≥ìGèÛë‘ÇÃçXêV
+void Player::ChangeIsInvincible(bool b, int frame)
+{
+	if (b) {
+		if (!_isInvincible) {
+			_invincibleRemainingCnt = frame;
+			_animStatus = ANIM_STATE::HIT;
+		}
+	}
+	else {
+		_invincibleRemainingCnt = 0;
+	}
+	_isInvincible = b;
+}
+
+void Player::SetDamage()
+{
+	_hp -= 1;
+	if (_hp < 0) {
+		_hp = 0;
+	}
+	ChangeIsInvincible(true, INVINCIBLE_CNT_MAX);
 }
 
 void Player::SetBone() {
@@ -153,47 +193,21 @@ bool Player::Process(float camAngleY)
 	// ÉtÉåÅ[ÉÄÉfÅ[É^ÇÃé¿çsÉRÉ}ÉìÉhÇÉ`ÉFÉbÉNÇ∑ÇÈ
 	CheckFrameDataCommand();
 
-	//// âÒì]çUåÇ
-	//if (_spinCnt > 90) {
-	//	_animStatus = STATUS::Rotation_SWING;
-	//	_isSpinning = true;
-	//	_canMove = true;
-	//}
-	//// í èÌçUåÇ
-	//else if (_input->GetRel(XINPUT_BUTTON_X) != 0) {
-	//	//if (_nextComboAnim != STATUS::NONE) {
-	//		_playNextComboAnim = true;
 
-	//		_isSwinging = true;
-	//		_canMove = false;
-	//	//}
-	//}
+	// ñ≥ìGèÛë‘ä÷òAÇÃèàóù
+	if (_isInvincible) {
+		int cnt = 10;
+		bool b = (INVINCIBLE_CNT_MAX - _invincibleRemainingCnt) % (cnt * 2) < cnt;
+		_modelColor->ChangeFlickerTexture(b);
 
-	//if (_input->GetKey(XINPUT_BUTTON_X) != 0) {
-	//	_spinCnt++;
-	//	//_canMove = false;
-	//}
-	//else {
-	//	_spinCnt = 0;
-	//	_isSpinning = false;
-	//}
-
-
-
-
-	//if (!_isSwinging && !_isSpinning) {
-	//	_animStatus = ANIM_STATE::IDLE;
-
-
-	//	_canMove = true;
-
-	//	_ibFollowingMode = true;
-	//	_isAttackState = false;
-	//}
-	//else {
-	//	_ibFollowingMode = false;
-	//	_isAttackState = true;
-	//}
+		// ñ≥ìGéûä‘Çå∏ÇÁÇ∑
+		_invincibleRemainingCnt -= 1;
+		// ñ≥ìGéûä‘Ç™0à»â∫Ç…Ç»Ç¡ÇΩÇÁñ≥ìGèÛë‘ÇâèúÇ∑ÇÈ
+		if (_invincibleRemainingCnt < 0) {
+			_isInvincible = false;
+			_modelColor->ChangeFlickerTexture(false);
+		}
+	}
 
 	{
 		// à⁄ìÆèàóù
@@ -235,7 +249,7 @@ bool Player::Process(float camAngleY)
 			_pos = VAdd(_pos, VScale(VNorm(_forwardDir), _moveSpeedFD));
 		}
 
-		if (!_isAttackState && _animStatus != ANIM_STATE::AVOIDANCE) {
+		if (!_isAttackState && _animStatus != ANIM_STATE::AVOIDANCE && _animStatus != ANIM_STATE::HIT) {
 			if (_isMoved) {
 				if (_isRunnning) {
 					_animStatus = ANIM_STATE::RUN;
@@ -270,7 +284,9 @@ bool Player::Process(float camAngleY)
 	if (_animStatus != ANIM_STATE::AVOIDANCE) {
 		// âÒì]çUåÇ
 		if (_spinCnt > 90) {
-			_animStatus = ANIM_STATE::ROTATION_SWING;
+			if (!_isRotationSwinging) {
+				_animStatus = ANIM_STATE::TO_ROTATION_SWING;
+			}
 		}
 		// í èÌçUåÇ
 		else if (_input->GetRel(XINPUT_BUTTON_X) != 0) {
@@ -306,7 +322,8 @@ bool Player::Process(float camAngleY)
 
 
 	if (_isRotationSwinging) {
-		_forwardDir = VTransform(_forwardDir, MGetRotY(-(2.0f * DX_PI_F) / 30.0f));
+		float angle = _animStatus == ANIM_STATE::TO_ROTATION_SWING ? -(2.0f * DX_PI_F) / 80.0f : -(2.0f * DX_PI_F) / 30.0f;
+		_forwardDir = VTransform(_forwardDir, MGetRotY(angle));
 	}
 
 	// âÒì]èàóù
@@ -324,6 +341,10 @@ bool Player::Process(float camAngleY)
 
 	_animManager->Process(static_cast<int>(_animStatus));
 	_frameData->Process(static_cast<int>(_animStatus), _animManager->GetPlayTime());
+
+
+
+
 
 	return true;
 }
@@ -344,8 +365,6 @@ bool Player::BlastOffProcess()
 bool Player::Render()
 {
 	CharacterBase::Render();
-
-	DrawDebugInfo();
 	return true;
 }
 
@@ -353,8 +372,7 @@ bool Player::Render()
 
 void Player::UpdateCollision()
 {
-	_capsuleCollision.down_pos = _pos;
-	_capsuleCollision.r = 35.0f;
+	_capsuleCollision.down_pos = VAdd(_pos, VGet(0, _capsuleCollision.r, 0));
 	_capsuleCollision.Update();
 }
 
@@ -439,7 +457,7 @@ void Player::CheckFrameDataCommand()
 			}
 			else {
 				// âÒì]çUåÇÇÃèÍçáÅAâÒì]çUåÇÉtÉâÉOÇóßÇƒÇÈ
-				if (_animStatus == ANIM_STATE::ROTATION_SWING) {
+				if (_animStatus == ANIM_STATE::TO_ROTATION_SWING || _animStatus == ANIM_STATE::ROTATION_SWING) {
 					_isRotationSwinging = true;
 					_isSwinging = false;
 				}
@@ -470,5 +488,16 @@ void Player::DrawDebugInfo()
 	for (int i = 0; i < sizeof(_bone) / sizeof(_bone[0]); i++) {
 		_bone[i]->DebugRender();
 	}
+
+	DrawCapsule3D(_capsuleCollision.up_pos, _capsuleCollision.down_pos, _capsuleCollision.r, 16, COLOR_RED, COLOR_RED, false);
+
+	int x = 0;
+	int y = 100;
+	int line = 0;
+	DrawFormatString(x, y + line * 16, COLOR_RED, "HP:%d", _hp); line++;
+	DrawFormatString(x, y + line * 16, COLOR_RED, "isInvincible:%d", _isInvincible); line++;
+	DrawFormatString(x, y + line * 16, COLOR_RED, "invincibleCnt:%d", _invincibleRemainingCnt); line++;
+
+	DrawFormatString(x, y + line * 16, COLOR_RED, "ANIM:%d", _animStatus); line++;
 	//DrawCapsule3D(_capsuleCollision._startPos, _capsuleCollision._endPos, _capsuleCollision._r, 16, COLOR_RED, COLOR_RED, false);
 }

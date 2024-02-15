@@ -44,6 +44,10 @@ public:
 	//カプセル同士の当たり判定
 	static bool TwoCapselCol(VECTOR line_1_start, VECTOR line_1_end, float r_1, VECTOR line_2_start, VECTOR line_2_end, float r_2);
 
+	// 球とカプセルの当たり判定
+	static bool SphereCapsuleCol(VECTOR spherePos, float sphereR, VECTOR capsuleStartPos, VECTOR capsuleEndPos, float capsuleR);
+	static bool SphereCapsuleCol(const Sphere& sphere, const Capsule& capsule);
+
 	//点とＯＢＢの最接近点　OBBと点が一番近いOBBの位置を返します。
 	static  VECTOR PointOBB(VECTOR point, OBB obb);
 	

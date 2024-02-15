@@ -1,9 +1,13 @@
 MO_PL_Idle,0
+MO_PL_Idle_Tired,0
+MO_PL_Walk,0
+MO_PL_Walk_Tired,0
 MO_PL_Run,0
 MO_PL_Horizontal_First,1
 MO_PL_Horizontal_Second,1
 MO_PL_Horizontal_Third,1
 MO_PL_Many_Times_Knock,0
+MO_PL_To_Rotate,1
 MO_PL_Rotate_Loop,0
 MO_PL_Idle_Fighting,0
 MO_PL_Long_Jump_Air,0
@@ -12,6 +16,3 @@ MO_PL_Long_Jump_Landing,1
 MO_PL_Game_Over,1
 MO_PL_Avoidance,1
 MO_PL_Hit,1
-MO_PL_Idle_Tired,0
-MO_PL_Walk_Tired,0
-MO_PL_Walk,0

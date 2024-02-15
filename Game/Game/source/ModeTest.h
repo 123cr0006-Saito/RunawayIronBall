@@ -62,4 +62,9 @@ protected:
 	int _effectSheet[30];
 	PlaneEffect::PlaneEffectManeger* _planeEffectManeger;
 	OBB obb;
+
+
+
+	// デバッグ表示をするかどうか
+	bool _drawDebug = false;
 };
