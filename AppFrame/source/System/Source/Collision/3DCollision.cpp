@@ -381,6 +381,17 @@ bool Collision3D::TwoCapselCol(VECTOR line_1_start, VECTOR line_1_end, float r_1
 	return Collision3D::SphereCol(value.line_1_point, r_1, value.line_2_point, r_2);
 }
 
+bool Collision3D::SphereCapsuleCol(VECTOR spherePos, float sphereR, VECTOR capsuleStartPos, VECTOR capsuleEndPos, float capsuleR)
+{
+	POINT_LINE_SHORT value = Collision3D::PointLineSegShortLength(capsuleStartPos, capsuleEndPos, spherePos);
+	return Collision3D::SphereCol(spherePos, sphereR, value.hit_point, capsuleR);
+}
+
+bool Collision3D::SphereCapsuleCol(const Sphere& sphere, const Capsule& capsule)
+{
+	return Collision3D::SphereCapsuleCol(sphere.centerPos, sphere.r, capsule.down_pos, capsule.up_pos, capsule.r);
+}
+
 VECTOR Collision3D::PointOBB(VECTOR point, OBB obb) {
 	VECTOR pos = obb.pos;
 	VECTOR cp = VSub(point, pos);

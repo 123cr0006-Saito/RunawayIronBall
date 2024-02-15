@@ -9,7 +9,8 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 protected:
-
-	XInput* input;
+	XInput* _input;
+	std::unordered_map<std::string,int> _handle;
+	int _selectItem;
 };
 

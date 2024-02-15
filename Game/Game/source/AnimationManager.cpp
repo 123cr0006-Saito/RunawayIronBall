@@ -22,14 +22,6 @@ AnimationManager::~AnimationManager()
 	_charaAnimMapPtr = nullptr;
 }
 
-// アニメーション情報用マップコンテナを追加する
-//	引数: mapコンテナへのポインタ（各クラスの静的メンバ変数）
-void AnimationManager::InitMap(std::map<int, ANIMATION_INFO>* animMap)
-{
-	if (this->_charaAnimMapPtr == nullptr) {
-		this->_charaAnimMapPtr = animMap;
-	}
-}
 
 void AnimationManager::InitMap(CHARA_NAME charaName, int modelHandle, std::string fileName)
 {

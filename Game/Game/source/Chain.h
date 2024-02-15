@@ -43,7 +43,7 @@ private:
 	VECTOR _iPos;
 	VECTOR _iForwardDir;
 	float _r = 55.0f; //// 後でSphereクラスを作る
-
+	VECTOR _ibDefaultScale;
 
 	// 配置ソケット
 	int _socketNo[3];
