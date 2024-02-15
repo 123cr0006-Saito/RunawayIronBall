@@ -1,6 +1,6 @@
 #pragma once
 #include "appframe.h"
-
+#include "ModePause.h"
 #include "Camera.h"
 #include "Player.h"
 #include "Chain.h"

@@ -10,7 +10,7 @@ bool ModePause::Initialize() {
 
 	SetUseASyncLoadFlag(TRUE);
 	 _backHandle = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu.png");
-	 _optionHandle = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_operation_gide.png");
+	 _optionHandle = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/PAUSE.png");
 	 _checkHandle = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_check.png");
 	 _checkBoxHandle = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/munu_ui_check_box.png");
 	 _volumBarHandle = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/UI_Menu_Bar.png");
@@ -136,7 +136,7 @@ bool ModePause::Render() {
 	int handleX, handleY;
 
 	DrawGraph(100, 65, _backHandle, true);
-	DrawGraph(180, 110, _optionHandle, true);
+	DrawGraph(150, 105, _optionHandle, true);
 	DrawGraph(900, 460, _checkBoxHandle, true);
 
 	int length[] = { _seVolum,_bgmVolum };
