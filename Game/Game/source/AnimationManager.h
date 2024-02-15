@@ -17,9 +17,9 @@ public:
 	AnimationManager();
 	~AnimationManager();
 
-	// アニメーション情報用マップコンテナを追加する
-	// 引数: mapコンテナへのポインタ（各クラスの静的メンバ変数）
-	void InitMap(std::map<int, ANIMATION_INFO>* animMap);
+	// アニメーション情報用マップコンテナの初期設定を行う
+	// 引数: キャラクター名, モデルハンドル, モーションリストファイル名
+	// 既に同じキャラクター名が登録されている場合は、同一のマップを使用する
 	void InitMap(CHARA_NAME charaName, int modelHandle, std::string fileName);
 
 	// ANIMATION_INFO型のアニメーション情報の初期設定を行う
