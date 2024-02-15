@@ -66,6 +66,8 @@ bool ModeTest::Initialize() {
 	_planeEffectManeger = new PlaneEffect::PlaneEffectManeger();
 	ResourceServer::LoadMultGraph("res/TemporaryMaterials/split/test", ".png", 30, _effectSheet);
 
+	global._soundServer->DirectPlay("Stage03");
+
 	return true;
 }
 
@@ -133,6 +135,7 @@ bool ModeTest::Process() {
 					VECTOR vDir = VSub(houseObb.pos, pPos);
 					(*itr)->ActivateBreakObject(true, vDir);
 					_player->SetExp(50);
+					global._soundServer->DirectPlay("OBJ_RockBreak");
 				}
 			}
 
@@ -145,6 +148,7 @@ bool ModeTest::Process() {
 					if (Collision3D::OBBSphereCol(houseObb, enPos, enR)) {
 						VECTOR vDir = VSub(houseObb.pos, pPos);
 						(*itr)->ActivateBreakObject(true, vDir);
+						global._soundServer->DirectPlay("OBJ_RockBreak");
 					}
 				}
 			}
