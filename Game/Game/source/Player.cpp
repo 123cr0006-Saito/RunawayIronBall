@@ -37,6 +37,9 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	_canMove = true;
 	_moveSpeed = 8.0f;
 	_moveSpeedFD = 0.0f;
+
+	_capsuleCollision.r = 30.0f;
+	_capsuleCollision.up = 65.0f;
 	UpdateCollision();
 
 	// ìSãÖÇÃà⁄ìÆèÛë‘ÇÅuí«è]ÅvÇ…ê›íË
@@ -353,8 +356,7 @@ bool Player::Render()
 
 void Player::UpdateCollision()
 {
-	_capsuleCollision.down_pos = _pos;
-	_capsuleCollision.r = 35.0f;
+	_capsuleCollision.down_pos = VAdd(_pos, VGet(0, _capsuleCollision.r, 0));
 	_capsuleCollision.Update();
 }
 
@@ -470,6 +472,9 @@ void Player::DrawDebugInfo()
 	for (int i = 0; i < sizeof(_bone) / sizeof(_bone[0]); i++) {
 		_bone[i]->DebugRender();
 	}
+
+	DrawCapsule3D(_capsuleCollision.up_pos, _capsuleCollision.down_pos, _capsuleCollision.r, 16, COLOR_RED, COLOR_RED, false);
+
 	int x = 0;
 	int y = 100;
 	int line = 0;
