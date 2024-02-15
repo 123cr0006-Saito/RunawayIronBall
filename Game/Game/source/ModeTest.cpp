@@ -43,8 +43,25 @@ bool ModeTest::Initialize() {
 		for (auto&& objectList : objectData) {
 			House* building = new House();
 			building->Init(MV1DuplicateModel(objHandle), objectList._pos);
-			_building.push_back(building);
+			_house.push_back(building);
 		}
+	}
+
+	// É^ÉèÅ[
+	for (int i = 0; i < 10; i++) {
+		VECTOR v = VGet(rand() % 4000, 0.0f, rand() % 4000);
+		v.x -= 2000.0f;
+		v.z -= 2000.0f;
+
+		std::array<int, 3> towerModelHandle;
+		towerModelHandle[0] = ResourceServer::MV1LoadModel("res/Building/Tower/test_Tower_01.mv1");
+		towerModelHandle[1] = ResourceServer::MV1LoadModel("res/Building/Tower/test_Tower_02.mv1");
+		towerModelHandle[2] = ResourceServer::MV1LoadModel("res/Building/Tower/test_Tower_03.mv1");
+
+		Tower* tower = new Tower();
+		tower->Init(towerModelHandle, v);
+
+		_tower.push_back(tower);
 	}
 
 
@@ -122,7 +139,7 @@ bool ModeTest::Process() {
 
 	int ibPower = _chain->GetPower();
 
-	for (auto itr = _building.begin(); itr != _building.end(); ++itr) {
+	for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
 		(*itr)->Process();
 		
 		if ((*itr)->GetUseCollision()) {
@@ -236,11 +253,15 @@ bool ModeTest::Render() {
 	_chain->Render();
 	//_chain->DrawDebugInfo();
 
-	for (auto itr = _building.begin(); itr != _building.end(); ++itr) {
+	for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
 		(*itr)->Render();
 		(*itr)->DrawDebugInfo();
 	}
 
+	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
+		(*itr)->Render();
+		(*itr)->DrawDebugInfo();
+	}
 
 
 	//SetDrawBlendMode(DX_BLENDMODE_ADD, 255);

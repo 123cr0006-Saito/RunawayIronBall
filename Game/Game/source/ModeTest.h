@@ -11,6 +11,7 @@
 
 #include "BuildingBase.h"
 #include "House.h"
+#include "Tower.h"
 
 #include "EnemyPool.h"
 #include "PlaneEffectManeger.h"
@@ -52,7 +53,8 @@ protected:
 	ScreenVibration* _sVib;
 	EnemyPool* _enemyPool;
 
-	std::vector<House*> _building;
+	std::vector<House*> _house;
+	std::vector<Tower*> _tower;
 
 	int _skySphere;
 	int _tile;
