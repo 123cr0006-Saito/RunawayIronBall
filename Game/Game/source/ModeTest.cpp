@@ -205,6 +205,8 @@ bool ModeTest::Process() {
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_START)) {
 		_enemyPool->Init();
+
+		_player->ChangeIsInvincible(true);
 	}
 
 	if (XInput::GetInstance()->GetKey(XINPUT_BUTTON_Y)) {
@@ -277,6 +279,12 @@ bool ModeTest::Render() {
 	}
 
 	_planeEffectManeger->Render();
+
+
+#ifdef _DEBUG
+	// デバッグ表示
+	_player->DrawDebugInfo();
+#endif // _DEBUG
 
 
 	SetUseZBuffer3D(FALSE);
