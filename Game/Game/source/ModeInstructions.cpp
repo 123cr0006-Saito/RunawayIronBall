@@ -29,9 +29,11 @@ bool ModeInstructions::Process() {
 	//‘I‘ð€–Ú‚ÌˆÚ“®
 	if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN)) {
 		count++;
+		global._soundServer->DirectPlay("SE_Select");
 	}
 	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP)) {
 		count--;
+		global._soundServer->DirectPlay("SE_Select");
 	}
 	_listChoice += count;
 	_listChoice = (_listChoice + LIST_SIZE_MAX) % LIST_SIZE_MAX;

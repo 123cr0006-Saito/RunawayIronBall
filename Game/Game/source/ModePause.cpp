@@ -48,6 +48,7 @@ void ModePause::SelectSetVolum(int& setVolum) {
 void ModePause::SelectSetVibration() {
 	if (_input->GetTrg(XINPUT_BUTTON_A)) {
 		_isVibration = 1 - _isVibration;
+		global._soundServer->DirectPlay("SE_Press");
 	}
 };
 
@@ -57,12 +58,14 @@ void ModePause::SelectOperationInstructions() {
 		//操作説明が終了した時ようにこのサーバーは削除しない
 		//削除しても良いが、操作説明でこのサーバーを作成してから削除する　※ガウスの背景はおかしくなると思われる
 		ModeServer::GetInstance()->Add(new ModeInstructions(), 100, "Instructions");
+		global._soundServer->DirectPlay("SE_Press");
 	}
 };
 
 void ModePause::SelectGameEnd() {
 	if (_input->GetTrg(XINPUT_BUTTON_A)) {
 		global.exit_count = true;
+		global._soundServer->DirectPlay("SE_Press");
 	}
 };
 
@@ -77,9 +80,11 @@ bool ModePause::Process() {
 	//選択項目の切り替え
 	if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP)) {
 		count--;
+		global._soundServer->DirectPlay("SE_Select");
 	}
 	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN)) {
 		count++;
+		global._soundServer->DirectPlay("SE_Select");
 	}
 
 	_selectItem += count;
