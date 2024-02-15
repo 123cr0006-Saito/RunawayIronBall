@@ -21,6 +21,19 @@ UIBase::UIBase(VECTOR pos, std::string handleName, int AllNum, int XNum, int YNu
 	_cy = _y / 2;
 };
 
+UIBase::UIBase(VECTOR pos, int size, int* handle) {
+	_handle = new int[size];
+	for (int i = 0; i < size; i++) {
+		_handle[i] = handle[i];
+	}
+	_pos = pos;
+	_handleNum = 0;
+	float _x, _y;
+	GetGraphSizeF(_handle[_handleNum], &_x, &_y);
+	_cx = _x / 2;
+	_cy = _y / 2;
+};
+
 UIBase::~UIBase() {
 	//“Á‚É‚È‚µ
 };
