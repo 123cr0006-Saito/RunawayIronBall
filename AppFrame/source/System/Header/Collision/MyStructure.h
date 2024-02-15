@@ -46,6 +46,22 @@ struct TWOLINE_SHORT {
 //	float length[3] = {0.0f,0.0f,0.0f}; //0:w 1:h 3:d
 //};
 
+class Sphere
+{
+public:
+	Sphere() {
+		centerPos = VGet(0.0f, 0.0f, 0.0f);
+		r = 0.0f;
+	}
+	Sphere(VECTOR pos, float r) {
+		centerPos = pos;
+		this->r = r;
+	}
+
+	VECTOR centerPos;
+	float r;
+};
+
 class OBB
 {
 public:
