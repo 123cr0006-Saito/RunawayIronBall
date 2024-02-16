@@ -186,6 +186,7 @@
     <ClCompile Include="source\ScreenVibration.cpp" />
     <ClCompile Include="source\SlaBlock.cpp" />
     <ClCompile Include="source\Tower.cpp" />
+    <ClCompile Include="source\TowerParts.cpp" />
     <ClCompile Include="source\UIBase.cpp" />
     <ClCompile Include="source\UIExpPoint.cpp" />
     <ClCompile Include="source\UIHeart.cpp" />
@@ -223,6 +224,7 @@
     <ClInclude Include="source\ScreenVibration.h" />
     <ClInclude Include="source\SlaBlock.h" />
     <ClInclude Include="source\Tower.h" />
+    <ClInclude Include="source\TowerParts.h" />
     <ClInclude Include="source\UIBase.h" />
     <ClInclude Include="source\UIExpPoint.h" />
     <ClInclude Include="source\UIHeart.h" />

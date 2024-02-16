@@ -1,5 +1,6 @@
 #pragma once
 #include "BuildingBase.h"
+#include "TowerParts.h"
 
 class Tower : public BuildingBase
 {
@@ -41,7 +42,10 @@ protected:
 	};
 
 	// ƒp[ƒc‚Ìî•ñ
-	std::vector<TOWER_PARTS_INFO*> _partsInfo;
+	std::vector<TowerParts*> _towerParts;
+
+
+
 	
 	bool _isFalling;
 	int _prevFallCnt;
@@ -53,5 +57,4 @@ protected:
 
 	float _r;
 	float _up;
-	std::vector<Sphere*> _sphereCollision;
 };

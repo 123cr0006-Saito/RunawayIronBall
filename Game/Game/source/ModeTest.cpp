@@ -233,6 +233,10 @@ bool ModeTest::Process() {
 		}
 	}
 
+	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
+		(*itr)->Process();
+	}
+
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_START)) {
 		_enemyPool->Init();
@@ -253,6 +257,13 @@ bool ModeTest::Process() {
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_BACK)) {
 		_drawDebug = !_drawDebug;
+		VECTOR pPos = _player->GetPosition();
+		for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
+			VECTOR hPos = (*itr)->GetPos();
+			VECTOR tmpDir = VSub(hPos, pPos);
+			tmpDir.y = 0.0f;
+			(*itr)->SetFalling(tmpDir);
+		}
 	}
 
 	if (_player->GetHP() <= 0) {
@@ -300,10 +311,9 @@ bool ModeTest::Render() {
 		(*itr)->Render();
 	}
 
-	//for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
-	//	(*itr)->Render();
-	//	(*itr)->DrawDebugInfo();
-	//}
+	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
+		(*itr)->Render();
+	}
 
 
 	//SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
@@ -328,7 +338,9 @@ bool ModeTest::Render() {
 			(*itr)->DrawDebugInfo();
 		}
 	}
-
+	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
+		(*itr)->DrawDebugInfo();
+	}
 
 	SetUseZBuffer3D(FALSE);
 
