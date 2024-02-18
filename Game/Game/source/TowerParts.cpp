@@ -1,5 +1,9 @@
 #include "TowerParts.h"
 
+namespace {
+	constexpr float BLAST_SPEED = 60.0f;
+	constexpr float FALL_CNT_MAX = 30;
+}
 TowerParts::TowerParts()
 {
 	_use = true;
@@ -7,6 +11,11 @@ TowerParts::TowerParts()
 
 	_blast = false;
 	_blastDir = VGet(0.0f, 0.0f, 0.0f);
+
+	_isFalling = false;
+	_fallCnt = 0;
+	_fallStartPos = VGet(0.0f, 0.0f, 0.0f);
+	_fallEndPos = VGet(0.0f, 0.0f, 0.0f);
 
 	_modelHandle = -1;
 	_pos = VGet(0.0f, 0.0f, 0.0f);
@@ -46,17 +55,55 @@ void TowerParts::Init(int modelHandle, VECTOR startPos)
 
 		_sphereCollision.r = length / 2.0f;
 	}
+
+	UpdateCollision();
 }
 
 void TowerParts::Process()
 {
-	UpdateCollision();
+	if (_use) {
+		// 吹っ飛び処理
+		if ( _blast) {
+			BlastOffProcess();
+		}
+
+		// 落下処理
+		if (_isFalling) {
+			FallProcess();
+		}
+
+		// モデルの座標を更新
+		MV1SetPosition(_modelHandle, _pos);
+
+		// 当たり判定の更新
+		if (_useCollision) {
+			UpdateCollision();
+		}
+	}
+}
+
+void TowerParts::BlastOffProcess()
+{
+	_pos = VAdd(_pos, VScale(_blastDir, BLAST_SPEED));
+}
+
+void TowerParts::FallProcess()
+{
+	float x = Easing::InQuint(_fallCnt, _fallStartPos.x, _fallEndPos.x, FALL_CNT_MAX);
+	float y = Easing::InQuint(_fallCnt, _fallStartPos.y, _fallEndPos.y, FALL_CNT_MAX);
+	float z = Easing::InQuint(_fallCnt, _fallStartPos.z, _fallEndPos.z, FALL_CNT_MAX);
+	_pos = VGet(x, y, z);
+
+	_fallCnt++;
+	if (_fallCnt > FALL_CNT_MAX) {
+		_isFalling = false;
+	}
 }
 
 void TowerParts::Render()
 {
 	MV1SetPosition(_modelHandle, _pos);
-	//MV1DrawModel(_modelHandle);
+	MV1DrawModel(_modelHandle);
 }
 
 void TowerParts::UpdateCollision()

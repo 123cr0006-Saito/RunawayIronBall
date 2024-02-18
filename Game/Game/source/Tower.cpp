@@ -1,11 +1,19 @@
 #include "Tower.h"
 
+
+namespace {
+	constexpr int FALL_CNT_MAX = 30; 
+}
+
 Tower::Tower()
 {
+	_use = true;
+	_partsNum = 0;
 	_isFalling = false;
 	_prevFallCnt = -1;
 	_fallCnt = 0;
 	_bottomIndex = 0;
+	_startPos = VGet(0.0f, 0.0f, 0.0f);
 	_endPos = VGet(0.0f, 0.0f, 0.0f);
 
 	_r = 0;
@@ -26,26 +34,7 @@ bool Tower::Init(std::array<int, 3> modelHandle, VECTOR startPos)
 			return false;
 		}
 
-		//TOWER_PARTS_INFO* tpInfo = new TOWER_PARTS_INFO();
-		//tpInfo->use = true;
-		//tpInfo->blast = false;
-		//tpInfo->modelHandle = modelHandle[i];
-		//if (i == 0) {
-		//	tpInfo->pos = startPos;
-		//}
-		//else {
-		//	VECTOR vOrigin = VGet(0.0f, 0.0f, 0.0f);
-		//	MATRIX m =  MV1GetFrameLocalWorldMatrix(_partsInfo[i - 1]->modelHandle, 3);
-		//	tpInfo->pos = VTransform(vOrigin, m);
-		//}
-		//MV1SetPosition(tpInfo->modelHandle, tpInfo->pos);
-
-		//tpInfo->vRot = VGet(0.0f, 0.0f, 0.0f);
-		//_partsInfo.push_back(tpInfo);
-
-
 		TowerParts* tp = new TowerParts();
-
 		VECTOR tmpPos = VGet(0.0f, 0.0f, 0.0f);
 		if (i == 0) {
 			tmpPos = startPos;
@@ -60,64 +49,86 @@ bool Tower::Init(std::array<int, 3> modelHandle, VECTOR startPos)
 		_towerParts.push_back(tp);
 	}
 
-
-	//for (int i = 0; i < 3; i++) {
-	//	TowerParts* pTowerParts = new TowerParts();
-	//	pTowerParts->Init(_partsInfo[i]->modelHandle, _partsInfo[i]->pos);
-	//	_towerParts.push_back(pTowerParts);
-	//}
-
+	_partsNum = _towerParts.size();
 	return true;
 }
 
 bool Tower::Process()
 {
-	BlastOffProcess();
-	if(_isFalling) {
+	if (_use) {
+		//if (_isFalling) {
 
-		int i = _bottomIndex;
-		int size = _towerParts.size();
-		if (i < size) {
-			_towerParts[i]->_pos.y -= 16.0f;
+		//	int i = _bottomIndex;
+		//	if (i < _partsNum) {
 
-			if (_towerParts[i]->_pos.y < _endPos.y) {
-				_towerParts[i]->_pos.y = _endPos.y;
+		//		float cnt = FALL_CNT_MAX - _fallCnt;
+		//		float x = Easing::InQuint(cnt, _startPos.x, _endPos.x, FALL_CNT_MAX);
+		//		float y = Easing::InQuint(cnt, _startPos.y, _endPos.y, FALL_CNT_MAX);
+		//		float z = Easing::InQuint(cnt, _startPos.z, _endPos.z, FALL_CNT_MAX);
+		//		_towerParts[i]->_pos = VGet(x, y, z);
+		//		MV1SetPosition(_towerParts[i]->_modelHandle, _towerParts[i]->_pos);
+
+		//		i++;
+		//		for (i; i < _partsNum; i++) {
+		//			VECTOR vOrigin = VGet(0.0f, 0.0f, 0.0f);
+		//			MATRIX m = MV1GetFrameLocalWorldMatrix(_towerParts[i - 1]->_modelHandle, 3);
+		//			_towerParts[i]->_pos = VTransform(vOrigin, m);
+		//			MV1SetPosition(_towerParts[i]->_modelHandle, _towerParts[i]->_pos);
+		//		}
+
+		//	}
+
+
+
+
+		//	_fallCnt--;
+		//	if (_fallCnt < 0) {
+		//		_fallCnt = 0;
+		//		_isFalling = false;
+		//	}
+		//}
+
+
+		if (_isFalling) {
+			bool fallingFinished = true;
+			for (int i = _bottomIndex; i < _partsNum; i++) {
+				if(_towerParts[i]->GetUse() == false) continue;
+
+				fallingFinished = fallingFinished && !(_towerParts[i]->GetIsFalling());
 			}
 
-			i++;
-			for (i; i < size; i++) {
-				VECTOR vOrigin = VGet(0.0f, 0.0f, 0.0f);
-				MATRIX m = MV1GetFrameLocalWorldMatrix(_towerParts[i -1]->_modelHandle, 3);
-				_towerParts[i]->_pos = VTransform(vOrigin, m);
+			if (fallingFinished) {
+				_isFalling = false;
+			}
+		}
+
+
+		if (_prevFallCnt >= 0) {
+			_prevFallCnt--;
+			if (_prevFallCnt < 0) {
+				_isFalling = true;
+				_fallCnt = FALL_CNT_MAX;
+
+
+				_startPos = _towerParts[_bottomIndex]->_pos;
+
+				//for (auto itr = _towerParts.begin(); itr != _towerParts.end(); ++itr) {
+				//	if ((*itr)->_use && (*itr)->_blast == false) {
+				//		_startPos = (*itr)->_pos;
+				//		break;
+				//	}
+				//}
 			}
 
+
+
 		}
 
+		UpdateCollision();
 
-
-
-		_fallCnt--;
-		if (_fallCnt < 0) {
-			_fallCnt = 0;
-			_isFalling = false;
-		}
 	}
-
-
-
-
-
-	if (_prevFallCnt >= 0) {
-		_prevFallCnt--;
-		if (_prevFallCnt < 0) {
-			_isFalling = true;
-			_fallCnt = 60;
-		}
-	}
-
-	UpdateCollision();
-	for (auto itr = _towerParts.begin(); itr != _towerParts.end(); ++itr) {
-		(*itr)->Process();
+	for (int i = 0; i < _partsNum; i++) {
+		_towerParts[i]->Process();
 	}
 	return true;
 }
@@ -133,33 +144,30 @@ bool Tower::Render()
 	//	}
 	//}
 
-	for (auto itr = _towerParts.begin(); itr != _towerParts.end(); ++itr) {
-		(*itr)->Render();
+	for (int i = 0; i < _partsNum; i++) {
+		_towerParts[i]->Render();
 	}
 	return successAll;
-}
-
-void Tower::BlastOffProcess()
-{
-	for(auto itr = _towerParts.begin(); itr != _towerParts.end(); ++itr) {
-		if((*itr)->_use && (*itr)->_blast) {
-			(*itr)->_pos = VAdd((*itr)->_pos, VScale((*itr)->_blastDir, 60.0f));
-		}
-	}
 }
 
 void Tower::SetFalling(VECTOR vDir)
 {
 	if (_prevFallCnt < 0 && !_isFalling) {
 		_prevFallCnt = 45;
-		for (auto itr = _towerParts.begin(); itr != _towerParts.end(); ++itr) {
-			if ((*itr)->_use && (*itr)->_blast == false) {
-				(*itr)->_blast = true;
-				_endPos = (*itr)->_pos;
-				(*itr)->_blastDir = VNorm(vDir);
-				_bottomIndex++;
-				break;
+
+		for (int i = _bottomIndex; i < _partsNum; i++) {
+
+			if (i == _bottomIndex) {
+				_towerParts[i]->SetBlast(VNorm(vDir));
 			}
+			else {
+				_towerParts[i]->SetFalling(_towerParts[i - 1]->_pos);
+			}
+		}
+		_bottomIndex++;
+
+		if (_bottomIndex >= _partsNum) {
+			_use = false;
 		}
 	}
 }

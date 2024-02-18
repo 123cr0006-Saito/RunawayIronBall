@@ -128,7 +128,7 @@ bool ModeTest::Process() {
 
 	_player->Process(_camera->GetCamY());
 	_chain->Process();
-	_enemyPool->Process();
+	//_enemyPool->Process();
 
 	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
 		ui[i]->Process();
@@ -191,28 +191,28 @@ bool ModeTest::Process() {
 
 
 		// 敵とプレイヤーの当たり判定
-		EnemyBase* enemy = _enemyPool->GetEnemy(i);
-		Sphere eCol = { enemy->GetCollisionPos(), enemy->GetR() };
-		Capsule pCol = _player->GetCollision();
-		if (Collision3D::SphereCapsuleCol(eCol, pCol)) {
-			if (!isInvincible) {
-				_player->SetDamage();
-			}
-			VECTOR tmpPos = enemy->GetCollisionPos();
-			tmpPos.y = 0.0f;
+		//EnemyBase* enemy = _enemyPool->GetEnemy(i);
+		//Sphere eCol = { enemy->GetCollisionPos(), enemy->GetR() };
+		//Capsule pCol = _player->GetCollision();
+		//if (Collision3D::SphereCapsuleCol(eCol, pCol)) {
+		//	if (!isInvincible) {
+		//		_player->SetDamage();
+		//	}
+		//	VECTOR tmpPos = enemy->GetCollisionPos();
+		//	tmpPos.y = 0.0f;
 
-			VECTOR vDir = VSub(pCol.down_pos, tmpPos);
-			vDir.y = 0.0f;
-			float squareLength = VSquareSize(vDir);
-			if (squareLength >= 0.0001f) {
-				vDir = VNorm(vDir);
-				tmpPos = VAdd(tmpPos, VScale(vDir, eCol.r + pCol.r));
-				_player->SetPos(tmpPos);
-			}
-			enemy = nullptr;
+		//	VECTOR vDir = VSub(pCol.down_pos, tmpPos);
+		//	vDir.y = 0.0f;
+		//	float squareLength = VSquareSize(vDir);
+		//	if (squareLength >= 0.0001f) {
+		//		vDir = VNorm(vDir);
+		//		tmpPos = VAdd(tmpPos, VScale(vDir, eCol.r + pCol.r));
+		//		_player->SetPos(tmpPos);
+		//	}
+		//	enemy = nullptr;
 
 
-		}
+		//}
 	}
 
 	//空間分割を考えていないので無駄が多いです。
@@ -240,7 +240,7 @@ bool ModeTest::Process() {
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_START)) {
 		_enemyPool->Init();
-		_player->SetDamage();
+		//_player->SetDamage();
 		ModeServer::GetInstance()->Add(new ModePause(), 10, "Pause");
 	}
 
@@ -303,7 +303,7 @@ bool ModeTest::Render() {
 	}
 
 	_player->Render();
-	_enemyPool->Render();
+	//_enemyPool->Render();
 	_chain->Render();
 	//_chain->DrawDebugInfo();
 
