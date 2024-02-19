@@ -35,6 +35,7 @@
     <ClCompile Include="source\Tower.cpp" />
     <ClCompile Include="source\FrameData.cpp" />
     <ClCompile Include="source\ModelColor.cpp" />
+    <ClCompile Include="source\ModeScenario.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -72,5 +73,6 @@
     <ClInclude Include="source\Tower.h" />
     <ClInclude Include="source\FrameData.h" />
     <ClInclude Include="source\ModelColor.h" />
+    <ClInclude Include="source\ModeScenario.h" />
   </ItemGroup>
 </Project>

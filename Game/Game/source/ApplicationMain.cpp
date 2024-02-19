@@ -4,6 +4,7 @@
 #include "ModeTest.h"
 #include "ModeTitle.h"
 #include "ModeGameOver.h"
+#include "ModeScenario.h"
 
 // ŽÀ‘Ì
 ApplicationMain				g_oApplicationMain;
@@ -14,8 +15,9 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance) {
 	// ƒ‚[ƒh‚Ì“o˜^
 	//ModeServer::GetInstance()->Add(new ModeTitle(), 1, "Title");
 	//ModeServer::GetInstance()->Add(new ModeGameOver(), 1, "Title");
-	ModeServer::GetInstance()->Add(new ModeTest(), 1, "Game");
-
+	//ModeServer::GetInstance()->Add(new ModeTest(), 1, "Game");
+	
+	ModeServer::GetInstance()->Add(new ModeScenario("Data/ScenarioData/Scenario_01.csv"), 1, "Scenario");
 	global.Init();
 
 	_input = new XInput(DX_INPUT_PAD1);
