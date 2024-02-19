@@ -376,6 +376,11 @@ bool Collision3D::SphereCol(VECTOR pos1, float r1, VECTOR pos2, float r2) {
 	return VSquareSize(VSub(pos2, pos1)) <= (r1 + r2) * (r1 + r2);
 }
 
+bool Collision3D::SphereCol(const Sphere& sphere1, const Sphere& sphere2)
+{
+	return Collision3D::SphereCol(sphere1.centerPos, sphere1.r, sphere2.centerPos, sphere2.r);
+}
+
 bool Collision3D::TwoCapselCol(VECTOR line_1_start, VECTOR line_1_end, float r_1, VECTOR line_2_start, VECTOR line_2_end, float r_2) {
 	TWOLINE_SHORT value = Collision3D::TwoSegmentShortPoint(line_1_start, line_1_end, line_2_start, line_2_end);
 	return Collision3D::SphereCol(value.line_1_point, r_1, value.line_2_point, r_2);

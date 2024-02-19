@@ -12,23 +12,26 @@ Tower::Tower()
 	_isFalling = false;
 	_prevFallCnt = -1;
 	_fallCnt = 0;
-	_bottomIndex = 0;
-	_startPos = VGet(0.0f, 0.0f, 0.0f);
-	_endPos = VGet(0.0f, 0.0f, 0.0f);
 
-	_r = 0;
-	_up = 0.0f;
+	_canBlast = true;
+
+	_bottomIndex = 0;
+
+	_bottomSphereCollision = nullptr;
 }
 
 Tower::~Tower()
 {
+	for (auto itr = _towerParts.begin(); itr != _towerParts.end(); ++itr) {
+		delete* itr;
+	}
+	_towerParts.clear();
+
 }
 
 bool Tower::Init(std::array<int, 3> modelHandle, VECTOR startPos)
 {
 	_pos = startPos;
-	_r = 100.0f;
-	_up = 60.0f;
 	for (int i = 0; i < 3; i++) {
 		if (modelHandle[i] == -1) {
 			return false;
@@ -99,6 +102,7 @@ bool Tower::Process()
 
 			if (fallingFinished) {
 				_isFalling = false;
+				_canBlast = true;
 			}
 		}
 
@@ -108,9 +112,6 @@ bool Tower::Process()
 			if (_prevFallCnt < 0) {
 				_isFalling = true;
 				_fallCnt = FALL_CNT_MAX;
-
-
-				_startPos = _towerParts[_bottomIndex]->_pos;
 
 				//for (auto itr = _towerParts.begin(); itr != _towerParts.end(); ++itr) {
 				//	if ((*itr)->_use && (*itr)->_blast == false) {
@@ -150,17 +151,21 @@ bool Tower::Render()
 	return successAll;
 }
 
-void Tower::SetFalling(VECTOR vDir)
+void Tower::SetBlast(VECTOR vDir)
 {
 	if (_prevFallCnt < 0 && !_isFalling) {
 		_prevFallCnt = 45;
+		_canBlast = false;
 
 		for (int i = _bottomIndex; i < _partsNum; i++) {
 
+			// 最下部のパーツのみ吹っ飛び処理
 			if (i == _bottomIndex) {
 				_towerParts[i]->SetBlast(VNorm(vDir));
 			}
+			// それ以外のパーツは落下処理
 			else {
+				// 一つしたのパーツの現在の座標を、落下終了後の座標として設定
 				_towerParts[i]->SetFalling(_towerParts[i - 1]->_pos);
 			}
 		}

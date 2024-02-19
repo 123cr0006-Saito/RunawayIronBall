@@ -29,6 +29,7 @@ TowerParts::TowerParts()
 
 TowerParts::~TowerParts()
 {
+	
 }
 
 void TowerParts::Init(int modelHandle, VECTOR startPos)
@@ -76,9 +77,9 @@ void TowerParts::Process()
 		MV1SetPosition(_modelHandle, _pos);
 
 		// ìñÇΩÇËîªíËÇÃçXêV
-		if (_useCollision) {
+		//if (_useCollision) {
 			UpdateCollision();
-		}
+		//}
 	}
 }
 

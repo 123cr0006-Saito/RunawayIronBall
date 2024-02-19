@@ -174,6 +174,25 @@ bool ModeTest::Process() {
 		}
 	}
 
+	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
+		(*itr)->Process();
+		
+		if ((*itr)->GetCanBlast()) {
+			VECTOR tPos = (*itr)->GetPos();
+			Sphere tSphere = (*itr)->GetBottomSphereCollision();
+			if (isAttackState) {
+				Sphere ibSphere = { ibPos, ibR };
+				if (Collision3D::SphereCol(ibSphere, tSphere)) {
+
+					VECTOR vDir = VSub(tPos, pPos);
+					(*itr)->SetBlast(vDir);
+				}
+			}
+		}
+	}
+
+
+
 	for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
 		if (isAttackState) {
 			if (!_enemyPool->GetEnemy(i)->GetUse()) { continue; }
@@ -233,10 +252,6 @@ bool ModeTest::Process() {
 		}
 	}
 
-	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
-		(*itr)->Process();
-	}
-
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_START)) {
 		_enemyPool->Init();
@@ -262,7 +277,7 @@ bool ModeTest::Process() {
 			VECTOR hPos = (*itr)->GetPos();
 			VECTOR tmpDir = VSub(hPos, pPos);
 			tmpDir.y = 0.0f;
-			(*itr)->SetFalling(tmpDir);
+			(*itr)->SetBlast(tmpDir);
 		}
 	}
 

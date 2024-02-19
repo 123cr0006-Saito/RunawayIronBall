@@ -9,14 +9,14 @@ public:
 	TowerParts();
 	~TowerParts();
 
-
+	// 初期化処理
 	void Init(int modelHandle, VECTOR startPos);
+	// 更新処理
 	void Process();
-	void BlastOffProcess();
-	void FallProcess();
-
+	// 描画処理
 	void Render();
 
+	// 当たり判定の更新
 	void UpdateCollision();
 
 
@@ -43,9 +43,16 @@ public:
 		_fallEndPos = endPos;
 	}
 
-	bool GetIsFalling() {
-		return _isFalling;
-	}
+	bool GetIsFalling() { return _isFalling; }
+
+	Sphere GetSphereCollision() { return _sphereCollision; }
+
+protected:
+	// 吹っ飛び処理
+	void BlastOffProcess();
+	// 落下処理
+	void FallProcess();
+
 
 protected:
 	bool _use;

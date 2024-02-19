@@ -15,9 +15,15 @@ public:
 	bool Process() override;
 	bool Render() override;
 
-	void SetFalling(VECTOR vDir);
+	void SetBlast(VECTOR vDir);
+
+	bool GetCanBlast() { return _canBlast; }
 
 	void UpdateCollision();
+
+
+	Sphere GetBottomSphereCollision() { return _towerParts[_bottomIndex]->GetSphereCollision(); }
+
 
 	// デバッグ情報の表示
 	bool DrawDebugInfo() override;
@@ -34,12 +40,13 @@ protected:
 	int _prevFallCnt;
 	int _fallCnt;
 
+	bool _canBlast;
 
+	// 最下部のパーツのインデックス
 	int _bottomIndex;
 
-	VECTOR _startPos;
-	VECTOR _endPos;
 
-	float _r;
-	float _up;
+
+	Sphere* _bottomSphereCollision;
+
 };

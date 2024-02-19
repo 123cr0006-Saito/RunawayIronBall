@@ -40,6 +40,7 @@ public:
 
 	//‹…‚Æ‹…‚Ì“–‚½‚è”»’è
 	static bool SphereCol(VECTOR pos1, float r1, VECTOR pos2, float r2);
+	static bool SphereCol(const Sphere& sphere1, const Sphere& sphere2);
 
 	//ƒJƒvƒZƒ‹“¯Žm‚Ì“–‚½‚è”»’è
 	static bool TwoCapselCol(VECTOR line_1_start, VECTOR line_1_end, float r_1, VECTOR line_2_start, VECTOR line_2_end, float r_2);
