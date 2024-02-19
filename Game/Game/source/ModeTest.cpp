@@ -259,16 +259,16 @@ bool ModeTest::Process() {
 		ModeServer::GetInstance()->Add(new ModePause(), 10, "Pause");
 	}
 
-	//if (XInput::GetInstance()->GetKey(XINPUT_BUTTON_Y)) {
-	//	if (nowParcent > 0) {
-	//		nowParcent -= 1.0f / 120 * 100;
-	//	}
-	//}
-	//else {
-	//	if (nowParcent < 100) {
-	//		nowParcent += 1.0f / 120 * 100;
-	//	}
-	//}
+	if (XInput::GetInstance()->GetKey(XINPUT_BUTTON_Y)) {
+		if (nowParcent > 0) {
+			nowParcent -= 1.0f / 120 * 100;
+		}
+	}
+	else {
+		if (nowParcent < 100) {
+			nowParcent += 1.0f / 120 * 100;
+		}
+	}
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_BACK)) {
 		_drawDebug = !_drawDebug;
@@ -288,7 +288,7 @@ bool ModeTest::Process() {
 	}
 
 	VECTOR box_vec = ConvWorldPosToScreenPos(VAdd(_player->GetPosition(), VGet(0, 170, 0)));
-	_gaugeUI[0]->Process(box_vec, nowParcent, 100);
+	_gaugeUI[0]->Process(box_vec, _player->GetStamina(), _player->GetStaminaMax());
 	_gaugeUI[1]->Process(box_vec, 100, 100);
 
 	
@@ -337,8 +337,8 @@ bool ModeTest::Render() {
 	}
 	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
-	if (nowParcent < 100) {
-		int handleNum = floorf((float)nowParcent / 33.4f);
+	if (_player->GetStaminaRate() < 1.0f) {
+		int handleNum = floorf(_player->GetStaminaRate() * 100.0f / 33.4f);
 		_gaugeUI[1]->Draw(_gaugeHandle[handleNum]);
 		_gaugeUI[0]->Draw(_gaugeHandle[3]);
 	}

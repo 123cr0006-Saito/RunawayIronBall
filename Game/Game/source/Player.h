@@ -81,6 +81,16 @@ public:
 	// キャラモデルの点滅処理
 	void FlickerProcess();
 
+
+
+	float GetStamina() { return _stamina; }
+	float GetStaminaMax() { return _staminaMax; }
+	float GetStaminaRate() { return _stamina / _staminaMax; }
+
+
+
+
+
 	void SetBone();//齋藤が作った関数です。 boneのフレームを探すために使用する関数です。後でjsonでの読み込みにするかもしれません。
 	//↓齋藤が作った関数です。どこにjson読み込みをどこに書けばよいのかわからなかったので、コンストラクタの次に呼び出す関数として実装しました。
 	void SetNextExp(std::string FileName);//経験値データの読み込み
@@ -129,12 +139,23 @@ private:
 	// 残りの無敵時間
 	int _invincibleRemainingCnt;
 
+	// スタミナ
+	float _stamina;
+	// スタミナの最大値
+	float _staminaMax;
+	// スタミナを消費中かどうか
+	bool _isConsumingStamina;
+	// スタミナが尽きたかどうか
+	bool _isTired;
+	// スタミナの1フレームあたりの回復速度
+	float _staminaRecoverySpeed;
+
 	// 移動可能かどうか
 	bool _canMove;
 	// 移動速度
 	float _moveSpeed;
 	// 移動速度（フレームデータを使った移動）
-	float _moveSpeedFD;
+	float _moveSpeedFWD;
 
 	Capsule _capsuleCollision;
 

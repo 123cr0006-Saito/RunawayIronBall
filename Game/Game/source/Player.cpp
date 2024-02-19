@@ -23,6 +23,15 @@ namespace {
 	// 「走り」状態と「歩き」状態を切り替える閾値
 	// 「スティック入力ベクトルの大きさ」がこの値を超えたら「走り」状態になる
 	constexpr float MOVE_RUN_THRESHOLD = 0.6f;
+
+
+	// 仮
+	// スタミナの最大値
+	constexpr float STAMINA_MAX = 480.0f;
+	// 回転攻撃の1フレームあたりのスタミナ消費量
+	constexpr float ROTAION_SWING_STAMINA_DECREASE = 1.0f;
+	// スタミナが0になってから最大値まで回復するのにかかる時間
+	constexpr float STANIMA_RECOVERY_TIME = 120.0f;
 }
 
 Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
@@ -34,9 +43,15 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	_isInvincible = false;
 	_invincibleRemainingCnt = 0;
 
+	_stamina = STAMINA_MAX;
+	_staminaMax = STAMINA_MAX;
+	_isConsumingStamina = false;
+	_isTired = false;
+	_staminaRecoverySpeed = _staminaMax / STANIMA_RECOVERY_TIME;
+
 	_canMove = true;
 	_moveSpeed = 8.0f;
-	_moveSpeedFD = 0.0f;
+	_moveSpeedFWD = 0.0f;
 
 	_capsuleCollision.r = 30.0f;
 	_capsuleCollision.up = 65.0f;
@@ -245,18 +260,24 @@ bool Player::Process(float camAngleY)
 			}
 		}
 
-		if (_moveSpeedFD != 0.f) {
-			_pos = VAdd(_pos, VScale(VNorm(_forwardDir), _moveSpeedFD));
+		if (_moveSpeedFWD != 0.f) {
+			_pos = VAdd(_pos, VScale(VNorm(_forwardDir), _moveSpeedFWD));
 		}
 
 		if (!_isAttackState && _animStatus != ANIM_STATE::AVOIDANCE && _animStatus != ANIM_STATE::HIT) {
 			if (_isMoved) {
-				if (_isRunnning) {
-					_animStatus = ANIM_STATE::RUN;
+				if (_isTired) {
+					_animStatus = ANIM_STATE::WALK_TIRED;
 				}
 				else {
-					_animStatus = ANIM_STATE::WALK;
+					if (_isRunnning) {
+						_animStatus = ANIM_STATE::RUN;
+					}
+					else {
+						_animStatus = ANIM_STATE::WALK;
+					}
 				}
+
 
 				// キャラクターを滑らかに回転させる
 				float angle = Math::CalcVectorAngle(_forwardDir, vMoveDir);
@@ -270,18 +291,52 @@ bool Player::Process(float camAngleY)
 				}
 			}
 			else {
-				if (_idleFightingRemainingCnt > 0) {
-					_animStatus = ANIM_STATE::IDLE_FIGHTING;
-					_idleFightingRemainingCnt -= 1;
+				if (_isTired) {
+					_animStatus = ANIM_STATE::IDLE_TIRED;
+					_idleFightingRemainingCnt = 0;
 				}
 				else {
-					_animStatus = ANIM_STATE::IDLE_FIGHTING;
+					if (_idleFightingRemainingCnt > 0) {
+						_animStatus = ANIM_STATE::IDLE_FIGHTING;
+						_idleFightingRemainingCnt -= 1;
+					}
+					else {
+						_animStatus = ANIM_STATE::IDLE_FIGHTING;
+					}
 				}
 			}
 		}
 	}
 
-	if (_animStatus != ANIM_STATE::AVOIDANCE) {
+	// スタミナの更新
+	if (!_isConsumingStamina) {
+		if (_stamina < STAMINA_MAX) {
+			_staminaRecoverySpeed = STAMINA_MAX / STANIMA_RECOVERY_TIME;
+			_stamina += _staminaRecoverySpeed;
+			if (_stamina > STAMINA_MAX) {
+				_stamina = STAMINA_MAX;
+				_isTired = false;
+			}
+		}
+	}
+
+	if (_animStatus == ANIM_STATE::ROTATION_SWING) {
+		_stamina -= ROTAION_SWING_STAMINA_DECREASE;
+		_isConsumingStamina = true;
+		if (_stamina < 0.0f) {
+			_stamina = 0.0f;
+			_isTired = true;
+			_isConsumingStamina = false;
+			_isRotationSwinging = false;
+			_animStatus = ANIM_STATE::IDLE_TIRED;
+		}
+	}
+	else {
+		_isConsumingStamina = false;
+	}
+
+	// 攻撃状態の更新
+	if (_isTired == false && _animStatus != ANIM_STATE::AVOIDANCE) {
 		// 回転攻撃
 		if (_spinCnt > 90) {
 			if (!_isRotationSwinging) {
@@ -420,7 +475,7 @@ void Player::CheckFrameDataCommand()
 			_canMove = static_cast<bool>(param);
 			break;
 		case C_P_MOVE_FORWARD:
-			_moveSpeedFD = param;
+			_moveSpeedFWD = param;
 			break;
 		// コンボの入力受付を開始する
 		// C_P_CHECK_CHANGE_COMBOが実行されるタイミングで_playNextComboAnimがtrueの場合に次のコンボモーションを再生する
