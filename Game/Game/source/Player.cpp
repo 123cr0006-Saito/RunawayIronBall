@@ -10,15 +10,21 @@ namespace {
 	// 最大無敵時間
 	constexpr int INVINCIBLE_CNT_MAX = 90;
 
-	// 移動速度
+	// 移動速度（通常状態）
 	// 最大値
 	constexpr float MOVE_SPEED_MAX = 8.0f;
 	// 最小値
 	constexpr float MOVE_SPEED_MIN = 1.0f;
+	
+	// 移動速度（疲れ状態）
+	// 最大値
+	constexpr float MOVE_SPEED_TIRED_MAX = 3.0f;
+	// 最小値
+	constexpr float MOVE_SPEED_TIRED_MIN = 0.5f;
 
 	// スティック入力ベクトルの大きさの最大値
 	// この値を最大値として、入力の大きさを割合を計算する（割合は0~1の範囲にクランプする）
-	constexpr float MOVE_DIR_SIZE_MAX = 0.8f;
+	constexpr float MOVE_INPUT_VALUE_MAX = 0.8f;
 
 	// 「走り」状態と「歩き」状態を切り替える閾値
 	// 「スティック入力ベクトルの大きさ」がこの値を超えたら「走り」状態になる
@@ -100,6 +106,7 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::TO_ROTATION_SWING), "FD_MO_PL_To_Rotate.csv"));
 	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::AVOIDANCE), "FD_MO_PL_Avoidance.csv"));
 	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::HIT), "FD_MO_PL_Hit.csv"));
+	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::IDLE_TIRED), "FD_MO_PL_Idle_Tired.csv"));
 	_frameData->LoadData("Player", fdFileName);
 
 	//_animManager->InitMap(&_animMap);
@@ -208,7 +215,6 @@ bool Player::Process(float camAngleY)
 	// フレームデータの実行コマンドをチェックする
 	CheckFrameDataCommand();
 
-
 	// 無敵状態関連の処理
 	if (_isInvincible) {
 		int cnt = 10;
@@ -236,15 +242,17 @@ bool Player::Process(float camAngleY)
 		auto lStick = _input->GetAdjustedStick_L();
 		VECTOR vMoveDir = VGet(lStick.x, 0, lStick.y);
 		if (_canMove) {
+			float size = VSize(vMoveDir);
 			// 左スティックの入力があったら
-			if (VSize(vMoveDir) > 0.000000f) {
+			if (size > 0.000000f) {
 
-				float size = VSize(vMoveDir);
-
-				float rate = size / MOVE_DIR_SIZE_MAX;
-				_moveSpeed = MOVE_SPEED_MAX * rate;
+				float rate = size / MOVE_INPUT_VALUE_MAX;
 				rate = Math::Clamp(0.0f, 1.0f, rate);
-				_moveSpeed = Easing::Linear(rate, MOVE_SPEED_MIN, MOVE_SPEED_MAX, 1.0f);
+
+				float speedMax = _isTired ? MOVE_SPEED_TIRED_MAX : MOVE_SPEED_MAX;
+				float speedMin  = _isTired ? MOVE_SPEED_TIRED_MIN : MOVE_SPEED_MIN;
+
+				_moveSpeed = Easing::Linear(rate, speedMin, speedMax, 1.0f);
 				if(rate > MOVE_RUN_THRESHOLD) _isRunnning = true;
 
 				// 入力方向ベクトルを正規化する
