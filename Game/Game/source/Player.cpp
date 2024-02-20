@@ -98,22 +98,11 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	// アニメーションマネージャーの初期設定
 	_animManager = new AnimationManager();
 	//_animManager->InitMap("Player", _modelHandle, "MotionList_Player.csv");
-	_animManager->InitMap("Player", _modelHandle, motionList);
+	_animManager->InitMap("Player", _modelHandle, *motionList);
 
 
 	_frameData = new FrameData();
-	std::vector<std::pair<int, std::string>> fdFileName;
-	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::HORISONTAL_SWING_01), "FD_MO_PL_Horizontal_first.csv"));
-	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::HORISONTAL_SWING_02), "FD_MO_PL_Horizontal_second.csv"));
-	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::HORISONTAL_SWING_03), "FD_MO_PL_Horizontal_third.csv"));
-	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::IDLE), "FD_MO_PL_Idle.csv"));
-	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::IDLE_FIGHTING), "FD_MO_PL_Idle_Fighting.csv"));
-	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::ROTATION_SWING), "FD_MO_PL_Rotate_Loop.csv"));
-	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::TO_ROTATION_SWING), "FD_MO_PL_To_Rotate.csv"));
-	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::AVOIDANCE), "FD_MO_PL_Avoidance.csv"));
-	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::HIT), "FD_MO_PL_Hit.csv"));
-	fdFileName.push_back(std::make_pair(static_cast<int>(ANIM_STATE::IDLE_TIRED), "FD_MO_PL_Idle_Tired.csv"));
-	_frameData->LoadData("Player", fdFileName);
+	_frameData->LoadData("Player", *motionList);
 
 	//_animManager->InitMap(&_animMap);
 

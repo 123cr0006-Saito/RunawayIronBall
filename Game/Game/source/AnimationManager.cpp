@@ -74,16 +74,16 @@ void AnimationManager::InitMap(CHARA_NAME charaName, int modelHandle, std::strin
 	_modelHandle = modelHandle;
 }
 
-void AnimationManager::InitMap(CHARA_NAME charaName, int modelHandle, std::vector<MotionNamePair>* motionList)
+void AnimationManager::InitMap(CHARA_NAME charaName, int modelHandle, const std::vector<MotionNamePair>& motionList)
 {
 	auto itr = _allCharaAnimMap.find(charaName);
 	// 既に同じキャラクター名が登録されている場合は、同一のマップを使用する
 	if (itr == _allCharaAnimMap.end()) {
-		for (auto it = motionList->begin(); it != motionList->end(); ++it) {
+		for (auto it = motionList.begin(); it != motionList.end(); ++it) {
 			ANIMATION_INFO info;
 			info.animIndex = MV1GetAnimIndex(modelHandle, it->first.c_str());
 			info.loopTimes = it->second;
-			_allCharaAnimMap[charaName][it - motionList->begin()] = info;
+			_allCharaAnimMap[charaName][it - motionList.begin()] = info;
 #ifdef _DEBUG
 			if (info.animIndex == -1) {
 				std::string message = "[" + it->first + "] アニメーションが見つかりませんでした";

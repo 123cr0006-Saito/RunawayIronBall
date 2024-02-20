@@ -25,7 +25,7 @@ public:
 	// 引数: キャラクター名, モデルハンドル, モーションリストファイル名
 	void InitMap(CHARA_NAME charaName, int modelHandle, std::string fileName);
 	// 引数: キャラクター名, モデルハンドル, モーション名配列
-	void InitMap(CHARA_NAME charaName, int modelHandle, std::vector<MotionNamePair>* motionList);
+	void InitMap(CHARA_NAME charaName, int modelHandle, const std::vector<MotionNamePair>& motionList);
 
 	// ANIMATION_INFO型のアニメーション情報の初期設定を行う
 	void SetupAnimationInfo(int statusNo, int animIndex, int loopTimes);
