@@ -1,5 +1,5 @@
 #include "Player.h"
-#include "appframe.h"
+#include "MotionList.h"
 
 Player* Player::_instance = NULL;
 std::map<int, ANIMATION_INFO> Player::_animMap;
@@ -90,6 +90,11 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	_instance = this;
 
 	_idleFightingRemainingCnt = 0;
+
+	// モーションリストの読み込み
+	MotionList::Load("Player", "MotionList_Player.csv");
+	auto motionList = MotionList::GetMotionList("Player");
+
 	// アニメーションマネージャーの初期設定
 	_animManager = new AnimationManager();
 	_animManager->InitMap("Player", _modelHandle, "MotionList_Player.csv");
