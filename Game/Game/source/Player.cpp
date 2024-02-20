@@ -78,7 +78,7 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 
 	_isSwinging = false;
 	_isRotationSwinging = false;
-	_spinCnt = 0;
+	_rotationCnt = 0;
 
 
 	_instance = this;
@@ -310,13 +310,12 @@ bool Player::Process(float camAngleY)
 
 	// スタミナの更新
 	if (!_isConsumingStamina) {
-		if (_stamina < STAMINA_MAX) {
-			_staminaRecoverySpeed = STAMINA_MAX / STANIMA_RECOVERY_TIME;
-			_stamina += _staminaRecoverySpeed;
-			if (_stamina > STAMINA_MAX) {
-				_stamina = STAMINA_MAX;
-				_isTired = false;
-			}
+		_staminaRecoverySpeed = STAMINA_MAX / STANIMA_RECOVERY_TIME;
+		_stamina += _staminaRecoverySpeed;
+		if (_stamina > STAMINA_MAX) {
+			_stamina = STAMINA_MAX;
+			_isTired = false;
+			//_animStatus = ANIM_STATE::IDLE;
 		}
 	}
 
@@ -328,7 +327,8 @@ bool Player::Process(float camAngleY)
 			_isTired = true;
 			_isConsumingStamina = false;
 			_isRotationSwinging = false;
-			_animStatus = ANIM_STATE::IDLE_TIRED;
+			_rotationCnt = 0;
+			_isAttackState = false;
 		}
 	}
 	else {
@@ -338,7 +338,7 @@ bool Player::Process(float camAngleY)
 	// 攻撃状態の更新
 	if (_isTired == false && _animStatus != ANIM_STATE::AVOIDANCE) {
 		// 回転攻撃
-		if (_spinCnt > 90) {
+		if (_rotationCnt > 90) {
 			if (!_isRotationSwinging) {
 				_animStatus = ANIM_STATE::TO_ROTATION_SWING;
 			}
@@ -352,10 +352,10 @@ bool Player::Process(float camAngleY)
 		}
 
 		if (_input->GetKey(XINPUT_BUTTON_X) != 0) {
-			_spinCnt++;
+			_rotationCnt++;
 		}
 		else {
-			_spinCnt = 0;
+			_rotationCnt = 0;
 			if (_isRotationSwinging) {
 				_animStatus = ANIM_STATE::HORISONTAL_SWING_03;
 
@@ -370,7 +370,7 @@ bool Player::Process(float camAngleY)
 				_animStatus = ANIM_STATE::AVOIDANCE;
 				// モデルの正面方向を更新する
 				_forwardDir = _stickDir;
-				_spinCnt = 0;
+				_rotationCnt = 0;
 			}
 		}
 	}

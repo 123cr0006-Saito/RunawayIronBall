@@ -190,7 +190,7 @@ private:
 
 	bool _isSwinging;
 	bool _isRotationSwinging;
-	int _spinCnt;
+	int _rotationCnt;
 
 
 	ModelColor* _modelColor;
