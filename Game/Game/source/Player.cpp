@@ -97,25 +97,11 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 
 	// アニメーションマネージャーの初期設定
 	_animManager = new AnimationManager();
-	//_animManager->InitMap("Player", _modelHandle, "MotionList_Player.csv");
 	_animManager->InitMap("Player", _modelHandle, *motionList);
 
-
+	// フレームデータの初期設定
 	_frameData = new FrameData();
 	_frameData->LoadData("Player", *motionList);
-
-	//_animManager->InitMap(&_animMap);
-
-	//// _animMapが空の場合、アニメーション情報を設定する
-	//// _animMapは静的メンバ変数なので、インスタンス間で共有する
-	//if (_animMap.empty() ){
-	//	// _animMapの初期設定
-	//	_animManager->SetupAnimationInfo(static_cast<int>(STATUS::WAIT), MV1GetAnimIndex(_modelHandle, "MO_PL_Stay"), 0);
-	//	_animManager->SetupAnimationInfo(static_cast<int>(STATUS::RUN), MV1GetAnimIndex(_modelHandle, "MO_PL_Run"), 0);
-	//	_animManager->SetupAnimationInfo(static_cast<int>(STATUS::HORISONTAL_SWING_01), MV1GetAnimIndex(_modelHandle, "MO_PL_Horizontal_first"), 1);
-	//	_animManager->SetupAnimationInfo(static_cast<int>(STATUS::HORISONTAL_SWING_02), MV1GetAnimIndex(_modelHandle, "MO_PL_Horizontal_second"), 1);
-	//	_animManager->SetupAnimationInfo(static_cast<int>(STATUS::SPIN_SWING), MV1GetAnimIndex(_modelHandle, "MO_PL_roteate_loop"), 1);
-	//}
 
 	_modelColor = new ModelColor();
 	_modelColor->Init(_modelHandle);
@@ -304,7 +290,7 @@ bool Player::Process(float camAngleY)
 						_idleFightingRemainingCnt -= 1;
 					}
 					else {
-						_animStatus = ANIM_STATE::IDLE_FIGHTING;
+						_animStatus = ANIM_STATE::IDLE;
 					}
 				}
 			}
@@ -549,13 +535,16 @@ void Player::DrawDebugInfo()
 
 	DrawCapsule3D(_capsuleCollision.up_pos, _capsuleCollision.down_pos, _capsuleCollision.r, 16, COLOR_RED, COLOR_RED, false);
 
-	int x = 0;
-	int y = 100;
-	int line = 0;
-	DrawFormatString(x, y + line * 16, COLOR_RED, "HP:%d", _hp); line++;
-	DrawFormatString(x, y + line * 16, COLOR_RED, "isInvincible:%d", _isInvincible); line++;
-	DrawFormatString(x, y + line * 16, COLOR_RED, "invincibleCnt:%d", _invincibleRemainingCnt); line++;
+	//int x = 0;
+	//int y = 100;
+	//int line = 0;
+	//DrawFormatString(x, y + line * 16, COLOR_RED, "HP:%d", _hp); line++;
+	//DrawFormatString(x, y + line * 16, COLOR_RED, "isInvincible:%d", _isInvincible); line++;
+	//DrawFormatString(x, y + line * 16, COLOR_RED, "invincibleCnt:%d", _invincibleRemainingCnt); line++;
 
-	DrawFormatString(x, y + line * 16, COLOR_RED, "ANIM:%d", _animStatus); line++;
+	//DrawFormatString(x, y + line * 16, COLOR_RED, "ANIM:%d", _animStatus); line++;
 	//DrawCapsule3D(_capsuleCollision._startPos, _capsuleCollision._endPos, _capsuleCollision._r, 16, COLOR_RED, COLOR_RED, false);
+
+
+	_animManager->DrawDebugInfo();
 }
