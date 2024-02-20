@@ -7,14 +7,14 @@ ModeScenario::ModeScenario(std::string scenarioFile) {
 		int size = ScenarioFile.Size();
 		while (c < size) {
 			ScenarioData scenario;
+			// textを取得
+			c += GetString(&data[c], &scenario.text);
 			// 表示するキャラの番号を取得する
-			c += GetDecNum(&data[c], &scenario.charaHandle);
+			c += FindString(&data[c], ',', &data[size]); c++; c += GetDecNum(&data[c], &scenario.charaHandle);
 			// 表示する名前のハンドル番号を取得する
 			c += FindString(&data[c], ',', &data[size]); c++; c += GetDecNum(&data[c], &scenario.nameHandle);
-			// textを取得
-			c += FindString(&data[c], ',', &data[size]); c++;  c += GetString(&data[c], &scenario.text);
 			// 改行などスキップ
-			c += SkipSpace(&data[c], &data[size]);
+			c += 2;
 			_scenarioData.push_back(scenario);
 		}
 	}
@@ -28,24 +28,65 @@ ModeScenario::ModeScenario(std::string scenarioFile) {
 
 bool ModeScenario::Initialize(){
 	if (!base::Initialize()) { return false; }
-	index = 0;
+	_nowTextByte = 0;
+	_nowTextLine = 0;
 	_currentTime = GetNowCount();
+	_input = XInput::GetInstance();
+
+	ChangeFont("メイリオ");
+
+	ChangeFontType(DX_FONTTYPE_ANTIALIASING_EDGE_8X8);
+	SetFontSize(32);
 	return true;
 };
 
 bool ModeScenario::Terminate(){
 	base::Terminate();
 	_scenarioData.clear();
+	_input = nullptr;
+
+	// フォント関連の初期化
+	ChangeFontType(DX_FONTTYPE_NORMAL);
+	ChangeFont("MSゴシック");
+	SetFontSize(16);
 	return true;
 };
 
 bool ModeScenario::Process(){
 	base::Process();
+
+	// ミリ秒単位での文字の描画
+	float speed = 3.0f / 60.0f * 1000;// ミリ秒単位
+	int nowTime = GetNowCount() - _currentTime;
+	if (_nowTextByte < _scenarioData.at(_nowTextLine).text.length() && nowTime >= speed) {
+		if (SearchLetter(_scenarioData.at(_nowTextLine).text, _nowTextByte)) {
+			_nowTextByte++;
+		}
+		else {
+			_nowTextByte += 2;
+		}
+		_currentTime = GetNowCount();
+	}
+
+	// 次のラインに行く
+	if (_nowTextByte >= _scenarioData.at(_nowTextLine).text.length()) {
+		if (_input->GetTrg(XINPUT_BUTTON_A)) {
+			_nowTextLine++;
+			_nowTextByte = 0;
+			_currentTime = GetNowCount();
+		}
+	}
+
+	// シナリオをすべて描画し終えた
+	if (_nowTextLine >= _scenarioData.size()) {
+		ModeServer::GetInstance()->Del(this);
+	}
+	
 	return true;
 };
 
 bool ModeScenario::SearchLetter(std::string text, int byte) {
-	if (text.at(byte) <= 0x7f) {
+	if (0x00 <= text.at(byte) && text.at(byte) <= 0x7f) {
 		return true;
 	}
 	return false;
@@ -53,21 +94,10 @@ bool ModeScenario::SearchLetter(std::string text, int byte) {
 
 bool ModeScenario::Render() {
 	base::Render();
-	float speed = 120.0f / 60.0f;
-	int nowTime = GetNowCount() - _currentTime;
-	if (index < _scenarioData.at(1).text.length() && nowTime >= speed) {
-		if (SearchLetter(_scenarioData.at(1).text, index)) {
-			index++;
-		}
-		else {
-			index += 2;
-		}
-		_currentTime = GetNowCount();
-	}
-	std::string copy = _scenarioData.at(1).text.substr(0, index);
 
-	clsDx();
-	DrawFormatString(100,100,GetColor(0,0,0),"%s", copy.c_str());
+	std::string copy = _scenarioData.at(_nowTextLine).text.substr(0, _nowTextByte);
+
+	DrawFormatString(100,100,GetColor(255,255,255),"%s", copy.c_str());
 
 	return true;
 };

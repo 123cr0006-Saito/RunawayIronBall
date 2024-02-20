@@ -18,8 +18,10 @@ protected:
 		int nameHandle;
 		std::string text;
 	};
+	XInput* _input;
 	std::vector<ScenarioData> _scenarioData;
-	int index;
+	int _nowTextByte;
+	int _nowTextLine;
 	int _currentTime;
 };
 
