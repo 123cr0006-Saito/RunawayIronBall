@@ -1,6 +1,7 @@
 #pragma once
 #include "appframe.h"
 #include "AnimationItem.h"
+#include "MotionList.h"
 
 #include <map>
 #include <vector>
@@ -17,10 +18,14 @@ public:
 	AnimationManager();
 	~AnimationManager();
 
+
 	// アニメーション情報用マップコンテナの初期設定を行う
-	// 引数: キャラクター名, モデルハンドル, モーションリストファイル名
 	// 既に同じキャラクター名が登録されている場合は、同一のマップを使用する
+
+	// 引数: キャラクター名, モデルハンドル, モーションリストファイル名
 	void InitMap(CHARA_NAME charaName, int modelHandle, std::string fileName);
+	// 引数: キャラクター名, モデルハンドル, モーション名配列
+	void InitMap(CHARA_NAME charaName, int modelHandle, std::vector<MotionNamePair>* motionList);
 
 	// ANIMATION_INFO型のアニメーション情報の初期設定を行う
 	void SetupAnimationInfo(int statusNo, int animIndex, int loopTimes);
@@ -35,7 +40,7 @@ public:
 	float GetPlayTime() { return _playTime; }
 
 private:
-	static std::map<CHARA_NAME, ANIM_MAP> _animMap;
+	static std::map<CHARA_NAME, ANIM_MAP> _allCharaAnimMap;
 
 	// モデルハンドル
 	int _modelHandle;
@@ -46,7 +51,7 @@ private:
 	// アニメーション情報用マップコンテナ
 	// キー : int型 キャラクターのステータス番号
 	// バリュー : ANIMATION_INFO型 アニメーション情報
-	ANIM_MAP* _charaAnimMapPtr;
+	ANIM_MAP* _targetAnimMap;
 
 	// アニメーションアイテム
 	std::vector<AnimationItem*> _animContainer;

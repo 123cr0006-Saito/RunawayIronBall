@@ -97,7 +97,8 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 
 	// アニメーションマネージャーの初期設定
 	_animManager = new AnimationManager();
-	_animManager->InitMap("Player", _modelHandle, "MotionList_Player.csv");
+	//_animManager->InitMap("Player", _modelHandle, "MotionList_Player.csv");
+	_animManager->InitMap("Player", _modelHandle, motionList);
 
 
 	_frameData = new FrameData();

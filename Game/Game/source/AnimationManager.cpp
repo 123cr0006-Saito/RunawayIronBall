@@ -1,13 +1,13 @@
 #include "AnimationManager.h"
 
-std::map<CHARA_NAME, ANIM_MAP> AnimationManager::_animMap;
+std::map<CHARA_NAME, ANIM_MAP> AnimationManager::_allCharaAnimMap;
 
 AnimationManager::AnimationManager()
 {
 	_modelHandle = -1;
 	_animNo = -1;
 	_playTime = 0.0f;
-	_charaAnimMapPtr = nullptr;
+	_targetAnimMap = nullptr;
 	_latestAnimItem = nullptr;
 }
 
@@ -19,14 +19,14 @@ AnimationManager::~AnimationManager()
 		(*itr) = nullptr;
 	}
 	_animContainer.clear();
-	_charaAnimMapPtr = nullptr;
+	_targetAnimMap = nullptr;
 }
 
 
 void AnimationManager::InitMap(CHARA_NAME charaName, int modelHandle, std::string fileName)
 {
-	auto itr = _animMap.find(charaName);
-	if (itr == _animMap.end()) {
+	auto itr = _allCharaAnimMap.find(charaName);
+	if (itr == _allCharaAnimMap.end()) {
 		std::string filePath = "Data/MotionList/" + fileName;
 
 		// csvファイルを読み込む
@@ -52,7 +52,7 @@ void AnimationManager::InitMap(CHARA_NAME charaName, int modelHandle, std::strin
 				ANIMATION_INFO info;
 				info.animIndex = MV1GetAnimIndex(modelHandle, motionName.c_str());
 				info.loopTimes = loopTimes;
-				_animMap[charaName][stateNo] = info;
+				_allCharaAnimMap[charaName][stateNo] = info;
 				stateNo++;
 #ifdef _DEBUG
 				if (info.animIndex == -1) {
@@ -70,7 +70,30 @@ void AnimationManager::InitMap(CHARA_NAME charaName, int modelHandle, std::strin
 		}
 #endif // _DEBUG
 	}
-	_charaAnimMapPtr = &_animMap[charaName];
+	_targetAnimMap = &_allCharaAnimMap[charaName];
+	_modelHandle = modelHandle;
+}
+
+void AnimationManager::InitMap(CHARA_NAME charaName, int modelHandle, std::vector<MotionNamePair>* motionList)
+{
+	auto itr = _allCharaAnimMap.find(charaName);
+	// 既に同じキャラクター名が登録されている場合は、同一のマップを使用する
+	if (itr == _allCharaAnimMap.end()) {
+		for (auto it = motionList->begin(); it != motionList->end(); ++it) {
+			ANIMATION_INFO info;
+			info.animIndex = MV1GetAnimIndex(modelHandle, it->first.c_str());
+			info.loopTimes = it->second;
+			_allCharaAnimMap[charaName][it - motionList->begin()] = info;
+#ifdef _DEBUG
+			if (info.animIndex == -1) {
+				std::string message = "[" + it->first + "] アニメーションが見つかりませんでした";
+
+				MessageBox(NULL, message.c_str(), "エラー", MB_OK);
+			}
+#endif // _DEBUG
+		}
+	}
+	_targetAnimMap = &_allCharaAnimMap[charaName];
 	_modelHandle = modelHandle;
 }
 
@@ -78,13 +101,13 @@ void AnimationManager::InitMap(CHARA_NAME charaName, int modelHandle, std::strin
 void AnimationManager::SetupAnimationInfo(int statusNo, int animIndex, int loopTimes)
 {
 	// 引数statusNoに対応するアニメーション情報が存在するか調べる
-	auto itr = (*_charaAnimMapPtr).find(statusNo);
+	auto itr = (*_targetAnimMap).find(statusNo);
 	// アニメーション情報が存在しない場合のみ、アニメーション情報を追加する
-	if (itr == (*_charaAnimMapPtr).end()) {
+	if (itr == (*_targetAnimMap).end()) {
 		ANIMATION_INFO info;
 		info.animIndex = animIndex;
 		info.loopTimes = loopTimes;
-		(*_charaAnimMapPtr)[statusNo] = info;
+		(*_targetAnimMap)[statusNo] = info;
 	}
 
 }
@@ -92,9 +115,9 @@ void AnimationManager::SetupAnimationInfo(int statusNo, int animIndex, int loopT
 // アニメーションアイテムを追加する
 void AnimationManager::AddAnimationItem(int statusNo)
 {
-	auto itr = (*_charaAnimMapPtr).find(statusNo);
+	auto itr = (*_targetAnimMap).find(statusNo);
 	// アニメーション情報が存在する場合
-	if (itr != (*_charaAnimMapPtr).end())
+	if (itr != (*_targetAnimMap).end())
 	{
 		AnimationItem* anim = new AnimationItem();
 
