@@ -10,9 +10,9 @@ House::~House()
 {
 }
 
-bool House::Init(int modelHandle, VECTOR startPos)
+bool House::Init(int modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale)
 {
-	if (!base::Init(modelHandle, startPos)){ return false;}
+	if (!base::Init(modelHandle, startPos, rotation, scale)){ return false;}
 
 	// ìñÇΩÇËîªíËÇÃê›íË
 	vDiffToCenter = VGet(0.0f, -250.0f, 0.0f);

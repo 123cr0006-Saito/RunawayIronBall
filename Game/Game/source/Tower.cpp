@@ -29,7 +29,7 @@ Tower::~Tower()
 
 }
 
-bool Tower::Init(std::array<int, 3> modelHandle, VECTOR startPos)
+bool Tower::Init(std::array<int, 3> modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale)
 {
 	_pos = startPos;
 	for (int i = 0; i < 3; i++) {

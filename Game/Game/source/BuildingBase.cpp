@@ -4,6 +4,7 @@ BuildingBase::BuildingBase()
 {
 	_useCollision = true;
 	_modelHandle = -1;
+	_pos = VGet(0.0f, 0.0f, 0.0f);
 	_breakObj = nullptr;
 }
 
@@ -16,11 +17,13 @@ BuildingBase::~BuildingBase()
 	SAFE_DELETE(_breakObj);
 }
 
-bool BuildingBase::Init(int modelHandle, VECTOR startPos)
+bool BuildingBase::Init(int modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale)
 {
 	_modelHandle = modelHandle;
 	_pos = startPos;
 	MV1SetPosition(_modelHandle, _pos);
+	MV1SetRotationXYZ(_modelHandle, rotation);
+	MV1SetScale(_modelHandle, scale);
 
 	_breakObj = new BreakObject();
 	_breakObj->Init(_modelHandle);

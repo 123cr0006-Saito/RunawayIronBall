@@ -11,7 +11,7 @@ public:
 	~Tower();
 
 	//bool Init(int modelHandle, VECTOR startPos) override;
-	bool Init(std::array<int, 3> modelHandle, VECTOR startPos);
+	bool Init(std::array<int, 3> modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale);
 	bool Process() override;
 	bool Render() override;
 

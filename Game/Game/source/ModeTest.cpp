@@ -42,7 +42,7 @@ bool ModeTest::Initialize() {
 		std::vector<ModeTest::OBJECTDATA> objectData = LoadJsonObject(json._json, nameList);
 		for (auto&& objectList : objectData) {
 			House* building = new House();
-			building->Init(MV1DuplicateModel(objHandle), objectList._pos);
+			building->Init(MV1DuplicateModel(objHandle), objectList._pos, objectList._rotate, objectList._scale);
 			_house.push_back(building);
 		}
 	}
@@ -59,7 +59,7 @@ bool ModeTest::Initialize() {
 		towerModelHandle[2] = ResourceServer::MV1LoadModel("res/Building/Tower/test_Tower_03.mv1");
 
 		Tower* tower = new Tower();
-		tower->Init(towerModelHandle, v);
+		tower->Init(towerModelHandle, v, VGet(0,0,0), VGet(1,1,1));
 
 		_tower.push_back(tower);
 	}

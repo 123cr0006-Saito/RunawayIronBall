@@ -11,7 +11,7 @@ public:
 	House();
 	~House();
 
-	bool Init(int modelHandle, VECTOR startPos) override;
+	bool Init(int modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale) override;
 	bool Process() override;
 	bool Render() override;
 
