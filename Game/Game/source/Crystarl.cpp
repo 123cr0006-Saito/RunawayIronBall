@@ -10,41 +10,60 @@ Crystarl::~Crystarl() {
 
 void Crystarl::InheritanceInit() {
 	//個別でセットするもの
-	_player = Player::GetInstance();
-	_r = 100.0f;
+	_animState = ANIMSTATE::IDLE;
 	_attackPos = VGet(0, 0, 0);
 	_attackDir = 0.0f;
 };
 
-void  Crystarl::DebugSnail() {
-	//今のモデルに貼り付けているテクスチャ
-	MV1SetTextureGraphHandle(_model, 0, ResourceServer::LoadGraph("res/katatumuri/14086_Snail_with_toy_house_for_ shell_v2_diff2.jpg"), true);
-	MV1SetTextureGraphHandle(_model, 1, ResourceServer::LoadGraph("res/katatumuri/14086_Snail_with_toy_house_for_ shell_v2_diff.jpg"), true);
+void Crystarl::AnimInit() {
 
+	//// モーションリストのロード
+	MotionList::Load("Crystarl", "MotionList_Crystarl.csv");
+	auto motionList = MotionList::GetMotionList("Crystarl");
+	// アニメーションマネージャーの初期化
+	_animManager = new AnimationManager();
+	_animManager->InitMap("Crystarl", _model, *motionList);
+	// フレームデータの初期化
+	_frameData = new FrameData();
+	_frameData->LoadData("Crystarl", *motionList);
 
-	MV1SetScale(_model, VScale(VGet(1.0f, 1.0f, 1.0f), 0.1));
-	//---------------------------------------------
+}
+
+void Crystarl::Init(VECTOR pos) {
+	_IsUse = true;
+
+	SetPos(pos);
+	_hp = _maxHp;
+	_knockBackSpeedFrame = 0;
+	_gravity = 0;
+	_animState = ANIMSTATE::IDLE;
+	_modeState = ENEMYTYPE::SEARCH;
+	_searchState = SEARCHTYPE::COOLTIME;
+	_rotation = VGet(0, 0, 0);
 
 	float randSize = (float)(rand() % 75) / 100 + 0.75;// 1 + 0.0 ~ 0.5
-	MV1SetScale(_model, VScale(VGet(1.0f, 1.0f, 1.0f), 0.1 * randSize));//持ってきたモデルが大きかったため1/10に設定
+	MV1SetScale(_model, VScale(VGet(1.0f, 1.0f, 1.0f), randSize));
 
-	_diffeToCenter = VGet(0, 125 * randSize, 0);
-	_r = 150.0f * randSize;
+	_diffeToCenter = VGet(0, 20.0f * randSize, 0);
+	_r = 25.0f * randSize;
 	_weightExp = _weightExp * randSize;
 
-	//--------------------------------------------
+	InheritanceInit();
 };
 
 bool Crystarl::ModeSearch() {
 	switch (_searchState) {
 	case SEARCHTYPE::MOVE:
 		ModeSearchToMove();
+		_animState = ANIMSTATE::RUN;
 		break;
 	case SEARCHTYPE::TURN:
 		ModeSearchToTurn();
+		_animState = ANIMSTATE::WALK;
 		break;
 	case SEARCHTYPE::COOLTIME:
 		ModeSearchToCoolTime();
+		_animState = ANIMSTATE::IDLE;
 		break;
 	}
 
@@ -59,8 +78,8 @@ bool Crystarl::ModeSearch() {
 		float range_dir = Math::CalcVectorAngle(ene_dir, pla_dir);
 
 		if (range_dir <= _flontAngle) {
-			_state = ENEMYTYPE::ATTACK;//状態を発見にする
-			_sartchRange = _discoverRangeSize;//索敵範囲を発見時の半径に変更
+			_modeState = ENEMYTYPE::ATTACK;//状態を発見にする
+			_animState = ANIMSTATE::HANDSTAND;
 			_currentTime = GetNowCount();
 			_stopTime = 0;
 		}
@@ -101,9 +120,8 @@ bool Crystarl::ModeAttack() {
 	float p_distance = VSize(move);//敵とプレイヤーの距離
 
 	//索敵処理
-	if (p_distance >= _sartchRange) {
-		_state = ENEMYTYPE::SEARCH;//状態を索敵にする
-		_sartchRange = _hearingRangeSize;//索敵範囲を発見時の半径に変更
+	if (p_distance >= _discoverRangeSize) {
+		_modeState = ENEMYTYPE::SEARCH;//状態を索敵にする
 	//	_orignPos = _nextMovePoint = VAdd(_pos, _attackPos);
 		_orignPos = _nextMovePoint = _pos;
 		_attackDir = 0.0f;
@@ -120,7 +138,8 @@ bool Crystarl::ModeCoolTime() {
 	if (GetNowCount() - _currentTime >= moveCoolTime) {
 		_attackDir = 0.0f;
 		_currentTime = GetNowCount();
-		_state = ENEMYTYPE::ATTACK;
+		_animState = ANIMSTATE::HANDSTAND;
+		_modeState = ENEMYTYPE::ATTACK;
 	}
 	return true;
 };
@@ -130,10 +149,17 @@ bool Crystarl::ModeKnockBack() {
 	_pos = VAdd(_pos, knockBackVecter);
 	_knockBackSpeedFrame--;
 	if (_knockBackSpeedFrame <= 0) {
-		_state = ENEMYTYPE::ATTACK;
+		_animState = ANIMSTATE::HANDSTAND;
+		_modeState = ENEMYTYPE::ATTACK;
 	}
 	return true;
 };
+
+bool Crystarl::IndividualProcessing() {
+	_animManager->Process(static_cast<int>(_animState));
+	_frameData->Process(static_cast<int>(_animState), _animManager->GetPlayTime());
+	return true;
+}
 
 bool Crystarl::SetState() {
 	//最終的なモデルの位置や角度を調整
@@ -146,6 +172,6 @@ bool Crystarl::SetState() {
 };
 
 bool Crystarl::DebugRender() {
-	DrawSphere3D(VAdd(VAdd(_pos, _diffeToCenter), _attackPos), _r, 32, GetColor(0, 255, 0), GetColor(0, 0, 255), false);
+	//DrawSphere3D(VAdd(VAdd(_pos, _diffeToCenter), _attackPos), _r, 32, GetColor(0, 255, 0), GetColor(0, 0, 255), false);
 	return true;
 };

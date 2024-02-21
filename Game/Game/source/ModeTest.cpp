@@ -128,7 +128,7 @@ bool ModeTest::Process() {
 
 	_player->Process(_camera->GetCamY());
 	_chain->Process();
-	//_enemyPool->Process();
+	_enemyPool->Process();
 
 	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
 		ui[i]->Process();
@@ -318,7 +318,7 @@ bool ModeTest::Render() {
 	}
 
 	_player->Render();
-	//_enemyPool->Render();
+	_enemyPool->Render();
 	_chain->Render();
 	//_chain->DrawDebugInfo();
 

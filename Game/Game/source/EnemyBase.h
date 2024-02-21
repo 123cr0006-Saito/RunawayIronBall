@@ -5,6 +5,8 @@
 #include "EnemyStract.h"
 #include "PlaneEffectManeger.h"
 
+#define EN_MOTION_CHANGE 0
+
 //エネミー各種のもとになるクラス
 class EnemyBase
 {
@@ -16,10 +18,8 @@ public:
 	virtual void Init(VECTOR pos, float scale);
 	virtual void Init(VECTOR pos);
 	virtual void InheritanceInit();
-	//---------------------------------------------------------
-	//デバッグ用の関数です。素材が来たら後で消します
-	virtual void  DebugSnail();
-	//---------------------------------------------------------
+	virtual void AnimInit();
+
 	void SetPos(VECTOR pos);
 
 	bool Process();
@@ -39,6 +39,7 @@ public:
 	virtual bool ModeKnockBack();
 	virtual bool ModeDead();
 
+	virtual bool IndividualProcessing();
 	virtual bool SetState();
 	virtual bool SetGravity();
 
@@ -49,7 +50,7 @@ public:
 	bool GetUse() { return _IsUse; }
 	virtual VECTOR GetCollisionPos() { return VAdd(_pos, _diffeToCenter); }
 	float GetR() { return _r; }
-	ENEMYTYPE GetEnemyState() { return _state; }
+	ENEMYTYPE GetEnemyState() { return _modeState; }
 
 	void SetExtrusionPos(VECTOR movePos) { _pos = VAdd(_pos, movePos); }
 
@@ -105,8 +106,13 @@ protected:
 	VECTOR _knockBackDir;//エネミーが攻撃されたとき移動していく方向ベクトル
 	int _knockBackSpeedFrame;//エネミーが攻撃されたときに移動するspeedとフレーム
 
-	ENEMYTYPE _state;//今の状態
-	SEARCHTYPE _searchState;
+	ENEMYTYPE _modeState;// 現在のの状態
+	SEARCHTYPE _searchState; //Search状態の中の状態
+
+	// アニメーションマネージャー
+	AnimationManager* _animManager;
+	// フレームデータ
+	FrameData* _frameData;
 
 };
 

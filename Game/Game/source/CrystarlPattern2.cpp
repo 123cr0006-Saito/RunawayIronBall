@@ -34,7 +34,7 @@ bool CrystarlPattern2::ModeAttack() {
 		if (_nowAttackDistance <= 0 || attackRange <= _nowAttackDistance) {
 			_attackDistanceSpeed = -_attackDistanceSpeed;
 			if (_nowAttackDistance <= 0) {
-				_state = ENEMYTYPE::COOLTIME;
+				_modeState = ENEMYTYPE::COOLTIME;
 				_currentTime = GetNowCount();
 				_nowAttackDistance = 0;
 			}
@@ -53,7 +53,7 @@ bool CrystarlPattern2::ModeCoolTime() {
 	if (GetNowCount() - _currentTime >= moveCoolTime) {
 		_attackDir = 0.0f;
 		_currentTime = GetNowCount();
-		_state = ENEMYTYPE::DISCOVER;
+		_modeState = ENEMYTYPE::DISCOVER;
 	}
 	return true;
 };

@@ -42,7 +42,7 @@ void EnemyPool::Create() {
 			break;
 		case 1:
 			_enemy[i] = new Crystarl();
-			_enemy[i]->Create(ResourceServer::MV1LoadModel("res/katatumuri/snail.mv1"), vPos, _enemyParametersMap["Crystarl"]);
+			_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/Crystar/cg_crystar.mv1"), vPos, _enemyParametersMap["Crystarl"]);
 			break;
 		case 2:
 			_enemy[i] = new SlaBlockPattern2();
