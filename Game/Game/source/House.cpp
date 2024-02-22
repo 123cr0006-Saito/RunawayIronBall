@@ -78,5 +78,6 @@ bool House::DrawDebugInfo()
 	if (_useCollision) {
 		obb.Render(GetColor(255, 255, 255));
 	}
+	_breakObj->DrawDebugInfo();
 	return true;
 }

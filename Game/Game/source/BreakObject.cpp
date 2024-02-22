@@ -3,10 +3,9 @@
 BreakObject::BreakObject()
 {
 	_isActive = false;
-	_finishedBreak = false;
+	_finishedBreakAll = false;
 
 	_modelHandle = -1;
-	_pos = VGet(0, 0, 0);
 	//MV1SetPosition(_modelHandle, _pos);
 	//MV1SetScale(_modelHandle, VGet(10.0f, 10.0f, 10.0f));
 
@@ -15,7 +14,6 @@ BreakObject::BreakObject()
 	_breakCnt = 0;
 
 	_blastDir = VGet(0.0f, 0.0f, -1.0f);
-	_blastPower = 10.0f;
 
 
 	_isDrawLocus = false;
@@ -30,15 +28,6 @@ void BreakObject::Init(int modelHandle)
 {
 	_modelHandle = modelHandle;
 	for (int i = 0; i < MV1GetFrameNum(_modelHandle); i++) {
-//#if 0
-//		// 仮：子のフレームがないもののみ
-//		int childNum = MV1GetFrameChildNum(_modelHandle, i);
-//		if (childNum != 0) continue; // 子のフレームの数が0子以外の場合はcontinue
-//#else
-//		// 仮：親子関係を利用する
-//		int parentIndex = MV1GetFrameParent(_modelHandle, i);
-//		if (parentIndex != 0)continue; // 親のフレームがルート出ない場合はcontinue
-//#endif
 
 		// フレームの名前を取得する
 		std::string frameName = MV1GetFrameName(_modelHandle, i);
@@ -47,8 +36,6 @@ void BreakObject::Init(int modelHandle)
 		if (frameName.substr(0, 3) != checkName) {
 			continue;
 		}
-
-
 
 
 		// フレームの座標変換行列を取得する
@@ -67,8 +54,19 @@ void BreakObject::Init(int modelHandle)
 			}
 		}
 
-		FRAME_INFO f = { i, vFrameLocalDir };
+		FRAME_INFO* f = new FRAME_INFO();
+		f->frameIndex = i;
+		f->finishedBreak;
+		f->horizontalDir = vFrameLocalDir;
+		f->horizontalVelocity = 0.0f;
+		f->verticalVelocity = 0.0f;
+		f->vRot = VGet(0.0f, 0.0f, 0.0f);
+
 		_frameInfo.push_back(f);
+
+
+
+
 
 		_locus.resize(_locus.size() + 1);
 	}
@@ -81,7 +79,7 @@ void BreakObject::Init(int modelHandle)
 	// デバッグ用
 
 	for (auto itr = _frameInfo.begin(); itr != _frameInfo.end(); ++itr) {
-		MATRIX m = MV1GetFrameLocalWorldMatrix(_modelHandle, itr->frameIndex);
+		MATRIX m = MV1GetFrameLocalWorldMatrix(_modelHandle, (*itr)->frameIndex);
 
 		VECTOR v = VTransform(VGet(0.0f, 0.0f, 0.0f), m);
 		_locus.at(std::distance(_frameInfo.begin(), itr)).push_back(v);
@@ -93,34 +91,44 @@ void BreakObject::Init(int modelHandle)
 
 void BreakObject::Process()
 {
-	if (!_finishedBreak && _isActive) {
+	if (!_finishedBreakAll && _isActive) {
+		_finishedBreakAll = true;
 		// 破片が飛び散る処理
 		for (auto itr = _frameInfo.begin(); itr != _frameInfo.end(); ++itr) {
+
+			if((*itr)->finishedBreak) continue;
+			_finishedBreakAll = false;
+
 			// 回転行列
-			MATRIX mRot = MGetRotX(itr->vRot.x);
-			mRot = MMult(mRot, MGetRotY(itr->vRot.y));
-			mRot = MMult(mRot, MGetRotZ(itr->vRot.z));
+			MATRIX mRot = MGetRotX((*itr)->vRot.x);
+			mRot = MMult(mRot, MGetRotY((*itr)->vRot.y));
+			mRot = MMult(mRot, MGetRotZ((*itr)->vRot.z));
 
 			// 移動前の行列
-			MATRIX mBefor = MV1GetFrameLocalMatrix(_modelHandle, itr->frameIndex);
+			MATRIX mBefor = MV1GetFrameLocalMatrix(_modelHandle, (*itr)->frameIndex);
 			// 平行移動行列（水平方向と鉛直方向の平行移動行列を合成する）
-			MATRIX mTrans = MGetTranslate(VAdd(VScale(itr->horizontalDir, itr->horizontalVelocity), VGet(0.0f, itr->verticalVelocity, 0.0f)));
+			MATRIX mTrans = MGetTranslate(VAdd(VScale((*itr)->horizontalDir, (*itr)->horizontalVelocity), VGet(0.0f, (*itr)->verticalVelocity, 0.0f)));
 
 			MATRIX m = MMult(mRot, mBefor);
 			m = MMult(m, mTrans);
 
 			// 行列の適応
-			MV1SetFrameUserLocalMatrix(_modelHandle, itr->frameIndex, m);
+			MV1SetFrameUserLocalMatrix(_modelHandle, (*itr)->frameIndex, m);
 
 
 
 			// 重力処理
-			itr->verticalVelocity -= 2.f;
+			(*itr)->verticalVelocity -= 2.f;
 
 			// 軌跡表示用の座標を保持
-			MATRIX mLocus = MV1GetFrameLocalWorldMatrix(_modelHandle, itr->frameIndex);
+			MATRIX mLocus = MV1GetFrameLocalWorldMatrix(_modelHandle, (*itr)->frameIndex);
 			VECTOR vLocus = VTransform(VGet(0.0f, 0.0f, 0.0f), mLocus);
 			_locus.at(std::distance(_frameInfo.begin(), itr)).push_back(vLocus);
+
+			if (vLocus.y < 0.0f) {
+				(*itr)->finishedBreak = true;
+			}
+
 			//itr->pos = v;
 		}
 		//_blastPower -= 0.5f;
@@ -128,35 +136,36 @@ void BreakObject::Process()
 		_breakCnt++;
 		//_blastDir.y -= 0.05f;
 
-		 // リセット
-		if (_breakCnt > 180) {
-			_finishedBreak = true;
+		// // リセット
+		//if (_breakCnt > 180) {
+		//	_finishedBreakAll = true;
 
-			//_breakCnt = 0;
+		//	//_breakCnt = 0;
 
-			//// 吹っ飛ばす方向を指定
-			//SetBlastDir(VGet(0.0f, 0.0f, 1.0f));
+		//	//// 吹っ飛ばす方向を指定
+		//	//SetBlastDir(VGet(0.0f, 0.0f, 1.0f));
 
-			//// 軌跡表示用の座標情報をリセット
-			//for (auto itr = _locus.begin(); itr != _locus.end(); ++itr) {
-			//	itr->clear();
-			//}
+		//	//// 軌跡表示用の座標情報をリセット
+		//	//for (auto itr = _locus.begin(); itr != _locus.end(); ++itr) {
+		//	//	itr->clear();
+		//	//}
 
-			//// パーツを初期位置に戻す
-			//for (auto itr = _frameInfo.begin(); itr != _frameInfo.end(); ++itr) {
-			//	MV1ResetFrameUserLocalMatrix(_modelHandle, itr->frameIndex);
+		//	//// パーツを初期位置に戻す
+		//	//for (auto itr = _frameInfo.begin(); itr != _frameInfo.end(); ++itr) {
+		//	//	MV1ResetFrameUserLocalMatrix(_modelHandle, itr->frameIndex);
 
-			//	MATRIX m = MV1GetFrameLocalWorldMatrix(_modelHandle, itr->frameIndex);
-			//	VECTOR v = VTransform(VGet(0.0f, 0.0f, 0.0f), m);
-			//	_locus.at(std::distance(_frameInfo.begin(), itr)).push_back(v);
-			//}
-		}
+		//	//	MATRIX m = MV1GetFrameLocalWorldMatrix(_modelHandle, itr->frameIndex);
+		//	//	VECTOR v = VTransform(VGet(0.0f, 0.0f, 0.0f), m);
+		//	//	_locus.at(std::distance(_frameInfo.begin(), itr)).push_back(v);
+		//	//}
+		//}
 
-		// 軌跡表示のOn/Off切り替え
-		auto input = XInput::GetInstance();
-		if (input->GetTrg(XINPUT_BUTTON_BACK) != 0) {
-			_isDrawLocus = !_isDrawLocus;
-		}
+
+	}
+	// 軌跡表示のOn/Off切り替え
+	auto input = XInput::GetInstance();
+	if (input->GetTrg(XINPUT_BUTTON_BACK) != 0) {
+		_isDrawLocus = !_isDrawLocus;
 	}
 }
 
@@ -189,15 +198,17 @@ void BreakObject::SetBlastDir(VECTOR vDir)
 	const int maxVerticalVelocity = 50;
 
 	// パーツごとにふっ飛ばし方向をセットする
+
+
 	for (auto itr = _frameInfo.begin(); itr != _frameInfo.end(); ++itr) {
 		// 水平方向
 		float angle = rand() % (maxRange * 2);
 		angle -= maxRange;
-		itr->horizontalDir = VTransform(vDir, MGetRotY(Math::DegToRad(angle)));
-		itr->horizontalVelocity = rand() % maxHorizontalVelocity;
+		(*itr)->horizontalDir = VTransform(vDir, MGetRotY(Math::DegToRad(angle)));
+		(*itr)->horizontalVelocity = rand() % maxHorizontalVelocity;
 
 		// 鉛直方向
-		itr->verticalVelocity = (rand() % maxVerticalVelocity) + 20.0f;
+		(*itr)->verticalVelocity = (rand() % maxVerticalVelocity) + 20.0f;
 
 		// 回転値
 		int deltaRot = 4;
@@ -207,7 +218,7 @@ void BreakObject::SetBlastDir(VECTOR vDir)
 		angleY = Math::DegToRad(angleY);
 		float angleZ = rand() % deltaRot;
 		angleZ = Math::DegToRad(angleZ);
-		itr->vRot = VGet(angleX, angleY, angleZ);
+		(*itr)->vRot = VGet(angleX, angleY, angleZ);
 	}
 	//_blastPower = 20.0f;
 	_blastDir = vDir;
@@ -216,7 +227,7 @@ void BreakObject::SetBlastDir(VECTOR vDir)
 void BreakObject::ResetFrameMatrix()
 {
 	for (auto itr = _frameInfo.begin(); itr != _frameInfo.end(); ++itr) {
-		MV1ResetFrameUserLocalMatrix(_modelHandle, itr->frameIndex);
+		MV1ResetFrameUserLocalMatrix(_modelHandle, (*itr)->frameIndex);
 	}
 }
 
