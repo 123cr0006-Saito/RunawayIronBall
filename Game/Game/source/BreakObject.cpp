@@ -222,12 +222,22 @@ void BreakObject::SetBlastDir(VECTOR vDir)
 
 		// ‰ñ“]’l
 		int deltaRot = 4;
+
 		float angleX = rand() % deltaRot;
 		angleX = Math::DegToRad(angleX);
+		int mul = rand() % 2 == 0 ? 1 : -1;
+		angleX *= mul;
+
 		float angleY = rand() % deltaRot;
 		angleY = Math::DegToRad(angleY);
+		mul = rand() % 2 == 0 ? 1 : -1;
+		angleY *= mul;
+
 		float angleZ = rand() % deltaRot;
 		angleZ = Math::DegToRad(angleZ);
+		mul = rand() % 2 == 0 ? 1 : -1;
+		angleZ *= mul;
+
 		(*itr)->vRot = VGet(angleX, angleY, angleZ);
 	}
 	//_blastPower = 20.0f;
