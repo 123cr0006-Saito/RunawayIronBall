@@ -189,8 +189,16 @@ void BreakObject::Activate(bool activate, VECTOR _blastDir)
 // vDir : ふっ飛ばしの中心方向
 void BreakObject::SetBlastDir(VECTOR vDir)
 {
+	_modelRotation = MV1GetRotationXYZ(_modelHandle);
+
+
 	vDir.y = 0.0f;
 	vDir = VNorm(vDir);
+
+	// ふっ飛ばし方向をモデルの回転値に合わせてローカル座標系に変換する
+	MATRIX mToLocal = MGetRotY(-_modelRotation.y);
+	VECTOR vLocalDir = VTransform(vDir, mToLocal);
+
 	// パーツごとに吹っ飛ばす水平方向をvDirから ±maxRange度の間でランダムに決定する
 	const int maxRange = 35;
 	// 水平・鉛直方向における最大速度
@@ -204,7 +212,9 @@ void BreakObject::SetBlastDir(VECTOR vDir)
 		// 水平方向
 		float angle = rand() % (maxRange * 2);
 		angle -= maxRange;
-		(*itr)->horizontalDir = VTransform(vDir, MGetRotY(Math::DegToRad(angle)));
+		
+
+		(*itr)->horizontalDir = VTransform(vLocalDir, MGetRotY(Math::DegToRad(angle)));
 		(*itr)->horizontalVelocity = rand() % maxHorizontalVelocity;
 
 		// 鉛直方向
@@ -236,8 +246,8 @@ void BreakObject::DrawDebugInfo()
 	if (_isActive && _isDrawLocus) {
 		// ふっ飛ばし方向の中心
 		{
-			VECTOR startPos = VGet(0.0f, 0.0f, 0.0f);
-			DrawLine3D(startPos, VAdd(startPos, VScale(_blastDir, 1000.0f)), GetColor(255, 255, 255));
+			VECTOR startPos = MV1GetPosition(_modelHandle);
+			DrawLine3D(startPos, VAdd(startPos, VScale(_blastDir, 1000.0f)), GetColor(0, 255, 0));
 		}
 
 		// パーツごとに吹っ飛びの軌跡を表示する

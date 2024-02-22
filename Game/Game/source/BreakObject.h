@@ -39,7 +39,8 @@ private:
 	// モデルハンドル
 	// 各建物クラスのインスタンスから受け取る（そのインスタンスとモデルハンドルを共有する）
 	int _modelHandle;
-	
+	// モデルの回転値
+	VECTOR _modelRotation;
 
 	int _breakCnt;
 
