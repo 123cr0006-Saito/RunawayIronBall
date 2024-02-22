@@ -22,10 +22,11 @@ public:
 	EnemyPool(std::string paramJsonFile);
 	~EnemyPool();
 
-	void Create(std::string createJsonFile);//敵の作成
+	void Create(myJson json);//敵の作成
 	void Create();//敵の作成
 	void Init();//敵の配置などの初期化
 	void Init(VECTOR pos);//敵の配置　ループなし
+	std::vector<VECTOR> LoadJsonData(myJson jsonFile,std::string  loadName);//jsonファイルから敵の初期位置を読み込む
 	void DeleteEnemy();//敵の削除 すべて消すか いらないのを消すかは未定
 
 	EnemyBase* Recicle();//使用していないオブジェクトを返す

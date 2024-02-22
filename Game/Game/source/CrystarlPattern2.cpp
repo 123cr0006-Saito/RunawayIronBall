@@ -9,9 +9,6 @@ CrystarlPattern2::~CrystarlPattern2() {
 
 void CrystarlPattern2::InheritanceInit() {
 
-	//ŒÂ•Ê‚ÅƒZƒbƒg‚·‚é‚à‚Ì
-	EnemyBase::InheritanceInit();
-
 	_attackPos = VGet(0, 0, 0);
 	_attackDir = 0.0f;
 	_nowAttackDistance = 0;

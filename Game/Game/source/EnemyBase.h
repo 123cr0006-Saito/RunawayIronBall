@@ -5,6 +5,8 @@
 #include "EnemyStract.h"
 #include "PlaneEffectManeger.h"
 
+#include <string>
+
 #define EN_MOTION_CHANGE 0
 
 //エネミー各種のもとになるクラス
@@ -14,7 +16,7 @@ public:
 	EnemyBase();
 	~EnemyBase();
 
-	bool Create(int model, VECTOR pos, EnemyParam param);
+	bool Create(int model, VECTOR pos, EnemyParam param,std::string name);
 	virtual void Init(VECTOR pos, float scale);
 	virtual void Init(VECTOR pos);
 	virtual void InheritanceInit();

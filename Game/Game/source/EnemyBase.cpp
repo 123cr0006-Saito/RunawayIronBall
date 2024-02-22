@@ -17,7 +17,7 @@ EnemyBase::~EnemyBase() {
 	MV1DeleteModel(_model);
 };
 
-bool EnemyBase::Create(int model, VECTOR pos, EnemyParam param) {
+bool EnemyBase::Create(int model, VECTOR pos, EnemyParam param, std::string name) {
 	_model = model;
 
 	_player = Player::GetInstance();
