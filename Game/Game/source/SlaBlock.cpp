@@ -38,7 +38,7 @@ bool SlaBlock::ModeAttack() {
 			_easingFrame = 0;
 			ScreenVibration::GetInstance()->SetVibration(0, 20, 20);
 			_currentTime = GetNowCount();
-			_state = ENEMYTYPE::COOLTIME;
+			_modeState = ENEMYTYPE::COOLTIME;
 		}
 	}
 	return true;
@@ -51,14 +51,14 @@ bool SlaBlock::ModeCoolTime() {
 
 	if (GetNowCount() - _currentTime >= moveCoolTime) {
 		_currentTime = 0;
-		_state = ENEMYTYPE::DISCOVER;
+		_modeState = ENEMYTYPE::DISCOVER;
 	}
 	return true;
 };
 
 bool SlaBlock::SetGravity() {
 	//d—Íˆ—
-	if (_state != ENEMYTYPE::ATTACK) {
+	if (_modeState != ENEMYTYPE::ATTACK) {
 		if (_pos.y > 0) {
 			_gravity++;
 			_pos.y -= _gravity;

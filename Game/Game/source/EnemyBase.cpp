@@ -17,11 +17,10 @@ EnemyBase::~EnemyBase() {
 	MV1DeleteModel(_model);
 };
 
-bool EnemyBase::Create(int model, VECTOR pos, EnemyParam param) {
+bool EnemyBase::Create(int model, VECTOR pos, EnemyParam param, std::string name) {
 	_model = model;
 
 	_player = Player::GetInstance();
-	_r = 100.0f;
 
 	//Param------------------
 	_hp = param._hp;
@@ -39,7 +38,7 @@ bool EnemyBase::Create(int model, VECTOR pos, EnemyParam param) {
 
 	Init(pos);
 	InheritanceInit();
-	DebugSnail();
+	AnimInit();
 
 	return true;
 };
@@ -55,7 +54,7 @@ void EnemyBase::Init(VECTOR pos) {
 	_hp = _maxHp;
 	_knockBackSpeedFrame = 0;
 	_gravity = 0;
-	_state = ENEMYTYPE::SEARCH;
+	_modeState = ENEMYTYPE::SEARCH;
 	_searchState = SEARCHTYPE::COOLTIME;
 	_rotation = VGet(0, 0, 0);
 
@@ -66,15 +65,13 @@ void EnemyBase::Init(VECTOR pos) {
 	_r = 150.0f * randSize;
 	_weightExp = _weightExp * randSize;
 
-	DebugSnail();
-
 };
 
 void EnemyBase::InheritanceInit() {
 
 };
 
-void  EnemyBase::DebugSnail() {
+void EnemyBase::AnimInit() {
 
 };
 
@@ -179,7 +176,7 @@ bool EnemyBase::ModeSearch() {
 		float range_dir = Math::CalcVectorAngle(ene_dir, pla_dir);
 
 		if (range_dir <= _flontAngle) {
-			_state = ENEMYTYPE::DISCOVER;//èÛë‘Çî≠å©Ç…Ç∑ÇÈ
+			_modeState = ENEMYTYPE::DISCOVER;//èÛë‘Çî≠å©Ç…Ç∑ÇÈ
 			_sartchRange = _discoverRangeSize;//çıìGîÕàÕÇî≠å©éûÇÃîºåaÇ…ïœçX
 			_currentTime = 0;
 		}
@@ -205,14 +202,14 @@ bool EnemyBase::ModeDisCover() {
 
 	//çıìGèàóù
 	if (p_distance >= _sartchRange) {
-		_state = ENEMYTYPE::SEARCH;//èÛë‘ÇçıìGÇ…Ç∑ÇÈ
+		_modeState = ENEMYTYPE::SEARCH;//èÛë‘ÇçıìGÇ…Ç∑ÇÈ
 		_sartchRange = _hearingRangeSize;//çıìGîÕàÕÇî≠å©éûÇÃîºåaÇ…ïœçX
 		_orignPos = _nextMovePoint = _pos;
 	}
 
 	//çUåÇèàóù
 	if (p_distance <= _attackRangeSize) {
-		_state = ENEMYTYPE::ATTACK;//èÛë‘ÇçıìGÇ…Ç∑ÇÈ
+		_modeState = ENEMYTYPE::ATTACK;//èÛë‘ÇçıìGÇ…Ç∑ÇÈ
 		_currentTime = GetNowCount();
 		_saveNextPoint = VAdd(_player->GetCollision().down_pos, VGet(0, 500, 0));
 		_savePos = _pos;
@@ -233,7 +230,7 @@ bool EnemyBase::ModeKnockBack() {
 	_pos = VAdd(_pos, knockBackVecter);
 	_knockBackSpeedFrame--;
 	if (_knockBackSpeedFrame <= 0) {
-		_state = ENEMYTYPE::DISCOVER;
+		_modeState = ENEMYTYPE::DISCOVER;
 	}
 	return true;
 };
@@ -247,6 +244,10 @@ bool EnemyBase::ModeDead() {
 	}
 	return true;
 };
+
+bool EnemyBase::IndividualProcessing() {
+	return true;
+}
 
 bool EnemyBase::SetState() {
 	//ç≈èIìIÇ»ÉÇÉfÉãÇÃà íuÇ‚äpìxÇí≤êÆ
@@ -283,20 +284,20 @@ void EnemyBase::SetKnockBack(VECTOR vDir, float damage) {
 		PlaneEffect::BoardPolygon* effect = new PlaneEffect::BoardPolygon(effectPos, GetCameraBillboardMatrix(), 200, effectHandle, 30, 0.5f / 60.0f * 1000.0f);
 
 		PlaneEffect::PlaneEffectManeger::GetInstance()->LoadVertical(effect);
-		_state = ENEMYTYPE::KNOCKBACK;
+		_modeState = ENEMYTYPE::KNOCKBACK;
 		if (_hp <= 0) {
 
 			_knockBackSpeedFrame = damage;
 
 			_player->SetExp(_weightExp);
-			_state = ENEMYTYPE::DEAD;
+			_modeState = ENEMYTYPE::DEAD;
 		}
 	}
 };
 
 bool EnemyBase::Process() {
 	if (_IsUse) {
-		switch (_state) {
+		switch (_modeState) {
 		case ENEMYTYPE::SEARCH:
 			ModeSearch();
 			break;
@@ -324,7 +325,7 @@ bool EnemyBase::Process() {
 		}
 
 		//ÉmÉbÉNÉoÉbÉNíÜÇÃÇØÇºÇËèàóù âºÇ≈Ç∑
-		if (_state == ENEMYTYPE::KNOCKBACK) {
+		if (_modeState == ENEMYTYPE::KNOCKBACK) {
 			if (_pos.y > 0) {
 				if (_rotation.x < Math::DegToRad(60)) {
 					_rotation.x += Math::DegToRad(1.2f);
@@ -336,8 +337,9 @@ bool EnemyBase::Process() {
 				_rotation.x -= Math::DegToRad(2);
 			}
 		}
-
+		
 		SetState();
+		IndividualProcessing();
 	}
 
 	return true;
@@ -365,10 +367,15 @@ bool  EnemyBase::DebugRender() {
 	return true;
 };
 
+bool EnemyBase::IndividualRendering() {
+	return true;
+};
+
 bool EnemyBase::Render() {
-	if (_model != 0) {
+	if (_model != 0) {   
 		DebugRender();
 		MV1DrawModel(_model);
+		IndividualRendering();
 	}
 	return true;
 };

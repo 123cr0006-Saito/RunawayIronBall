@@ -37,6 +37,7 @@
     <ClCompile Include="source\ModelColor.cpp" />
     <ClCompile Include="source\TowerParts.cpp" />
     <ClCompile Include="source\MotionList.cpp" />
+    <ClCompile Include="source\CrystarRoof.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -76,5 +77,6 @@
     <ClInclude Include="source\ModelColor.h" />
     <ClInclude Include="source\TowerParts.h" />
     <ClInclude Include="source\MotionList.h" />
+    <ClInclude Include="source\CrystarRoof.h" />
   </ItemGroup>
 </Project>

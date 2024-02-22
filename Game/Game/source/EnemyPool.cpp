@@ -24,8 +24,27 @@ EnemyPool::~EnemyPool() {
 	delete[] _enemy; 
 };
 
-void EnemyPool::Create(std::string createJsonFile){
-	
+void EnemyPool::Create(myJson json){
+	int i = 0;
+	std::vector<std::string> enemyName = { "CryStar_Glass","CryStar_Rock", "CryStar_Iron", "Slablock_Glass","Slablock_Rock","Slablock_Iron","ChainGuard" };
+	for (auto&& name : enemyName) {
+		std::vector<VECTOR> enemyData = LoadJsonData(json, name);
+		for (auto&& vPos : enemyData) {
+			if (name == "CryStar_Glass" || name == "CryStar_Rock"|| name == "CryStar_Iron") {
+				_enemy[i] = new Crystarl();
+				_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/Crystar/cg_crystar.mv1"), vPos, _enemyParametersMap[name], name);
+			}
+			else if (name == "Slablock_Glass" || name == "Slablock_Rock" || name == "Slablock_Iron") {
+				_enemy[i] = new SlaBlock();
+				_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/SlaBlock/SlaBlock.mv1"), vPos, _enemyParametersMap[name], name);
+			}
+			else if (name == "ChainGuard") {
+				/*_enemy[i] = new ChainGuard();
+				_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/ChainGuard/ChainGuard.mv1"), vPos, _enemyParametersMap[name]);*/
+			}
+			i++;
+		}
+	}
 };
 
 void EnemyPool::Create() {
@@ -38,15 +57,15 @@ void EnemyPool::Create() {
 		switch (enemyNum) {
 		case 0:
 			_enemy[i] = new SlaBlock();
-			_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/SlaBlock/SlaBlock.mv1"), vPos, _enemyParametersMap["Slablock"]);
+			_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/SlaBlock/SlaBlock.mv1"), vPos, _enemyParametersMap["Slablock"],"Slablock");
 			break;
 		case 1:
 			_enemy[i] = new Crystarl();
-			_enemy[i]->Create(ResourceServer::MV1LoadModel("res/katatumuri/snail.mv1"), vPos, _enemyParametersMap["Crystarl"]);
+			_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/Crystar/cg_crystar.mv1"), vPos, _enemyParametersMap["Crystarl"],"Crystarl");
 			break;
 		case 2:
 			_enemy[i] = new SlaBlockPattern2();
-			_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/SlaBlock/SlaBlock.mv1"), vPos, _enemyParametersMap["Slablock"]);
+			_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/SlaBlock/SlaBlock.mv1"), vPos, _enemyParametersMap["Slablock"],"Slablock");
 			break;
 		}
 	}
@@ -61,6 +80,22 @@ void EnemyPool::Init(){
 
 void EnemyPool::Init(VECTOR pos) {
 
+};
+
+std::vector<VECTOR> EnemyPool::LoadJsonData(myJson jsonFile, std::string  loadName) {
+	nlohmann::json loadEnemy = jsonFile._json.at(loadName);
+	std::vector<VECTOR> posList;
+	for (auto& list : loadEnemy) {
+		VECTOR pos;
+		list.at("translate").at("x").get_to(pos.x);
+		list.at("translate").at("y").get_to(pos.z);
+		list.at("translate").at("z").get_to(pos.y);
+		//ç¿ïWèCê≥
+		pos.x *= -1;
+
+		posList.push_back(pos);
+	}
+	return posList;
 };
 
 void EnemyPool::DeleteEnemy() {

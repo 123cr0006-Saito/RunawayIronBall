@@ -28,7 +28,7 @@ enum class ENEMYTYPE : int {
 };
 
 enum class SEARCHTYPE : int {
+	COOLTIME,
 	TURN,
-	MOVE,
-	COOLTIME
+	MOVE
 };
