@@ -155,6 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\CrystarRoof.cpp" />
     <ClCompile Include="source\AnimationItem.cpp" />
     <ClCompile Include="source\AnimationManager.cpp" />
     <ClCompile Include="source\BoardPolygon.cpp" />
@@ -193,6 +194,7 @@
     <ClCompile Include="source\UIHeart.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\CrystarRoof.h" />
     <ClInclude Include="source\AnimationItem.h" />
     <ClInclude Include="source\AnimationManager.h" />
     <ClInclude Include="source\BoardPolygon.h" />

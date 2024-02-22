@@ -17,6 +17,8 @@ void Crystarl::InheritanceInit() {
 
 void Crystarl::AnimInit() {
 
+	_roof = new CrystarRoof(ResourceServer::MV1LoadModel("res/Enemy/Crystar/cg_crystar_roof.mv1"), _model);
+
 	//// モーションリストのロード
 	MotionList::Load("Crystarl", "MotionList_Crystarl.csv");
 	auto motionList = MotionList::GetMotionList("Crystarl");
@@ -160,6 +162,7 @@ bool Crystarl::ModeKnockBack() {
 };
 
 bool Crystarl::IndividualProcessing() {
+	_roof->Updata();
 	_animManager->Process(static_cast<int>(_animState));
 	_frameData->Process(static_cast<int>(_animState), _animManager->GetPlayTime());
 	return true;
@@ -171,7 +174,13 @@ bool Crystarl::SetState() {
 		MV1SetRotationXYZ(_model, VGet(0.0f, _rotation.y + _attackDir, 0.0f));
 		//MV1SetPosition(_model, VAdd(_pos, _attackPos));
 		MV1SetPosition(_model, _pos);
+		
 	}
+	return true;
+};
+
+bool Crystarl::IndividualRendering() {
+	_roof->Render();
 	return true;
 };
 

@@ -337,8 +337,9 @@ bool EnemyBase::Process() {
 				_rotation.x -= Math::DegToRad(2);
 			}
 		}
-		IndividualProcessing();
+		
 		SetState();
+		IndividualProcessing();
 	}
 
 	return true;
@@ -366,10 +367,15 @@ bool  EnemyBase::DebugRender() {
 	return true;
 };
 
+bool EnemyBase::IndividualRendering() {
+	return true;
+};
+
 bool EnemyBase::Render() {
-	if (_model != 0) {
+	if (_model != 0) {   
 		DebugRender();
 		MV1DrawModel(_model);
+		IndividualRendering();
 	}
 	return true;
 };

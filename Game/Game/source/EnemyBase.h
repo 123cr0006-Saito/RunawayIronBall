@@ -42,6 +42,7 @@ public:
 	virtual bool ModeDead();
 
 	virtual bool IndividualProcessing();
+	virtual bool IndividualRendering();
 	virtual bool SetState();
 	virtual bool SetGravity();
 

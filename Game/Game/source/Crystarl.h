@@ -1,5 +1,7 @@
 #pragma once
 #include "EnemyBase.h"
+#include "CrystarRoof.h"
+
 class Crystarl : public EnemyBase
 {
 public:
@@ -16,10 +18,13 @@ public:
 	bool ModeKnockBack()override;
 
 	bool IndividualProcessing()override;
+	bool IndividualRendering()override;
 	bool SetState()override;
 
 	bool DebugRender()override;
 	VECTOR GetCollisionPos()override { return VAdd(VAdd(_pos, _diffeToCenter), _attackPos); }
+
+	int GetModelHandle() { return _model; }
 protected:
 
 	static enum ANIMSTATE : int {
@@ -36,5 +41,6 @@ protected:
 	VECTOR _attackPos;//UŒ‚‚É‘‚¦‚é’l
 	float _attackDir;//UŒ‚‚µ‚½‚Ég—p‚·‚éŠp“x
 
+	CrystarRoof* _roof;
 };
 
