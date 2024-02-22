@@ -314,13 +314,13 @@ bool Player::Process(float camAngleY)
 		if (_stamina < 0.0f) {
 			_stamina = 0.0f;
 			_isTired = true;
-			_isConsumingStamina = false;
 			_isRotationSwinging = false;
 			_rotationCnt = 0;
-			_isAttackState = false;
+			_animStatus = ANIM_STATE::HORISONTAL_SWING_03;
 		}
 	}
-	else {
+
+	if(!_isAttackState ){
 		_isConsumingStamina = false;
 	}
 
@@ -360,6 +360,7 @@ bool Player::Process(float camAngleY)
 				// ƒ‚ƒfƒ‹‚Ì³–Ê•ûŒü‚ðXV‚·‚é
 				_forwardDir = _stickDir;
 				_rotationCnt = 0;
+				_idleFightingRemainingCnt = 240;
 			}
 		}
 	}
