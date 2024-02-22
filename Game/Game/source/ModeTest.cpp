@@ -86,6 +86,10 @@ bool ModeTest::Initialize() {
 	ResourceServer::LoadMultGraph("res/TemporaryMaterials/split/test", ".png", 30, _effectSheet);
 	//global._soundServer->DirectPlay("Stage03");
 	global._soundServer->BgmFadeIn("Stage03", 2000);
+
+	SetFogEnable(true);
+	SetFogStartEnd(2500, 10000);
+
 	return true;
 }
 
@@ -323,7 +327,12 @@ bool ModeTest::Render() {
 	//_chain->DrawDebugInfo();
 
 	for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
-		(*itr)->Render();
+		VECTOR vpos = VSub((*itr)->GetPos(), GetCameraPosition());
+		int drawRange = 12000;
+        float length = VSquareSize(vpos);
+		if (length <= drawRange * drawRange) {
+			(*itr)->Render();
+		}
 	}
 
 	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
