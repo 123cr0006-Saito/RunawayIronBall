@@ -91,6 +91,9 @@ bool Crystarl::ModeSearch() {
 bool Crystarl::ModeAttack() {
 	int nowTime = GetNowCount() - _currentTime;//今の状態になってから何秒経ったか？
 
+	// 攻撃開始から2秒以内は動かない
+	if (nowTime <= 1.5f * 1000)return true;
+
 	//今の問題　プレイヤーのほうを常に向くので急激に角度が変化したとき逆位置に移動する
 
 	//プランナーさん側で変更できる場所　※秒数単位 
@@ -149,6 +152,7 @@ bool Crystarl::ModeKnockBack() {
 	_pos = VAdd(_pos, knockBackVecter);
 	_knockBackSpeedFrame--;
 	if (_knockBackSpeedFrame <= 0) {
+		_currentTime = GetNowCount();
 		_animState = ANIMSTATE::HANDSTAND;
 		_modeState = ENEMYTYPE::ATTACK;
 	}
