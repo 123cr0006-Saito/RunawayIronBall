@@ -210,28 +210,28 @@ bool ModeTest::Process() {
 
 
 		// 敵とプレイヤーの当たり判定
-		//EnemyBase* enemy = _enemyPool->GetEnemy(i);
-		//Sphere eCol = { enemy->GetCollisionPos(), enemy->GetR() };
-		//Capsule pCol = _player->GetCollision();
-		//if (Collision3D::SphereCapsuleCol(eCol, pCol)) {
-		//	if (!isInvincible) {
-		//		_player->SetDamage();
-		//	}
-		//	VECTOR tmpPos = enemy->GetCollisionPos();
-		//	tmpPos.y = 0.0f;
+		EnemyBase* enemy = _enemyPool->GetEnemy(i);
+		Sphere eCol = { enemy->GetCollisionPos(), enemy->GetR() };
+		Capsule pCol = _player->GetCollision();
+		if (Collision3D::SphereCapsuleCol(eCol, pCol)) {
+			if (!isInvincible) {
+				_player->SetDamage();
+			}
+			VECTOR tmpPos = enemy->GetCollisionPos();
+			tmpPos.y = 0.0f;
 
-		//	VECTOR vDir = VSub(pCol.down_pos, tmpPos);
-		//	vDir.y = 0.0f;
-		//	float squareLength = VSquareSize(vDir);
-		//	if (squareLength >= 0.0001f) {
-		//		vDir = VNorm(vDir);
-		//		tmpPos = VAdd(tmpPos, VScale(vDir, eCol.r + pCol.r));
-		//		_player->SetPos(tmpPos);
-		//	}
-		//	enemy = nullptr;
+			VECTOR vDir = VSub(pCol.down_pos, tmpPos);
+			vDir.y = 0.0f;
+			float squareLength = VSquareSize(vDir);
+			if (squareLength >= 0.0001f) {
+				vDir = VNorm(vDir);
+				tmpPos = VAdd(tmpPos, VScale(vDir, eCol.r + pCol.r));
+				_player->SetPos(tmpPos);
+			}
+			enemy = nullptr;
 
 
-		//}
+		}
 	}
 
 	//空間分割を考えていないので無駄が多いです。

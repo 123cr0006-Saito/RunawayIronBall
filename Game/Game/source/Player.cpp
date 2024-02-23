@@ -251,6 +251,7 @@ bool Player::Process(float camAngleY)
 
 		if (_moveSpeedFWD != 0.f) {
 			_pos = VAdd(_pos, VScale(VNorm(_forwardDir), _moveSpeedFWD));
+			_moveSpeedFWD = 0.f;
 		}
 
 		if (!_isAttackState && _animStatus != ANIM_STATE::AVOIDANCE && _animStatus != ANIM_STATE::HIT) {
