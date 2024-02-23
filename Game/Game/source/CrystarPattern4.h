@@ -1,11 +1,11 @@
 #pragma once
 #include "EnemyBase.h"
 //‰ñ“]L”ÍˆÍUŒ‚
-class CrystarlPattern2 : public EnemyBase
+class CrystarPattern4 : public EnemyBase
 {
 public:
-	CrystarlPattern2();
-	~CrystarlPattern2();
+	CrystarPattern4();
+	~CrystarPattern4();
 	void InheritanceInit()override;
 	bool ModeAttack()override;
 	bool ModeCoolTime()override;

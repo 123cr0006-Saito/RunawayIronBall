@@ -155,6 +155,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\CrystarPattern1.cpp" />
+    <ClCompile Include="source\CrystarPattern2.cpp" />
     <ClCompile Include="source\CrystarRoof.cpp" />
     <ClCompile Include="source\AnimationItem.cpp" />
     <ClCompile Include="source\AnimationManager.cpp" />
@@ -166,7 +168,7 @@
     <ClCompile Include="source\ModePause.cpp" />
     <ClCompile Include="source\PlaneEffectManeger.cpp" />
     <ClCompile Include="source\SlaBlockPattern2.cpp" />
-    <ClCompile Include="source\CrystarlPattern2.cpp" />
+    <ClCompile Include="source\CrystarPattern4.cpp" />
     <ClCompile Include="source\EnemyPool.cpp" />
     <ClCompile Include="source\House.cpp" />
     <ClCompile Include="source\myJson.cpp" />
@@ -174,7 +176,7 @@
     <ClCompile Include="source\BreakObject.cpp" />
     <ClCompile Include="source\BuildingBase.cpp" />
     <ClCompile Include="source\CharacterBase.cpp" />
-    <ClCompile Include="source\Crystarl.cpp" />
+    <ClCompile Include="source\CrystarPattern3.cpp" />
     <ClCompile Include="source\EnemyBase.cpp" />
     <ClCompile Include="source\ModeGameOver.cpp" />
     <ClCompile Include="source\ModeClear.cpp" />
@@ -194,6 +196,8 @@
     <ClCompile Include="source\UIHeart.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\CrystarPattern1.h" />
+    <ClInclude Include="source\CrystarPattern2.h" />
     <ClInclude Include="source\CrystarRoof.h" />
     <ClInclude Include="source\AnimationItem.h" />
     <ClInclude Include="source\AnimationManager.h" />
@@ -205,7 +209,7 @@
     <ClInclude Include="source\ModePause.h" />
     <ClInclude Include="source\PlaneEffectManeger.h" />
     <ClInclude Include="source\SlaBlockPattern2.h" />
-    <ClInclude Include="source\CrystarlPattern2.h" />
+    <ClInclude Include="source\CrystarPattern4.h" />
     <ClInclude Include="source\EnemyPool.h" />
     <ClInclude Include="source\EnemyStract.h" />
     <ClInclude Include="source\House.h" />
@@ -214,7 +218,7 @@
     <ClInclude Include="source\BreakObject.h" />
     <ClInclude Include="source\BuildingBase.h" />
     <ClInclude Include="source\CharacterBase.h" />
-    <ClInclude Include="source\Crystarl.h" />
+    <ClInclude Include="source\CrystarPattern3.h" />
     <ClInclude Include="source\EnemyBase.h" />
     <ClInclude Include="source\ModeGameOver.h" />
     <ClInclude Include="source\ModeClear.h" />

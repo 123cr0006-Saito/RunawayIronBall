@@ -1,21 +1,21 @@
-#include "Crystarl.h"
+#include "CrystarPattern3.h"
 
-Crystarl::Crystarl() :EnemyBase::EnemyBase() {
+CrystarPattern3::CrystarPattern3() :EnemyBase::EnemyBase() {
 
 };
 
-Crystarl::~Crystarl() {
+CrystarPattern3::~CrystarPattern3() {
 	EnemyBase::~EnemyBase();
 };
 
-void Crystarl::InheritanceInit() {
+void CrystarPattern3::InheritanceInit() {
 	//個別でセットするもの
 	_animState = ANIMSTATE::IDLE;
 	_attackPos = VGet(0, 0, 0);
 	_attackDir = 0.0f;
 };
 
-void Crystarl::AnimInit() {
+void CrystarPattern3::AnimInit() {
 
 	_roof = new CrystarRoof(ResourceServer::MV1LoadModel("res/Enemy/Crystar/cg_crystar_roof.mv1"), _model);
 
@@ -31,7 +31,7 @@ void Crystarl::AnimInit() {
 
 }
 
-void Crystarl::Init(VECTOR pos) {
+void CrystarPattern3::Init(VECTOR pos) {
 	_IsUse = true;
 
 	SetPos(pos);
@@ -53,7 +53,7 @@ void Crystarl::Init(VECTOR pos) {
 	InheritanceInit();
 };
 
-bool Crystarl::ModeSearch() {
+bool CrystarPattern3::ModeSearch() {
 	switch (_searchState) {
 	case SEARCHTYPE::MOVE:
 		ModeSearchToMove();
@@ -90,7 +90,7 @@ bool Crystarl::ModeSearch() {
 	return true;
 }
 
-bool Crystarl::ModeAttack() {
+bool CrystarPattern3::ModeAttack() {
 	int nowTime = GetNowCount() - _currentTime;//今の状態になってから何秒経ったか？
 
 	// 攻撃開始から2秒以内は動かない
@@ -127,7 +127,6 @@ bool Crystarl::ModeAttack() {
 	//索敵処理
 	if (p_distance >= _discoverRangeSize) {
 		_modeState = ENEMYTYPE::SEARCH;//状態を索敵にする
-	//	_orignPos = _nextMovePoint = VAdd(_pos, _attackPos);
 		_orignPos = _nextMovePoint = _pos;
 		_attackDir = 0.0f;
 		_attackPos = VGet(0, 0, 0);
@@ -136,7 +135,7 @@ bool Crystarl::ModeAttack() {
 	return true;
 };
 
-bool Crystarl::ModeCoolTime() {
+bool CrystarPattern3::ModeCoolTime() {
 	//プランナーさん側で変更できる場所　※秒数単位 
 	float moveCoolTime = 2.0f * 1000; //攻撃してからのクールタイム   
 	
@@ -149,7 +148,7 @@ bool Crystarl::ModeCoolTime() {
 	return true;
 };
 
-bool Crystarl::ModeKnockBack() {
+bool CrystarPattern3::ModeKnockBack() {
 	VECTOR knockBackVecter = VScale(_knockBackDir, _knockBackSpeedFrame);
 	_pos = VAdd(_pos, knockBackVecter);
 	_knockBackSpeedFrame--;
@@ -161,30 +160,29 @@ bool Crystarl::ModeKnockBack() {
 	return true;
 };
 
-bool Crystarl::IndividualProcessing() {
+bool CrystarPattern3::IndividualProcessing() {
 	_roof->Updata();
 	_animManager->Process(static_cast<int>(_animState));
 	_frameData->Process(static_cast<int>(_animState), _animManager->GetPlayTime());
 	return true;
 }
 
-bool Crystarl::SetState() {
+bool CrystarPattern3::SetState() {
 	//最終的なモデルの位置や角度を調整
 	if (_model != 0) {
 		MV1SetRotationXYZ(_model, VGet(0.0f, _rotation.y + _attackDir, 0.0f));
 		//MV1SetPosition(_model, VAdd(_pos, _attackPos));
 		MV1SetPosition(_model, _pos);
-		
 	}
 	return true;
 };
 
-bool Crystarl::IndividualRendering() {
+bool CrystarPattern3::IndividualRendering() {
 	_roof->Render();
 	return true;
 };
 
-bool Crystarl::DebugRender() {
-	//DrawSphere3D(VAdd(VAdd(_pos, _diffeToCenter), _attackPos), _r, 32, GetColor(0, 255, 0), GetColor(0, 0, 255), false);
+bool CrystarPattern3::DebugRender() {
+	DrawSphere3D(VAdd(VAdd(_pos, _diffeToCenter), _attackPos), _r, 32, GetColor(0, 255, 0), GetColor(0, 0, 255), false);
 	return true;
 };
