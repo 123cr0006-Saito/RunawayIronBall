@@ -29,14 +29,26 @@ void EnemyPool::Create(myJson json){
 	std::vector<std::string> enemyName = { "CryStar_Glass","CryStar_Rock", "CryStar_Iron", "Slablock_Glass","Slablock_Rock","Slablock_Iron","ChainGuard" };
 	for (auto&& name : enemyName) {
 		std::vector<VECTOR> enemyData = LoadJsonData(json, name);
-		for (auto&& vPos : enemyData) {
-			if (name == "CryStar_Glass" || name == "CryStar_Rock"|| name == "CryStar_Iron") {
+		for (auto& vPos : enemyData) {
+			if (name == "CryStar_Glass") {
 				_enemy[i] = new Crystarl();
-				_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/Crystar/cg_crystar.mv1"), vPos, _enemyParametersMap[name], name);
+				_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/Crystar/cg_crystar.mv1"), vPos, _enemyParametersMap["Crystarl"], name);
 			}
-			else if (name == "Slablock_Glass" || name == "Slablock_Rock" || name == "Slablock_Iron") {
+			else if (name == "CryStar_Rock") {
+				_enemy[i] = new Crystarl();
+				_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/Crystar/cg_crystar.mv1"), vPos, _enemyParametersMap["Crystarl"], name);
+			}
+			else if (name == "CryStar_Iron") {
+				_enemy[i] = new Crystarl();
+				_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/Crystar/cg_crystar.mv1"), vPos, _enemyParametersMap["Crystarl"], name);
+			}
+			else if (name == "Slablock_Glass" || name == "Slablock_Rock" ) {
 				_enemy[i] = new SlaBlock();
-				_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/SlaBlock/SlaBlock.mv1"), vPos, _enemyParametersMap[name], name);
+				_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/SlaBlock/SlaBlock.mv1"), vPos, _enemyParametersMap["Slablock"], name);
+			}
+			else if (name == "Slablock_Iron") {
+				_enemy[i] = new SlaBlockPattern2();
+				_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/SlaBlock/SlaBlock.mv1"), vPos, _enemyParametersMap["Slablock"], "Slablock");
 			}
 			else if (name == "ChainGuard") {
 				/*_enemy[i] = new ChainGuard();
@@ -73,6 +85,7 @@ void EnemyPool::Create() {
 
 void EnemyPool::Init(){
 	for (int i = 0; i < ENEMY_MAX_SIZE; i++) {
+		if (!_enemy[i]->GetUse())continue;
 		VECTOR vPos = VGet(rand() % 3000 - 1500, 0, rand() % 3000 - 1500);
 		_enemy[i]->Init(vPos);
 	}
@@ -112,6 +125,7 @@ EnemyBase* EnemyPool::Recicle() {
 
 bool EnemyPool::Process(){
 	for (int i = 0; i < ENEMY_MAX_SIZE; i++) {
+		if (!_enemy[i]) {continue;}
 		if (_enemy[i]->GetUse()) {
 			_enemy[i]->Process();
 		}
@@ -121,9 +135,17 @@ bool EnemyPool::Process(){
 
 bool EnemyPool::Render() {
 	for (int i = 0; i < ENEMY_MAX_SIZE; i++) {
+		if (!_enemy[i]) { continue; }
 		if (_enemy[i]->GetUse()) {
 			_enemy[i]->Render();
 		}
 	}
 	return true;
 };
+
+EnemyBase* EnemyPool::GetEnemy(int i) {
+	if (_enemy[i] != nullptr) {
+		return _enemy[i];
+	}
+	return nullptr;
+}
