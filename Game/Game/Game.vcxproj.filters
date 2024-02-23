@@ -6,7 +6,7 @@
     <ClCompile Include="source\BreakObject.cpp" />
     <ClCompile Include="source\BuildingBase.cpp" />
     <ClCompile Include="source\CharacterBase.cpp" />
-    <ClCompile Include="source\Crystarl.cpp" />
+    <ClCompile Include="source\CrystarPattern3.cpp" />
     <ClCompile Include="source\EnemyBase.cpp" />
     <ClCompile Include="source\ModeGameOver.cpp" />
     <ClCompile Include="source\ModeClear.cpp" />
@@ -23,7 +23,7 @@
     <ClCompile Include="source\UIHeart.cpp" />
     <ClCompile Include="source\House.cpp" />
     <ClCompile Include="source\EnemyPool.cpp" />
-    <ClCompile Include="source\CrystarlPattern2.cpp" />
+    <ClCompile Include="source\CrystarPattern4.cpp" />
     <ClCompile Include="source\SlaBlockPattern2.cpp" />
     <ClCompile Include="source\ScreenVibration.cpp" />
     <ClCompile Include="source\PlaneEffectManeger.cpp" />
@@ -38,6 +38,8 @@
     <ClCompile Include="source\TowerParts.cpp" />
     <ClCompile Include="source\MotionList.cpp" />
     <ClCompile Include="source\CrystarRoof.cpp" />
+    <ClCompile Include="source\CrystarPattern2.cpp" />
+    <ClCompile Include="source\CrystarPattern1.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -45,7 +47,7 @@
     <ClInclude Include="source\BreakObject.h" />
     <ClInclude Include="source\BuildingBase.h" />
     <ClInclude Include="source\CharacterBase.h" />
-    <ClInclude Include="source\Crystarl.h" />
+    <ClInclude Include="source\CrystarPattern3.h" />
     <ClInclude Include="source\EnemyBase.h" />
     <ClInclude Include="source\ModeGameOver.h" />
     <ClInclude Include="source\ModeClear.h" />
@@ -63,7 +65,7 @@
     <ClInclude Include="source\House.h" />
     <ClInclude Include="source\EnemyStract.h" />
     <ClInclude Include="source\EnemyPool.h" />
-    <ClInclude Include="source\CrystarlPattern2.h" />
+    <ClInclude Include="source\CrystarPattern4.h" />
     <ClInclude Include="source\SlaBlockPattern2.h" />
     <ClInclude Include="source\ScreenVibration.h" />
     <ClInclude Include="source\PlaneEffectManeger.h" />
@@ -78,5 +80,7 @@
     <ClInclude Include="source\TowerParts.h" />
     <ClInclude Include="source\MotionList.h" />
     <ClInclude Include="source\CrystarRoof.h" />
+    <ClInclude Include="source\CrystarPattern2.h" />
+    <ClInclude Include="source\CrystarPattern1.h" />
   </ItemGroup>
 </Project>

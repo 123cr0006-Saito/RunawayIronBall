@@ -1,19 +1,18 @@
 #pragma once
 #include "EnemyBase.h"
 #include "CrystarRoof.h"
-
-class Crystarl : public EnemyBase
+class CrystarPattern1 :public EnemyBase
 {
 public:
-	Crystarl();
-	~Crystarl();
+	CrystarPattern1();
+	~CrystarPattern1();
 
 	void Init(VECTOR pos)override;
 	void InheritanceInit()override;
 	void AnimInit()override;
 
 	bool ModeSearch()override;
-	bool ModeAttack()override;
+	bool ModeDisCover()override;
 	bool ModeCoolTime()override;
 	bool ModeKnockBack()override;
 
@@ -22,11 +21,10 @@ public:
 	bool SetState()override;
 
 	bool DebugRender()override;
-	VECTOR GetCollisionPos()override { return VAdd(VAdd(_pos, _diffeToCenter), _attackPos); }
+	VECTOR GetCollisionPos()override { return VAdd(_pos, _diffeToCenter); }
 
 	int GetModelHandle() { return _model; }
 protected:
-
 	static enum ANIMSTATE : int {
 		IDLE = 0,
 		WALK,
@@ -35,12 +33,7 @@ protected:
 		HANDSTANDLOOP,
 		HANDBUTT
 	};
-
 	ANIMSTATE _animState;
-
-	VECTOR _attackPos;//çUåÇéûÇ…ëùÇ¶ÇÈíl
-	float _attackDir;//çUåÇÇµÇΩéûÇ…égópÇ∑ÇÈäpìx
-
 	CrystarRoof* _roof;
 };
 
