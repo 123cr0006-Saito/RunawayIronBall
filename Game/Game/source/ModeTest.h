@@ -65,7 +65,8 @@ protected:
 	PlaneEffect::PlaneEffectManeger* _planeEffectManeger;
 	OBB obb;
 
-
+	int _shadowHandle;
+	int _lightHandle[2];
 
 	// デバッグ表示をするかどうか
 	bool _drawDebug = false;

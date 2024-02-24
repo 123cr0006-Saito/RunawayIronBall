@@ -373,7 +373,9 @@ bool EnemyBase::IndividualRendering() {
 
 bool EnemyBase::Render() {
 	if (_model != 0) {   
+#ifdef _DEBUG
 		DebugRender();
+#endif
 		MV1DrawModel(_model);
 		IndividualRendering();
 	}

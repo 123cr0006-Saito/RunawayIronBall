@@ -8,6 +8,11 @@ bool ModeTest::Initialize() {
 
 	_camera = new Camera();
 
+	_lightHandle[0] = CreateDirLightHandle(VGet(- 1, -1, -1));
+	_lightHandle[1] = CreateDirLightHandle(VGet(1, 1, 1));
+
+	_shadowHandle = MakeShadowMap(2048, 2048);
+
 	_skySphere = MV1LoadModel(_T("res/SkySphere/skysphere.mv1"));
 	_tile = MV1LoadModel(_T("res/TemporaryMaterials/stage_normal_01.mv1"));
 	MV1SetPosition(_skySphere, VGet(0, 0, 0));
@@ -306,8 +311,8 @@ bool ModeTest::Render() {
 	SetUseLighting(TRUE);
 	//clsDx();
 
-	MV1DrawModel(_skySphere);
-	MV1DrawModel(_tile);
+	
+
 	// 0,0,0を中心に線を引く
 	{
 		float linelength = 1000.f;
@@ -317,34 +322,55 @@ bool ModeTest::Render() {
 		DrawLine3D(VAdd(v, VGet(0, 0, -linelength)), VAdd(v, VGet(0, 0, linelength)), GetColor(0, 0, 255));
 	}
 
-	_player->Render();
-	_enemyPool->Render();
-	_chain->Render();
-	//_chain->DrawDebugInfo();
+	//------------------------------------
+	// シャドウマップの設定　
+	// shadowCount 0 シャドウマップに描画 1 モデルの描画
+	VECTOR lightDir = VGet(0, -1, 0);
+	SetShadowMapLightDirection(_shadowHandle, lightDir);
 
-	for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
-		(*itr)->Render();
+	// シャドウマップに描画する範囲を設定
+    // カメラの注視点を中心にする
+	float length = 10000.f;
+	VECTOR plPos = _player->GetPosition();
+	SetShadowMapDrawArea(_shadowHandle, VAdd(plPos, VGet(-length, -1.0f, -length)), VAdd(plPos, VGet(length,length, length)));
+
+	for (int shadowCount = 0; shadowCount < 2; shadowCount++) {
+		// シャドウマップの設定
+		if (shadowCount == 0) {
+			// シャドウマップへの描画の準備
+			ShadowMap_DrawSetup(_shadowHandle);
+		}
+		else if (shadowCount == 1) {
+			// シャドウマップへの描画を終了
+			ShadowMap_DrawEnd();
+			// 描画に使用するシャドウマップを設定
+			SetUseShadowMap(0, _shadowHandle);
+		}
+
+		//-------------------------------------------------------------------------------------
+	
+
+		_player->Render();
+		_enemyPool->Render();
+		_chain->Render();
+		//_chain->DrawDebugInfo();
+
+		_planeEffectManeger->Render();
+//}
+		for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
+			(*itr)->Render();
+		}
+
+		for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
+			(*itr)->Render();
+		}
+
+		MV1DrawModel(_skySphere);
+		MV1DrawModel(_tile);
 	}
-
-	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
-		(*itr)->Render();
-	}
-
-
-	//SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
-	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
-		ui[i]->Draw();
-	}
-	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-
-	if (_player->GetStaminaRate() < 1.0f) {
-		int handleNum = floorf(_player->GetStaminaRate() * 100.0f / 33.4f);
-		_gaugeUI[1]->Draw(_gaugeHandle[handleNum]);
-		_gaugeUI[0]->Draw(_gaugeHandle[3]);
-	}
-
-	_planeEffectManeger->Render();
-
+	// 描画に使用するシャドウマップの設定を解除
+	SetUseShadowMap(0, -1);
+	TestDrawShadowMap(_shadowHandle, 0, 0, 512, 512);
 
 	if (_drawDebug) {
 		_player->DrawDebugInfo();
@@ -353,11 +379,24 @@ bool ModeTest::Render() {
 			(*itr)->DrawDebugInfo();
 		}
 	}
+
 	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
 		(*itr)->DrawDebugInfo();
 	}
-
 	SetUseZBuffer3D(FALSE);
+
+	//SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
+	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
+		ui[i]->Draw();
+	}
+
+	if (_player->GetStaminaRate() < 1.0f) {
+		int handleNum = floorf(_player->GetStaminaRate() * 100.0f / 33.4f);
+		_gaugeUI[1]->Draw(_gaugeHandle[handleNum]);
+		_gaugeUI[0]->Draw(_gaugeHandle[3]);
+	}
+
+	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	SetFontSize(62);
 	DrawFormatString(45, 200, GetColor(0, 0, 0), "%d", _player->GetInstance()->GetNowLevel() + 1);
