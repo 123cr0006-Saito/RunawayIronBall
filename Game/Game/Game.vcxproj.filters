@@ -38,6 +38,9 @@
     <ClCompile Include="source\TowerParts.cpp" />
     <ClCompile Include="source\MotionList.cpp" />
     <ClCompile Include="source\CrystarRoof.cpp" />
+    <ClCompile Include="source\ClassificationEffect.cpp" />
+    <ClCompile Include="source\EffekseerPosSynchro.cpp" />
+    <ClCompile Include="source\EffekseerBase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -78,5 +81,8 @@
     <ClInclude Include="source\TowerParts.h" />
     <ClInclude Include="source\MotionList.h" />
     <ClInclude Include="source\CrystarRoof.h" />
+    <ClInclude Include="source\ClassificationEffect.h" />
+    <ClInclude Include="source\EffekseerPosSynchro.h" />
+    <ClInclude Include="source\EffekseerBase.h" />
   </ItemGroup>
 </Project>
