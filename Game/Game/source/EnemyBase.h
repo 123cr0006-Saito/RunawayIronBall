@@ -46,8 +46,6 @@ public:
 	virtual bool SetState();
 	virtual bool SetGravity();
 
-	bool StopPos();
-
 	void SetKnockBack(VECTOR vDir, float damage);//攻撃を受けた時の処理
 
 	bool GetUse() { return _IsUse; }
@@ -82,6 +80,7 @@ protected:
 	//主な変数
 	int    _model;//モデル
 	VECTOR _pos;//エネミーの座標
+	VECTOR _forwardVec; // 正面方向のベクトル
 	float _gravity;//重力加速度
 	VECTOR _rotation;//y軸の向いている方向
 	float _r;//当たり判定用の半径

@@ -21,27 +21,53 @@ EnemyPool::EnemyPool(std::string paramJsonFile){
 
 EnemyPool::~EnemyPool() {
 	_enemyParametersMap.clear();
+	_enemyInitPos.clear();
 	delete[] _enemy; 
 };
 
 void EnemyPool::Create(myJson json){
 	int i = 0;
+	//読み込む敵の名前のリスト
+	int handle = 0;
 	std::vector<std::string> enemyName = { "CryStar_Glass","CryStar_Rock", "CryStar_Iron", "Slablock_Glass","Slablock_Rock","Slablock_Iron","ChainGuard" };
+
+	// データの読み込み
 	for (auto&& name : enemyName) {
-		std::vector<VECTOR> enemyData = LoadJsonData(json, name);
-		for (auto&& vPos : enemyData) {
-			if (name == "CryStar_Glass" || name == "CryStar_Rock"|| name == "CryStar_Iron") {
-				_enemy[i] = new Crystarl();
-				_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/Crystar/cg_crystar.mv1"), vPos, _enemyParametersMap[name], name);
+		std::vector<std::pair<std::string, VECTOR>> enemyData = LoadJsonData(json, name);
+		// データの分配
+		for (auto& enemyDataList : enemyData) {
+			if (enemyDataList.first == "CryStar_Glass") {
+				_enemy[i] = new CrystarPattern1();
+				handle = ResourceServer::MV1LoadModel("res/Enemy/Crystar/cg_crystar.mv1");
+				_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/Crystar/cg_crystar.mv1"), enemyDataList.second, _enemyParametersMap["Crystarl"], enemyDataList.first);
 			}
-			else if (name == "Slablock_Glass" || name == "Slablock_Rock" || name == "Slablock_Iron") {
+			else if (enemyDataList.first == "CryStar_Rock") {
+				_enemy[i] = new CrystarPattern2();
+				handle = ResourceServer::MV1LoadModel("res/Enemy/Crystar/cg_crystar.mv1");
+				_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/Crystar/cg_crystar.mv1"), enemyDataList.second, _enemyParametersMap["Crystarl"], enemyDataList.first);
+			}
+			else if (enemyDataList.first == "CryStar_Iron") {
+				_enemy[i] = new CrystarPattern3();
+				handle = ResourceServer::MV1LoadModel("res/Enemy/Crystar/cg_crystar.mv1");
+				_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/Crystar/cg_crystar.mv1"), enemyDataList.second, _enemyParametersMap["Crystarl"], enemyDataList.first);
+			}
+			else if (enemyDataList.first == "Slablock_Glass" || enemyDataList.first == "Slablock_Rock") {
 				_enemy[i] = new SlaBlock();
-				_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/SlaBlock/SlaBlock.mv1"), vPos, _enemyParametersMap[name], name);
+				handle = ResourceServer::MV1LoadModel("res/Enemy/SlaBlock/SlaBlock.mv1");
+				_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/SlaBlock/SlaBlock.mv1"), enemyDataList.second, _enemyParametersMap["Slablock"], enemyDataList.first);
 			}
-			else if (name == "ChainGuard") {
+			else if (enemyDataList.first == "Slablock_Iron") {
+				_enemy[i] = new SlaBlockPattern2();
+				handle = ResourceServer::MV1LoadModel("res/Enemy/SlaBlock/SlaBlock.mv1");
+				_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/SlaBlock/SlaBlock.mv1"), enemyDataList.second, _enemyParametersMap["Slablock"], enemyDataList.first);
+			}
+			else if (enemyDataList.first == "ChainGuard") {
 				/*_enemy[i] = new ChainGuard();
 				_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/ChainGuard/ChainGuard.mv1"), vPos, _enemyParametersMap[name]);*/
 			}
+			_enemyInitPos.emplace_back(enemyDataList.second);
+			// データがないので今は個別
+			//_enemy[i]->Create(handle, enemyDataList.second, _enemyParametersMap[enemyDataList.first], enemyDataList.first);
 			i++;
 		}
 	}
@@ -60,7 +86,7 @@ void EnemyPool::Create() {
 			_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/SlaBlock/SlaBlock.mv1"), vPos, _enemyParametersMap["Slablock"],"Slablock");
 			break;
 		case 1:
-			_enemy[i] = new Crystarl();
+			_enemy[i] = new CrystarPattern3();
 			_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/Crystar/cg_crystar.mv1"), vPos, _enemyParametersMap["Crystarl"],"Crystarl");
 			break;
 		case 2:
@@ -73,8 +99,10 @@ void EnemyPool::Create() {
 
 void EnemyPool::Init(){
 	for (int i = 0; i < ENEMY_MAX_SIZE; i++) {
-		VECTOR vPos = VGet(rand() % 3000 - 1500, 0, rand() % 3000 - 1500);
-		_enemy[i]->Init(vPos);
+		if (!_enemy[i])continue;
+		//VECTOR vPos = VGet(rand() % 3000 - 1500, 0, rand() % 3000 - 1500);
+		//_enemy[i]->Init(vPos);
+		_enemy[i]->Init(_enemyInitPos[i]);
 	}
 };
 
@@ -82,9 +110,9 @@ void EnemyPool::Init(VECTOR pos) {
 
 };
 
-std::vector<VECTOR> EnemyPool::LoadJsonData(myJson jsonFile, std::string  loadName) {
+std::vector<std::pair<std::string, VECTOR>> EnemyPool::LoadJsonData(myJson jsonFile, std::string  loadName) {
 	nlohmann::json loadEnemy = jsonFile._json.at(loadName);
-	std::vector<VECTOR> posList;
+	std::vector<std::pair<std::string, VECTOR>> posList;
 	for (auto& list : loadEnemy) {
 		VECTOR pos;
 		list.at("translate").at("x").get_to(pos.x);
@@ -93,7 +121,7 @@ std::vector<VECTOR> EnemyPool::LoadJsonData(myJson jsonFile, std::string  loadNa
 		//座標修正
 		pos.x *= -1;
 
-		posList.push_back(pos);
+		posList.push_back(std::make_pair(loadName,pos));
 	}
 	return posList;
 };
@@ -112,6 +140,7 @@ EnemyBase* EnemyPool::Recicle() {
 
 bool EnemyPool::Process(){
 	for (int i = 0; i < ENEMY_MAX_SIZE; i++) {
+		if (!_enemy[i]) {continue;}
 		if (_enemy[i]->GetUse()) {
 			_enemy[i]->Process();
 		}
@@ -121,9 +150,17 @@ bool EnemyPool::Process(){
 
 bool EnemyPool::Render() {
 	for (int i = 0; i < ENEMY_MAX_SIZE; i++) {
+		if (!_enemy[i]) { continue; }
 		if (_enemy[i]->GetUse()) {
 			_enemy[i]->Render();
 		}
 	}
 	return true;
 };
+
+EnemyBase* EnemyPool::GetEnemy(int i) {
+	if (_enemy[i] != nullptr) {
+		return _enemy[i];
+	}
+	return nullptr;
+}

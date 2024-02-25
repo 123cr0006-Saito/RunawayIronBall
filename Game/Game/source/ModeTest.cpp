@@ -80,7 +80,7 @@ bool ModeTest::Initialize() {
 	_sVib = new ScreenVibration();
 
 	_enemyPool = new EnemyPool("res/JsonFile/EnemyData.json");
-	_enemyPool->Create();
+	_enemyPool->Create(json);
 
 	_planeEffectManeger = new PlaneEffect::PlaneEffectManeger();
 	ResourceServer::LoadMultGraph("res/TemporaryMaterials/split/test", ".png", 30, _effectSheet);
@@ -160,10 +160,14 @@ bool ModeTest::Process() {
 
 			//エネミーがノックバック状態の時、建物にぶつかったら破壊する
 			for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
-				ENEMYTYPE enState = _enemyPool->GetEnemy(i)->GetEnemyState();
-				float enR = _enemyPool->GetEnemy(i)->GetR();
+				EnemyBase* en = _enemyPool->GetEnemy(i);
+				if (!en) {continue;}
+				if (!en->GetUse()) { continue; }
+
+				ENEMYTYPE enState = en->GetEnemyState();
+				float enR = en->GetR();
 				if (enState == ENEMYTYPE::DEAD) {
-					VECTOR enPos = _enemyPool->GetEnemy(i)->GetCollisionPos();
+					VECTOR enPos = en->GetCollisionPos();
 					if (Collision3D::OBBSphereCol(houseObb, enPos, enR)) {
 						VECTOR vDir = VSub(houseObb.pos, pPos);
 						(*itr)->ActivateBreakObject(true, vDir);
@@ -195,14 +199,16 @@ bool ModeTest::Process() {
 
 	for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
 		if (isAttackState) {
-			if (!_enemyPool->GetEnemy(i)->GetUse()) { continue; }
-			VECTOR enPos = _enemyPool->GetEnemy(i)->GetCollisionPos();
-			float enR = _enemyPool->GetEnemy(i)->GetR();
+			EnemyBase* en = _enemyPool->GetEnemy(i);
+			if (!en) { continue; }
+			if (!en->GetUse()) { continue; }
+			VECTOR enPos = en->GetCollisionPos();
+			float enR = en->GetR();
 
 			if (Collision3D::SphereCol(ibPos, ibR, enPos, enR)) {
 				VECTOR vDir = VSub(enPos, pPos);
 				vDir = VNorm(vDir);
-				_enemyPool->GetEnemy(i)->SetKnockBack(vDir, ibPower);
+				en->SetKnockBack(vDir, ibPower);
 				PlaneEffect::BoardPolygon* effect = new PlaneEffect::BoardPolygon(VAdd(ibPos, VGet(0, 100, 0)), GetCameraBillboardMatrix(), 200, _effectSheet, 30, 1.0f / 60.0f * 1000.0f);
 				_planeEffectManeger->LoadVertical(effect);
 			}
@@ -236,18 +242,24 @@ bool ModeTest::Process() {
 
 	//空間分割を考えていないので無駄が多いです。
 	for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
-		VECTOR en1Pos = _enemyPool->GetEnemy(i)->GetCollisionPos();
-		float en1R = _enemyPool->GetEnemy(i)->GetR();
+		EnemyBase* en = _enemyPool->GetEnemy(i);
+		if (!en) { continue; }
+		if (!en->GetUse()) { continue; }
+		VECTOR en1Pos = en->GetCollisionPos();
+		float en1R = en->GetR();
 		for (int j = 0; j < _enemyPool->ENEMY_MAX_SIZE; j++) {
 			if (i == j) { continue; }
-			VECTOR en2Pos = _enemyPool->GetEnemy(j)->GetCollisionPos();
-			float en2R = _enemyPool->GetEnemy(j)->GetR();
+			EnemyBase* en = _enemyPool->GetEnemy(i);
+			if (!en) { continue; }
+			if (en->GetUse()) { continue; }
+			VECTOR en2Pos = en->GetCollisionPos();
+			float en2R = en->GetR();
 			VECTOR dirVec = VSub(en2Pos, en1Pos);
 			float length = VSize(dirVec);
 			if (length <= en1R + en2R) {
 				float pushLength = length - en1R - en2R;
 				dirVec = VNorm(dirVec);
-				_enemyPool->GetEnemy(i)->SetExtrusionPos(VScale(dirVec, pushLength));
+				en->SetExtrusionPos(VScale(dirVec, pushLength));
 			}
 		}
 	}

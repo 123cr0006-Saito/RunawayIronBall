@@ -1,13 +1,13 @@
-#include "CrystarlPattern2.h"
-CrystarlPattern2::CrystarlPattern2() :EnemyBase::EnemyBase() {
+#include "CrystarPattern4.h"
+CrystarPattern4::CrystarPattern4() :EnemyBase::EnemyBase() {
 
 };
 
-CrystarlPattern2::~CrystarlPattern2() {
+CrystarPattern4::~CrystarPattern4() {
 	EnemyBase::~EnemyBase();
 };
 
-void CrystarlPattern2::InheritanceInit() {
+void CrystarPattern4::InheritanceInit() {
 
 	_attackPos = VGet(0, 0, 0);
 	_attackDir = 0.0f;
@@ -15,7 +15,7 @@ void CrystarlPattern2::InheritanceInit() {
 	_attackDistanceSpeed = 3;
 };
 
-bool CrystarlPattern2::ModeAttack() {
+bool CrystarPattern4::ModeAttack() {
 	int nowTime = GetNowCount() - _currentTime;//今の状態になってから何秒経ったか？
 
 	//プランナーさん側で変更できる場所　※秒数単位 
@@ -43,7 +43,7 @@ bool CrystarlPattern2::ModeAttack() {
 	return true;
 };
 
-bool CrystarlPattern2::ModeCoolTime() {
+bool CrystarPattern4::ModeCoolTime() {
 	//プランナーさん側で変更できる場所　※秒数単位 
 	float moveCoolTime = 2.0f * 1000; //攻撃してからのクールタイム   
 	_attackDir += Math::DegToRad(15.0f);//毎フレーム30度増やす
@@ -55,7 +55,7 @@ bool CrystarlPattern2::ModeCoolTime() {
 	return true;
 };
 
-bool CrystarlPattern2::SetState() {
+bool CrystarPattern4::SetState() {
 	//最終的なモデルの位置や角度を調整
 	if (_model != 0) {
 		MV1SetRotationXYZ(_model, VGet(_rotation.x, _rotation.y + _attackDir, 0.0f));
@@ -64,7 +64,7 @@ bool CrystarlPattern2::SetState() {
 	return true;
 };
 
-bool CrystarlPattern2::DebugRender() {
+bool CrystarPattern4::DebugRender() {
 	DrawSphere3D(VAdd(VAdd(_pos, _diffeToCenter), _attackPos), _r, 16, GetColor(0, 0, 255), GetColor(0, 0, 255), false);
 	return true;
 };
