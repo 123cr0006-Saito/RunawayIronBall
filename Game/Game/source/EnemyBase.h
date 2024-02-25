@@ -27,6 +27,8 @@ public:
 	bool Process();
 	bool Render();
 
+	virtual void CommandProcess();
+
 	virtual bool DebugRender();
 
 	virtual bool ModeSearch();

@@ -11,6 +11,7 @@ public:
 	void Init(VECTOR pos)override;
 	void InheritanceInit()override;
 	void AnimInit()override;
+	void CommandProcess()override;
 
 	bool ModeSearch()override;
 	bool ModeAttack()override;
