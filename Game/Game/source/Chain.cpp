@@ -47,6 +47,8 @@ void Chain::Init() {
 	_followingMode = false;
 	_moveState = IB_MOVE_STATE::FOLLOWING;
 
+	_attackState = false;
+
 	_playerInstance = Player::GetInstance();
 	_playerModelHandle = _playerInstance->GetModelHandle();
 	_socketNo[0] = MV1SearchFrame(_playerModelHandle, "chain1");
@@ -84,6 +86,7 @@ bool Chain::UpdateLevel() {
 
 void Chain::Process() {
 	_moveState = _playerInstance->GetIBMoveState();
+	_attackState = _playerInstance->GetEnabledIBAttackCollision();
 
 	_cPos[0] = _playerInstance->GetRightHandPos();
 
@@ -298,7 +301,8 @@ void Chain::Render()
 }
 
 void Chain::DrawDebugInfo() {
-	DrawSphere3D(_iPos, _r, 16, COLOR_RED, COLOR_RED, false);
+	unsigned int color = _attackState ? COLOR_RED : COLOR_WHITE;
+	DrawSphere3D(_iPos, _r, 16, color, color, false);
 
 	//int x = 0;
 	//int y = 0;

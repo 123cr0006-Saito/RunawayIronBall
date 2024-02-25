@@ -22,6 +22,11 @@ public:
 	VECTOR GetBallPosition() { return _iPos; }
 	float GetBallRadius() { return _r; }
 
+
+	bool GetAttackState() { return _attackState; }
+	void SetAttackState(bool state) { _attackState = state; }
+
+	// デバッグ情報の表示
 	void DrawDebugInfo();
 
 	//齋藤が作成した関数です------------------------
@@ -67,6 +72,7 @@ private:
 	bool _followingMode;
 	
 	IB_MOVE_STATE _moveState;
+	bool _attackState;
 
 
 	Player* _playerInstance;
