@@ -31,6 +31,23 @@ void CrystarPattern3::AnimInit() {
 
 }
 
+void CrystarPattern3::CommandProcess() {
+	std::vector<CommandParam> commandParam = _frameData->GetCommandData();
+
+	for (auto itr = commandParam.begin(); itr != commandParam.end(); ++itr) {
+		// コマンドを取得
+		int command = itr->first;
+		// パラメータを取得
+		float param = itr->second;
+
+		switch (command) {
+		case EN_MOTION_CHANGE:
+			_animState = static_cast<ANIMSTATE>(param);
+			break;
+		}
+	}
+};
+
 void CrystarPattern3::Init(VECTOR pos) {
 	_IsUse = true;
 

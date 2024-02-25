@@ -289,8 +289,15 @@ void EnemyBase::SetKnockBack(VECTOR vDir, float damage) {
 	}
 };
 
+void EnemyBase::CommandProcess() {
+
+};
+
 bool EnemyBase::Process() {
 	if (_IsUse) {
+
+		
+
 		switch (_modeState) {
 		case ENEMYTYPE::SEARCH:
 			ModeSearch();
@@ -334,6 +341,7 @@ bool EnemyBase::Process() {
 		
 		SetState();
 		IndividualProcessing();
+		CommandProcess();
 	}
 
 	return true;

@@ -39,31 +39,31 @@ void EnemyPool::Create(myJson json){
 			if (enemyDataList.first == "CryStar_Glass") {
 				_enemy[i] = new CrystarPattern1();
 				handle = ResourceServer::MV1LoadModel("res/Enemy/Crystar/cg_crystar.mv1");
-				_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/Crystar/cg_crystar.mv1"), enemyDataList.second, _enemyParametersMap["Crystarl"], enemyDataList.first);
+				_enemy[i]->Create(handle, enemyDataList.second, _enemyParametersMap["Crystarl"], enemyDataList.first);
 			}
 			else if (enemyDataList.first == "CryStar_Rock") {
 				_enemy[i] = new CrystarPattern2();
 				handle = ResourceServer::MV1LoadModel("res/Enemy/Crystar/cg_crystar.mv1");
-				_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/Crystar/cg_crystar.mv1"), enemyDataList.second, _enemyParametersMap["Crystarl"], enemyDataList.first);
+				_enemy[i]->Create(handle, enemyDataList.second, _enemyParametersMap["Crystarl"], enemyDataList.first);
 			}
 			else if (enemyDataList.first == "CryStar_Iron") {
 				_enemy[i] = new CrystarPattern3();
 				handle = ResourceServer::MV1LoadModel("res/Enemy/Crystar/cg_crystar.mv1");
-				_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/Crystar/cg_crystar.mv1"), enemyDataList.second, _enemyParametersMap["Crystarl"], enemyDataList.first);
+				_enemy[i]->Create(handle, enemyDataList.second, _enemyParametersMap["Crystarl"], enemyDataList.first);
 			}
 			else if (enemyDataList.first == "Slablock_Glass" || enemyDataList.first == "Slablock_Rock") {
 				_enemy[i] = new SlaBlock();
-				handle = ResourceServer::MV1LoadModel("res/Enemy/SlaBlock/SlaBlock.mv1");
-				_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/SlaBlock/SlaBlock.mv1"), enemyDataList.second, _enemyParametersMap["Slablock"], enemyDataList.first);
+				handle = ResourceServer::MV1LoadModel("res/Enemy/SlaBlock/cg_surablock_TEST.mv1");
+				_enemy[i]->Create(handle, enemyDataList.second, _enemyParametersMap["Slablock"], enemyDataList.first);
 			}
 			else if (enemyDataList.first == "Slablock_Iron") {
 				_enemy[i] = new SlaBlockPattern2();
-				handle = ResourceServer::MV1LoadModel("res/Enemy/SlaBlock/SlaBlock.mv1");
-				_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/SlaBlock/SlaBlock.mv1"), enemyDataList.second, _enemyParametersMap["Slablock"], enemyDataList.first);
+				handle = ResourceServer::MV1LoadModel("res/Enemy/SlaBlock/cg_surablock_TEST.mv1");
+				_enemy[i]->Create(handle, enemyDataList.second, _enemyParametersMap["Slablock"], enemyDataList.first);
 			}
 			else if (enemyDataList.first == "ChainGuard") {
 				/*_enemy[i] = new ChainGuard();
-				_enemy[i]->Create(ResourceServer::MV1LoadModel("res/Enemy/ChainGuard/ChainGuard.mv1"), vPos, _enemyParametersMap[name]);*/
+				_enemy[i]->Create(handle, vPos, _enemyParametersMap[name]);*/
 			}
 			_enemyInitPos.emplace_back(enemyDataList.second);
 			// ƒf[ƒ^‚ª‚È‚¢‚Ì‚Å¡‚ÍŒÂ•Ê
