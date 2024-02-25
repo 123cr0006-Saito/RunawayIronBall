@@ -198,10 +198,11 @@ bool ModeTest::Process() {
 
 
 	for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
+		EnemyBase* en = _enemyPool->GetEnemy(i);
+		if (!en) { continue; }
+		if (!en->GetUse()) { continue; }
+
 		if (isAttackState) {
-			EnemyBase* en = _enemyPool->GetEnemy(i);
-			if (!en) { continue; }
-			if (!en->GetUse()) { continue; }
 			VECTOR enPos = en->GetCollisionPos();
 			float enR = en->GetR();
 
@@ -216,14 +217,14 @@ bool ModeTest::Process() {
 
 
 		// “G‚ÆƒvƒŒƒCƒ„[‚Ì“–‚½‚è”»’è
-		EnemyBase* enemy = _enemyPool->GetEnemy(i);
-		Sphere eCol = { enemy->GetCollisionPos(), enemy->GetR() };
+
+		Sphere eCol = { en->GetCollisionPos(), en->GetR() };
 		Capsule pCol = _player->GetCollision();
 		if (Collision3D::SphereCapsuleCol(eCol, pCol)) {
 			if (!isInvincible) {
 				_player->SetDamage();
 			}
-			VECTOR tmpPos = enemy->GetCollisionPos();
+			VECTOR tmpPos = en->GetCollisionPos();
 			tmpPos.y = 0.0f;
 
 			VECTOR vDir = VSub(pCol.down_pos, tmpPos);
@@ -234,9 +235,7 @@ bool ModeTest::Process() {
 				tmpPos = VAdd(tmpPos, VScale(vDir, eCol.r + pCol.r));
 				_player->SetPos(tmpPos);
 			}
-			enemy = nullptr;
-
-
+			//en = nullptr;
 		}
 	}
 
