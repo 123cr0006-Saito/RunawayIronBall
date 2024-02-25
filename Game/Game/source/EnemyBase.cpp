@@ -57,6 +57,7 @@ void EnemyBase::Init(VECTOR pos) {
 	_modeState = ENEMYTYPE::SEARCH;
 	_searchState = SEARCHTYPE::COOLTIME;
 	_rotation = VGet(0, 0, 0);
+	_forwardVec = VScale(Math::MatrixToVector(MGetRotY(_rotation.y), 2), -1);// モデルが-ｚの方向を正面としているので-1をかける
 
 	float randSize = (float)(rand() % 75) / 100 + 0.75;// 1 + 0.0 ~ 0.5
 	MV1SetScale(_model, VScale(VGet(1.0f, 1.0f, 1.0f), 2 * randSize));//スラブロックの借りが小さかったため2倍に設定
@@ -82,30 +83,20 @@ void EnemyBase::SetPos(VECTOR pos) {
 	_nextMovePoint = pos;
 };
 
-
-bool EnemyBase::StopPos() {
-	if (_pos.x >= _nextMovePoint.x - _speed && _pos.x <= _nextMovePoint.x + _speed &&
-		_pos.y >= _nextMovePoint.y - _speed && _pos.y <= _nextMovePoint.y + _speed &&
-		_pos.z >= _nextMovePoint.z - _speed && _pos.z <= _nextMovePoint.z + _speed)
-	{
-		return true;
-	}
-	return false;
-};
-
-
 bool EnemyBase::ModeSearchToTurn() {
 	_easingFrame++;
 	_rotation.y = Easing::Linear(_easingFrame, _oldDir, _nextDir, 60);
 	if (_easingFrame >= 60) {
 		_easingFrame = 0;
 		_nextMovePoint = _saveNextPoint;
+		_currentTime = GetNowCount();
 		if (rand() % 4 == 0) {
-			_currentTime = GetNowCount();
 			_stopTime = 1;
 			_searchState = SEARCHTYPE::COOLTIME;
 		}
 		else {
+			_stopTime = (float)(rand() % 200) / 100.0f + 2.0f;//2秒から4秒まで止まる　小数点２桁までのランダム
+			_forwardVec = VScale(Math::MatrixToVector(MGetRotY(_rotation.y), 2),-1);// モデルが-ｚの方向を正面としているので-1をかける
 			_searchState = SEARCHTYPE::MOVE;
 		}
 	}
@@ -114,13 +105,16 @@ bool EnemyBase::ModeSearchToTurn() {
 
 bool EnemyBase::ModeSearchToMove() {
 	//移動処理
-	VECTOR move = VSub(_nextMovePoint, _pos);
+	/*VECTOR move = VSub(_nextMovePoint, _pos);
 	move = VNorm(move);
 	move = VScale(move, _speed);
+	_pos = VAdd(_pos, move);*/
+	VECTOR move = VScale(_forwardVec, _speed);
 	_pos = VAdd(_pos, move);
 
-	if (StopPos()) {
-		_stopTime = (float)(rand() % 200) / 100.0f + 2.0f;//1秒から3秒まで止まる　小数点２桁までのランダム
+	//if (StopPos()) {
+	if (GetNowCount() - _currentTime >= _stopTime * 1000) {
+		_stopTime = (float)(rand() % 200) / 100.0f + 2.0f;//2秒から4秒まで止まる　小数点２桁までのランダム
 		_currentTime = GetNowCount();
 		_searchState = SEARCHTYPE::COOLTIME;
 	}
@@ -129,7 +123,7 @@ bool EnemyBase::ModeSearchToMove() {
 };
 
 bool EnemyBase::ModeSearchToCoolTime() {
-	if ((float)(GetNowCount() - _currentTime) / 1000 >= _stopTime) {
+	if (GetNowCount() - _currentTime >= _stopTime * 1000) {
 
 		VECTOR vArrow = VGet((float)(rand() % 20 / 10.0f) - 1.0f, 1.0f, (float)(rand() % 20 / 10.0f) - 1.0f);//ランダムな方向ベクトルを取る
 		vArrow = VScale(vArrow, rand() % (int)_moveRange); vArrow.y = 0.0f;//基準点からの半径分をランダムで掛け、次に進むポイントを決める
