@@ -67,6 +67,7 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	_ibMoveState = IB_MOVE_STATE::FOLLOWING;
 
 	_isAttackState = false;
+	_enabledIBAttackCollision = false;
 
 	_playNextComboAnim = true;
 
@@ -518,6 +519,7 @@ void Player::CheckFrameDataCommand()
 			break;
 		}
 		case C_P_ENABLE_IB_ATTACK_COLLISION:
+			_enabledIBAttackCollision = static_cast<bool>(param);
 			break;
 		case C_P_ENABLE_IB_FOLLOWING_MODE:
 			_ibMoveState = static_cast<int>(param) == 0 ? IB_MOVE_STATE::PUTTING_ON_SOCKET : IB_MOVE_STATE::FOLLOWING;

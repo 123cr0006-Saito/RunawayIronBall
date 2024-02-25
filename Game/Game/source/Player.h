@@ -116,8 +116,8 @@ public:
 	IB_MOVE_STATE GetIBMoveState() { return _ibMoveState; }
 
 
-	bool GetIsAttackState() { return _isAttackState; }
-
+	bool GetAttackState() { return _isAttackState; }
+	bool GetEnabledIBAttackCollision() { return _enabledIBAttackCollision; }
 
 	// フレームデータのコマンドをチェックする
 	void CheckFrameDataCommand();
@@ -164,6 +164,8 @@ private:
 
 	// 攻撃状態かどうか
 	bool _isAttackState;
+	// 鉄球の攻撃コリジョンが有効かどうか
+	bool _enabledIBAttackCollision;
 
 	// 次のコンボモーションを再生するかどうか
 	bool _playNextComboAnim;
