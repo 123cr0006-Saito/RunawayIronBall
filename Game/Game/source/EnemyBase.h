@@ -76,6 +76,7 @@ protected:
 	float _hearingRangeSize;//’®Šo”ÍˆÍ‚Ì”¼Œa
 	float _discoverRangeSize;//”­Œ©A‘ÎÛ‚ÌŒ©¸‚¤‚Ü‚Å‚Ì‹——£‚Ì”¼Œa
 	float _attackRangeSize;//³–Ê‚ÌUŒ‚”ÍˆÍ
+	int _suppression; // §ˆ³’l
 
 	//------------------------------------------------------------------------------------------------
 	
