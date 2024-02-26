@@ -102,6 +102,9 @@ bool ModeTest::Initialize() {
 
 bool ModeTest::Terminate() {
 	base::Terminate();
+	for (int i = 0; i < 2; i++) {
+	DeleteLightHandle(_lightHandle[i]);
+	}
 	return true;
 }
 
