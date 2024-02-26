@@ -331,6 +331,7 @@ bool Player::Process(float camAngleY)
 			_isTired = true;
 			_isRotationSwinging = false;
 			_rotationCnt = 0;
+			_forwardDir = _stickDir;
 			_animStatus = ANIM_STATE::HORISONTAL_SWING_03;
 		}
 	}

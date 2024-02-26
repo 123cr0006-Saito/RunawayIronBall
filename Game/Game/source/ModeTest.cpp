@@ -43,6 +43,7 @@ bool ModeTest::Initialize() {
 
 
 	int objHandle = MV1LoadModel("res/Building/House/House_test_03.mv1");
+	//int objHandle = MV1LoadModel("res/Building/TrafficLight/cg_object_shingou.mv1");
 	myJson json("Data/ObjectList/Stage_03.json");
 
 	_enemyPool = new EnemyPool("res/JsonFile/EnemyData.json");
@@ -316,6 +317,7 @@ bool ModeTest::Process() {
 	_gaugeUI[0]->Process(box_vec, _player->GetStamina(), _player->GetStaminaMax());
 	_gaugeUI[1]->Process(box_vec, 100, 100);
 
+	_player->AnimationProcess();
 	
 	_planeEffectManeger->Update();
 	_camera->Process(_player->GetPosition(), _tile);
