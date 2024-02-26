@@ -43,6 +43,7 @@
     <ClCompile Include="source\ClassificationEffect.cpp" />
     <ClCompile Include="source\EffekseerPosSynchro.cpp" />
     <ClCompile Include="source\EffekseerBase.cpp" />
+    <ClCompile Include="source\UISuppressionGauge.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -88,5 +89,6 @@
     <ClInclude Include="source\ClassificationEffect.h" />
     <ClInclude Include="source\EffekseerPosSynchro.h" />
     <ClInclude Include="source\EffekseerBase.h" />
+    <ClInclude Include="source\UISuppressionGauge.h" />
   </ItemGroup>
 </Project>

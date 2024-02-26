@@ -8,6 +8,11 @@ bool ModeTest::Initialize() {
 
 	_camera = new Camera();
 
+	_lightHandle[0] = CreateDirLightHandle(VGet(- 1, -1, -1));
+	_lightHandle[1] = CreateDirLightHandle(VGet(1, 1, 1));
+
+	_shadowHandle = MakeShadowMap(2048, 2048);
+
 	_skySphere = MV1LoadModel(_T("res/SkySphere/skysphere.mv1"));
 	_tile = MV1LoadModel(_T("res/TemporaryMaterials/stage_normal_01.mv1"));
 	MV1SetPosition(_skySphere, VGet(0, 0, 0));
@@ -20,6 +25,8 @@ bool ModeTest::Initialize() {
 
 	_chain = new Chain();
 	_chain->Init();
+
+	
 
 	//int objHandle = MV1LoadModel("res/Building/House_test_01.mv1");
 	//for (int i = 0; i < 10; i++) {
@@ -36,7 +43,12 @@ bool ModeTest::Initialize() {
 
 
 	int objHandle = MV1LoadModel("res/Building/House/House_test_03.mv1");
+	//int objHandle = MV1LoadModel("res/Building/TrafficLight/cg_object_shingou.mv1");
 	myJson json("Data/ObjectList/Stage_03.json");
+
+	_enemyPool = new EnemyPool("res/JsonFile/EnemyData.json");
+	_enemyPool->Create(json);
+
 	std::vector<std::string> loadName{ "House_Iron","House_Rock","House_Glass" };
 	for (auto&& nameList : loadName) {
 		std::vector<ModeTest::OBJECTDATA> objectData = LoadJsonObject(json._json, nameList);
@@ -69,8 +81,9 @@ bool ModeTest::Initialize() {
 	int heartHandle[3];
 	ResourceServer::LoadMultGraph("res/UI/UI_Heart", ".png", 3, heartHandle);
 	ui[0] = new UIHeart(VGet(20, 20, 0), 3,heartHandle,2);
-	//ui[0] = new UIHeart(VGet(0, 0, 0), "res/TemporaryMaterials/UI_Hp_01.png");
 	ui[1] = new UIExpPoint(VGet(0, 150, 0), "res/TemporaryMaterials/UI_EXP_01.png");
+	ResourceServer::LoadMultGraph("res/TemporaryMaterials/SuppressionGauge/suppressiongauge", ".png", 3, heartHandle);
+	ui[2] = new UISuppressionGauge(VGet(500,100,0),3, heartHandle);
 	_gaugeUI[0] = new DrawGauge(0, 3, size, true);
 	_gaugeUI[1] = new DrawGauge(0, 3, size, true);
 	_gaugeHandle[0] = ResourceServer::LoadGraph(_T("res/UI/UI_Stamina_03.png"));
@@ -79,8 +92,7 @@ bool ModeTest::Initialize() {
 	_gaugeHandle[3] = ResourceServer::LoadGraph(_T("res/UI/UI_Stamina_04.png"));
 	_sVib = new ScreenVibration();
 
-	_enemyPool = new EnemyPool("res/JsonFile/EnemyData.json");
-	_enemyPool->Create(json);
+	
 
 	_planeEffectManeger = new PlaneEffect::PlaneEffectManeger();
 	ResourceServer::LoadMultGraph("res/TemporaryMaterials/split/test", ".png", 30, _effectSheet);
@@ -91,6 +103,9 @@ bool ModeTest::Initialize() {
 
 bool ModeTest::Terminate() {
 	base::Terminate();
+	for (int i = 0; i < 2; i++) {
+	DeleteLightHandle(_lightHandle[i]);
+	}
 	return true;
 }
 
@@ -302,6 +317,7 @@ bool ModeTest::Process() {
 	_gaugeUI[0]->Process(box_vec, _player->GetStamina(), _player->GetStaminaMax());
 	_gaugeUI[1]->Process(box_vec, 100, 100);
 
+	_player->AnimationProcess();
 	
 	_planeEffectManeger->Update();
 	_camera->Process(_player->GetPosition(), _tile);
@@ -313,12 +329,12 @@ bool ModeTest::Render() {
 	SetWriteZBuffer3D(TRUE);
 	SetUseBackCulling(TRUE);
 
+	MV1DrawModel(_skySphere);
+
+
 	// ライト設定
 	SetUseLighting(TRUE);
-	//clsDx();
 
-	MV1DrawModel(_skySphere);
-	MV1DrawModel(_tile);
 	// 0,0,0を中心に線を引く
 	{
 		float linelength = 1000.f;
@@ -328,34 +344,53 @@ bool ModeTest::Render() {
 		DrawLine3D(VAdd(v, VGet(0, 0, -linelength)), VAdd(v, VGet(0, 0, linelength)), GetColor(0, 0, 255));
 	}
 
-	_player->Render();
-	_enemyPool->Render();
-	_chain->Render();
-	//_chain->DrawDebugInfo();
+	//------------------------------------
+	// シャドウマップの設定　
+	// shadowCount 0 シャドウマップに描画 1 モデルの描画
+	VECTOR lightDir = VGet(0, -1, 0);
+	SetShadowMapLightDirection(_shadowHandle, lightDir);
 
-	for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
-		(*itr)->Render();
+	// シャドウマップに描画する範囲を設定
+	// カメラの注視点を中心にする
+	float length = 10000.f;
+	VECTOR plPos = _player->GetPosition();
+	SetShadowMapDrawArea(_shadowHandle, VAdd(plPos, VGet(-length, -1.0f, -length)), VAdd(plPos, VGet(length, length, length)));
+
+	for (int shadowCount = 0; shadowCount < 2; shadowCount++) {
+		// シャドウマップの設定
+		if (shadowCount == 0) {
+			// シャドウマップへの描画の準備
+			ShadowMap_DrawSetup(_shadowHandle);
+		}
+		else if (shadowCount == 1) {
+			// シャドウマップへの描画を終了
+			ShadowMap_DrawEnd();
+
+		}
+
+		//-------------------------------------------------------------------------------------
+
+		_player->Render();
+		_enemyPool->Render();
+		_chain->Render();
+		//_chain->DrawDebugInfo();
+
+		_planeEffectManeger->Render();
+		//}
+		for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
+			(*itr)->Render();
+		}
+
+		for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
+			(*itr)->Render();
+		}
 	}
 
-	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
-		(*itr)->Render();
-	}
-
-
-	//SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
-	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
-		ui[i]->Draw();
-	}
-	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-
-	if (_player->GetStaminaRate() < 1.0f) {
-		int handleNum = floorf(_player->GetStaminaRate() * 100.0f / 33.4f);
-		_gaugeUI[1]->Draw(_gaugeHandle[handleNum]);
-		_gaugeUI[0]->Draw(_gaugeHandle[3]);
-	}
-
-	_planeEffectManeger->Render();
-
+	// 描画に使用するシャドウマップを設定
+	SetUseShadowMap(0, _shadowHandle);
+	MV1DrawModel(_tile);
+	// 描画に使用するシャドウマップの設定を解除
+	SetUseShadowMap(0, -1);
 
 	if (_drawDebug) {
 		_player->DrawDebugInfo();
@@ -364,11 +399,24 @@ bool ModeTest::Render() {
 			(*itr)->DrawDebugInfo();
 		}
 	}
+
 	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
 		(*itr)->DrawDebugInfo();
 	}
-
 	SetUseZBuffer3D(FALSE);
+
+	//SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
+	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
+		ui[i]->Draw();
+	}
+
+	if (_player->GetStaminaRate() < 1.0f) {
+		int handleNum = floorf(_player->GetStaminaRate() * 100.0f / 33.4f);
+		_gaugeUI[1]->Draw(_gaugeHandle[handleNum]);
+		_gaugeUI[0]->Draw(_gaugeHandle[3]);
+	}
+
+	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	SetFontSize(62);
 	DrawFormatString(45, 200, GetColor(0, 0, 0), "%d", _player->GetInstance()->GetNowLevel() + 1);

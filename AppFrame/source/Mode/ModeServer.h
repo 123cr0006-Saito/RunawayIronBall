@@ -15,6 +15,7 @@ public:
 	static ModeServer*GetInstance() { return (ModeServer*)_lpInstance; }
 
 	int Add(ModeBase *mode, int layer, const char *name);		// “o˜^‚Í‚·‚é‚ªAˆê“xƒƒCƒ“‚ğ‰ñ‚³‚È‚¢‚Æ‚¢‚¯‚È‚¢
+	int Del(const char *name);		// íœ—\–ñ
 	int Del(ModeBase *mode);		// íœ—\–ñ
 	ModeBase *Get(int uid);
 	ModeBase *Get(const char *name);

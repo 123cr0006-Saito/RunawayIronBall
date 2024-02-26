@@ -93,7 +93,7 @@ bool UIExpPoint::Draw() {
 	//背景は色を暗くするため頂点指定の方で描画
 	//drawgraphで暗くできるならそっちのほうが良い
 	DrawPrimitiveIndexed2D(_back, 4, vertex, 6, DX_PRIMTYPE_TRIANGLELIST, _handle[_handleNum], true);
-	//経験値の表示
+	//経験値の表示V
 	DrawPrimitiveIndexed2D(_front, 4, vertex, 6, DX_PRIMTYPE_TRIANGLELIST, _handle[_handleNum], true);
 	//デバッグ用 uv座標のvがどこにあるかの確認用
 	for (int i = 0; i < 4; i++) {
