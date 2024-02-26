@@ -307,11 +307,11 @@ bool ModeTest::Render() {
 	SetWriteZBuffer3D(TRUE);
 	SetUseBackCulling(TRUE);
 
+	MV1DrawModel(_skySphere);
+
+
 	// ライト設定
 	SetUseLighting(TRUE);
-	//clsDx();
-
-	
 
 	// 0,0,0を中心に線を引く
 	{
@@ -329,10 +329,10 @@ bool ModeTest::Render() {
 	SetShadowMapLightDirection(_shadowHandle, lightDir);
 
 	// シャドウマップに描画する範囲を設定
-    // カメラの注視点を中心にする
+	// カメラの注視点を中心にする
 	float length = 10000.f;
 	VECTOR plPos = _player->GetPosition();
-	SetShadowMapDrawArea(_shadowHandle, VAdd(plPos, VGet(-length, -1.0f, -length)), VAdd(plPos, VGet(length,length, length)));
+	SetShadowMapDrawArea(_shadowHandle, VAdd(plPos, VGet(-length, -1.0f, -length)), VAdd(plPos, VGet(length, length, length)));
 
 	for (int shadowCount = 0; shadowCount < 2; shadowCount++) {
 		// シャドウマップの設定
@@ -343,12 +343,10 @@ bool ModeTest::Render() {
 		else if (shadowCount == 1) {
 			// シャドウマップへの描画を終了
 			ShadowMap_DrawEnd();
-			// 描画に使用するシャドウマップを設定
-			SetUseShadowMap(0, _shadowHandle);
+
 		}
 
 		//-------------------------------------------------------------------------------------
-	
 
 		_player->Render();
 		_enemyPool->Render();
@@ -356,7 +354,7 @@ bool ModeTest::Render() {
 		//_chain->DrawDebugInfo();
 
 		_planeEffectManeger->Render();
-//}
+		//}
 		for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
 			(*itr)->Render();
 		}
@@ -364,13 +362,13 @@ bool ModeTest::Render() {
 		for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
 			(*itr)->Render();
 		}
-
-		MV1DrawModel(_skySphere);
-		MV1DrawModel(_tile);
 	}
+
+	// 描画に使用するシャドウマップを設定
+	SetUseShadowMap(0, _shadowHandle);
+	MV1DrawModel(_tile);
 	// 描画に使用するシャドウマップの設定を解除
 	SetUseShadowMap(0, -1);
-	TestDrawShadowMap(_shadowHandle, 0, 0, 512, 512);
 
 	if (_drawDebug) {
 		_player->DrawDebugInfo();
