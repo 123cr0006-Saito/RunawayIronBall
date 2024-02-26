@@ -9,16 +9,17 @@ bool ModePause::Initialize() {
 	GraphFilter(gauss_handle, DX_GRAPH_FILTER_GAUSS, 16, 1800);
 
 	SetUseASyncLoadFlag(TRUE);
-	 _backHandle = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu.png");
-	 _optionHandle = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/PAUSE.png");
-	 _checkHandle = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_check.png");
-	 _checkBoxHandle = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/munu_ui_check_box.png");
-	 _volumBarHandle = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/UI_Menu_Bar.png");
-	_itemHandle[0] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_se.png");
-	_itemHandle[1] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_bgm.png");
-	_itemHandle[2] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_controller_vibration.png");
-	_itemHandle[3] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_operation_gide.png");
-	_itemHandle[4] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_title_return.png");
+
+	_handleMap["back"] = ResourceServer::LoadGraph("res/ModePause/UI_Menu.png");
+	_handleMap["check"] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_check.png");
+	_handleMap["checkBox"] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/munu_ui_check_box.png");
+	_handleMap["volumBar"] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/UI_Menu_Bar.png");
+	_handleMap["se"] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_se.png");
+	_handleMap["bgm"] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_bgm.png");
+	_handleMap["vibration"] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_controller_vibration.png");
+	_handleMap["gide"] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_operation_gide.png");
+	_handleMap["return"] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_title_return.png");
+
 	SetUseASyncLoadFlag(FALSE);
 
 	//inputを作成
@@ -135,15 +136,16 @@ bool ModePause::Render() {
 	//ボリュームとかとかの描画（仮）
 	int handleX, handleY;
 
-	DrawGraph(100, 65, _backHandle, true);
-	DrawGraph(150, 105, _optionHandle, true);
-	DrawGraph(900, 460, _checkBoxHandle, true);
+	DrawGraph(0, 0, _handleMap["back"], true);
+	DrawGraph(900, 460, _handleMap["checkBox"], true);
 
 	int length[] = { _seVolum,_bgmVolum };
 	GetGraphSize(_volumBarHandle, &handleX, &handleY);
 	for (int i = 0; i < 2; i++) {
-		DrawExtendGraph(500, 250 + 110 * i, 500 + (handleX / 255 * length[i]), 250 + 110 * i + handleY,_volumBarHandle,true);
+		DrawExtendGraph(500, 250 + 110 * i, 500 + (handleX / 255 * length[i]), 250 + 110 * i + handleY, _handleMap["volumBar"],true);
 	}
+
+	std::array<std::string,5> _itemList = { "se","bgm","vibration","gide","return" };
 
 	for (int i = 0; i < MAX_MODE; i++) {
 		int _selectedItems = 0;
@@ -154,17 +156,17 @@ bool ModePause::Render() {
 		int length = 50;
 		switch (i) {
 		case 2:
-			GetGraphSize(_checkHandle, &handleX, &handleY);
-			if (_isVibration)  DrawGraph(900 + (70 - handleX) / 2, 460 + (70 - handleY) / 2, _checkHandle, true);
+			GetGraphSize(_handleMap["check"], &handleX, &handleY);
+			if (_isVibration)  DrawGraph(900 + (70 - handleX) / 2, 460 + (70 - handleY) / 2, _handleMap["check"], true);
 			break;
 		case 4:
 			_gameEnd = 190;
 			break;
 		}
-		GetGraphSize(_itemHandle[i], &handleX, &handleY);
+		GetGraphSize(_handleMap[_itemList[i]], &handleX, &handleY);
 		
 	//	DrawGraph(180 + _selectedItems, 250 + 110 * i + _gameEnd, _itemHandle[i], true);
-		DrawRotaGraph(180 + handleX/2, 250 + handleY/2 + 110 * i + _gameEnd, extRate, 0.0f, _itemHandle[i], true);
+		DrawRotaGraph(180 + handleX/2, 250 + handleY/2 + 110 * i + _gameEnd, extRate, 0.0f, _handleMap[_itemList[i]], true);
 	}
 
 	return true;
