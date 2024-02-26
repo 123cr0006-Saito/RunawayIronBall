@@ -21,6 +21,8 @@ bool ModeTest::Initialize() {
 	_chain = new Chain();
 	_chain->Init();
 
+	
+
 	//int objHandle = MV1LoadModel("res/Building/House_test_01.mv1");
 	//for (int i = 0; i < 10; i++) {
 	//	VECTOR v = VGet(rand() % 4000, 0.0f, rand() % 4000);
@@ -37,6 +39,10 @@ bool ModeTest::Initialize() {
 
 	int objHandle = MV1LoadModel("res/Building/House/House_test_03.mv1");
 	myJson json("Data/ObjectList/Stage_03.json");
+
+	_enemyPool = new EnemyPool("res/JsonFile/EnemyData.json");
+	_enemyPool->Create(json);
+
 	std::vector<std::string> loadName{ "House_Iron","House_Rock","House_Glass" };
 	for (auto&& nameList : loadName) {
 		std::vector<ModeTest::OBJECTDATA> objectData = LoadJsonObject(json._json, nameList);
@@ -69,8 +75,9 @@ bool ModeTest::Initialize() {
 	int heartHandle[3];
 	ResourceServer::LoadMultGraph("res/UI/UI_Heart", ".png", 3, heartHandle);
 	ui[0] = new UIHeart(VGet(20, 20, 0), 3,heartHandle,2);
-	//ui[0] = new UIHeart(VGet(0, 0, 0), "res/TemporaryMaterials/UI_Hp_01.png");
 	ui[1] = new UIExpPoint(VGet(0, 150, 0), "res/TemporaryMaterials/UI_EXP_01.png");
+	ResourceServer::LoadMultGraph("res/TemporaryMaterials/SuppressionGauge/suppressiongauge", ".png", 3, heartHandle);
+	ui[2] = new UISuppressionGauge(VGet(500,100,0),3, heartHandle);
 	_gaugeUI[0] = new DrawGauge(0, 3, size, true);
 	_gaugeUI[1] = new DrawGauge(0, 3, size, true);
 	_gaugeHandle[0] = ResourceServer::LoadGraph(_T("res/UI/UI_Stamina_03.png"));
@@ -79,8 +86,7 @@ bool ModeTest::Initialize() {
 	_gaugeHandle[3] = ResourceServer::LoadGraph(_T("res/UI/UI_Stamina_04.png"));
 	_sVib = new ScreenVibration();
 
-	_enemyPool = new EnemyPool("res/JsonFile/EnemyData.json");
-	_enemyPool->Create(json);
+	
 
 	_planeEffectManeger = new PlaneEffect::PlaneEffectManeger();
 	ResourceServer::LoadMultGraph("res/TemporaryMaterials/split/test", ".png", 30, _effectSheet);

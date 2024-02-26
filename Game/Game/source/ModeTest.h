@@ -8,6 +8,7 @@
 #include "Chain.h"
 #include "UIBase.h"
 #include "UIExpPoint.h"
+#include "UISuppressionGauge.h"
 #include "ScreenVibration.h"
 #include "uiheart.h"
 
@@ -47,7 +48,7 @@ protected:
 	Player* _player;
 
 	Chain* _chain;
-	UIBase* ui[2];
+	UIBase* ui[3];
 	DrawGauge* _gaugeUI[2];
 	int _gaugeHandle[4];// 0フレーム 3ゲージ
 	float nowParcent = 100;

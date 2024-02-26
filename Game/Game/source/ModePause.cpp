@@ -140,7 +140,7 @@ bool ModePause::Render() {
 	DrawGraph(900, 460, _handleMap["checkBox"], true);
 
 	int length[] = { _seVolum,_bgmVolum };
-	GetGraphSize(_volumBarHandle, &handleX, &handleY);
+	GetGraphSize(_handleMap["volumBar"], &handleX, &handleY);
 	for (int i = 0; i < 2; i++) {
 		DrawExtendGraph(500, 250 + 110 * i, 500 + (handleX / 255 * length[i]), 250 + 110 * i + handleY, _handleMap["volumBar"],true);
 	}
