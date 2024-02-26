@@ -134,7 +134,7 @@ bool ModeTest::Process() {
 		ui[i]->Process();
 	}
 
-	bool isAttackState = _player->GetIsAttackState();
+	bool isAttackState = _chain->GetAttackState();
 	bool isInvincible = _player->GetIsInvincible();
 	VECTOR pPos = _player->GetPosition();
 
