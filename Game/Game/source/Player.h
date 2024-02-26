@@ -11,19 +11,6 @@
 
 #include "ModelColor.h"
 
-// テスト用
-// フレームデータのコマンド
-#define C_P_CHANGE_MOTION							0
-#define	C_P_ENABLE_MOVE								1
-#define C_P_MOVE_FORWARD									2
-#define C_P_ACCEPT_COMBO_INPUT					3
-#define C_P_CHECK_CHANGE_COMBO				4
-#define C_P_CHECK_CHANGE_ATTACK_STATE		5
-
-#define C_P_ENABLE_IB_ATTACK_COLLISION		100
-#define C_P_ENABLE_IB_FOLLOWING_MODE		101
-#define C_P_ENABLE_IB_INTERPOLATION			102
-
 enum IB_MOVE_STATE {
 	FOLLOWING,
 	PUTTING_ON_SOCKET,
@@ -132,6 +119,7 @@ private:
 	// Lスティック入力があった場合に更新する
 	VECTOR _stickDir;
 
+	/* ステータス関連 */
 	// HP
 	int _hp;
 	// 無敵かどうか
@@ -167,6 +155,9 @@ private:
 	// 鉄球の攻撃コリジョンが有効かどうか
 	bool _enabledIBAttackCollision;
 
+	/* アニメーション関連 */
+	// モーション変更可能かどうか
+	bool  _canMotionCancel;
 	// 次のコンボモーションを再生するかどうか
 	bool _playNextComboAnim;
 

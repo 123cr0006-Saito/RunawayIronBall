@@ -31,13 +31,25 @@ namespace {
 	constexpr float MOVE_RUN_THRESHOLD = 0.6f;
 
 
-	// 仮
 	// スタミナの最大値
 	constexpr float STAMINA_MAX = 480.0f;
 	// 回転攻撃の1フレームあたりのスタミナ消費量
 	constexpr float ROTAION_SWING_STAMINA_DECREASE = 1.0f;
 	// スタミナが0になってから最大値まで回復するのにかかる時間
 	constexpr float STANIMA_RECOVERY_TIME = 120.0f;
+
+	// フレームデータのコマンド
+	constexpr unsigned int	C_P_CHANGE_MOTION							= 0;
+	constexpr unsigned int 	C_P_ENABLE_MOVE								= 1;
+	constexpr unsigned int 	C_P_MOVE_FORWARD							= 2;
+	constexpr unsigned int 	C_P_ACCEPT_COMBO_INPUT					= 3;
+	constexpr unsigned int 	C_P_CHECK_CHANGE_COMBO				= 4;
+	constexpr unsigned int 	C_P_CHECK_CHANGE_ATTACK_STATE		= 5;
+	constexpr unsigned int 	C_P_ENACLE_MOTION_CANCEL				= 6;
+
+	constexpr unsigned int 	C_P_ENABLE_IB_ATTACK_COLLISION		= 100;
+	constexpr unsigned int 	C_P_ENABLE_IB_FOLLOWING_MODE		= 101;
+	constexpr unsigned int 	C_P_ENABLE_IB_INTERPOLATION			= 102;
 }
 
 Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
@@ -69,6 +81,7 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	_isAttackState = false;
 	_enabledIBAttackCollision = false;
 
+	_canMotionCancel = true;
 	_playNextComboAnim = true;
 
 
@@ -223,7 +236,7 @@ bool Player::Process(float camAngleY)
 		// 左スティックの入力情報を取得する
 		auto lStick = _input->GetAdjustedStick_L();
 		VECTOR vMoveDir = VGet(lStick.x, 0, lStick.y);
-		if (_canMove) {
+		if (_canMove || _canMotionCancel) {
 			float size = VSize(vMoveDir);
 			// 左スティックの入力があったら
 			if (size > 0.000000f) {
@@ -255,7 +268,7 @@ bool Player::Process(float camAngleY)
 			_moveSpeedFWD = 0.f;
 		}
 
-		if (!_isAttackState && _animStatus != ANIM_STATE::AVOIDANCE && _animStatus != ANIM_STATE::HIT) {
+		if (_canMotionCancel) {
 			if (_isMoved) {
 				if (_isTired) {
 					_animStatus = ANIM_STATE::WALK_TIRED;
@@ -281,7 +294,7 @@ bool Player::Process(float camAngleY)
 					_forwardDir = VTransform(_forwardDir, MGetRotAxis(vN, rotRad));
 				}
 			}
-			else {
+			else if(!_isAttackState) {
 				if (_isTired) {
 					_animStatus = ANIM_STATE::IDLE_TIRED;
 					_idleFightingRemainingCnt = 0;
@@ -518,6 +531,10 @@ void Player::CheckFrameDataCommand()
 			_isAttackState = nextState;
 			break;
 		}
+		case C_P_ENACLE_MOTION_CANCEL:
+			_canMotionCancel = static_cast<bool>(param);
+			break;
+
 		case C_P_ENABLE_IB_ATTACK_COLLISION:
 			_enabledIBAttackCollision = static_cast<bool>(param);
 			break;
