@@ -263,6 +263,8 @@ bool ModeTest::Process() {
 		}
 	}
 
+	_player->AnimationProcess();
+
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_START)) {
 		_enemyPool->Init();

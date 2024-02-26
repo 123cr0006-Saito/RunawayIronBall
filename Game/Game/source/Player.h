@@ -53,6 +53,7 @@ public:
 	~Player() override;
 
 	bool Process(float camAngleY);
+	bool AnimationProcess();
 	bool BlastOffProcess();
 	bool Render() override;
 

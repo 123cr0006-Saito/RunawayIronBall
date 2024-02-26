@@ -340,7 +340,7 @@ bool Player::Process(float camAngleY)
 	}
 
 	// UŒ‚ó‘Ô‚ÌXV
-	if (_isTired == false && _animStatus != ANIM_STATE::AVOIDANCE) {
+	if (_isTired == false && _animStatus != ANIM_STATE::AVOIDANCE && _animStatus != ANIM_STATE::HIT) {
 		// ‰ñ“]UŒ‚
 		if (_rotationCnt > 90) {
 			if (!_isRotationSwinging) {
@@ -399,13 +399,19 @@ bool Player::Process(float camAngleY)
 	UpdateBone();
 	//-------------------
 
+	
+
+
+
+
+
+	return true;
+}
+
+bool Player::AnimationProcess()
+{
 	_animManager->Process(static_cast<int>(_animStatus));
 	_frameData->Process(static_cast<int>(_animStatus), _animManager->GetPlayTime());
-
-
-
-
-
 	return true;
 }
 
