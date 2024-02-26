@@ -35,11 +35,20 @@ public:
 	bool Process();
 	bool Render();
 
+	static EnemyPool* GetInstance() { return _instance; }
+	static EnemyPool* _instance;
+
 	EnemyBase* GetEnemy(int i);
+	void SetSuppression(int suppression) { _nowSuppression -= suppression; }
+	int GetNowSuppression() { return _nowSuppression; }
+	int GetMaxSuppression() { return _maxSuppression; }
+
 	static const int ENEMY_MAX_SIZE = 100;
 private:
 	EnemyBase* _enemy[ENEMY_MAX_SIZE];
 	std::map<std::string, EnemyParam> _enemyParametersMap;
 	std::vector<VECTOR> _enemyInitPos;
+
+	int _nowSuppression,_maxSuppression;
 };
 

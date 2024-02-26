@@ -1,5 +1,9 @@
 #include "EnemyPool.h"
+
+EnemyPool*  EnemyPool::_instance = nullptr;
+
 EnemyPool::EnemyPool(std::string paramJsonFile){
+	_instance = this;
 	myJson json(paramJsonFile);
 	EnemyParam param;
 	std::string enemyName;
@@ -15,6 +19,7 @@ EnemyPool::EnemyPool(std::string paramJsonFile){
 		list.at("SartchRange").get_to(param._sartchRange);
 		list.at("DiscoverRange").get_to(param._discoverRangeSize);
 		list.at("AttackRange").get_to(param._attackRangeSize);
+		list.at("Suppression").get_to(param._suppression);
 		_enemyParametersMap[enemyName] = param;
 	}
 };
@@ -29,37 +34,33 @@ void EnemyPool::Create(myJson json){
 	int i = 0;
 	//読み込む敵の名前のリスト
 	int handle = 0;
-	std::vector<std::string> enemyName = { "CryStar_Glass","CryStar_Rock", "CryStar_Iron", "Slablock_Glass","Slablock_Rock","Slablock_Iron","ChainGuard" };
-
+	std::vector<std::string> enemyName = { "CryStar_Glass","CryStar_Rock", "CryStar_Iron", "Slablock_Glass","Slablock_Rock","Slablock_Iron"/*,"ChainGuard"*/ };
+	
 	// データの読み込み
 	for (auto&& name : enemyName) {
 		std::vector<std::pair<std::string, VECTOR>> enemyData = LoadJsonData(json, name);
+		_maxSuppression += _enemyParametersMap[name]._suppression * enemyData.size();
 		// データの分配
 		for (auto& enemyDataList : enemyData) {
 			if (enemyDataList.first == "CryStar_Glass") {
 				_enemy[i] = new CrystarPattern1();
 				handle = ResourceServer::MV1LoadModel("res/Enemy/Crystar/cg_crystar.mv1");
-				_enemy[i]->Create(handle, enemyDataList.second, _enemyParametersMap["Crystarl"], enemyDataList.first);
 			}
 			else if (enemyDataList.first == "CryStar_Rock") {
 				_enemy[i] = new CrystarPattern2();
 				handle = ResourceServer::MV1LoadModel("res/Enemy/Crystar/cg_crystar.mv1");
-				_enemy[i]->Create(handle, enemyDataList.second, _enemyParametersMap["Crystarl"], enemyDataList.first);
 			}
 			else if (enemyDataList.first == "CryStar_Iron") {
 				_enemy[i] = new CrystarPattern3();
 				handle = ResourceServer::MV1LoadModel("res/Enemy/Crystar/cg_crystar.mv1");
-				_enemy[i]->Create(handle, enemyDataList.second, _enemyParametersMap["Crystarl"], enemyDataList.first);
 			}
 			else if (enemyDataList.first == "Slablock_Glass" || enemyDataList.first == "Slablock_Rock") {
 				_enemy[i] = new SlaBlock();
 				handle = ResourceServer::MV1LoadModel("res/Enemy/SlaBlock/cg_surablock_TEST.mv1");
-				_enemy[i]->Create(handle, enemyDataList.second, _enemyParametersMap["Slablock"], enemyDataList.first);
 			}
 			else if (enemyDataList.first == "Slablock_Iron") {
 				_enemy[i] = new SlaBlockPattern2();
 				handle = ResourceServer::MV1LoadModel("res/Enemy/SlaBlock/cg_surablock_TEST.mv1");
-				_enemy[i]->Create(handle, enemyDataList.second, _enemyParametersMap["Slablock"], enemyDataList.first);
 			}
 			else if (enemyDataList.first == "ChainGuard") {
 				/*_enemy[i] = new ChainGuard();
@@ -67,10 +68,11 @@ void EnemyPool::Create(myJson json){
 			}
 			_enemyInitPos.emplace_back(enemyDataList.second);
 			// データがないので今は個別
-			//_enemy[i]->Create(handle, enemyDataList.second, _enemyParametersMap[enemyDataList.first], enemyDataList.first);
+			_enemy[i]->Create(handle, enemyDataList.second, _enemyParametersMap[enemyDataList.first], enemyDataList.first);
 			i++;
 		}
 	}
+	_nowSuppression = _maxSuppression;
 };
 
 void EnemyPool::Create() {

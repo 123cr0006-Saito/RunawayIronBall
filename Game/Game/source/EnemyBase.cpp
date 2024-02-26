@@ -1,4 +1,5 @@
 #include "EnemyBase.h"
+#include "EnemyPool.h"
 
 EnemyBase::EnemyBase() {
 	_player = nullptr;
@@ -35,6 +36,7 @@ bool EnemyBase::Create(int model, VECTOR pos, EnemyParam param, std::string name
 	_sartchRange = param._sartchRange;
 	_discoverRangeSize = param._discoverRangeSize;
 	_attackRangeSize = param._attackRangeSize;
+	_suppression = param._suppression;
 
 	Init(pos);
 	InheritanceInit();
@@ -282,9 +284,10 @@ void EnemyBase::SetKnockBack(VECTOR vDir, float damage) {
 		if (_hp <= 0) {
 
 			_knockBackSpeedFrame = damage;
-
+			EnemyPool::GetInstance()->SetSuppression(_suppression);
 			_player->SetExp(_weightExp);
 			_modeState = ENEMYTYPE::DEAD;
+
 		}
 	}
 };
