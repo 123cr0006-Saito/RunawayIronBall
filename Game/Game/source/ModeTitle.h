@@ -25,8 +25,7 @@ public:
 protected:
 	XInput* _input;
 	int _modeCount;//今選択されている項目の番号
-	int _titleLogo;//タイトルロゴの画像ハンドル
-	int _comandHandlle[6];//タイトルの項目で使用する画像ハンドル
+	std::unordered_map<std::string, int> _handleMap;//タイトルで使用する画像ハンドルのマップ
 	bool _IsGameStart;//ゲームを開始したかどうか
 	//-----------------
 	//タイトルが割れる処理の変数
