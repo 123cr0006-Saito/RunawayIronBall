@@ -11,14 +11,14 @@ bool ModePause::Initialize() {
 	SetUseASyncLoadFlag(TRUE);
 
 	_handleMap["back"] = ResourceServer::LoadGraph("res/ModePause/UI_Menu.png");
-	_handleMap["check"] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_check.png");
-	_handleMap["checkBox"] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/munu_ui_check_box.png");
-	_handleMap["volumBar"] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/UI_Menu_Bar.png");
-	_handleMap["se"] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_se.png");
-	_handleMap["bgm"] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_bgm.png");
-	_handleMap["vibration"] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_controller_vibration.png");
-	_handleMap["gide"] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_operation_gide.png");
-	_handleMap["return"] = ResourceServer::LoadGraph("res/TemporaryMaterials/Pause/menu_ui_title_return.png");
+	_handleMap["check"] = ResourceServer::LoadGraph("res/ModePause/UI_Menu_Check.png");
+	_handleMap["checkBox"] = ResourceServer::LoadGraph("res/ModePause/UI_Menu_Check_Box.png");
+	_handleMap["volumBar"] = ResourceServer::LoadGraph("res/ModePause/");
+	_handleMap["se"] = ResourceServer::LoadGraph("res/ModePause/UI_Menu_SE.png");
+	_handleMap["bgm"] = ResourceServer::LoadGraph("res/ModePause/UI_Menu_BGM.png");
+	_handleMap["vibration"] = ResourceServer::LoadGraph("res/ModePause/UI_Menu_Controll.png");
+	_handleMap["gide"] = ResourceServer::LoadGraph("res/ModePause/UI_Menu_How_To.png");
+	_handleMap["return"] = ResourceServer::LoadGraph("res/ModePause/UI_Menu_Back.png");
 
 	SetUseASyncLoadFlag(FALSE);
 
@@ -66,7 +66,9 @@ void ModePause::SelectOperationInstructions() {
 
 void ModePause::SelectGameEnd() {
 	if (_input->GetTrg(XINPUT_BUTTON_A)) {
-		global.exit_count = true;
+		ModeServer::GetInstance()->Del("Game");
+		ModeServer::GetInstance()->Del(this);
+		ModeServer::GetInstance()->Add(new ModeTitle(), 1, "Title");
 		global._soundServer->DirectPlay("SE_Press");
 	}
 };
@@ -137,7 +139,7 @@ bool ModePause::Render() {
 	int handleX, handleY;
 
 	DrawGraph(0, 0, _handleMap["back"], true);
-	DrawGraph(900, 460, _handleMap["checkBox"], true);
+	DrawGraph(1000, 550, _handleMap["checkBox"], true);
 
 	int length[] = { _seVolum,_bgmVolum };
 	GetGraphSize(_handleMap["volumBar"], &handleX, &handleY);
@@ -151,22 +153,24 @@ bool ModePause::Render() {
 		int _selectedItems = 0;
 		int _gameEnd = 0;
 		float extRate = 1.0f;
+
+		int originX = 180;
+		int originY = 400;
 		
 		if (_selectItem == i)  extRate = 1.1f; 
 		int length = 50;
 		switch (i) {
 		case 2:
+			originY -= 50;
 			GetGraphSize(_handleMap["check"], &handleX, &handleY);
-			if (_isVibration)  DrawGraph(900 + (70 - handleX) / 2, 460 + (70 - handleY) / 2, _handleMap["check"], true);
+			if (_isVibration)  DrawGraph(1000+handleX/2, 350 + 100 * i + handleY / 2,  _handleMap["check"], true);
 			break;
 		case 4:
-			_gameEnd = 190;
+			_gameEnd = 400;
 			break;
 		}
 		GetGraphSize(_handleMap[_itemList[i]], &handleX, &handleY);
-		
-	//	DrawGraph(180 + _selectedItems, 250 + 110 * i + _gameEnd, _itemHandle[i], true);
-		DrawRotaGraph(180 + handleX/2, 250 + handleY/2 + 110 * i + _gameEnd, extRate, 0.0f, _handleMap[_itemList[i]], true);
+		DrawRotaGraph(originX + handleX/2 + _gameEnd, originY + handleY/2 + 100 * i , extRate, 0.0f, _handleMap[_itemList[i]], true);
 	}
 
 	return true;

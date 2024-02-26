@@ -1,4 +1,4 @@
-
+#pragma once
 #include "appframe.h"
 
 class ModeTitle : public ModeBase
