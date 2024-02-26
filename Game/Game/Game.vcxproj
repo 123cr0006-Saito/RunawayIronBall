@@ -197,6 +197,7 @@
     <ClCompile Include="source\UIBase.cpp" />
     <ClCompile Include="source\UIExpPoint.cpp" />
     <ClCompile Include="source\UIHeart.cpp" />
+    <ClCompile Include="source\UISuppressionGauge.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CrystarPattern1.h" />
@@ -242,6 +243,7 @@
     <ClInclude Include="source\UIBase.h" />
     <ClInclude Include="source\UIExpPoint.h" />
     <ClInclude Include="source\UIHeart.h" />
+    <ClInclude Include="source\UISuppressionGauge.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
