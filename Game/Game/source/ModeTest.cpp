@@ -44,6 +44,8 @@ bool ModeTest::Initialize() {
 
 	int objHandle = MV1LoadModel("res/Building/House/House_test_03.mv1");
 	//int objHandle = MV1LoadModel("res/Building/TrafficLight/cg_object_shingou.mv1");
+	//int objHandle = MV1LoadModel("res/Building/Pole/cg_object_denchu.mv1");
+	//int objHandle = MV1LoadModel("res/Building/StoneLantern/cg_object_tourou.mv1");
 	myJson json("Data/ObjectList/Stage_03.json");
 
 	_enemyPool = new EnemyPool("res/JsonFile/EnemyData.json");
@@ -212,73 +214,6 @@ bool ModeTest::Process() {
 
 
 
-	for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
-		EnemyBase* en = _enemyPool->GetEnemy(i);
-		if (!en) { continue; }
-		if (!en->GetUse()) { continue; }
-
-		if (isAttackState) {
-			VECTOR enPos = en->GetCollisionPos();
-			float enR = en->GetR();
-
-			if (Collision3D::SphereCol(ibPos, ibR, enPos, enR)) {
-				VECTOR vDir = VSub(enPos, pPos);
-				vDir = VNorm(vDir);
-				en->SetKnockBack(vDir, ibPower);
-				PlaneEffect::BoardPolygon* effect = new PlaneEffect::BoardPolygon(VAdd(ibPos, VGet(0, 100, 0)), GetCameraBillboardMatrix(), 200, _effectSheet, 30, 1.0f / 60.0f * 1000.0f);
-				_planeEffectManeger->LoadVertical(effect);
-			}
-		}
-
-
-		// 敵とプレイヤーの当たり判定
-
-		Sphere eCol = { en->GetCollisionPos(), en->GetR() };
-		Capsule pCol = _player->GetCollision();
-		if (Collision3D::SphereCapsuleCol(eCol, pCol)) {
-			if (!isInvincible) {
-				_player->SetDamage();
-			}
-			VECTOR tmpPos = en->GetCollisionPos();
-			tmpPos.y = 0.0f;
-
-			VECTOR vDir = VSub(pCol.down_pos, tmpPos);
-			vDir.y = 0.0f;
-			float squareLength = VSquareSize(vDir);
-			if (squareLength >= 0.0001f) {
-				vDir = VNorm(vDir);
-				tmpPos = VAdd(tmpPos, VScale(vDir, eCol.r + pCol.r));
-				_player->SetPos(tmpPos);
-			}
-			//en = nullptr;
-		}
-	}
-
-	//空間分割を考えていないので無駄が多いです。
-	for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
-		EnemyBase* en = _enemyPool->GetEnemy(i);
-		if (!en) { continue; }
-		if (!en->GetUse()) { continue; }
-		VECTOR en1Pos = en->GetCollisionPos();
-		float en1R = en->GetR();
-		for (int j = 0; j < _enemyPool->ENEMY_MAX_SIZE; j++) {
-			if (i == j) { continue; }
-			EnemyBase* en = _enemyPool->GetEnemy(i);
-			if (!en) { continue; }
-			if (en->GetUse()) { continue; }
-			VECTOR en2Pos = en->GetCollisionPos();
-			float en2R = en->GetR();
-			VECTOR dirVec = VSub(en2Pos, en1Pos);
-			float length = VSize(dirVec);
-			if (length <= en1R + en2R) {
-				float pushLength = length - en1R - en2R;
-				dirVec = VNorm(dirVec);
-				en->SetExtrusionPos(VScale(dirVec, pushLength));
-			}
-		}
-	}
-
-
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_START)) {
 		_enemyPool->Init();
 		//_player->SetDamage();
@@ -371,7 +306,6 @@ bool ModeTest::Render() {
 		//-------------------------------------------------------------------------------------
 
 		_player->Render();
-		_enemyPool->Render();
 		_chain->Render();
 		//_chain->DrawDebugInfo();
 
@@ -406,9 +340,9 @@ bool ModeTest::Render() {
 	SetUseZBuffer3D(FALSE);
 
 	//SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
-	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
-		ui[i]->Draw();
-	}
+	//for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
+	//	ui[i]->Draw();
+	//}
 
 	if (_player->GetStaminaRate() < 1.0f) {
 		int handleNum = floorf(_player->GetStaminaRate() * 100.0f / 33.4f);
