@@ -46,6 +46,8 @@
     <ClCompile Include="source\UISuppressionGauge.cpp" />
     <ClCompile Include="source\TimeLimit.cpp" />
     <ClCompile Include="source\UITimeLimit.cpp" />
+    <ClCompile Include="source\BoardPolygonDust.cpp" />
+    <ClCompile Include="source\PlaneEffectBase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -94,5 +96,7 @@
     <ClInclude Include="source\UISuppressionGauge.h" />
     <ClInclude Include="source\TimeLimit.h" />
     <ClInclude Include="source\UITimeLimit.h" />
+    <ClInclude Include="source\BoardPolygonDust.h" />
+    <ClInclude Include="source\PlaneEffectBase.h" />
   </ItemGroup>
 </Project>
