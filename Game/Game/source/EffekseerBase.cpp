@@ -5,7 +5,7 @@
 //‰½‰ñ‚àŒÄ‚Ño‚·‚Æ‚»‚Ì‚Ô‚ñˆê‚Éˆ—‚³‚ê‚é
 
 EffekseerBase::EffekseerBase(std::string name, VECTOR* pos,float size,float speed,bool loopFlag) :
-	_effectResourceHandle(ResourceServer::LoadEffekseerEffect(name.c_str())),
+	_effectResourceHandle(ResourceServer::LoadEffekseerEffect(_T(name.c_str()),_T(name.c_str()))),
 	_pos(*pos),
 	_speed(speed),
 	_size(size),

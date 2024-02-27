@@ -50,7 +50,7 @@ protected:
 	Player* _player;
 
 	Chain* _chain;
-	UIBase* ui[4];
+	UIBase* ui[3];
 	DrawGauge* _gaugeUI[2];
 	int _gaugeHandle[4];// 0フレーム 3ゲージ
 	float nowParcent = 100;

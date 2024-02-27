@@ -33,7 +33,7 @@ DrawGauge::DrawGauge(int image, int start_pos, float size, bool flag)
 };
 
 DrawGauge::DrawGauge(const char* name, int start_pos, float size, bool flag)
-    :handle(ResourceServer::LoadGraph(_T(name))),
+    :handle(ResourceServer::LoadGraph(_T(name),_T(name))),
     _startPosition(start_pos),
     _size(size),
     _transFlag(flag ? -1 : 1)

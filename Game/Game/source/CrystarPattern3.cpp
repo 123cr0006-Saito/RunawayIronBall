@@ -17,7 +17,7 @@ void CrystarPattern3::InheritanceInit() {
 
 void CrystarPattern3::AnimInit() {
 
-	_roof = new CrystarRoof(ResourceServer::MV1LoadModel("res/Enemy/Crystar/cg_crystar_roof.mv1"), _model);
+	_roof = new CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof","res/Enemy/Crystar/cg_crystar_roof.mv1"), _model);
 
 	//// モーションリストのロード
 	MotionList::Load("Crystarl", "MotionList_Crystarl.csv");

@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "math.h"
 #include "EnemyStract.h"
+#include "BoardPolygon.h"
 #include "PlaneEffectManeger.h"
 
 #include <string>

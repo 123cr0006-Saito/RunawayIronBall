@@ -68,9 +68,9 @@ bool ModeTest::Initialize() {
 		v.z -= 2000.0f;
 
 		std::array<int, 3> towerModelHandle;
-		towerModelHandle[0] = ResourceServer::MV1LoadModel("res/Building/Tower/test_Tower_01.mv1");
-		towerModelHandle[1] = ResourceServer::MV1LoadModel("res/Building/Tower/test_Tower_02.mv1");
-		towerModelHandle[2] = ResourceServer::MV1LoadModel("res/Building/Tower/test_Tower_03.mv1");
+		towerModelHandle[0] = ResourceServer::MV1LoadModel("Tower01","res/Building/Tower/test_Tower_01.mv1");
+		towerModelHandle[1] = ResourceServer::MV1LoadModel("Tower02","res/Building/Tower/test_Tower_02.mv1");
+		towerModelHandle[2] = ResourceServer::MV1LoadModel("Tower03","res/Building/Tower/test_Tower_03.mv1");
 
 		Tower* tower = new Tower();
 		tower->Init(towerModelHandle, v, VGet(0,0,0), VGet(1,1,1));
@@ -81,23 +81,23 @@ bool ModeTest::Initialize() {
 
 	int size = 100;
 	int heartHandle[3];
-	ResourceServer::LoadMultGraph("res/UI/UI_Heart", ".png", 3, heartHandle);
+	ResourceServer::LoadMultGraph("Heart","res/UI/UI_Heart", ".png", 3, heartHandle);
 	ui[0] = new UIHeart(VGet(20, 20, 0), 3,heartHandle,2);
 	ui[1] = new UIExpPoint(VGet(0, 150, 0), "res/TemporaryMaterials/UI_EXP_01.png");
-	ResourceServer::LoadMultGraph("res/TemporaryMaterials/SuppressionGauge/suppressiongauge", ".png", 3, heartHandle);
+	ResourceServer::LoadMultGraph("Suppressiongauge","res/TemporaryMaterials/SuppressionGauge/suppressiongauge", ".png", 3, heartHandle);
 	ui[2] = new UISuppressionGauge(VGet(500,100,0),3, heartHandle);
 	_gaugeUI[0] = new DrawGauge(0, 3, size, true);
 	_gaugeUI[1] = new DrawGauge(0, 3, size, true);
-	_gaugeHandle[0] = ResourceServer::LoadGraph(_T("res/UI/UI_Stamina_03.png"));
-	_gaugeHandle[1] = ResourceServer::LoadGraph(_T("res/UI/UI_Stamina_02.png"));
-	_gaugeHandle[2] = ResourceServer::LoadGraph(_T("res/UI/UI_Stamina_01.png"));
-	_gaugeHandle[3] = ResourceServer::LoadGraph(_T("res/UI/UI_Stamina_04.png"));
+	_gaugeHandle[0] = ResourceServer::LoadGraph("Stamina03",_T("res/UI/UI_Stamina_03.png"));
+	_gaugeHandle[1] = ResourceServer::LoadGraph("Stamina02",_T("res/UI/UI_Stamina_02.png"));
+	_gaugeHandle[2] = ResourceServer::LoadGraph("Stamina01",_T("res/UI/UI_Stamina_01.png"));
+	_gaugeHandle[3] = ResourceServer::LoadGraph("Stamina04",_T("res/UI/UI_Stamina_04.png"));
 	_sVib = new ScreenVibration();
 
 	
 
 	_planeEffectManeger = new PlaneEffect::PlaneEffectManeger();
-	ResourceServer::LoadMultGraph("res/TemporaryMaterials/split/test", ".png", 30, _effectSheet);
+	ResourceServer::LoadMultGraph("split","res/TemporaryMaterials/split/test", ".png", 30, _effectSheet);
 	//global._soundServer->DirectPlay("Stage03");
 	global._soundServer->BgmFadeIn("Stage03", 2000);
 	return true;
