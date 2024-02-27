@@ -44,6 +44,8 @@
     <ClCompile Include="source\EffekseerPosSynchro.cpp" />
     <ClCompile Include="source\EffekseerBase.cpp" />
     <ClCompile Include="source\UISuppressionGauge.cpp" />
+    <ClCompile Include="source\TimeLimit.cpp" />
+    <ClCompile Include="source\UITimeLimit.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -90,5 +92,7 @@
     <ClInclude Include="source\EffekseerPosSynchro.h" />
     <ClInclude Include="source\EffekseerBase.h" />
     <ClInclude Include="source\UISuppressionGauge.h" />
+    <ClInclude Include="source\TimeLimit.h" />
+    <ClInclude Include="source\UITimeLimit.h" />
   </ItemGroup>
 </Project>

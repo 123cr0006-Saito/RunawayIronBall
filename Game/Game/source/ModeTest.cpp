@@ -8,8 +8,11 @@ bool ModeTest::Initialize() {
 
 	_camera = new Camera();
 
+	int alpha = 10;
 	_lightHandle[0] = CreateDirLightHandle(VGet(- 1, -1, -1));
+	SetLightAmbColorHandle(_lightHandle[0], GetColorF(100, 0, 0, alpha));
 	_lightHandle[1] = CreateDirLightHandle(VGet(1, 1, 1));
+	SetLightAmbColorHandle(_lightHandle[1], GetColorF(0,0,100, alpha));
 
 	_shadowHandle = MakeShadowMap(2048, 2048);
 
@@ -26,7 +29,8 @@ bool ModeTest::Initialize() {
 	_chain = new Chain();
 	_chain->Init();
 
-	
+	_timeLimit = new TimeLimit();
+	_timeLimit->SetTimeLimit(11,0);
 
 	//int objHandle = MV1LoadModel("res/Building/House_test_01.mv1");
 	//for (int i = 0; i < 10; i++) {
@@ -78,12 +82,17 @@ bool ModeTest::Initialize() {
 
 
 	int size = 100;
-	int heartHandle[3];
-	ResourceServer::LoadMultGraph("res/UI/UI_Heart", ".png", 3, heartHandle);
-	ui[0] = new UIHeart(VGet(20, 20, 0), 3,heartHandle,2);
+	int UiHandle[3];
+	ResourceServer::LoadMultGraph("res/UI/UI_Heart", ".png", 3, UiHandle);
+	ui[0] = new UIHeart(VGet(20, 20, 0), 3,UiHandle,2);
 	ui[1] = new UIExpPoint(VGet(0, 150, 0), "res/TemporaryMaterials/UI_EXP_01.png");
-	ResourceServer::LoadMultGraph("res/TemporaryMaterials/SuppressionGauge/suppressiongauge", ".png", 3, heartHandle);
-	ui[2] = new UISuppressionGauge(VGet(500,100,0),3, heartHandle);
+	ResourceServer::LoadMultGraph("res/TemporaryMaterials/SuppressionGauge/suppressiongauge", ".png", 3, UiHandle);
+	ui[2] = new UISuppressionGauge(VGet(500,100,0),3, UiHandle);
+	int numHandle[10];
+	ResourceServer::LoadMultGraph("res/UI/Time/Ui_Time", ".png", 10, numHandle);
+	int colonHandle = ResourceServer::LoadGraph("res/UI/Time/Time_UI_colon.png");
+	int frameHandle = 0;
+	ui[3] = new UITimeLimit(VGet(500, 100, 0), VGet(1800, 150, 0), 10, numHandle,colonHandle,frameHandle);
 	_gaugeUI[0] = new DrawGauge(0, 3, size, true);
 	_gaugeUI[1] = new DrawGauge(0, 3, size, true);
 	_gaugeHandle[0] = ResourceServer::LoadGraph(_T("res/UI/UI_Stamina_03.png"));
@@ -144,6 +153,7 @@ bool ModeTest::Process() {
 	_player->Process(_camera->GetCamY());
 	_chain->Process();
 	_enemyPool->Process();
+	_timeLimit->Process();
 
 	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
 		ui[i]->Process();
