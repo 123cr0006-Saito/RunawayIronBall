@@ -7,7 +7,9 @@ namespace PlaneEffect {
 		_animCount = 0;
 		_animMax = handleMax;
 		_handle = new int[_animMax];
-		std::swap(_handle, handle);
+		for (int i = 0; i < _animMax; i++) {
+			_handle[i] = handle[i];
+		}
 		_speed = speed;
 		_currentTime = GetNowCount();
 		_IsPlay = true;
