@@ -4,6 +4,8 @@
 #include "bone.h"
 #include "myJson.h"
 
+#include "Chain.h"
+
 #include "AnimationManager.h"
 #include "AnimationItem.h"
 
@@ -101,6 +103,7 @@ public:
 
 	VECTOR GetRightHandPos();
 
+	VECTOR* GetIBPosPtr() { return &_chain->GetBallPosition(); }
 	IB_MOVE_STATE GetIBMoveState() { return _ibMoveState; }
 
 
@@ -146,15 +149,17 @@ private:
 	// 移動速度（フレームデータを使った移動）
 	float _moveSpeedFWD;
 
-	Capsule _capsuleCollision;
-
-	// 鉄球が追従状態かどうか
-	IB_MOVE_STATE _ibMoveState;
-
 	// 攻撃状態かどうか
 	bool _isAttackState;
 	// 鉄球の攻撃コリジョンが有効かどうか
 	bool _enabledIBAttackCollision;
+
+	// 鉄球
+	Chain* _chain;
+	// 鉄球が追従状態かどうか
+	IB_MOVE_STATE _ibMoveState;
+
+	Capsule _capsuleCollision;
 
 	/* アニメーション関連 */
 	// モーション変更可能かどうか

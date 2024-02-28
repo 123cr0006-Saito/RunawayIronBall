@@ -47,7 +47,7 @@ void Chain::Init() {
 	_followingMode = false;
 	_moveState = IB_MOVE_STATE::FOLLOWING;
 
-	_attackState = false;
+	_enabledAttackCollision = false;
 
 	_playerInstance = Player::GetInstance();
 	_playerModelHandle = _playerInstance->GetModelHandle();
@@ -86,7 +86,7 @@ bool Chain::UpdateLevel() {
 
 void Chain::Process() {
 	_moveState = _playerInstance->GetIBMoveState();
-	_attackState = _playerInstance->GetEnabledIBAttackCollision();
+	_enabledAttackCollision = _playerInstance->GetEnabledIBAttackCollision();
 
 	_cPos[0] = _playerInstance->GetRightHandPos();
 
@@ -126,7 +126,7 @@ void Chain::MoveProcess()
 		PuttingOnSocketProcess();
 		break;
 	case INTERPOLATION:
-		InterpolationProcess();
+		//InterpolationProcess();
 		break;
 	}
 }
@@ -301,7 +301,7 @@ void Chain::Render()
 }
 
 void Chain::DrawDebugInfo() {
-	unsigned int color = _attackState ? COLOR_RED : COLOR_WHITE;
+	unsigned int color = _enabledAttackCollision ? COLOR_RED : COLOR_WHITE;
 	DrawSphere3D(_iPos, _r, 16, color, color, false);
 
 	//int x = 0;

@@ -84,6 +84,9 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	_canMotionCancel = true;
 	_playNextComboAnim = true;
 
+	// 鉄球の初期化
+	_chain = new Chain();
+	_chain->Init();
 
 	// ステートを「待機」に設定
 	_animStatus = ANIM_STATE::IDLE;
@@ -403,6 +406,7 @@ bool Player::Process(float camAngleY)
 	
 
 
+	_chain->Process();
 
 
 
@@ -432,6 +436,7 @@ bool Player::BlastOffProcess()
 bool Player::Render()
 {
 	CharacterBase::Render();
+	_chain->Render();
 	return true;
 }
 
@@ -575,4 +580,5 @@ void Player::DrawDebugInfo()
 
 
 	_animManager->DrawDebugInfo();
+	_chain->DrawDebugInfo();
 }
