@@ -6,9 +6,9 @@
 bool ModeGameOver::Initialize() {
 	if (!base::Initialize()) { return false; }
 	_input = XInput::GetInstance();
-	_handle["Logo"] = ResourceServer::LoadGraph("res/ModeGameOver/UI_Game_Over.png");
-	_handle["Retry"] = ResourceServer::LoadGraph("res/ModeGameOver/UI_Game_Over_Retry.png");
-	_handle["Give"] = ResourceServer::LoadGraph("res/ModeGameOver/UI_Game_Over_Title_Back.png");
+	_handle["Logo"] = ResourceServer::LoadGraph("Logo","res/ModeGameOver/UI_Game_Over.png");
+	_handle["Retry"] = ResourceServer::LoadGraph("Retry","res/ModeGameOver/UI_Game_Over_Retry.png");
+	_handle["Give"] = ResourceServer::LoadGraph("Give","res/ModeGameOver/UI_Game_Over_Title_Back.png");
 	_selectItem = 0;
 	return true;
 };

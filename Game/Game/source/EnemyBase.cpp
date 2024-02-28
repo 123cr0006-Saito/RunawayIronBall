@@ -276,7 +276,7 @@ void EnemyBase::SetKnockBack(VECTOR vDir, float damage) {
 		VECTOR effectPos = VAdd(VAdd(_pos, _diffeToCenter), VScale(vDir, -50));
 
 		int effectHandle[30];
-		ResourceServer::LoadMultGraph("res/TemporaryMaterials/split/test", ".png", 30, effectHandle);
+		ResourceServer::LoadMultGraph("split", "res/TemporaryMaterials/split/test", ".png", 30, effectHandle);
 		PlaneEffect::BoardPolygon* effect = new PlaneEffect::BoardPolygon(effectPos, GetCameraBillboardMatrix(), 200, effectHandle, 30, 0.5f / 60.0f * 1000.0f);
 
 		PlaneEffect::PlaneEffectManeger::GetInstance()->LoadVertical(effect);

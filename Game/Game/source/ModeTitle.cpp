@@ -14,14 +14,14 @@ bool ModeTitle::Initialize() {
 	_input = XInput::GetInstance();
 	_modeCount = 0;
 
-	_handleMap["title"] = ResourceServer::LoadGraph(_T("res/ModeTitle/UI_Title.png"));
-	_handleMap["start"] = ResourceServer::LoadGraph(_T("res/ModeTitle/UI_Title_Play.png"));
-	_handleMap["option"] = ResourceServer::LoadGraph(_T("res/ModeTitle/UI_Title_Option.png"));
-	_handleMap["quit"] = ResourceServer::LoadGraph(_T("res/ModeTitle/UI_Title_Quit.png"));
+	_handleMap["title"] = ResourceServer::LoadGraph("Title",_T("res/ModeTitle/UI_Title.png"));
+	_handleMap["start"] = ResourceServer::LoadGraph("Start",_T("res/ModeTitle/UI_Title_Play.png"));
+	_handleMap["option"] = ResourceServer::LoadGraph("Option",_T("res/ModeTitle/UI_Title_Option.png"));
+	_handleMap["quit"] = ResourceServer::LoadGraph("Quit",_T("res/ModeTitle/UI_Title_Quit.png"));
 
 	_IsGameStart = false;
 	//äÑÇÍÇÈèàóùÇÃèâä˙âª
-	 _modelHandle = ResourceServer::MV1LoadModel(_T("res/TemporaryMaterials/board.mv1"));
+	 _modelHandle = ResourceServer::MV1LoadModel("Board",_T("res/TemporaryMaterials/board.mv1"));
 	 _currentTime = 0;
 	 _IsBreak = false;
 	 _frameSize = MV1GetFrameNum(_modelHandle);
