@@ -23,8 +23,7 @@ bool ModeTest::Initialize() {
 	_player = new Player(playerModelHandle, VGet(0, 0, 0));
 	_player->SetNextExp("res/JsonFile/ExpList.json");
 
-	_chain = new Chain();
-	_chain->Init();
+
 
 	
 
@@ -148,7 +147,6 @@ bool ModeTest::Process() {
 	_sVib->UpdateScreenVibration();
 
 	_player->Process(_camera->GetCamY());
-	_chain->Process();
 
 
 
@@ -307,7 +305,6 @@ bool ModeTest::Render() {
 		//-------------------------------------------------------------------------------------
 
 		_player->Render();
-		_chain->Render();
 		//_chain->DrawDebugInfo();
 
 		_planeEffectManeger->Render();
@@ -329,7 +326,6 @@ bool ModeTest::Render() {
 
 	if (_drawDebug) {
 		_player->DrawDebugInfo();
-		_chain->DrawDebugInfo();
 		for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
 			(*itr)->DrawDebugInfo();
 		}

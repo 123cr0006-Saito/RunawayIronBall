@@ -22,9 +22,10 @@ public:
 	VECTOR GetBallPosition() { return _iPos; }
 	float GetBallRadius() { return _r; }
 
+	VECTOR* GetBallPosPtr() { return &_iPos; }
 
-	bool GetAttackState() { return _attackState; }
-	void SetAttackState(bool state) { _attackState = state; }
+	bool GetEnabledAttackCollision() { return _enabledAttackCollision; }
+	void SetEnabledAttackCollision(bool state) { _enabledAttackCollision = state; }
 
 	// デバッグ情報の表示
 	void DrawDebugInfo();
@@ -72,7 +73,7 @@ private:
 	bool _followingMode;
 	
 	IB_MOVE_STATE _moveState;
-	bool _attackState;
+	bool _enabledAttackCollision;
 
 
 	Player* _playerInstance;
