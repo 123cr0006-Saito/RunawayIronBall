@@ -75,11 +75,9 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	_capsuleCollision.up = 65.0f;
 	UpdateCollision();
 
-	// 鉄球の移動状態を「追従」に設定
-	_ibMoveState = IB_MOVE_STATE::FOLLOWING;
+
 
 	_isAttackState = false;
-	_enabledIBAttackCollision = false;
 
 	_canMotionCancel = true;
 	_playNextComboAnim = true;
@@ -87,6 +85,9 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	// 鉄球の初期化
 	_chain = new Chain();
 	_chain->Init();
+	_chain->SetPlayerModelHandle(_modelHandle);
+	// 鉄球の移動状態を「追従」に設定
+	_chain->SetMoveState(IB_MOVE_STATE::FOLLOWING);
 
 	// ステートを「待機」に設定
 	_animStatus = ANIM_STATE::IDLE;
@@ -110,6 +111,9 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 
 
 	_nowLevel = 0;
+	SetNextExp("res/JsonFile/ExpList.json");
+	SetPowerScale("res/JsonFile/IronState.json");
+	UpdateLevel();
 
 	// モーションリストの読み込み
 	MotionList::Load("Player", "MotionList_Player.csv");
@@ -188,7 +192,6 @@ void Player::SetNextExp(std::string FileName) {
 		expList.at("Exp").get_to(exp);
 		_nextLevel[nowLevel] = exp;
 	}
-	UpdateLevel();
 };
 
 bool Player::UpdateExp() {
@@ -203,11 +206,13 @@ bool Player::UpdateExp() {
 	if (_input->GetTrg(XINPUT_BUTTON_A)) {
 		if (_nowLevel <= _maxLevel) {
 			_nowLevel--;
+			UpdateLevel();
 		}
 	}
 	if (_input->GetTrg(XINPUT_BUTTON_B)) {
 		if (_nowLevel < _maxLevel) {
 			_nowLevel++;
+			UpdateLevel();
 		}
 	}
 	return true;
@@ -574,13 +579,16 @@ void Player::CheckFrameDataCommand()
 			break;
 
 		case C_P_ENABLE_IB_ATTACK_COLLISION:
-			_enabledIBAttackCollision = static_cast<bool>(param);
+			_chain->SetEnabledAttackCollision(static_cast<bool>(param));
 			break;
 		case C_P_ENABLE_IB_FOLLOWING_MODE:
-			_ibMoveState = static_cast<int>(param) == 0 ? IB_MOVE_STATE::PUTTING_ON_SOCKET : IB_MOVE_STATE::FOLLOWING;
+		{
+			IB_MOVE_STATE nextState = static_cast<int>(param) == 0 ? IB_MOVE_STATE::PUTTING_ON_SOCKET : IB_MOVE_STATE::FOLLOWING;
+			_chain->SetMoveState(nextState);
 			break;
+		}
 		case C_P_ENABLE_IB_INTERPOLATION:
-			_ibMoveState = IB_MOVE_STATE::INTERPOLATION;
+			_chain->SetMoveState(IB_MOVE_STATE::INTERPOLATION);
 			break;
 		}
 	}

@@ -1,7 +1,47 @@
 #include "Chain.h"
+#include "Player.h"
 
 namespace {
 	constexpr float IB_COLLISION_RADIUS = 50.0f;
+}
+
+Chain::Chain()
+{
+	_cModelHandle = -1;
+	_iModelHandle = -1;
+	_playerModelHandle = -1;
+	_input = nullptr;
+	_iForwardDir = VGet(0, 0, 0);
+
+	for(int i = 0; i < CHAIN_MAX; i++) {
+		_cPos[i] = VGet(0, 0, 0);
+	}
+	for(int i = 0; i < CHAIN_MAX; i++) {
+		_m[i] = MGetIdent();
+	}
+
+	_iPos = VGet(0, 0, 0);
+	_ibDefaultScale = VGet(0, 0, 0);
+	_sphereCollision.centerPos = VGet(0, 0, 0);
+	_sphereCollision.r = 0;
+	_animIndex = 0;
+	_animTotalTime = 0;
+	_playTime = 0;
+	_attackAnimCnt = 0;
+	_cnt = 0;
+	_attackDir = 1;
+	_length = 0;
+	_followingMode = false;
+	_moveState = IB_MOVE_STATE::FOLLOWING;
+	_enabledAttackCollision = false;
+	_socketNo[0] = -1;
+	_socketNo[1] = -1;
+	_socketNo[2] = -1;
+}
+
+Chain::~Chain()
+{
+
 }
 
 void Chain::Init() {
@@ -50,21 +90,13 @@ void Chain::Init() {
 	_moveState = IB_MOVE_STATE::FOLLOWING;
 
 	_enabledAttackCollision = false;
-
-	_playerInstance = Player::GetInstance();
-	_playerModelHandle = _playerInstance->GetModelHandle();
-	_socketNo[0] = MV1SearchFrame(_playerModelHandle, "chain1");
-	_socketNo[1] = MV1SearchFrame(_playerModelHandle, "chain2");
-	_socketNo[2] = MV1SearchFrame(_playerModelHandle, "chain3");
-
 }
 
 
 void Chain::Process() {
-	_moveState = _playerInstance->GetIBMoveState();
-	_enabledAttackCollision = _playerInstance->GetEnabledIBAttackCollision();
-
-	_cPos[0] = _playerInstance->GetRightHandPos();
+	MATRIX m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, _socketNo[0]);
+	VECTOR v = VGet(0.0f, 0.0f, 0.0f);
+	_cPos[0] = VTransform(v, m);
 
 	MoveProcess();
 
@@ -81,8 +113,8 @@ void Chain::Process() {
 		_attackAnimCnt = 0;
 	}
 
-	if (_iPos.y - _r < 0.0f) {
-		_iPos.y = 0.0f + _r;
+	if (_iPos.y - _sphereCollision.r < 0.0f) {
+		_iPos.y = 0.0f + _sphereCollision.r;
 	}
 
 	UpdateCollision();
@@ -280,9 +312,18 @@ void Chain::UpdateCollision()
 	_sphereCollision.centerPos = _iPos;
 }
 
+void Chain::SetPlayerModelHandle(int handle)
+{
+	_playerModelHandle = handle;
+
+	_socketNo[0] = MV1SearchFrame(_playerModelHandle, "chain1");
+	_socketNo[1] = MV1SearchFrame(_playerModelHandle, "chain2");
+	_socketNo[2] = MV1SearchFrame(_playerModelHandle, "chain3");
+}
+
 void Chain::DrawDebugInfo() {
 	unsigned int color = _enabledAttackCollision ? COLOR_RED : COLOR_WHITE;
-	DrawSphere3D(_iPos, _r, 16, color, color, false);
+	DrawSphere3D(_sphereCollision.centerPos, _sphereCollision.r, 16, color, color, false);
 
 	//int x = 0;
 	//int y = 0;
@@ -295,6 +336,6 @@ void Chain::DrawDebugInfo() {
 bool Chain::UpdateLevel(float scale)
 {
 	MV1SetScale(_iModelHandle, VScale(_ibDefaultScale, scale));
-	_r = IB_COLLISION_RADIUS * scale;
-	return false;
+	_sphereCollision.r = IB_COLLISION_RADIUS * scale;
+	return true;
 }

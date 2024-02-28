@@ -13,11 +13,7 @@
 
 #include "ModelColor.h"
 
-enum IB_MOVE_STATE {
-	FOLLOWING,
-	PUTTING_ON_SOCKET,
-	INTERPOLATION,
-};
+
 
 class Player : public CharacterBase
 {
@@ -110,12 +106,11 @@ public:
 
 	VECTOR GetRightHandPos();
 
-	VECTOR* GetIBPosPtr() { return &_chain->GetBallPosition(); }
-	IB_MOVE_STATE GetIBMoveState() { return _ibMoveState; }
+	VECTOR* GetIBPosPtr() { return _chain->GetBallPosPtr(); }
 
 
 	bool GetAttackState() { return _isAttackState; }
-	bool GetEnabledIBAttackCollision() { return _enabledIBAttackCollision; }
+	bool GetEnabledIBAttackCollision() { return _chain->GetEnabledAttackCollision(); }
 
 	// フレームデータのコマンドをチェックする
 	void CheckFrameDataCommand();
@@ -158,13 +153,9 @@ private:
 
 	// 攻撃状態かどうか
 	bool _isAttackState;
-	// 鉄球の攻撃コリジョンが有効かどうか
-	bool _enabledIBAttackCollision;
 
 	// 鉄球
 	Chain* _chain;
-	// 鉄球が追従状態かどうか
-	IB_MOVE_STATE _ibMoveState;
 
 	Capsule _capsuleCollision;
 

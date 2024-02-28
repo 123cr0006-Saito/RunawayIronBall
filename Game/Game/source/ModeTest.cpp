@@ -21,7 +21,6 @@ bool ModeTest::Initialize() {
 
 	int playerModelHandle = ResourceServer::MV1LoadModel("Player","res/Character/cg_player_girl/cg_player_girl_TEST_Ver.2.mv1");
 	_player = new Player(playerModelHandle, VGet(0, 0, 0));
-	_player->SetNextExp("res/JsonFile/ExpList.json");
 
 
 
@@ -141,10 +140,10 @@ bool ModeTest::Process() {
 	bool isInvincible = _player->GetIsInvincible();
 	VECTOR pPos = _player->GetPosition();
 
-	VECTOR ibPos = *(_player->GetIBPosPtr());
-	float ibR = _chain->GetBallRadius();
 
-	int ibPower = _chain->GetPower();
+	Sphere ibSphere = _player->GetIBCollision();
+
+	int ibPower = _player->GetPower();
 
 	for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
 		(*itr)->Process();
@@ -152,7 +151,7 @@ bool ModeTest::Process() {
 		if ((*itr)->GetUseCollision()) {
 			OBB houseObb = (*itr)->GetOBBCollision();
 
-			if (Collision3D::OBBSphereCol(houseObb, ibPos, ibR)) {
+			if (Collision3D::OBBSphereCol(houseObb, ibSphere)) {
 				if (isAttackState) {
 					VECTOR vDir = VSub(houseObb.pos, pPos);
 					(*itr)->ActivateBreakObject(true, vDir);
@@ -188,7 +187,6 @@ bool ModeTest::Process() {
 			VECTOR tPos = (*itr)->GetPos();
 			Sphere tSphere = (*itr)->GetBottomSphereCollision();
 			if (isAttackState) {
-				Sphere ibSphere = { ibPos, ibR };
 				if (Collision3D::SphereCol(ibSphere, tSphere)) {
 
 					VECTOR vDir = VSub(tPos, pPos);
@@ -234,13 +232,13 @@ bool ModeTest::Process() {
 		ModeServer::GetInstance()->Add(new ModeGameOver(), 1, "gameover");
 	}
 
-	VECTOR box_vec = ConvWorldPosToScreenPos(VAdd(_player->GetPosition(), VGet(0, 170, 0)));
-	_gaugeUI[0]->Process(box_vec, _player->GetStamina(), _player->GetStaminaMax());
-	_gaugeUI[1]->Process(box_vec, 100, 100);
+	//VECTOR box_vec = ConvWorldPosToScreenPos(VAdd(_player->GetPosition(), VGet(0, 170, 0)));
+	//_gaugeUI[0]->Process(box_vec, _player->GetStamina(), _player->GetStaminaMax());
+	//_gaugeUI[1]->Process(box_vec, 100, 100);
 
 	_player->AnimationProcess();
 	
-	_planeEffectManeger->Update();
+	//_planeEffectManeger->Update();
 	_camera->Process(_player->GetPosition(), _tile);
 	return true;
 }
@@ -328,11 +326,11 @@ bool ModeTest::Render() {
 	//	ui[i]->Draw();
 	//}
 
-	if (_player->GetStaminaRate() < 1.0f) {
-		int handleNum = floorf(_player->GetStaminaRate() * 100.0f / 33.4f);
-		_gaugeUI[1]->Draw(_gaugeHandle[handleNum]);
-		_gaugeUI[0]->Draw(_gaugeHandle[3]);
-	}
+	//if (_player->GetStaminaRate() < 1.0f) {
+	//	int handleNum = floorf(_player->GetStaminaRate() * 100.0f / 33.4f);
+	//	_gaugeUI[1]->Draw(_gaugeHandle[handleNum]);
+	//	_gaugeUI[0]->Draw(_gaugeHandle[3]);
+	//}
 
 	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
@@ -342,6 +340,10 @@ bool ModeTest::Render() {
 	//for (auto itr = _buildingBase.begin(); itr != _buildingBase.end(); ++itr) {
 	//	(*itr)->DrawDebugInfo();
 	//}
+
+
+	//VECTOR* ibPos = _player->GetIBPosPtr();
+	//DrawSphere3D(*ibPos, 100.5f, 32, GetColor(255, 0, 0), GetColor(255, 0, 0), TRUE);
 
 	return true;
 }

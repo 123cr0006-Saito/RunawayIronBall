@@ -1,11 +1,17 @@
 #pragma once
 #include "appframe.h"
-#include "Player.h"
 
 #define CHAIN_MAX 12
 
+enum IB_MOVE_STATE {
+	FOLLOWING,
+	PUTTING_ON_SOCKET,
+	INTERPOLATION,
+};
 class Chain {
 public:
+	Chain();
+	~Chain();
 
 	void Init();
 	void Process();
@@ -20,7 +26,6 @@ public:
 	void Render();
 
 	VECTOR GetBallPosition() { return _iPos; }
-	float GetBallRadius() { return _r; }
 
 	VECTOR* GetBallPosPtr() { return &_iPos; }
 
@@ -29,6 +34,14 @@ public:
 
 	Sphere GetCollision() { return _sphereCollision; }
 	void UpdateCollision();
+
+
+
+	// プレイヤー関連
+	// プレイヤーのモデルハンドルをセット
+	void SetPlayerModelHandle(int handle);
+	void SetMoveState(IB_MOVE_STATE state) { _moveState = state; }
+
 
 	// デバッグ情報の表示
 	void DrawDebugInfo();
@@ -48,7 +61,6 @@ private:
 	int _iModelHandle;
 	VECTOR _iPos;
 	VECTOR _iForwardDir;
-	float _r = 55.0f; //// 後でSphereクラスを作る
 
 	Sphere _sphereCollision;
 
@@ -79,7 +91,6 @@ private:
 	bool _enabledAttackCollision;
 
 
-	Player* _playerInstance;
 	int _playerModelHandle;
 
 	//-------------------
