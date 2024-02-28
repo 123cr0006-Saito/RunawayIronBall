@@ -11,7 +11,7 @@ PlaneEffect::PlaneEffectManeger::~PlaneEffectManeger() {
 
 };
 
-void PlaneEffect::PlaneEffectManeger::LoadVertical(BoardPolygon* effect) {
+void PlaneEffect::PlaneEffectManeger::LoadVertical(PlaneEffectBase* effect) {
 	_vertical.push_back(effect);
 };
 
@@ -32,6 +32,8 @@ bool PlaneEffect::PlaneEffectManeger::Update(){
 bool PlaneEffect::PlaneEffectManeger::Render() {
 	//ビルボード描画中はライトの計算を一時停止  ライトと反対方向を向くと黒くなる
 	SetUseLighting(FALSE);
+	clsDx();
+	printfDx("%d", _vertical.size());
 	for (auto itr = _vertical.begin(); itr != _vertical.end(); ++itr) {
 		(*itr)->Render();
 	}

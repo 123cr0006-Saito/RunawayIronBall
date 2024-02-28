@@ -1,5 +1,5 @@
 #pragma once
-#include "BoardPolygon.h"
+#include "PlaneEffectBase.h"
 #include <vector>
 namespace PlaneEffect {
 	class PlaneEffectManeger
@@ -8,12 +8,12 @@ namespace PlaneEffect {
 		PlaneEffectManeger();
 		~PlaneEffectManeger();
 
-		void LoadVertical(BoardPolygon* effect);
+		void LoadVertical(PlaneEffectBase* effect);
 		virtual bool Update();
 		virtual bool Render();
 		static PlaneEffectManeger* _instance;
 		static PlaneEffectManeger* GetInstance() { return _instance; };
 	protected:
-		std::vector<BoardPolygon*> _vertical;
+		std::vector<PlaneEffectBase*> _vertical;
 	};
 };

@@ -10,15 +10,15 @@ bool ModePause::Initialize() {
 
 	SetUseASyncLoadFlag(TRUE);
 
-	_handleMap["back"] = ResourceServer::LoadGraph("res/ModePause/UI_Menu.png");
-	_handleMap["check"] = ResourceServer::LoadGraph("res/ModePause/UI_Menu_Check.png");
-	_handleMap["checkBox"] = ResourceServer::LoadGraph("res/ModePause/UI_Menu_Check_Box.png");
-	_handleMap["volumBar"] = ResourceServer::LoadGraph("res/ModePause/");
-	_handleMap["se"] = ResourceServer::LoadGraph("res/ModePause/UI_Menu_SE.png");
-	_handleMap["bgm"] = ResourceServer::LoadGraph("res/ModePause/UI_Menu_BGM.png");
-	_handleMap["vibration"] = ResourceServer::LoadGraph("res/ModePause/UI_Menu_Controll.png");
-	_handleMap["gide"] = ResourceServer::LoadGraph("res/ModePause/UI_Menu_How_To.png");
-	_handleMap["return"] = ResourceServer::LoadGraph("res/ModePause/UI_Menu_Back.png");
+	_handleMap["back"] = ResourceServer::LoadGraph("back","res/ModePause/UI_Menu.png");
+	_handleMap["check"] = ResourceServer::LoadGraph("check","res/ModePause/UI_Menu_Check.png");
+	_handleMap["checkBox"] = ResourceServer::LoadGraph("checkBox","res/ModePause/UI_Menu_Check_Box.png");
+	_handleMap["volumBar"] = ResourceServer::LoadGraph("volumBar","res/ModePause/");
+	_handleMap["se"] = ResourceServer::LoadGraph("se","res/ModePause/UI_Menu_SE.png");
+	_handleMap["bgm"] = ResourceServer::LoadGraph("bgm","res/ModePause/UI_Menu_BGM.png");
+	_handleMap["vibration"] = ResourceServer::LoadGraph("vibration","res/ModePause/UI_Menu_Controll.png");
+	_handleMap["gide"] = ResourceServer::LoadGraph("gide","res/ModePause/UI_Menu_How_To.png");
+	_handleMap["return"] = ResourceServer::LoadGraph("return","res/ModePause/UI_Menu_Back.png");
 
 	SetUseASyncLoadFlag(FALSE);
 
