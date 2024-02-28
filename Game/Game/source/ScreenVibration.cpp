@@ -24,18 +24,6 @@ void ScreenVibration::SetVibration(float x, float y, float time) {
 		this->time = time;
 		use_flag = true;
 };
-void ScreenVibration::SetVibrationX(float x, float time){
-	vibration_x = x;
-	max_x = x;
-	this->time = time;
-	use_flag = true;
-};
-void ScreenVibration::SetVibrationY(float y, float time){
-	vibration_y = y;
-	max_y = y;
-	this->time = time;
-	use_flag = true;
-};
 
 void ScreenVibration::UpdateScreenVibration() {
 	if (use_flag) {

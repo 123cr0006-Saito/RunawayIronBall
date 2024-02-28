@@ -8,7 +8,6 @@ class EffekseerBase
 {
 public:
 	EffekseerBase(std::string name, VECTOR* pos, float size,float speed =1.0f , bool loopFlag = false);
-	EffekseerBase(int handle, VECTOR* pos, float size, float speed = 1.0f, bool loopFlag = false);
 	~EffekseerBase();
 
 	virtual bool Process();

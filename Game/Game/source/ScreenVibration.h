@@ -8,8 +8,6 @@ public:
 	ScreenVibration();
 	~ScreenVibration();
 	void SetVibration(float x, float y, float time);//âÊñ êUìÆ
-	void SetVibrationX(float x, float time);
-	void SetVibrationY(float y, float time);
 	void UpdateScreenVibration();
 	
 	static ScreenVibration* _instance;
