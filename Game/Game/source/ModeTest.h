@@ -23,6 +23,8 @@
 #include "EnemyPool.h"
 #include "PlaneEffectManeger.h"
 
+#include "Boss.h"
+
 class ModeTest : public ModeBase
 {
 	typedef ModeBase base;
