@@ -11,11 +11,16 @@ public:
 
 	static enum class TYPE: int {
 		Handle,
-		Div,
 		Mult,
 		Efk,
 		Model,
 		Sound,
+	};
+
+	//複数の画像を保存するための構造体
+	static struct Mult {
+		int  AllNum;//画像の全体の枚数
+		int* handle;//画像を保存する用の変数   枚数が動的に変化するためポインタ
 	};
 
 	static int LoadGraph(const char* key_name, const char* handle_name);//画像ハンドルの読み込み
@@ -25,25 +30,17 @@ public:
 	static int LoadEffekseerEffect(const char* key_name, const char* handle_name);//エフェクシアのエフェクトの読み込み
 	static int MV1LoadModel(const char* key_name, const char*  model_name);//dxlibの.mv1形式に対応した３Ｄモデルの読み込み
 	static int LoadSound(const char* key_name, const char* sound_name);//サウンドの読み込み
-	static int SearchGraph(const char* name);//メモリ内に画像があるか検索　あった場合画像ハンドルの値を返す
-	template<typename T>
-	static std::pair<bool, T> Search(const char* search_key, std::map<const char*,T>* resourceMap);
+	
+	static std::pair<bool, int> DeleteSearchSingle(const char* search_key, std::map<const char*,int>* resourceMap);
+	static std::pair<bool, ResourceServer::Mult> DeleteSearchMult(const char* search_key, std::map<const char*, Mult>* resourceMap);
 	static bool Delete(const char* key, TYPE resouceType);
-
 
 	static void DeleteResourceAll();//全てのリソースを削除
 
-	//複数の画像を保存するための構造体
-	static struct Div {
-		int  AllNum;//画像の全体の枚数
-		int* handle;//画像を保存する用の変数   枚数が動的に変化するためポインタ
-	};
-
-	static std::map<const char*, int> handle_server;//画像を保存する変数
-	static std::map<const char*, int> sound_server;//se・bgmを保存する変数
-	static std::map<const char*, Div> div_server;//複数に分割した画像を保存する変数
-	static std::map<const char*, Div> mult_server;//複数の画像を保存する変数
-	static std::map<const char*, int >effekseer_server;//エフェクシアのエフェクトを保存する変数
-	static std::map<const char*, std::vector<int> >model_server;//dxlibのモデルハンドルを保存する変数
+	static std::map<const char*, int> _handleMap;//画像を保存する変数
+	static std::map<const char*, int> _soundMap;//se・bgmを保存する変数
+	static std::map<const char*, Mult> _multMap;//複数の画像を保存する変数
+	static std::map<const char*, int >_effekseerMap;//エフェクシアのエフェクトを保存する変数
+	static std::map<const char*, std::vector<int> >_modelMap;//dxlibのモデルハンドルを保存する変数
 
 };
