@@ -8,6 +8,11 @@ bool ModeTest::Initialize() {
 
 	_camera = new Camera();
 
+	_lightHandle[0] = CreateDirLightHandle(VGet(- 1, -1, -1));
+	_lightHandle[1] = CreateDirLightHandle(VGet(1, 1, 1));
+
+	_shadowHandle = MakeShadowMap(2048, 2048);
+
 	_skySphere = MV1LoadModel(_T("res/SkySphere/skysphere.mv1"));
 	_tile = MV1LoadModel(_T("res/TemporaryMaterials/stage_normal_01.mv1"));
 	MV1SetPosition(_skySphere, VGet(0, 0, 0));
@@ -20,6 +25,8 @@ bool ModeTest::Initialize() {
 
 	_chain = new Chain();
 	_chain->Init();
+
+	
 
 	//int objHandle = MV1LoadModel("res/Building/House_test_01.mv1");
 	//for (int i = 0; i < 10; i++) {
@@ -36,7 +43,14 @@ bool ModeTest::Initialize() {
 
 
 	int objHandle = MV1LoadModel("res/Building/House/House_test_03.mv1");
+	//int objHandle = MV1LoadModel("res/Building/TrafficLight/cg_object_shingou.mv1");
+	//int objHandle = MV1LoadModel("res/Building/Pole/cg_object_denchu.mv1");
+	//int objHandle = MV1LoadModel("res/Building/StoneLantern/cg_object_tourou.mv1");
 	myJson json("Data/ObjectList/Stage_03.json");
+
+	_enemyPool = new EnemyPool("res/JsonFile/EnemyData.json");
+	_enemyPool->Create(json);
+
 	std::vector<std::string> loadName{ "House_Iron","House_Rock","House_Glass" };
 	for (auto&& nameList : loadName) {
 		std::vector<ModeTest::OBJECTDATA> objectData = LoadJsonObject(json._json, nameList);
@@ -54,9 +68,9 @@ bool ModeTest::Initialize() {
 		v.z -= 2000.0f;
 
 		std::array<int, 3> towerModelHandle;
-		towerModelHandle[0] = ResourceServer::MV1LoadModel("res/Building/Tower/test_Tower_01.mv1");
-		towerModelHandle[1] = ResourceServer::MV1LoadModel("res/Building/Tower/test_Tower_02.mv1");
-		towerModelHandle[2] = ResourceServer::MV1LoadModel("res/Building/Tower/test_Tower_03.mv1");
+		towerModelHandle[0] = ResourceServer::MV1LoadModel("Tower01","res/Building/Tower/test_Tower_01.mv1");
+		towerModelHandle[1] = ResourceServer::MV1LoadModel("Tower02","res/Building/Tower/test_Tower_02.mv1");
+		towerModelHandle[2] = ResourceServer::MV1LoadModel("Tower03","res/Building/Tower/test_Tower_03.mv1");
 
 		Tower* tower = new Tower();
 		tower->Init(towerModelHandle, v, VGet(0,0,0), VGet(1,1,1));
@@ -67,23 +81,23 @@ bool ModeTest::Initialize() {
 
 	int size = 100;
 	int heartHandle[3];
-	ResourceServer::LoadMultGraph("res/UI/UI_Heart", ".png", 3, heartHandle);
+	ResourceServer::LoadMultGraph("Heart","res/UI/UI_Heart", ".png", 3, heartHandle);
 	ui[0] = new UIHeart(VGet(20, 20, 0), 3,heartHandle,2);
-	//ui[0] = new UIHeart(VGet(0, 0, 0), "res/TemporaryMaterials/UI_Hp_01.png");
 	ui[1] = new UIExpPoint(VGet(0, 150, 0), "res/TemporaryMaterials/UI_EXP_01.png");
+	ResourceServer::LoadMultGraph("Suppressiongauge","res/TemporaryMaterials/SuppressionGauge/suppressiongauge", ".png", 3, heartHandle);
+	ui[2] = new UISuppressionGauge(VGet(500,100,0),3, heartHandle);
 	_gaugeUI[0] = new DrawGauge(0, 3, size, true);
 	_gaugeUI[1] = new DrawGauge(0, 3, size, true);
-	_gaugeHandle[0] = ResourceServer::LoadGraph(_T("res/UI/UI_Stamina_03.png"));
-	_gaugeHandle[1] = ResourceServer::LoadGraph(_T("res/UI/UI_Stamina_02.png"));
-	_gaugeHandle[2] = ResourceServer::LoadGraph(_T("res/UI/UI_Stamina_01.png"));
-	_gaugeHandle[3] = ResourceServer::LoadGraph(_T("res/UI/UI_Stamina_04.png"));
+	_gaugeHandle[0] = ResourceServer::LoadGraph("Stamina03",_T("res/UI/UI_Stamina_03.png"));
+	_gaugeHandle[1] = ResourceServer::LoadGraph("Stamina02",_T("res/UI/UI_Stamina_02.png"));
+	_gaugeHandle[2] = ResourceServer::LoadGraph("Stamina01",_T("res/UI/UI_Stamina_01.png"));
+	_gaugeHandle[3] = ResourceServer::LoadGraph("Stamina04",_T("res/UI/UI_Stamina_04.png"));
 	_sVib = new ScreenVibration();
 
-	_enemyPool = new EnemyPool("res/JsonFile/EnemyData.json");
-	_enemyPool->Create(json);
+	
 
 	_planeEffectManeger = new PlaneEffect::PlaneEffectManeger();
-	ResourceServer::LoadMultGraph("res/TemporaryMaterials/split/test", ".png", 30, _effectSheet);
+	ResourceServer::LoadMultGraph("split","res/TemporaryMaterials/split/test", ".png", 30, _effectSheet);
 	//global._soundServer->DirectPlay("Stage03");
 	global._soundServer->BgmFadeIn("Stage03", 2000);
 	return true;
@@ -91,6 +105,9 @@ bool ModeTest::Initialize() {
 
 bool ModeTest::Terminate() {
 	base::Terminate();
+	for (int i = 0; i < 2; i++) {
+	DeleteLightHandle(_lightHandle[i]);
+	}
 	return true;
 }
 
@@ -197,73 +214,6 @@ bool ModeTest::Process() {
 
 
 
-	for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
-		EnemyBase* en = _enemyPool->GetEnemy(i);
-		if (!en) { continue; }
-		if (!en->GetUse()) { continue; }
-
-		if (isAttackState) {
-			VECTOR enPos = en->GetCollisionPos();
-			float enR = en->GetR();
-
-			if (Collision3D::SphereCol(ibPos, ibR, enPos, enR)) {
-				VECTOR vDir = VSub(enPos, pPos);
-				vDir = VNorm(vDir);
-				en->SetKnockBack(vDir, ibPower);
-				PlaneEffect::BoardPolygon* effect = new PlaneEffect::BoardPolygon(VAdd(ibPos, VGet(0, 100, 0)), GetCameraBillboardMatrix(), 200, _effectSheet, 30, 1.0f / 60.0f * 1000.0f);
-				_planeEffectManeger->LoadVertical(effect);
-			}
-		}
-
-
-		// 敵とプレイヤーの当たり判定
-
-		Sphere eCol = { en->GetCollisionPos(), en->GetR() };
-		Capsule pCol = _player->GetCollision();
-		if (Collision3D::SphereCapsuleCol(eCol, pCol)) {
-			if (!isInvincible) {
-				_player->SetDamage();
-			}
-			VECTOR tmpPos = en->GetCollisionPos();
-			tmpPos.y = 0.0f;
-
-			VECTOR vDir = VSub(pCol.down_pos, tmpPos);
-			vDir.y = 0.0f;
-			float squareLength = VSquareSize(vDir);
-			if (squareLength >= 0.0001f) {
-				vDir = VNorm(vDir);
-				tmpPos = VAdd(tmpPos, VScale(vDir, eCol.r + pCol.r));
-				_player->SetPos(tmpPos);
-			}
-			//en = nullptr;
-		}
-	}
-
-	//空間分割を考えていないので無駄が多いです。
-	for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
-		EnemyBase* en = _enemyPool->GetEnemy(i);
-		if (!en) { continue; }
-		if (!en->GetUse()) { continue; }
-		VECTOR en1Pos = en->GetCollisionPos();
-		float en1R = en->GetR();
-		for (int j = 0; j < _enemyPool->ENEMY_MAX_SIZE; j++) {
-			if (i == j) { continue; }
-			EnemyBase* en = _enemyPool->GetEnemy(i);
-			if (!en) { continue; }
-			if (en->GetUse()) { continue; }
-			VECTOR en2Pos = en->GetCollisionPos();
-			float en2R = en->GetR();
-			VECTOR dirVec = VSub(en2Pos, en1Pos);
-			float length = VSize(dirVec);
-			if (length <= en1R + en2R) {
-				float pushLength = length - en1R - en2R;
-				dirVec = VNorm(dirVec);
-				en->SetExtrusionPos(VScale(dirVec, pushLength));
-			}
-		}
-	}
-
-
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_START)) {
 		_enemyPool->Init();
 		//_player->SetDamage();
@@ -302,6 +252,7 @@ bool ModeTest::Process() {
 	_gaugeUI[0]->Process(box_vec, _player->GetStamina(), _player->GetStaminaMax());
 	_gaugeUI[1]->Process(box_vec, 100, 100);
 
+	_player->AnimationProcess();
 	
 	_planeEffectManeger->Update();
 	_camera->Process(_player->GetPosition(), _tile);
@@ -313,12 +264,12 @@ bool ModeTest::Render() {
 	SetWriteZBuffer3D(TRUE);
 	SetUseBackCulling(TRUE);
 
+	MV1DrawModel(_skySphere);
+
+
 	// ライト設定
 	SetUseLighting(TRUE);
-	//clsDx();
 
-	MV1DrawModel(_skySphere);
-	MV1DrawModel(_tile);
 	// 0,0,0を中心に線を引く
 	{
 		float linelength = 1000.f;
@@ -328,34 +279,52 @@ bool ModeTest::Render() {
 		DrawLine3D(VAdd(v, VGet(0, 0, -linelength)), VAdd(v, VGet(0, 0, linelength)), GetColor(0, 0, 255));
 	}
 
-	_player->Render();
-	_enemyPool->Render();
-	_chain->Render();
-	//_chain->DrawDebugInfo();
+	//------------------------------------
+	// シャドウマップの設定　
+	// shadowCount 0 シャドウマップに描画 1 モデルの描画
+	VECTOR lightDir = VGet(0, -1, 0);
+	SetShadowMapLightDirection(_shadowHandle, lightDir);
 
-	for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
-		(*itr)->Render();
+	// シャドウマップに描画する範囲を設定
+	// カメラの注視点を中心にする
+	float length = 10000.f;
+	VECTOR plPos = _player->GetPosition();
+	SetShadowMapDrawArea(_shadowHandle, VAdd(plPos, VGet(-length, -1.0f, -length)), VAdd(plPos, VGet(length, length, length)));
+
+	for (int shadowCount = 0; shadowCount < 2; shadowCount++) {
+		// シャドウマップの設定
+		if (shadowCount == 0) {
+			// シャドウマップへの描画の準備
+			ShadowMap_DrawSetup(_shadowHandle);
+		}
+		else if (shadowCount == 1) {
+			// シャドウマップへの描画を終了
+			ShadowMap_DrawEnd();
+
+		}
+
+		//-------------------------------------------------------------------------------------
+
+		_player->Render();
+		_chain->Render();
+		//_chain->DrawDebugInfo();
+
+		_planeEffectManeger->Render();
+		//}
+		for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
+			(*itr)->Render();
+		}
+
+		for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
+			(*itr)->Render();
+		}
 	}
 
-	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
-		(*itr)->Render();
-	}
-
-
-	//SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
-	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
-		ui[i]->Draw();
-	}
-	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-
-	if (_player->GetStaminaRate() < 1.0f) {
-		int handleNum = floorf(_player->GetStaminaRate() * 100.0f / 33.4f);
-		_gaugeUI[1]->Draw(_gaugeHandle[handleNum]);
-		_gaugeUI[0]->Draw(_gaugeHandle[3]);
-	}
-
-	_planeEffectManeger->Render();
-
+	// 描画に使用するシャドウマップを設定
+	SetUseShadowMap(0, _shadowHandle);
+	MV1DrawModel(_tile);
+	// 描画に使用するシャドウマップの設定を解除
+	SetUseShadowMap(0, -1);
 
 	if (_drawDebug) {
 		_player->DrawDebugInfo();
@@ -364,11 +333,24 @@ bool ModeTest::Render() {
 			(*itr)->DrawDebugInfo();
 		}
 	}
+
 	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
 		(*itr)->DrawDebugInfo();
 	}
-
 	SetUseZBuffer3D(FALSE);
+
+	//SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
+	//for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
+	//	ui[i]->Draw();
+	//}
+
+	if (_player->GetStaminaRate() < 1.0f) {
+		int handleNum = floorf(_player->GetStaminaRate() * 100.0f / 33.4f);
+		_gaugeUI[1]->Draw(_gaugeHandle[handleNum]);
+		_gaugeUI[0]->Draw(_gaugeHandle[3]);
+	}
+
+	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	SetFontSize(62);
 	DrawFormatString(45, 200, GetColor(0, 0, 0), "%d", _player->GetInstance()->GetNowLevel() + 1);

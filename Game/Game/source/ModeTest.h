@@ -6,10 +6,15 @@
 #include "Camera.h"
 #include "Player.h"
 #include "Chain.h"
+
 #include "UIBase.h"
 #include "UIExpPoint.h"
+#include "UISuppressionGauge.h"
+#include "UiHeart.h"
+#include "UITimeLimit.h"
+#include "TimeLimit.h"
+
 #include "ScreenVibration.h"
-#include "uiheart.h"
 
 #include "BuildingBase.h"
 #include "House.h"
@@ -41,16 +46,17 @@ public:
 
 protected:
 
-
-
 	Camera* _camera;
 	Player* _player;
 
 	Chain* _chain;
-	UIBase* ui[2];
+	UIBase* ui[3];
 	DrawGauge* _gaugeUI[2];
 	int _gaugeHandle[4];// 0フレーム 3ゲージ
 	float nowParcent = 100;
+
+	TimeLimit* _timeLimit;
+
 
 	ScreenVibration* _sVib;
 	EnemyPool* _enemyPool;
@@ -65,7 +71,8 @@ protected:
 	PlaneEffect::PlaneEffectManeger* _planeEffectManeger;
 	OBB obb;
 
-
+	int _shadowHandle;
+	int _lightHandle[2];
 
 	// デバッグ表示をするかどうか
 	bool _drawDebug = false;

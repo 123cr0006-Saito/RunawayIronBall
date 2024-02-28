@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "math.h"
 #include "EnemyStract.h"
+#include "BoardPolygon.h"
 #include "PlaneEffectManeger.h"
 
 #include <string>
@@ -76,6 +77,7 @@ protected:
 	float _hearingRangeSize;//’®Šo”ÍˆÍ‚Ì”¼Œa
 	float _discoverRangeSize;//”­Œ©A‘ÎÛ‚ÌŒ©¸‚¤‚Ü‚Å‚Ì‹——£‚Ì”¼Œa
 	float _attackRangeSize;//³–Ê‚ÌUŒ‚”ÍˆÍ
+	int _suppression; // §ˆ³’l
 
 	//------------------------------------------------------------------------------------------------
 	

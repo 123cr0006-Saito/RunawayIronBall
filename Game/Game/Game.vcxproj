@@ -155,6 +155,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\PlaneEffectBase.cpp" />
+    <ClCompile Include="source\BoardPolygonDust.cpp" />
     <ClCompile Include="source\CrystarPattern1.cpp" />
     <ClCompile Include="source\CrystarPattern2.cpp" />
     <ClCompile Include="source\ClassificationEffect.cpp" />
@@ -197,8 +199,13 @@
     <ClCompile Include="source\UIBase.cpp" />
     <ClCompile Include="source\UIExpPoint.cpp" />
     <ClCompile Include="source\UIHeart.cpp" />
+    <ClCompile Include="source\UISuppressionGauge.cpp" />
+    <ClCompile Include="source\TimeLimit.cpp" />
+    <ClCompile Include="source\UITimeLimit.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\PlaneEffectBase.h" />
+    <ClInclude Include="source\BoardPolygonDust.h" />
     <ClInclude Include="source\CrystarPattern1.h" />
     <ClInclude Include="source\CrystarPattern2.h" />
     <ClInclude Include="source\ClassificationEffect.h" />
@@ -242,6 +249,9 @@
     <ClInclude Include="source\UIBase.h" />
     <ClInclude Include="source\UIExpPoint.h" />
     <ClInclude Include="source\UIHeart.h" />
+    <ClInclude Include="source\UISuppressionGauge.h" />
+    <ClInclude Include="source\TimeLimit.h" />
+    <ClInclude Include="source\UITimeLimit.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
