@@ -428,6 +428,11 @@ bool Collision3D::OBBSphereCol(OBB obb, VECTOR point, float r) {
 	return false;
 }
 
+bool Collision3D::OBBSphereCol(const OBB& obb, const Sphere& sphere)
+{
+	return Collision3D::OBBSphereCol(obb, sphere.centerPos, sphere.r);
+}
+
 bool Collision3D::OBBCapselCol(VECTOR line_start, VECTOR line_end, OBB obb, float r) {
 	POINT_LINE_SHORT  a = Collision3D::PointLineSegShortLength(line_start, line_end, obb.pos);
 

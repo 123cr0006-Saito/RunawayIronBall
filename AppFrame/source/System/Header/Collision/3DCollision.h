@@ -54,6 +54,7 @@ public:
 	
 	//OBB‚Æ‹…‚Ì“–‚½‚è”»’è
 	static bool OBBSphereCol(OBB obb, VECTOR point, float r);
+	static bool OBBSphereCol(const OBB& obb, const Sphere& sphere);
 
 	//OBB‚ÆƒJƒvƒZƒ‹‚Ì“–‚½‚è”»’è
 	static bool OBBCapselCol(VECTOR line_start, VECTOR line_end, OBB obb, float r);
