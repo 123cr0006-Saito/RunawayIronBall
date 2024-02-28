@@ -277,9 +277,9 @@ void EnemyBase::SetKnockBack(VECTOR vDir, float damage) {
 
 		int effectHandle[30];
 		ResourceServer::LoadMultGraph("split", "res/TemporaryMaterials/split/test", ".png", 30, effectHandle);
-		PlaneEffect::BoardPolygon* effect = new PlaneEffect::BoardPolygon(effectPos, GetCameraBillboardMatrix(), 200, effectHandle, 30, 0.5f / 60.0f * 1000.0f);
+		BoardPolygon* effect = new BoardPolygon(effectPos, GetCameraBillboardMatrix(), 200, effectHandle, 30, 0.5f / 60.0f * 1000.0f);
 
-		PlaneEffect::PlaneEffectManeger::GetInstance()->LoadVertical(effect);
+		EffectManeger::GetInstance()->LoadEffect(effect);
 		_modeState = ENEMYTYPE::KNOCKBACK;
 		if (_hp <= 0) {
 

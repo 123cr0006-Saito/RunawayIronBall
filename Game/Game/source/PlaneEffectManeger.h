@@ -1,19 +1,17 @@
 #pragma once
-#include "PlaneEffectBase.h"
+#include "EffectBase.h"
 #include <vector>
-namespace PlaneEffect {
-	class PlaneEffectManeger
-	{
-	public:
-		PlaneEffectManeger();
-		~PlaneEffectManeger();
+class EffectManeger
+{
+public:
+	EffectManeger();
+	~EffectManeger();
 
-		void LoadVertical(PlaneEffectBase* effect);
-		virtual bool Update();
-		virtual bool Render();
-		static PlaneEffectManeger* _instance;
-		static PlaneEffectManeger* GetInstance() { return _instance; };
-	protected:
-		std::vector<PlaneEffectBase*> _vertical;
-	};
+	void LoadEffect(EffectBase* effect);
+	virtual bool Update();
+	virtual bool Render();
+	static EffectManeger* _instance;
+	static EffectManeger* GetInstance() { return _instance; };
+protected:
+	std::vector<EffectBase*> _effect;
 };

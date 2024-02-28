@@ -1,40 +1,38 @@
 #include "PlaneEffectManeger.h"
 
-PlaneEffect::PlaneEffectManeger* PlaneEffect::PlaneEffectManeger::_instance = nullptr;
+EffectManeger* EffectManeger::_instance = nullptr;
 
-PlaneEffect::PlaneEffectManeger::PlaneEffectManeger(){
+EffectManeger::EffectManeger(){
 	_instance = this;
-	_vertical.clear();
+	_effect.clear();
 };
 
-PlaneEffect::PlaneEffectManeger::~PlaneEffectManeger() {
+EffectManeger::~EffectManeger() {
 
 };
 
-void PlaneEffect::PlaneEffectManeger::LoadVertical(PlaneEffectBase* effect) {
-	_vertical.push_back(effect);
+void EffectManeger::LoadEffect(EffectBase* effect) {
+	_effect.push_back(effect);
 };
 
-bool PlaneEffect::PlaneEffectManeger::Update(){
-	for (auto itr = _vertical.begin(); itr != _vertical.end(); ) {
+bool EffectManeger::Update(){
+	for (auto itr = _effect.begin(); itr != _effect.end(); ) {
 		if ((*itr)->GetFlag()) {
-			(*itr)->Update();
+			(*itr)->Process();
 			++itr;
 		}
 		else {
 			delete (*itr);
-			itr = _vertical.erase(itr);
+			itr = _effect.erase(itr);
 		}
 	}
 	return true;
 };
 
-bool PlaneEffect::PlaneEffectManeger::Render() {
+bool EffectManeger::Render() {
 	//ビルボード描画中はライトの計算を一時停止  ライトと反対方向を向くと黒くなる
 	SetUseLighting(FALSE);
-	clsDx();
-	printfDx("%d", _vertical.size());
-	for (auto itr = _vertical.begin(); itr != _vertical.end(); ++itr) {
+	for (auto itr = _effect.begin(); itr != _effect.end(); ++itr) {
 		(*itr)->Render();
 	}
 	SetUseLighting(TRUE);

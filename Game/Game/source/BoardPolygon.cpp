@@ -1,6 +1,6 @@
 #include "BoardPolygon.h"
 
-namespace PlaneEffect {
+
 	BoardPolygon::BoardPolygon(VECTOR pos, VECTOR dir, int sizeX, int* handle, int handleMax, int speed)
 		: PlaneEffectBase(pos, sizeX, handle, handleMax, speed) {
 
@@ -73,8 +73,8 @@ namespace PlaneEffect {
 		PlaneEffectBase::~PlaneEffectBase();
 	};
 
-	bool BoardPolygon::Update() {
-		PlaneEffectBase::Update();
+	bool BoardPolygon::Process() {
+		PlaneEffectBase::Process();
 		return true;
 	};
 
@@ -84,4 +84,3 @@ namespace PlaneEffect {
 		}
 		return true;
 	};
-}
