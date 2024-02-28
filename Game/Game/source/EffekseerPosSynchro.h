@@ -6,6 +6,7 @@ class EffekseerPosSynchro : public EffekseerBase
 	typedef EffekseerBase base;
 public :
 	EffekseerPosSynchro(std::string name, VECTOR* pos, float size, float speed = 1.0f, bool loopFlag = false);
+	EffekseerPosSynchro(int handle, VECTOR* pos, float size, float speed = 1.0f, bool loopFlag = false);
 	~EffekseerPosSynchro();
 
 	virtual bool Process()override;

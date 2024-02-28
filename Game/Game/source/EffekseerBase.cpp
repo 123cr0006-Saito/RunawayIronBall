@@ -16,6 +16,18 @@ EffekseerBase::EffekseerBase(std::string name, VECTOR* pos,float size,float spee
 	SetSpeedPlayingEffekseer3DEffect(_playingEffectHandle, _speed);
 	SetScalePlayingEffekseer3DEffect(_playingEffectHandle, _size, _size, _size);
 };
+EffekseerBase::EffekseerBase(int handle, VECTOR* pos, float size, float speed , bool loopFlag ) :
+	_effectResourceHandle(handle),
+	_pos(*pos),
+	_speed(speed),
+	_size(size),
+	_useFlag(true),
+	_loopFlag(loopFlag)
+{
+	_playingEffectHandle = PlayEffekseer3DEffect(_effectResourceHandle);
+	SetSpeedPlayingEffekseer3DEffect(_playingEffectHandle, _speed);
+	SetScalePlayingEffekseer3DEffect(_playingEffectHandle, _size, _size, _size);
+};
 
 EffekseerBase::~EffekseerBase() {
 	
