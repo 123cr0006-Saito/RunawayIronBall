@@ -48,8 +48,6 @@
     <ClCompile Include="source\UITimeLimit.cpp" />
     <ClCompile Include="source\BoardPolygonDust.cpp" />
     <ClCompile Include="source\PlaneEffectBase.cpp" />
-    <ClCompile Include="source\EffectBase.cpp" />
-    <ClCompile Include="source\EffectManeger.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -100,7 +98,5 @@
     <ClInclude Include="source\UITimeLimit.h" />
     <ClInclude Include="source\BoardPolygonDust.h" />
     <ClInclude Include="source\PlaneEffectBase.h" />
-    <ClInclude Include="source\EffectBase.h" />
-    <ClInclude Include="source\EffectManeger.h" />
   </ItemGroup>
 </Project>
