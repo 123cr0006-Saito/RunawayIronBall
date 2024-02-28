@@ -91,11 +91,18 @@ public:
 	int GetNowExp() { return _nowExp; }
 	int GetNextExp() { return _nextLevel[_nowLevel]; }
 
+
+	void SetPowerScale(std::string FileName);//ファイル読み込みでレベルに合わせた攻撃力と拡大率を取得
+	bool UpdateLevel();// レベルアップ時に攻撃力と拡大率を設定
+	int GetPower() { return _power; }//ノックバック用の力を返します。
+
+
+
 	void UpdateBone();
 	void UpdateCollision();
 
 	Capsule GetCollision() { return _capsuleCollision; };
-
+	Sphere GetIBCollision() { return _chain->GetCollision(); };
 
 	void SetBlastOffPower(VECTOR dir, float power) { _blastOffDir = dir; _blastOffPower = power; };
 
@@ -204,5 +211,8 @@ private:
 	int _nowExp; //現在持っている経験値を格納します。
 	int _maxLevel;//レベルの最大値
 	std::map<int, int> _nextLevel;// first 現在のレベル  second  次のレベルが上がるまでの経験値
+
+	int _power;//吹っ飛ばす力です。
+	std::map<int, std::pair<int, float>> _powerAndScale;//攻撃力と拡大率を格納したコンテナです。
 	//------------
 };

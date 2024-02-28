@@ -1,5 +1,8 @@
 #include "Chain.h"
 
+namespace {
+	constexpr float IB_COLLISION_RADIUS = 50.0f;
+}
 
 void Chain::Init() {
 	_input = XInput::GetInstance();
@@ -20,16 +23,15 @@ void Chain::Init() {
 	MV1SetPosition(_iModelHandle, _iPos);
 
 
-
+	_sphereCollision.centerPos = _iPos;
+	_sphereCollision.r = IB_COLLISION_RADIUS;
 
 
 	_animIndex = MV1AttachAnim(_iModelHandle, 0);
 	_animTotalTime = MV1GetAnimTotalTime(_iModelHandle, _animIndex);
 	_playTime = 0.0f;
 
-	//齋藤が書きました------------------------------------------------------------------
-	SetPowerScale("res/JsonFile/IronState.json");
-	//------------------------------------------------------------------
+
 	_iForwardDir = VGet(0, 0, 0);
 
 
@@ -57,32 +59,6 @@ void Chain::Init() {
 
 }
 
-void Chain::SetPowerScale(std::string FileName) {
-	myJson json(FileName);
-	int level = 0;
-	int power = 0;
-	float scale = 0;
-	for (auto& list : json._json) {
-		list.at("Level").get_to(level);
-		list.at("Power").get_to(power);
-		list.at("Magnification").get_to(scale);
-		_powerAndScale[level] = std::make_pair(power,scale);
-	}
-};
-
-bool Chain::UpdateLevel() {
-	static int _oldLevel = -1; //前フレームのレベルです。
-	int level = _playerInstance->GetNowLevel();
-
-	if (_oldLevel != level) {
-		_power = _powerAndScale[level].first;
-		MV1SetScale(_iModelHandle, VScale(_ibDefaultScale, _powerAndScale[level].second));
-		_r = _originR * _powerAndScale[level].second;
-	}
-
-	_oldLevel = level;
-	return true;
-};
 
 void Chain::Process() {
 	_moveState = _playerInstance->GetIBMoveState();
@@ -91,9 +67,6 @@ void Chain::Process() {
 	_cPos[0] = _playerInstance->GetRightHandPos();
 
 	MoveProcess();
-
-	
-	UpdateLevel();
 
 	_iPos = _cPos[CHAIN_MAX - 1];
 	MV1SetPosition(_iModelHandle, _iPos);
@@ -111,6 +84,8 @@ void Chain::Process() {
 	if (_iPos.y - _r < 0.0f) {
 		_iPos.y = 0.0f + _r;
 	}
+
+	UpdateCollision();
 
 	AnimProcess();
 }
@@ -300,6 +275,11 @@ void Chain::Render()
 	MV1DrawModel(_iModelHandle);
 }
 
+void Chain::UpdateCollision()
+{
+	_sphereCollision.centerPos = _iPos;
+}
+
 void Chain::DrawDebugInfo() {
 	unsigned int color = _enabledAttackCollision ? COLOR_RED : COLOR_WHITE;
 	DrawSphere3D(_iPos, _r, 16, color, color, false);
@@ -310,4 +290,11 @@ void Chain::DrawDebugInfo() {
 	//DrawFormatString(x, y + line * 16, COLOR_WHITE, "_pos: x %3.2f, y %3.2f, z  %3.2f", _pos.x, _pos.y, _pos.z); line++;
 	//DrawFormatString(x, y + line * 16, COLOR_WHITE, "_dir: x %3.2f, y %3.2f, z  %3.2f", _dir.x, _dir.y, _dir.z); line++;
 	//DrawFormatString(x, y + line * 16, COLOR_WHITE, "_speed %3.2f", _speed); line++;
+}
+
+bool Chain::UpdateLevel(float scale)
+{
+	MV1SetScale(_iModelHandle, VScale(_ibDefaultScale, scale));
+	_r = IB_COLLISION_RADIUS * scale;
+	return false;
 }

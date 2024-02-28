@@ -108,6 +108,9 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 
 	_idleFightingRemainingCnt = 0;
 
+
+	_nowLevel = 0;
+
 	// モーションリストの読み込み
 	MotionList::Load("Player", "MotionList_Player.csv");
 	auto motionList = MotionList::GetMotionList("Player");
@@ -185,6 +188,7 @@ void Player::SetNextExp(std::string FileName) {
 		expList.at("Exp").get_to(exp);
 		_nextLevel[nowLevel] = exp;
 	}
+	UpdateLevel();
 };
 
 bool Player::UpdateExp() {
@@ -192,6 +196,7 @@ bool Player::UpdateExp() {
 		if (_nowExp >= _nextLevel[_nowLevel]) {
 			_nowExp -= _nextLevel[_nowLevel];
 			_nowLevel++;
+			UpdateLevel();
 		}
 	}
 
@@ -446,6 +451,27 @@ void Player::UpdateCollision()
 {
 	_capsuleCollision.down_pos = VAdd(_pos, VGet(0, _capsuleCollision.r, 0));
 	_capsuleCollision.Update();
+}
+
+void Player::SetPowerScale(std::string FileName)
+{
+	myJson json(FileName);
+	int level = 0;
+	int power = 0;
+	float scale = 0;
+	for (auto& list : json._json) {
+		list.at("Level").get_to(level);
+		list.at("Power").get_to(power);
+		list.at("Magnification").get_to(scale);
+		_powerAndScale[level] = std::make_pair(power, scale);
+	}
+}
+
+bool Player::UpdateLevel()
+{
+	_power = _powerAndScale[_nowLevel].first;
+	_chain->UpdateLevel(_powerAndScale[_nowLevel].second);
+	return true;
 }
 
 void Player::UpdateBone() {
