@@ -31,8 +31,12 @@ public:
 	static int MV1LoadModel(const char* key_name, const char*  model_name);//dxlibの.mv1形式に対応した３Ｄモデルの読み込み
 	static int LoadSound(const char* key_name, const char* sound_name);//サウンドの読み込み
 	
+	static int SearchSingle(const char* search_key, TYPE resouceType);
+	static bool SearchMult(const char* search_key,int* handle, int size);
 	static std::pair<bool, int> DeleteSearchSingle(const char* search_key, std::map<const char*,int>* resourceMap);
 	static std::pair<bool, ResourceServer::Mult> DeleteSearchMult(const char* search_key, std::map<const char*, Mult>* resourceMap);
+
+	
 	static bool Delete(const char* key, TYPE resouceType);
 
 	static void DeleteResourceAll();//全てのリソースを削除

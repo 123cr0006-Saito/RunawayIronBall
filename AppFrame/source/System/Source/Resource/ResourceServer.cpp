@@ -152,6 +152,40 @@ int ResourceServer::MV1LoadModel(const char* key_name, const char* model_name) {
 	return value;
 };
 
+int ResourceServer::SearchSingle(const char* search_key, TYPE resouceType) {
+	std::map<const char*, int>* resourceMap = nullptr;
+	//リソースの種類によって検索するリソースを変更
+	switch (resouceType) {
+	case TYPE::Handle:
+		resourceMap = &_handleMap;
+		break;
+	case TYPE::Efk:
+		resourceMap = &_effekseerMap;
+		break;
+	case TYPE::Sound:
+		resourceMap = &_soundMap;
+		break;
+	}
+
+	auto itr = (*resourceMap).find(const_cast<char*>(search_key));
+	if (itr != (*resourceMap).end()) {
+		return itr->second;
+	}
+
+	return itr->second;
+};
+
+bool ResourceServer::SearchMult(const char* search_key, int* handle, int size) {
+	auto itr = _multMap.find(const_cast<char*>(search_key));
+	if (itr != _multMap.end()) {
+		for (int i = 0; i < size; i++) {
+			handle[i] = itr->second.handle[i];
+		}
+		return true;
+	}
+	return false;
+};
+
 std::pair<bool, int> ResourceServer::DeleteSearchSingle(const char* search_key, std::map<const char*, int>* resourceMap){
 	auto itr = (*resourceMap).find(const_cast<char*>(search_key));
 	if (itr != (*resourceMap).end()) {
@@ -161,6 +195,7 @@ std::pair<bool, int> ResourceServer::DeleteSearchSingle(const char* search_key, 
 	}
 	return std::make_pair(false, itr->second);
 };
+
 std::pair<bool, ResourceServer::Mult> ResourceServer::DeleteSearchMult(const char* search_key, std::map<const char*, ResourceServer::Mult>* resourceMap) {
 	auto itr = (*resourceMap).find(const_cast<char*>(search_key));
 	if (itr != (*resourceMap).end()) {
