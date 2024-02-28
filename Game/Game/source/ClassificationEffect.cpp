@@ -27,5 +27,39 @@ ClassificationEffect::~ClassificationEffect() {
 };
 
 void ClassificationEffect::SetClassification(CommandParam param) {
-
+	if (param.first == Play_Vibration_X) {
+		// バイブレーション
+	}
+	else if (param.first == Play_Vibration_Y) {
+		// バイブレーション
+	}
+	else if (param.first == Play_SE) {
+		// SE
+	}
+	else if (param.first == Play_CameraVibration) {
+		// カメラバイブレーション
+	}
+	else if (param.first == Play_Effect_PC) {
+		// エフェクト
+	}
+	else if (param.first == Play_Effect_IC) {
+		// エフェクト
+	}
+	else if (param.first == Play_Effect_IU) {
+		// エフェクト
+	}
+	else if (param.first == Play_Effekseer_PC) {
+		// エフェクシア
+	}
+	else if (param.first == Play_Effekseer_IC) {
+		// エフェクシア
+	}
+	else if (param.first == Play_Effekseer_IU) {
+		// エフェクシア
+	}
+	else {
+#ifdef _DEBUG
+		MessageBox(NULL, "エフェクトコマンドが見つかりませんでした。", "エラー", MB_OK);
+#endif
+	}
 };
