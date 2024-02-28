@@ -19,7 +19,7 @@ bool ModeTest::Initialize() {
 	MV1SetScale(_skySphere, VGet(3, 3, 3));
 	MV1SetPosition(_tile, VGet(0, 0, 0));
 
-	int playerModelHandle = MV1LoadModel("res/Character/cg_player_girl/cg_player_girl_TEST.mv1");
+	int playerModelHandle = ResourceServer::MV1LoadModel("res/Character/cg_player_girl/cg_player_girl_TEST_Ver.2.mv1");
 	_player = new Player(playerModelHandle, VGet(0, 0, 0));
 	_player->SetNextExp("res/JsonFile/ExpList.json");
 
@@ -42,7 +42,11 @@ bool ModeTest::Initialize() {
 	//}
 
 
-	int objHandle = MV1LoadModel("res/Building/House/House_test_03.mv1");
+	int objHandle = MV1LoadModel("res/Building/House/Rock/House_rock_01.mv1");
+	//int objHandle = MV1LoadModel("res/Building/House/Rock/House_rock_02.mv1");
+	//int objHandle = MV1LoadModel("res/Building/House/Iron/House_iron_01.mv1");
+	//int objHandle = MV1LoadModel("res/Building/House/Glass/House_glass_01.mv1");
+
 	//int objHandle = MV1LoadModel("res/Building/TrafficLight/cg_object_shingou.mv1");
 	//int objHandle = MV1LoadModel("res/Building/Pole/cg_object_denchu.mv1");
 	//int objHandle = MV1LoadModel("res/Building/StoneLantern/cg_object_tourou.mv1");
@@ -145,11 +149,8 @@ bool ModeTest::Process() {
 
 	_player->Process(_camera->GetCamY());
 	_chain->Process();
-	_enemyPool->Process();
 
-	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
-		ui[i]->Process();
-	}
+
 
 	bool isAttackState = _chain->GetAttackState();
 	bool isInvincible = _player->GetIsInvincible();

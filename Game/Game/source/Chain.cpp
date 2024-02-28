@@ -126,7 +126,7 @@ void Chain::MoveProcess()
 		PuttingOnSocketProcess();
 		break;
 	case INTERPOLATION:
-		InterpolationProcess();
+		//InterpolationProcess();
 		break;
 	}
 }
