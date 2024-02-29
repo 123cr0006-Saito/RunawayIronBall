@@ -63,6 +63,8 @@ protected:
 	ScreenVibration* _sVib;
 	EnemyPool* _enemyPool;
 
+	Boss* _boss;
+
 	std::vector<House*> _house;
 	std::vector<Tower*> _tower;
 

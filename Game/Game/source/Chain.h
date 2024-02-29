@@ -26,6 +26,7 @@ public:
 	void Render();
 
 	VECTOR GetBallPosition() { return _iPos; }
+	void SetBallPosition(VECTOR pos) { _iPos = pos; }
 
 	VECTOR* GetBallPosPtr() { return &_iPos; }
 

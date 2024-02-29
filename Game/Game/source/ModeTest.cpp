@@ -23,7 +23,6 @@ bool ModeTest::Initialize() {
 	_player = new Player(playerModelHandle, VGet(0, 0, 0));
 
 
-
 	
 
 	//int objHandle = MV1LoadModel("res/Building/House_test_01.mv1");
@@ -52,6 +51,10 @@ bool ModeTest::Initialize() {
 
 	_enemyPool = new EnemyPool("res/JsonFile/EnemyData.json");
 	_enemyPool->Create(json);
+
+	_boss = new Boss();
+	_boss->LoadModel();
+	_boss->Init(VGet(0, 0, 500));
 
 	std::vector<std::string> loadName{ "House_Iron","House_Rock","House_Glass" };
 	for (auto&& nameList : loadName) {
@@ -134,7 +137,7 @@ bool ModeTest::Process() {
 
 	_player->Process(_camera->GetCamY());
 
-
+	_boss->Process();
 
 	bool isAttackState = _player->GetEnabledIBAttackCollision();
 	bool isInvincible = _player->GetIsInvincible();
@@ -145,56 +148,86 @@ bool ModeTest::Process() {
 
 	int ibPower = _player->GetPower();
 
-	for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
-		(*itr)->Process();
-		
-		if ((*itr)->GetUseCollision()) {
-			OBB houseObb = (*itr)->GetOBBCollision();
 
-			if (Collision3D::OBBSphereCol(houseObb, ibSphere)) {
-				if (isAttackState) {
-					VECTOR vDir = VSub(houseObb.pos, pPos);
-					(*itr)->ActivateBreakObject(true, vDir);
-					_player->SetExp(50);
-					global._soundServer->DirectPlay("OBJ_RockBreak");
-				}
-			}
+	Capsule plCol = _player->GetCollision();
+	Capsule bossStakeCol = _boss->GetStakeCollision();
+	Sphere ibCol = _player->GetIBCollision();
 
-			//エネミーがノックバック状態の時、建物にぶつかったら破壊する
-			for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
-				EnemyBase* en = _enemyPool->GetEnemy(i);
-				if (!en) {continue;}
-				if (!en->GetUse()) { continue; }
+	if (Collision3D::TwoCapsuleCol(plCol, bossStakeCol)) {
+		VECTOR vDir = VSub(plCol.down_pos, bossStakeCol.down_pos);
+		vDir.y = 0.0f;
+		vDir = VNorm(vDir);
+		float length = plCol.r + bossStakeCol.r;
 
-				ENEMYTYPE enState = en->GetEnemyState();
-				float enR = en->GetR();
-				if (enState == ENEMYTYPE::DEAD) {
-					VECTOR enPos = en->GetCollisionPos();
-					if (Collision3D::OBBSphereCol(houseObb, enPos, enR)) {
-						VECTOR vDir = VSub(houseObb.pos, pPos);
-						(*itr)->ActivateBreakObject(true, vDir);
-						global._soundServer->DirectPlay("OBJ_RockBreak");
-					}
-				}
-			}
-		}
+		VECTOR vPos = VAdd(bossStakeCol.down_pos, VScale(vDir, length));
+		_player->SetPos(vPos);
 	}
 
-	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
-		(*itr)->Process();
-		
-		if ((*itr)->GetCanBlast()) {
-			VECTOR tPos = (*itr)->GetPos();
-			Sphere tSphere = (*itr)->GetBottomSphereCollision();
-			if (isAttackState) {
-				if (Collision3D::SphereCol(ibSphere, tSphere)) {
+	if (Collision3D::SphereCapsuleCol(ibCol, bossStakeCol)) {
+		VECTOR vDir = VSub(ibCol.centerPos, bossStakeCol.down_pos);
+		vDir.y = 0.0f;
+		vDir = VNorm(vDir);
+		float length = ibCol.r + bossStakeCol.r;
 
-					VECTOR vDir = VSub(tPos, pPos);
-					(*itr)->SetBlast(vDir);
-				}
-			}
-		}
+		VECTOR vPos = VAdd(bossStakeCol.down_pos, VScale(vDir, length));
+		vPos.y = ibCol.centerPos.y;
+		_player->SetIBPos(vPos);
 	}
+
+
+
+
+
+	//for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
+	//	(*itr)->Process();
+	//	
+	//	if ((*itr)->GetUseCollision()) {
+	//		OBB houseObb = (*itr)->GetOBBCollision();
+
+	//		if (Collision3D::OBBSphereCol(houseObb, ibSphere)) {
+	//			if (isAttackState) {
+	//				VECTOR vDir = VSub(houseObb.pos, pPos);
+	//				(*itr)->ActivateBreakObject(true, vDir);
+	//				_player->SetExp(50);
+	//				global._soundServer->DirectPlay("OBJ_RockBreak");
+	//			}
+	//		}
+
+	//		//エネミーがノックバック状態の時、建物にぶつかったら破壊する
+	//		for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
+	//			EnemyBase* en = _enemyPool->GetEnemy(i);
+	//			if (!en) {continue;}
+	//			if (!en->GetUse()) { continue; }
+
+	//			ENEMYTYPE enState = en->GetEnemyState();
+	//			float enR = en->GetR();
+	//			if (enState == ENEMYTYPE::DEAD) {
+	//				VECTOR enPos = en->GetCollisionPos();
+	//				if (Collision3D::OBBSphereCol(houseObb, enPos, enR)) {
+	//					VECTOR vDir = VSub(houseObb.pos, pPos);
+	//					(*itr)->ActivateBreakObject(true, vDir);
+	//					global._soundServer->DirectPlay("OBJ_RockBreak");
+	//				}
+	//			}
+	//		}
+	//	}
+	//}
+
+	//for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
+	//	(*itr)->Process();
+	//	
+	//	if ((*itr)->GetCanBlast()) {
+	//		VECTOR tPos = (*itr)->GetPos();
+	//		Sphere tSphere = (*itr)->GetBottomSphereCollision();
+	//		if (isAttackState) {
+	//			if (Collision3D::SphereCol(ibSphere, tSphere)) {
+
+	//				VECTOR vDir = VSub(tPos, pPos);
+	//				(*itr)->SetBlast(vDir);
+	//			}
+	//		}
+	//	}
+	//}
 
 
 
@@ -292,15 +325,17 @@ bool ModeTest::Render() {
 		_player->Render();
 		//_chain->DrawDebugInfo();
 
+		_boss->Render();
+
 		_planeEffectManeger->Render();
 		//}
-		for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
-			(*itr)->Render();
-		}
+		//for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
+		//	(*itr)->Render();
+		//}
 
-		for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
-			(*itr)->Render();
-		}
+		//for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
+		//	(*itr)->Render();
+		//}
 	}
 
 	// 描画に使用するシャドウマップを設定
@@ -311,14 +346,16 @@ bool ModeTest::Render() {
 
 	if (_drawDebug) {
 		_player->DrawDebugInfo();
-		for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
-			(*itr)->DrawDebugInfo();
-		}
+		//for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
+		//	(*itr)->DrawDebugInfo();
+		//}
+		//for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
+		//	(*itr)->DrawDebugInfo();
+		//}
+		_boss->DrawDebugInfo();
 	}
 
-	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
-		(*itr)->DrawDebugInfo();
-	}
+
 	SetUseZBuffer3D(FALSE);
 
 	//SetDrawBlendMode(DX_BLENDMODE_ADD, 255);

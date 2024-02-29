@@ -99,6 +99,8 @@ public:
 
 	Capsule GetCollision() { return _capsuleCollision; };
 	Sphere GetIBCollision() { return _chain->GetCollision(); };
+	VECTOR GetIBPos() { return _chain->GetBallPosition(); };
+	void SetIBPos(VECTOR pos) { _chain->SetBallPosition(pos); };
 
 	void SetBlastOffPower(VECTOR dir, float power) { _blastOffDir = dir; _blastOffPower = power; };
 

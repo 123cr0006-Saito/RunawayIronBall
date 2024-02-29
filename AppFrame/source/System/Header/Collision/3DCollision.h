@@ -43,7 +43,8 @@ public:
 	static bool SphereCol(const Sphere& sphere1, const Sphere& sphere2);
 
 	//カプセル同士の当たり判定
-	static bool TwoCapselCol(VECTOR line_1_start, VECTOR line_1_end, float r_1, VECTOR line_2_start, VECTOR line_2_end, float r_2);
+	static bool TwoCapsuleCol(VECTOR line_1_start, VECTOR line_1_end, float r_1, VECTOR line_2_start, VECTOR line_2_end, float r_2);
+	static bool TwoCapsuleCol(const Capsule& capsule1, const Capsule& capsule2);
 
 	// 球とカプセルの当たり判定
 	static bool SphereCapsuleCol(VECTOR spherePos, float sphereR, VECTOR capsuleStartPos, VECTOR capsuleEndPos, float capsuleR);
