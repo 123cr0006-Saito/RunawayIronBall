@@ -1,4 +1,9 @@
 #include "ModeScenario.h"
+
+std::unordered_map<int, int> ModeScenario::_charaHandleMap;
+std::unordered_map<int, std::string> ModeScenario::_nameHandleMap;
+std::unordered_map<int, int> ModeScenario::_BackGroundHandleMap;
+
 ModeScenario::ModeScenario(std::string scenarioFile) {
 	CFile ScenarioFile(scenarioFile);
 	if (ScenarioFile.Success()) {
@@ -9,10 +14,14 @@ ModeScenario::ModeScenario(std::string scenarioFile) {
 			ScenarioData scenario;
 			// textを取得
 			c += GetString(&data[c], &scenario.text);
+			// voiceを取得する
+			c += FindString(&data[c], ',', &data[size]); c++; c += GetDecNum(&data[c], &scenario.voiceData);
 			// 表示するキャラの番号を取得する
 			c += FindString(&data[c], ',', &data[size]); c++; c += GetDecNum(&data[c], &scenario.charaHandle);
-			// 表示する名前のハンドル番号を取得する
+			// 表示するキャラの番号を取得する
 			c += FindString(&data[c], ',', &data[size]); c++; c += GetDecNum(&data[c], &scenario.nameHandle);
+			// 背景の番号を取得する
+			c += FindString(&data[c], ',', &data[size]); c++; c += GetDecNum(&data[c], &scenario.backGroundHandle);
 			// 改行などスキップ
 			c += 2;
 			_scenarioData.push_back(scenario);

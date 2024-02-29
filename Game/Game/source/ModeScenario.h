@@ -5,6 +5,7 @@ class ModeScenario : public ModeBase
 	typedef ModeBase base;
 public:
 	ModeScenario(std::string scenarioFile);
+	bool LoadHandleData();
 	virtual bool Initialize();
 	virtual bool Terminate();
 	virtual bool Process();
@@ -13,9 +14,14 @@ public:
 	bool SearchLetter(std::string text, int byte);
 
 protected:
+	static std::unordered_map<int,int>_charaHandleMap;
+	static std::unordered_map<int, std::string>_nameHandleMap;
+	static std::unordered_map<int, int>_BackGroundHandleMap;
 	struct ScenarioData {
+		int voiceData;
 		int charaHandle;
 		int nameHandle;
+		int backGroundHandle;
 		std::string text;
 	};
 	XInput* _input;
@@ -23,5 +29,6 @@ protected:
 	int _nowTextByte;
 	int _nowTextLine;
 	int _currentTime;
+
 };
 
