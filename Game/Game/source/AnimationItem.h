@@ -17,7 +17,9 @@ private:
 	~AnimationItem();
 
 	// アニメーションアイテムの初期設定
-	void Setup(int attachIndex, float totalTime, int loopTimes);
+	void Setup(int animIndex, int attachIndex, float totalTime, int loopTimes);
+
+	int _stateNo;
 
 	// アニメーションのアタッチインデックス
 	int _attachIndex;

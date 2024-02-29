@@ -16,8 +16,10 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance) {
 	//ModeServer::GetInstance()->Add(new ModeTitle(), 1, "Title");
 	//ModeServer::GetInstance()->Add(new ModeGameOver(), 1, "Title");
 	//ModeServer::GetInstance()->Add(new ModeTest(), 1, "Game");
-	
 	ModeServer::GetInstance()->Add(new ModeScenario("Data/ScenarioData/Scenario01.csv"), 2, "Scenario");
+	ModeServer::GetInstance()->Add(new ModeGame(), 1, "Game");
+	
+
 	global.Init();
 
 	_input = new XInput(DX_INPUT_PAD1);

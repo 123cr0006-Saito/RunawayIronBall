@@ -17,7 +17,8 @@ protected:
 	static bool IsLoadHandle;
 	static std::unordered_map<int,int>_charaHandleMap;
 	static std::unordered_map<int, std::string>_nameHandleMap;
-	static std::unordered_map<int, int>_BackGroundHandleMap;
+	static std::unordered_map<int, int>_backGroundHandleMap;
+	static std::unordered_map<int, int> _textBoxHandle;
 	struct ScenarioData {
 		int voiceData;
 		int charaHandle;
@@ -27,9 +28,11 @@ protected:
 	};
 	XInput* _input;
 	std::vector<ScenarioData> _scenarioData;
+	int _nameFontHandle;
+	int _textFontHandle;
 	int _nowTextByte;
 	int _nowTextLine;
 	int _currentTime;
-
+	int _handleX, _handleY;
 };
 

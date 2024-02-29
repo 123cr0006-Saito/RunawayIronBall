@@ -3,7 +3,8 @@
 bool ModeScenario::IsLoadHandle = false;
 std::unordered_map<int, int> ModeScenario::_charaHandleMap;
 std::unordered_map<int, std::string> ModeScenario::_nameHandleMap;
-std::unordered_map<int, int> ModeScenario::_BackGroundHandleMap;
+std::unordered_map<int, int> ModeScenario::_backGroundHandleMap;
+std::unordered_map<int, int> ModeScenario::_textBoxHandle;
 
 ModeScenario::ModeScenario(std::string scenarioFile) {
 
@@ -58,9 +59,9 @@ bool ModeScenario::LoadOnceHandleData() {
 			while (c < size) {
 				std::string handleName;
 				int key;
-				// textを取得
+				// ハンドルの名前を取得
 				c += GetString(&data[c], &handleName);
-				// voiceを取得する
+				// keyを取得する
 				c += FindString(&data[c], ',', &data[size]); c++; c += GetDecNum(&data[c], &key);
 				// 改行コードや空白を埋める
 				c += SkipSpace(&data[c], &data[size]);
@@ -82,12 +83,12 @@ bool ModeScenario::LoadOnceHandleData() {
 			while (c < size) {
 				std::string charaName;
 				int key;
-				// textを取得
+				// 名前を取得
 				c += GetString(&data[c], &charaName);
-				// voiceを取得する
+				// keyを取得する
 				c += FindString(&data[c], ',', &data[size]); c++; c += GetDecNum(&data[c], &key);
 				// 改行コードや空白を埋める
-				c += SkipSpace(&data[c], &data[size]);
+				c += 2;
 				_nameHandleMap[key] = charaName;
 			}
 		}
@@ -105,17 +106,43 @@ bool ModeScenario::LoadOnceHandleData() {
 			while (c < size) {
 				std::string handleName;
 				int key;
-				// textを取得
+				// ハンドルの名前を取得
 				c += GetString(&data[c], &handleName);
-				// voiceを取得する
+				// keyを取得する
 				c += FindString(&data[c], ',', &data[size]); c++; c += GetDecNum(&data[c], &key);
 				// 改行コードや空白を埋める
 				c += SkipSpace(&data[c], &data[size]);
 				std::string handlePath = commonPath + Path + "/" + handleName + ".png";
-				_charaHandleMap[key] = ResourceServer::LoadGraph(handleName, handlePath);
+				_backGroundHandleMap[key] = ResourceServer::LoadGraph(handleName, handlePath);
 			}
 		}
 	}
+
+	// テキストボックスの読み込み
+	{
+		std::string Path = "TextBox";
+		std::string scenarioFile = commonPath + "Data/" + Path + ".csv";
+		CFile ScenarioFile(scenarioFile);
+		if (ScenarioFile.Success()) {
+			const char* data = (const char*)ScenarioFile.Data();
+			int c = 0;
+			int size = ScenarioFile.Size();
+			while (c < size) {
+				std::string handleName;
+				int key;
+				// ハンドルの名前を取得
+				c += GetString(&data[c], &handleName);
+				// keyを取得する
+				c += FindString(&data[c], ',', &data[size]); c++; c += GetDecNum(&data[c], &key);
+				// 改行コードや空白を埋める
+				c += SkipSpace(&data[c], &data[size]);
+				std::string handlePath = commonPath + Path + "/" + handleName + ".png";
+				_textBoxHandle[key] = ResourceServer::LoadGraph(handleName, handlePath);
+			}
+		}
+	}
+
+	IsLoadHandle = true;
 
 	return true;
 };
@@ -127,10 +154,10 @@ bool ModeScenario::Initialize(){
 	_currentTime = GetNowCount();
 	_input = XInput::GetInstance();
 
-	ChangeFont("メイリオ");
+	GetGraphSize(_charaHandleMap[_scenarioData.at(_nowTextLine).charaHandle], &_handleX, &_handleY);
+	_textFontHandle = CreateFontToHandle("メイリオ", 32, 3, DX_FONTTYPE_ANTIALIASING_EDGE_8X8);
+	_nameFontHandle = CreateFontToHandle("メイリオ", 64, 3, DX_FONTTYPE_ANTIALIASING_EDGE_8X8);
 
-	ChangeFontType(DX_FONTTYPE_ANTIALIASING_EDGE_8X8);
-	SetFontSize(32);
 	return true;
 };
 
@@ -142,12 +169,12 @@ bool ModeScenario::Terminate(){
 	// フォント関連の初期化
 	ChangeFontType(DX_FONTTYPE_NORMAL);
 	ChangeFont("MSゴシック");
-	SetFontSize(16);
 	return true;
 };
 
 bool ModeScenario::Process(){
 	base::Process();
+	ModeServer::GetInstance()->SkipProcessUnderLayer();
 
 	// ミリ秒単位での文字の描画
 	float speed = 3.0f / 60.0f * 1000;// ミリ秒単位
@@ -172,7 +199,7 @@ bool ModeScenario::Process(){
 	}
 
 	// シナリオをすべて描画し終えた
-	if (_nowTextLine >= _scenarioData.size()) {
+	if (_nowTextLine >= _scenarioData.size() || _input->GetTrg(XINPUT_BUTTON_START)) {
 		ModeServer::GetInstance()->Del(this);
 	}
 	
@@ -188,10 +215,24 @@ bool ModeScenario::SearchLetter(std::string text, int byte) {
 
 bool ModeScenario::Render() {
 	base::Render();
+	int x, y;
 
+	// 背景の描画
+	DrawGraph(0, 0, _backGroundHandleMap[_scenarioData.at(_nowTextLine).backGroundHandle], true);
+
+	// キャラクターの描画
+	DrawGraph(0, 1080 - _handleY, _charaHandleMap[_scenarioData.at(_nowTextLine).charaHandle], true);
+
+	//テキストボックスの描画
+	GetGraphSize(_textBoxHandle[0], &x, &y);
+	DrawGraph(_handleX, 1080 - _handleY/2,  _textBoxHandle[0],true);
+
+	// 名前の描画
+	DrawStringToHandle(_handleX + x / 6, 1080 - y - 100,  _nameHandleMap[_scenarioData.at(_nowTextLine).nameHandle].c_str(), GetColor(255, 255, 255), _nameFontHandle);
+
+	// 文字列の描画
 	std::string copy = _scenarioData.at(_nowTextLine).text.substr(0, _nowTextByte);
-
-	DrawFormatString(100,100,GetColor(255,255,255),"%s", copy.c_str());
+	DrawStringToHandle(_handleX + x / 5, 1080 - y,  copy.c_str(), GetColor(255, 255, 255),_textFontHandle);
 
 	return true;
 };

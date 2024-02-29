@@ -6,7 +6,7 @@
     <ClCompile Include="source\BreakObject.cpp" />
     <ClCompile Include="source\BuildingBase.cpp" />
     <ClCompile Include="source\CharacterBase.cpp" />
-    <ClCompile Include="source\Crystarl.cpp" />
+    <ClCompile Include="source\CrystarPattern3.cpp" />
     <ClCompile Include="source\EnemyBase.cpp" />
     <ClCompile Include="source\ModeGameOver.cpp" />
     <ClCompile Include="source\ModeClear.cpp" />
@@ -23,10 +23,9 @@
     <ClCompile Include="source\UIHeart.cpp" />
     <ClCompile Include="source\House.cpp" />
     <ClCompile Include="source\EnemyPool.cpp" />
-    <ClCompile Include="source\CrystarlPattern2.cpp" />
+    <ClCompile Include="source\CrystarPattern4.cpp" />
     <ClCompile Include="source\SlaBlockPattern2.cpp" />
     <ClCompile Include="source\ScreenVibration.cpp" />
-    <ClCompile Include="source\PlaneEffectManeger.cpp" />
     <ClCompile Include="source\BoardPolygon.cpp" />
     <ClCompile Include="source\ModePause.cpp" />
     <ClCompile Include="source\ModeInstructions.cpp" />
@@ -36,6 +35,23 @@
     <ClCompile Include="source\FrameData.cpp" />
     <ClCompile Include="source\ModelColor.cpp" />
     <ClCompile Include="source\ModeScenario.cpp" />
+    <ClCompile Include="source\TowerParts.cpp" />
+    <ClCompile Include="source\MotionList.cpp" />
+    <ClCompile Include="source\CrystarRoof.cpp" />
+    <ClCompile Include="source\CrystarPattern2.cpp" />
+    <ClCompile Include="source\CrystarPattern1.cpp" />
+    <ClCompile Include="source\ClassificationEffect.cpp" />
+    <ClCompile Include="source\EffekseerPosSynchro.cpp" />
+    <ClCompile Include="source\EffekseerBase.cpp" />
+    <ClCompile Include="source\UISuppressionGauge.cpp" />
+    <ClCompile Include="source\TimeLimit.cpp" />
+    <ClCompile Include="source\UITimeLimit.cpp" />
+    <ClCompile Include="source\Boss.cpp" />
+    <ClCompile Include="source\BoardPolygonDust.cpp" />
+    <ClCompile Include="source\PlaneEffectBase.cpp" />
+    <ClCompile Include="source\EffectBase.cpp" />
+    <ClCompile Include="source\EffectManeger.cpp" />
+    <ClCompile Include="source\Suppression.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -43,7 +59,7 @@
     <ClInclude Include="source\BreakObject.h" />
     <ClInclude Include="source\BuildingBase.h" />
     <ClInclude Include="source\CharacterBase.h" />
-    <ClInclude Include="source\Crystarl.h" />
+    <ClInclude Include="source\CrystarPattern3.h" />
     <ClInclude Include="source\EnemyBase.h" />
     <ClInclude Include="source\ModeGameOver.h" />
     <ClInclude Include="source\ModeClear.h" />
@@ -61,10 +77,9 @@
     <ClInclude Include="source\House.h" />
     <ClInclude Include="source\EnemyStract.h" />
     <ClInclude Include="source\EnemyPool.h" />
-    <ClInclude Include="source\CrystarlPattern2.h" />
+    <ClInclude Include="source\CrystarPattern4.h" />
     <ClInclude Include="source\SlaBlockPattern2.h" />
     <ClInclude Include="source\ScreenVibration.h" />
-    <ClInclude Include="source\PlaneEffectManeger.h" />
     <ClInclude Include="source\BoardPolygon.h" />
     <ClInclude Include="source\ModePause.h" />
     <ClInclude Include="source\ModeInstructions.h" />
@@ -74,5 +89,22 @@
     <ClInclude Include="source\FrameData.h" />
     <ClInclude Include="source\ModelColor.h" />
     <ClInclude Include="source\ModeScenario.h" />
+    <ClInclude Include="source\TowerParts.h" />
+    <ClInclude Include="source\MotionList.h" />
+    <ClInclude Include="source\CrystarRoof.h" />
+    <ClInclude Include="source\CrystarPattern2.h" />
+    <ClInclude Include="source\CrystarPattern1.h" />
+    <ClInclude Include="source\ClassificationEffect.h" />
+    <ClInclude Include="source\EffekseerPosSynchro.h" />
+    <ClInclude Include="source\EffekseerBase.h" />
+    <ClInclude Include="source\UISuppressionGauge.h" />
+    <ClInclude Include="source\TimeLimit.h" />
+    <ClInclude Include="source\UITimeLimit.h" />
+    <ClInclude Include="source\Boss.h" />
+    <ClInclude Include="source\BoardPolygonDust.h" />
+    <ClInclude Include="source\PlaneEffectBase.h" />
+    <ClInclude Include="source\EffectBase.h" />
+    <ClInclude Include="source\EffectManeger.h" />
+    <ClInclude Include="source\Suppression.h" />
   </ItemGroup>
 </Project>

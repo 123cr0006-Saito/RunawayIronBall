@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include "MotionList.h"
+
 typedef std::pair<int, float> CommandParam;
 
 class FrameData
@@ -18,6 +20,8 @@ public:
 	~FrameData();
 
 	bool LoadData(std::string, std::vector<std::pair<int, std::string>> frameData);
+
+	bool LoadData(std::string kindName, const std::vector<MotionNamePair>& motionList);
 
 	void Process(int state, int animTime);
 

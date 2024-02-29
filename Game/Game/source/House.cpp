@@ -1,82 +1,71 @@
 #include "House.h"
 
-std::vector<int>House:: _breakFrame;
-
-House::House() :BuildingBase::BuildingBase() {
-	vDiffToCenter = VGet(0.0f, 0.0f, 0.0f);
+House::House()
+{
+	_modelHandle = -1;
+	_pos = VGet(0.0f, 0.0f, 0.0f);
+	_useCollision = true;
+	_breakObj = nullptr;
 }
 
 House::~House()
 {
+	if (_modelHandle != -1) {
+		MV1DeleteModel(_modelHandle);
+		_modelHandle = -1;
+	}
+	SAFE_DELETE(_breakObj);
 }
 
-bool House::Init(int modelHandle, VECTOR startPos)
+void House::Init(int modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength)
 {
-	if (!base::Init(modelHandle, startPos)){ return false;}
+	// モデルの設定
+	_modelHandle = modelHandle;
+	_pos = startPos;
+	MV1SetPosition(_modelHandle, _pos);
+	MV1SetRotationXYZ(_modelHandle, rotation);
+	MV1SetScale(_modelHandle, scale);
 
 	// 当たり判定の設定
-	vDiffToCenter = VGet(0.0f, -250.0f, 0.0f);
-	obb.pos = VSub(_pos, vDiffToCenter);
-	obb.length[0] = 500.0f;
-	obb.length[1] = 500.0f;
-	obb.length[2] = 500.0f;
+	// スケール
+	obb.length[0] = obbLength.x * scale.x;
+	obb.length[1] = obbLength.y * scale.y;
+	obb.length[2] = obbLength.z * scale.z;
+	// 回転
+	MATRIX mRot = MGetRotX(rotation.x);
+	mRot = MMult(mRot, MGetRotY(rotation.y));
+	mRot = MMult(mRot, MGetRotZ(rotation.z));
+	obb.dir_vec[0] = VTransform(obb.dir_vec[0], mRot);
+	obb.dir_vec[1] = VTransform(obb.dir_vec[1], mRot);
+	obb.dir_vec[2] = VTransform(obb.dir_vec[2], mRot);
+	// 座標
+	obb.pos = VAdd(startPos, VGet(0.0f, obb.length[1] / 2.0f, 0.0f));
 
-	//// _breakFrameが空の場合は初期化
-	//if (_breakFrame.empty()) {
-	//	for (int i = 0; i < MV1GetFrameNum(_modelHandle); i++) {
-
-	//		// フレームの名前を取得する
-	//		std::string frameName = MV1GetFrameName(_modelHandle, i);
-	//		std::string checkName = "BRK";
-	//		if (frameName.substr(0, 3) != checkName) {
-	//			continue;
-	//		}
-
-	//		_breakFrame.push_back(i);
-
-	//		// フレームの座標変換行列を取得する
-	//		MATRIX mFrameLocal = MV1GetFrameLocalMatrix(_modelHandle, i);
-	//		// フレームのローカル座標を求める
-	//		VECTOR vFrameLocalPos = VGet(0.0f, 0.0f, 0.0f);
-	//		vFrameLocalPos = VTransform(vFrameLocalPos, mFrameLocal);
-
-	//		// モデルの起点座標から見たフレームの方向を取得する
-	//		VECTOR vFrameLocalDir = VGet(0.0f, 0.0f, -1.0f);
-	//		if (VSquareSize(vFrameLocalPos) > 0.0000f) {
-	//			vFrameLocalDir = VNorm(vFrameLocalPos);
-	//			// 吹っ飛ぶ方向をz軸マイナス方向に限定する
-	//			if (vFrameLocalDir.z > 0.0f) {
-	//				vFrameLocalDir.z *= -1;
-	//			}
-	//		}
-
-	//		//FRAME_INFO f = { i, vFrameLocalDir };
-	//		//_frameInfo.push_back(f);
-
-	//		//_locus.resize(_locus.size() + 1);
-	//	}
-	//}
-
-	return true;
+	// 破壊処理クラスの初期化
+	_breakObj = new BreakObject();
+	_breakObj->Init(_modelHandle);
 }
 
-bool House::Process()
+void House::Process()
 {
-	if(!base::Process()) { return false; }
-	return true;
+	_breakObj->Process();
 }
 
-bool House::Render()
+void House::Render()
 {
-	if (!base::Render()) { return false; }	
-	return true;
+	MV1DrawModel(_modelHandle);
 }
 
-bool House::DrawDebugInfo()
+void House::ActivateBreakObject(bool activate, VECTOR vDir)
 {
-	if (!base::DrawDebugInfo()) { return false; }
+	_breakObj->Activate(activate, vDir);
+	SetUseCollision(false);
+}
+
+void House::DrawDebugInfo()
+{
 	if (_useCollision) {
 		obb.Render(GetColor(255, 255, 255));
 	}
-	return true;
+	_breakObj->DrawDebugInfo();
 }

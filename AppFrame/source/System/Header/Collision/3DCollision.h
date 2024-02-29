@@ -40,9 +40,11 @@ public:
 
 	//球と球の当たり判定
 	static bool SphereCol(VECTOR pos1, float r1, VECTOR pos2, float r2);
+	static bool SphereCol(const Sphere& sphere1, const Sphere& sphere2);
 
 	//カプセル同士の当たり判定
-	static bool TwoCapselCol(VECTOR line_1_start, VECTOR line_1_end, float r_1, VECTOR line_2_start, VECTOR line_2_end, float r_2);
+	static bool TwoCapsuleCol(VECTOR line_1_start, VECTOR line_1_end, float r_1, VECTOR line_2_start, VECTOR line_2_end, float r_2);
+	static bool TwoCapsuleCol(const Capsule& capsule1, const Capsule& capsule2);
 
 	// 球とカプセルの当たり判定
 	static bool SphereCapsuleCol(VECTOR spherePos, float sphereR, VECTOR capsuleStartPos, VECTOR capsuleEndPos, float capsuleR);
@@ -52,7 +54,8 @@ public:
 	static  VECTOR PointOBB(VECTOR point, OBB obb);
 	
 	//OBBと球の当たり判定
-	static bool OBBSphereCol(OBB obb, VECTOR point, float r);
+	static bool OBBSphereCol(OBB obb, VECTOR point, float r, VECTOR * hitPos = nullptr);
+	static bool OBBSphereCol(const OBB& obb, const Sphere& sphere);
 
 	//OBBとカプセルの当たり判定
 	static bool OBBCapselCol(VECTOR line_start, VECTOR line_end, OBB obb, float r);
