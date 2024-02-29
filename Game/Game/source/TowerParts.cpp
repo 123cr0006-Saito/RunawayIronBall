@@ -5,6 +5,8 @@ namespace {
 	constexpr int BLAST_CNT_MAX = 180;
 	constexpr float FALL_CNT_MAX = 30;
 }
+
+std::vector<TowerParts*> TowerParts::_blastTowerParts;
 TowerParts::TowerParts()
 {
 	_use = true;

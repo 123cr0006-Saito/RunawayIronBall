@@ -60,6 +60,11 @@ bool ModeGame::Initialize() {
 
 	//global._soundServer->DirectPlay("Stage03");
 	global._soundServer->BgmFadeIn("Stage03", 2000);
+
+
+
+	TowerParts::InitBlastTowerParts();
+
 	return true;
 }
 
@@ -154,10 +159,10 @@ bool ModeGame::LoadStage(std::string fileName) {
 	}
 
 	// É^ÉèÅ[
-	for (int i = 0; i < 10; i++) {
-		VECTOR v = VGet(rand() % 4000, 0.0f, rand() % 4000);
-		v.x -= 2000.0f;
-		v.z -= 2000.0f;
+	for (int i = 0; i < 5; i++) {
+		VECTOR v = VGet(rand() % 8000, 0.0f, rand() % 8000);
+		v.x -= 4000.0f;
+		v.z -= 4000.0f;
 
 		std::array<int, 3> towerModelHandle;
 		towerModelHandle[0] = ResourceServer::MV1LoadModel("Tower01", "res/Building/CG_OBJ_Tower/CG_OBJ_Tower_Under.mv1");
@@ -211,6 +216,7 @@ bool ModeGame::Process() {
 					(*itr)->ActivateBreakObject(true, vDir);
 					_player->SetExp(50);
 					global._soundServer->DirectPlay("OBJ_RockBreak");
+					continue;
 				}
 			}
 
@@ -232,6 +238,7 @@ bool ModeGame::Process() {
 						VECTOR vDir = VSub(houseObb.pos, pPos);
 						(*itr)->ActivateBreakObject(true, vDir);
 						global._soundServer->DirectPlay("OBJ_RockBreak");
+						continue;
 					}
 					else {
 						VECTOR dirVec = VSub(enPos, hitPos);
@@ -239,6 +246,15 @@ bool ModeGame::Process() {
 						VECTOR movePos = VAdd(hitPos, VScale(dirVec, enR));
 						en->SetPos(movePos);
 					}
+				}
+			}
+
+			for (auto tpItr = TowerParts::_blastTowerParts.begin(); tpItr != TowerParts::_blastTowerParts.end(); ++tpItr) {
+				Sphere tpSphere = (*tpItr)->GetSphereCollision();
+				if (Collision3D::OBBSphereCol(houseObb, tpSphere)) {
+					VECTOR vDir = VSub(houseObb.pos, tpSphere.centerPos);
+					(*itr)->ActivateBreakObject(true, vDir);
+					continue;
 				}
 			}
 
@@ -423,6 +439,8 @@ bool ModeGame::Process() {
 	_gaugeUI[1]->Process(box_vec, 100, 100);
 
 	_player->AnimationProcess();
+
+	TowerParts::CheckFinishedBlastTowerParts();
 
 	_effectManeger->Update();
 	_camera->Process(_player->GetPosition(), _tile);

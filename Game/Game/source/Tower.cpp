@@ -145,6 +145,7 @@ void Tower::SetBlast(VECTOR vDir)
 			// 最下部のパーツのみ吹っ飛び処理
 			if (i == _bottomIndex) {
 				_towerParts[i]->SetBlast(VNorm(vDir));
+				TowerParts::AddBlastTowerParts(_towerParts[i]);
 			}
 			// それ以外のパーツは落下処理
 			else {

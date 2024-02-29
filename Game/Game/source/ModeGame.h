@@ -85,4 +85,9 @@ protected:
 	bool _drawDebug = false;
 
 	std::vector<std::tuple<std::string, VECTOR, int>>_objectParam;
+
+
+
+
+
 };
