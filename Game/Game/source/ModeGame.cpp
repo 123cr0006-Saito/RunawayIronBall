@@ -508,11 +508,12 @@ bool ModeGame::Render() {
 		for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
 			(*itr)->DrawDebugInfo();
 		}
+		for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
+			(*itr)->DrawDebugInfo();
+		}
 	}
 
-	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
-		(*itr)->DrawDebugInfo();
-	}
+
 	SetUseZBuffer3D(FALSE);
 
 	//SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
