@@ -6,6 +6,7 @@ class UIExpPoint : public UIBase
 public:
 	UIExpPoint(VECTOR pos, std::string handleName);
 	UIExpPoint(VECTOR pos, std::string handleName, int AllNum, int XNum, int YNum, int XSize, int YSize, int* HandleBuf);
+	UIExpPoint(VECTOR pos, int size, int* handle);
 	~UIExpPoint();
 	virtual bool Process()override;
 	virtual bool Draw()override;

@@ -61,6 +61,33 @@ UIExpPoint::UIExpPoint(VECTOR pos, std::string handleName, int AllNum, int XNum,
 
 }
 
+UIExpPoint::UIExpPoint(VECTOR pos, int size, int* handle) : UIBase(pos,size,handle){
+	_player = Player::GetInstance();
+	//     x,      y,    u,    v
+	float posTbl[][4] = {
+		{-_cx,-_cy,0.0f,0.0f},
+		{_cx,-_cy,1.0f,0.0f},
+		{-_cx,_cy,0.0f,1.0f},
+		{_cx,_cy,1.0f,1.0f}
+	};
+
+	VECTOR center = VAdd(pos, VGet(_cx, _cy, 0));
+
+	for (int i = 0; i < 4; i++) {
+		_back[i].pos = VAdd(center, VGet(posTbl[i][0], posTbl[i][1], 0));
+		_back[i].u = posTbl[i][2];
+		_back[i].v = posTbl[i][3];
+		_back[i].dif = GetColorU8(125, 125, 125, 255);
+		_back[i].rhw = 1.0f;
+
+		_front[i].pos = VAdd(center, VGet(posTbl[i][0], posTbl[i][1], 0));
+		_front[i].u = posTbl[i][2];
+		_front[i].v = posTbl[i][3];
+		_front[i].dif = GetColorU8(255, 255, 255, 255);
+		_front[i].rhw = 1.0f;
+	}
+};
+
 UIExpPoint::~UIExpPoint() {
 	//“Á‚É‚È‚µ
 };
@@ -81,8 +108,8 @@ bool UIExpPoint::Process() {
 
 	for (int i = 0; i < 2; i++) {
 		//ã‚É‚ ‚éÀ•W‚ðˆê“x‰º‚É‚¨‚ë‚µ‚Ä‚©‚çŒvŽZ‚·‚é
-		_front[i].pos.y = _pos.y + _cy * 2 - _cy * ratio * 2;
-		_front[i].v = 1.0f - ratio;
+		_front[i*2 + 1].pos.x = _pos.x  + _cx * ratio * 2 ;
+		_front[i*2 + 1].u =  ratio;
 	}
 
 	return true;
