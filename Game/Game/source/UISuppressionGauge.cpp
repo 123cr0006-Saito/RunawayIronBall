@@ -46,7 +46,7 @@ bool UISuppressionGauge::Process(){
 	// ^‚ñ’†‚Ì’¸“_2‚Â‚ÌÀ•W‚Æ‚•‚ğ•Ï‚¦‚½‚çÀ‘•‚Å‚«‚é
 	for (int i = 0; i < 2; i++) {
 		_suppression[0 + 2 * i].pos = VAdd(_standardPos, VScale(VGet(_cx * ratio, _cy * i, 0),2));
-		_suppression[0 + 2 * i].u = ratio;
+		_suppression[0 + 2 * i].u =  ratio;
 		_residue[1 + 2 * i].pos = VAdd(_standardPos, VScale(VGet(_cx * ratio, _cy * i, 0), 2));
 		_residue[1 + 2 * i].u = ratio;
 	}

@@ -47,7 +47,7 @@ bool ModeGame::Initialize() {
 	ui[0] = new UIHeart(VGet(20, 20, 0), 3, heartHandle, 2);
 	ui[1] = new UIExpPoint(VGet(0, 150, 0), "res/TemporaryMaterials/UI_EXP_01.png");
 	ResourceServer::LoadMultGraph("Suppressiongauge", "res/TemporaryMaterials/SuppressionGauge/suppressiongauge", ".png", 3, heartHandle);
-	ui[2] = new UISuppressionGauge(VGet(500, 100, 0), 3, heartHandle);
+	ui[2] = new UISuppressionGauge(VGet(700, 100, 0), 3, heartHandle);
 	_gaugeUI[0] = new DrawGauge(0, 3, size, true);
 	_gaugeUI[1] = new DrawGauge(0, 3, size, true);
 	_gaugeHandle[0] = ResourceServer::LoadGraph("Stamina03", _T("res/UI/UI_Stamina_03.png"));

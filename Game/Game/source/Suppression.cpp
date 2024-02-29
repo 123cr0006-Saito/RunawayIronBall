@@ -17,7 +17,7 @@ void Suppression::AddSuppression(int suppression) {
 	_nowSuppression += suppression;
 }
 
-void Suppression::SubSuppression(int suppression) { _nowSuppression -= suppression; }
+void Suppression::SubSuppression(int suppression) { if(_nowSuppression > 0)_nowSuppression -= suppression; }
 
 void Suppression::ClearSuppression() {
 	_maxSuppression = 0;
