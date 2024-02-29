@@ -47,10 +47,10 @@ Chain::~Chain()
 void Chain::Init() {
 	_input = XInput::GetInstance();
 
-	_cModelHandle = MV1LoadModel("res/Chain/Chain02.mv1");
+	_cModelHandle = MV1LoadModel("res/Chain/Cg_Chain.mv1");
 	_cPos[0] = VGet(0.0f, 0.0f, 0.0f);
 	MV1SetPosition(_cModelHandle, _cPos[0]);
-	MV1SetScale(_cModelHandle, VGet(0.5f, 0.5f, 0.5f));
+	//MV1SetScale(_cModelHandle, VGet(0.5f, 0.5f, 0.5f));
 
 	for (int i = 1; i < CHAIN_MAX; i++) {
 		_cPos[i] = VAdd(_cPos[i - 1], VGet(0.0f, 0.0f, -100.0f));
@@ -116,6 +116,11 @@ void Chain::Process() {
 	if (_iPos.y - _sphereCollision.r < 0.0f) {
 		_iPos.y = 0.0f + _sphereCollision.r;
 	}
+	for (int i = 1; i < CHAIN_MAX; i++) {
+		if (_cPos[i].y - 10.0f < 0.0f) {
+			_cPos[i].y = 10.0f;
+		}
+	}
 
 	UpdateCollision();
 
@@ -143,8 +148,8 @@ void Chain::FollowingProcess()
 	// d—Íˆ—
 	for (int i = 1; i < CHAIN_MAX; i++) {
 		_cPos[i].y -= 12.0f;
-		if (_cPos[i].y < 0.0f) {
-			_cPos[i].y = 0.0f;
+		if (_cPos[i].y - 10.0f < 0.0f) {
+			_cPos[i].y = 10.0f;
 		}
 	}
 	_iPos.y -= 12.0f;
