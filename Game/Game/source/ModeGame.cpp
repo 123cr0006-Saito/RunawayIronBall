@@ -180,21 +180,24 @@ bool ModeGame::Process() {
 	_sVib->UpdateScreenVibration();
 
 	_player->Process(_camera->GetCamY());
-	_chain->Process();
 	_enemyPool->Process();
 
 	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
 		ui[i]->Process();
 	}
 
-	bool isAttackState = _chain->GetAttackState();
+	bool isAttackState = _player->GetEnabledIBAttackCollision();
 	bool isInvincible = _player->GetIsInvincible();
 	VECTOR pPos = _player->GetPosition();
 
-	VECTOR ibPos = _chain->GetBallPosition();
-	float ibR = _chain->GetBallRadius();
 
-	int ibPower = _chain->GetPower();
+	Sphere ibSphere = _player->GetIBCollision();
+
+	int ibPower = _player->GetPower();
+
+
+	Capsule plCol = _player->GetCollision();
+	Sphere ibCol = _player->GetIBCollision();
 
 	for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
 		(*itr)->Process();
@@ -202,7 +205,7 @@ bool ModeGame::Process() {
 		if ((*itr)->GetUseCollision()) {
 			OBB houseObb = (*itr)->GetOBBCollision();
 
-			if (Collision3D::OBBSphereCol(houseObb, ibPos, ibR)) {
+			if (Collision3D::OBBSphereCol(houseObb, ibSphere)) {
 				if (isAttackState) {
 					VECTOR vDir = VSub(houseObb.pos, pPos);
 					(*itr)->ActivateBreakObject(true, vDir);
@@ -262,7 +265,6 @@ bool ModeGame::Process() {
 		Sphere tSphere = (*itr)->GetBottomSphereCollision();
 		if ((*itr)->GetCanBlast()) {
 			if (isAttackState) {
-				Sphere ibSphere = { ibPos, ibR };
 				if (Collision3D::SphereCol(ibSphere, tSphere)) {
 
 					VECTOR vDir = VSub(tPos, pPos);
@@ -318,11 +320,11 @@ bool ModeGame::Process() {
 			VECTOR enPos = enemy->GetCollisionPos();
 			float enR = enemy->GetR();
 
-			if (Collision3D::SphereCol(ibPos, ibR, enPos, enR)) {
+			if (Collision3D::SphereCol(ibSphere.centerPos, ibSphere.r, enPos, enR)) {
 				VECTOR vDir = VSub(enPos, pPos);
 				vDir = VNorm(vDir);
 				enemy->SetKnockBack(vDir, ibPower);
-				BoardPolygon* effect = new BoardPolygon(VAdd(ibPos, VGet(0, 100, 0)), GetCameraBillboardMatrix(), 200, _effectSheet, 30, 1.0f / 60.0f * 1000.0f);
+				BoardPolygon* effect = new BoardPolygon(VAdd(ibSphere.centerPos, VGet(0, 100, 0)), GetCameraBillboardMatrix(), 200, _effectSheet, 30, 1.0f / 60.0f * 1000.0f);
 				_effectManeger->LoadEffect(effect);
 			}
 		}
@@ -401,6 +403,7 @@ bool ModeGame::Process() {
 		_drawDebug = !_drawDebug;
 		VECTOR pPos = _player->GetPosition();
 		for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
+			
 			VECTOR hPos = (*itr)->GetPos();
 			VECTOR tmpDir = VSub(hPos, pPos);
 			tmpDir.y = 0.0f;
@@ -484,7 +487,6 @@ bool ModeGame::Render() {
 		//-------------------------------------------------------------------------------------
 
 		_player->Render();
-		_chain->Render();
 		_enemyPool->Render();
 		//_chain->DrawDebugInfo();
 
@@ -502,7 +504,6 @@ bool ModeGame::Render() {
 
 	if (_drawDebug) {
 		_player->DrawDebugInfo();
-		_chain->DrawDebugInfo();
 		for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
 			(*itr)->DrawDebugInfo();
 		}

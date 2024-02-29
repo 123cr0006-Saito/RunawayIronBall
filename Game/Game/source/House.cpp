@@ -14,7 +14,7 @@ bool House::Init(int modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale
 	if (!base::Init(modelHandle, startPos, rotation, scale)){ return false;}
 
 	// ìñÇΩÇËîªíËÇÃê›íË
-	obb.pos = VAdd(startPos, VGet(0.0f, obbLength.y, 0.0f));
+	obb.pos = VAdd(startPos, VGet(0.0f, obbLength.y / 2.0f, 0.0f));
 	obb.length[0] = obbLength.x;
 	obb.length[1] = obbLength.y;
 	obb.length[2] = obbLength.z;
