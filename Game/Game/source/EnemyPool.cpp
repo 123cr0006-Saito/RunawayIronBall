@@ -31,6 +31,7 @@ EnemyPool::~EnemyPool() {
 };
 
 void EnemyPool::Create(myJson json){
+	DeleteEnemy();
 	int i = 0;
 	//“Ç‚İ‚Ş“G‚Ì–¼‘O‚ÌƒŠƒXƒg
 	int handle = 0;
@@ -130,7 +131,12 @@ std::vector<std::pair<std::string, VECTOR>> EnemyPool::LoadJsonData(myJson jsonF
 };
 
 void EnemyPool::DeleteEnemy() {
-
+	for (int i = 0; i < ENEMY_MAX_SIZE; i++) {
+		if (_enemy[i] != nullptr) {
+			delete _enemy[i];
+			_enemy[i] = nullptr;
+		}
+	}
 };
 
 EnemyBase* EnemyPool::Recicle() {

@@ -416,12 +416,15 @@ VECTOR Collision3D::PointOBB(VECTOR point, OBB obb) {
 	return Re;
 }
 
-bool Collision3D::OBBSphereCol(OBB obb, VECTOR point, float r) {
+bool Collision3D::OBBSphereCol(OBB obb, VECTOR point, float r, VECTOR* hitPos) {
 	VECTOR pos = Collision3D::PointOBB(point, obb);
 
 	VECTOR vector = VSub(pos, point);
 
 	if (VDot(vector, vector) <= r * r) {
+		if (hitPos != nullptr) {
+			*hitPos = pos;
+		}
 		return true;
 	}
 

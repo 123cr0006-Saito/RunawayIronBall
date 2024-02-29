@@ -216,21 +216,45 @@ bool ModeTest::Process() {
 			}
 
 			//エネミーがノックバック状態の時、建物にぶつかったら破壊する
+			houseObb.pos.y = 0; houseObb.length[1] = 0; //平面での当たり判定のため建物のy軸の長さを0にする]
 			for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
 				EnemyBase* en = _enemyPool->GetEnemy(i);
-				if (!en) {continue;}
+				if (!en) { continue; }
 				if (!en->GetUse()) { continue; }
 
 				ENEMYTYPE enState = en->GetEnemyState();
+				
+				VECTOR enPos = en->GetCollisionPos(); enPos.y = 0;
+				VECTOR hitPos = VGet(0, 0, 0);
 				float enR = en->GetR();
-				if (enState == ENEMYTYPE::DEAD) {
-					VECTOR enPos = en->GetCollisionPos();
-					if (Collision3D::OBBSphereCol(houseObb, enPos, enR)) {
+
+				if (Collision3D::OBBSphereCol(houseObb, enPos, enR,&hitPos)) {
+					if (enState == ENEMYTYPE::DEAD) {
 						VECTOR vDir = VSub(houseObb.pos, pPos);
 						(*itr)->ActivateBreakObject(true, vDir);
 						global._soundServer->DirectPlay("OBJ_RockBreak");
 					}
+					else {
+						VECTOR dirVec = VSub(enPos, hitPos);
+						dirVec = VNorm(dirVec);
+						VECTOR movePos = VAdd(hitPos, VScale(dirVec, enR));
+						en->SetPos(movePos);
+					}
 				}
+			}
+
+			// プレイヤーの押出
+			VECTOR hitPos = VGet(0, 0, 0);
+			VECTOR pPos = _player->GetPosition(); 
+			float pPosY = pPos.y;
+			pPos.y = 0;
+           float pR = _player->GetCollision().r;
+			if (Collision3D::OBBSphereCol(houseObb, pPos, pR, &hitPos)) {
+				VECTOR dirVec = VSub(pPos, hitPos);
+				dirVec = VNorm(dirVec);
+				VECTOR movePos = VAdd(hitPos, VScale(dirVec, pR));
+				_player->SetPos(movePos);
+
 			}
 		}
 	}
@@ -238,9 +262,9 @@ bool ModeTest::Process() {
 	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
 		(*itr)->Process();
 		
+		VECTOR tPos = (*itr)->GetPos();
+		Sphere tSphere = (*itr)->GetBottomSphereCollision();
 		if ((*itr)->GetCanBlast()) {
-			VECTOR tPos = (*itr)->GetPos();
-			Sphere tSphere = (*itr)->GetBottomSphereCollision();
 			if (isAttackState) {
 				Sphere ibSphere = { ibPos, ibR };
 				if (Collision3D::SphereCol(ibSphere, tSphere)) {
@@ -248,6 +272,112 @@ bool ModeTest::Process() {
 					VECTOR vDir = VSub(tPos, pPos);
 					(*itr)->SetBlast(vDir);
 				}
+			}
+		}
+
+		// エネミーの押出処理
+		for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
+			EnemyBase* en = _enemyPool->GetEnemy(i);
+			if (!en) { continue; }
+			if (!en->GetUse()) { continue; }
+
+			float tR = tSphere.r;
+			VECTOR enPos = en->GetCollisionPos();
+			float enR = en->GetR();
+
+			enPos.y = 0;
+			tSphere.centerPos.y = 0;
+
+			VECTOR vDir = VSub(enPos, tSphere.centerPos);
+			if (VSize(vDir) <= enR + tR) {
+				float len = (enR + tR) - VSize(vDir);
+				vDir = VNorm(vDir);
+				en->SetPos(VAdd(enPos, VScale(vDir,len)));
+			}
+			en = nullptr;
+		}
+
+		// プレイヤーの押出
+		VECTOR pColPos = _player->GetPosition(); pColPos.y = 0;
+		float pR = _player->GetCollision().r;
+		float tR = tSphere.r;
+
+
+		VECTOR vDir = VSub(pColPos, tSphere.centerPos);
+		if (VSize(vDir) <= pR + tR) {
+			float len = (pR + tR) - VSize(vDir);
+			vDir = VNorm(vDir);
+			_player->SetPos(VAdd(pColPos, VScale(vDir, len)));
+		}
+
+	}
+
+
+	for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
+		EnemyBase* enemy = _enemyPool->GetEnemy(i);
+		if (!enemy) { continue; }
+		if (!enemy->GetUse()) { continue; }
+		if (isAttackState) {
+	
+			VECTOR enPos = enemy->GetCollisionPos();
+			float enR = enemy->GetR();
+
+			if (Collision3D::SphereCol(ibPos, ibR, enPos, enR)) {
+				VECTOR vDir = VSub(enPos, pPos);
+				vDir = VNorm(vDir);
+				enemy->SetKnockBack(vDir, ibPower);
+				BoardPolygon* effect = new BoardPolygon(VAdd(ibPos, VGet(0, 100, 0)), GetCameraBillboardMatrix(), 200, _effectSheet, 30, 1.0f / 60.0f * 1000.0f);
+				_effectManeger->LoadEffect(effect);
+			}
+		}
+		// 敵とプレイヤーの当たり判定
+		
+		Sphere eCol = { enemy->GetCollisionPos(), enemy->GetR() };
+		Capsule pCol = _player->GetCollision();
+		if (Collision3D::SphereCapsuleCol(eCol, pCol)) {
+			if (!isInvincible) {
+				_player->SetDamage();
+			}
+			VECTOR tmpPos = enemy->GetCollisionPos();
+			tmpPos.y = 0.0f;
+
+			VECTOR vDir = VSub(pCol.down_pos, tmpPos);
+			vDir.y = 0.0f;
+			float squareLength = VSquareSize(vDir);
+			if (squareLength >= 0.0001f) {
+				vDir = VNorm(vDir);
+				tmpPos = VAdd(tmpPos, VScale(vDir, eCol.r + pCol.r));
+				_player->SetPos(tmpPos);
+			}
+			enemy = nullptr;
+
+
+		}
+	}
+
+	//空間分割を考えていないので無駄が多いです。
+	for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
+		EnemyBase* en = _enemyPool->GetEnemy(i);
+		if (!en) { continue; }
+		if (!en->GetUse()) { continue; }
+
+		VECTOR en1Pos = en->GetCollisionPos();
+		float en1R = en->GetR();
+		for (int j = 0; j < _enemyPool->ENEMY_MAX_SIZE; j++) {
+			if (i == j) { continue; }
+
+			EnemyBase* en = _enemyPool->GetEnemy(i);
+			if (!en) { continue; }
+			if (en->GetUse()) { continue; }
+
+			VECTOR en2Pos = en->GetCollisionPos();
+			float en2R = en->GetR();
+			VECTOR dirVec = VSub(en2Pos, en1Pos);
+			float length = VSize(dirVec);
+			if (length <= en1R + en2R) {
+				float pushLength = length - en1R - en2R;
+				dirVec = VNorm(dirVec);
+				en->SetExtrusionPos(VScale(dirVec, pushLength));
 			}
 		}
 	}
@@ -310,6 +440,12 @@ bool ModeTest::Render() {
 
 	MV1DrawModel(_skySphere);
 
+	// 描画に使用するシャドウマップを設定
+	SetUseShadowMap(0, _shadowHandle);
+	MV1DrawModel(_tile);
+	// 描画に使用するシャドウマップの設定を解除
+	SetUseShadowMap(0, -1);
+
 
 	// ライト設定
 	SetUseLighting(TRUE);
@@ -365,11 +501,6 @@ bool ModeTest::Render() {
 		}
 	}
 
-	// 描画に使用するシャドウマップを設定
-	SetUseShadowMap(0, _shadowHandle);
-	MV1DrawModel(_tile);
-	// 描画に使用するシャドウマップの設定を解除
-	SetUseShadowMap(0, -1);
 
 	if (_drawDebug) {
 		_player->DrawDebugInfo();

@@ -25,6 +25,7 @@ public:
 	virtual void AnimInit();
 
 	void SetPos(VECTOR pos);
+	void SetKindPos(VECTOR pos);
 
 	bool Process();
 	bool Render();
@@ -54,6 +55,7 @@ public:
 
 	bool GetUse() { return _IsUse; }
 	virtual VECTOR GetCollisionPos() { return VAdd(_pos, _diffeToCenter); }
+	VECTOR GetRotation() { return _rotation; }
 	float GetR() { return _r; }
 	ENEMYTYPE GetEnemyState() { return _modeState; }
 
