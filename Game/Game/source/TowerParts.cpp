@@ -29,7 +29,10 @@ TowerParts::TowerParts()
 
 TowerParts::~TowerParts()
 {
-	
+	if (_modelHandle != -1) {
+		MV1DeleteModel(_modelHandle);
+		_modelHandle = -1;
+	}
 }
 
 void TowerParts::Init(int modelHandle, VECTOR startPos)
