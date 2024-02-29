@@ -36,58 +36,9 @@ bool ModeTest::Initialize() {
 		ResourceServer::LoadEffekseerEffect("Stanp", "res/Effekseer/Attack/HorizontalThird.efkefc");
 	}
 
-	
-
-	//int objHandle = MV1LoadModel("res/Building/House_test_01.mv1");
-	//for (int i = 0; i < 10; i++) {
-	//	VECTOR v = VGet(rand() % 4000, 0.0f, rand() % 4000);
-	//	v.x -= 2000.0f;
-	//	v.z -= 2000.0f;
-
-	//	House* building = new House();
-	//	building->Init(MV1DuplicateModel(objHandle), v);
-
-	//	_building.push_back(building);
-
-	//}
-
-
-	int objHandle = MV1LoadModel("res/Building/House/House_test_03.mv1");
-	//int objHandle = MV1LoadModel("res/Building/TrafficLight/cg_object_shingou.mv1");
-	//int objHandle = MV1LoadModel("res/Building/Pole/cg_object_denchu.mv1");
-	//int objHandle = MV1LoadModel("res/Building/StoneLantern/cg_object_tourou.mv1");
-	myJson json("Data/ObjectList/Stage_03.json");
-
 	_enemyPool = new EnemyPool("res/JsonFile/EnemyData.json");
-	_enemyPool->Create(json);
 
-	std::vector<std::string> loadName{ "House_Iron","House_Rock","House_Glass" };
-	for (auto&& nameList : loadName) {
-		std::vector<ModeTest::OBJECTDATA> objectData = LoadJsonObject(json._json, nameList);
-		for (auto&& objectList : objectData) {
-			House* building = new House();
-			building->Init(MV1DuplicateModel(objHandle), objectList._pos, objectList._rotate, objectList._scale);
-			_house.push_back(building);
-		}
-	}
-
-	// タワー
-	for (int i = 0; i < 10; i++) {
-		VECTOR v = VGet(rand() % 4000, 0.0f, rand() % 4000);
-		v.x -= 2000.0f;
-		v.z -= 2000.0f;
-
-		std::array<int, 3> towerModelHandle;
-		towerModelHandle[0] = ResourceServer::MV1LoadModel("Tower01","res/Building/Tower/test_Tower_01.mv1");
-		towerModelHandle[1] = ResourceServer::MV1LoadModel("Tower02","res/Building/Tower/test_Tower_02.mv1");
-		towerModelHandle[2] = ResourceServer::MV1LoadModel("Tower03","res/Building/Tower/test_Tower_03.mv1");
-
-		Tower* tower = new Tower();
-		tower->Init(towerModelHandle, v, VGet(0,0,0), VGet(1,1,1));
-
-		_tower.push_back(tower);
-	}
-
+	LoadStage("Data/ObjectList/Stage_03.json");
 
 	int size = 100;
 	int heartHandle[3];
@@ -143,6 +94,46 @@ std::vector<ModeTest::OBJECTDATA> ModeTest::LoadJsonObject(nlohmann::json json, 
 		_objectList.push_back(object);
 	}
 	return _objectList;
+};
+
+bool ModeTest::LoadStage(std::string fileName) {
+	myJson json(fileName);
+
+	_enemyPool->Create(json);
+
+	int objHandle = MV1LoadModel("res/Building/House/House_test_03.mv1");
+	//int objHandle = MV1LoadModel("res/Building/TrafficLight/cg_object_shingou.mv1");
+	//int objHandle = MV1LoadModel("res/Building/Pole/cg_object_denchu.mv1");
+	//int objHandle = MV1LoadModel("res/Building/StoneLantern/cg_object_tourou.mv1");
+
+	std::vector<std::string> loadName{ "House_Iron","House_Rock","House_Glass" };
+	for (auto&& nameList : loadName) {
+		std::vector<ModeTest::OBJECTDATA> objectData = LoadJsonObject(json._json, nameList);
+		for (auto&& objectList : objectData) {
+			House* building = new House();
+			building->Init(MV1DuplicateModel(objHandle), objectList._pos, objectList._rotate, objectList._scale);
+			_house.push_back(building);
+		}
+	}
+
+	// タワー
+	for (int i = 0; i < 10; i++) {
+		VECTOR v = VGet(rand() % 4000, 0.0f, rand() % 4000);
+		v.x -= 2000.0f;
+		v.z -= 2000.0f;
+
+		std::array<int, 3> towerModelHandle;
+		towerModelHandle[0] = ResourceServer::MV1LoadModel("Tower01", "res/Building/Tower/test_Tower_01.mv1");
+		towerModelHandle[1] = ResourceServer::MV1LoadModel("Tower02", "res/Building/Tower/test_Tower_02.mv1");
+		towerModelHandle[2] = ResourceServer::MV1LoadModel("Tower03", "res/Building/Tower/test_Tower_03.mv1");
+
+		Tower* tower = new Tower();
+		tower->Init(towerModelHandle, v, VGet(0, 0, 0), VGet(1, 1, 1));
+
+		_tower.push_back(tower);
+	}
+
+
 };
 
 bool ModeTest::Process() {
@@ -266,6 +257,10 @@ bool ModeTest::Process() {
 	_camera->Process(_player->GetPosition(), _tile);
 	return true;
 }
+
+
+bool GateProcess();// ゴールゲートの処理
+
 
 bool ModeTest::Render() {
 	SetUseZBuffer3D(TRUE);

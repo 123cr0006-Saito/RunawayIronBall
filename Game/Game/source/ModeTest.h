@@ -42,6 +42,9 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
+	bool LoadStage(std::string fileName);// ステージの読み込み 敵も含む
+	bool GateProcess();// ゴールゲートの処理
+
 	//デバッグ用
 	std::vector<OBJECTDATA> LoadJsonObject(nlohmann::json json,std::string loadName);//引数 読み込みたいオブジェクトの名前
 
