@@ -56,7 +56,7 @@ void ClassificationEffect::SetClassification(CommandParam param) {
 		int effectName = static_cast<int>(param.second);
 		ResourceServer::Mult handle = ResourceServer::SearchMult(_commandList[effectName].first.c_str());
 		if (handle.AllNum != 0) {
-			VECTOR pos = VGet(0, 0, 0);
+			VECTOR pos = Player::GetInstance()->GetIBPos();
 			float animSpeed = 1.0f / 60.0f * 1000;
 			BoardPolygonDust* dust = new BoardPolygonDust(pos, _commandList[effectName].second, handle.handle, handle.AllNum, animSpeed);
 			EffectManeger::GetInstance()->LoadEffect(dust);
@@ -69,13 +69,13 @@ void ClassificationEffect::SetClassification(CommandParam param) {
 	}
 	else if (param.first == Play_Effekseer_IC) {
 		// エフェクシア 鉄球中心
-		VECTOR pos = VGet(0, 0, 0);
-		CreateEffeckseer(param.second, &pos);
+		VECTOR* pos = Player::GetInstance()->GetIBPosPtr();
+		CreateEffeckseer(param.second, pos);
 	}
 	else if (param.first == Play_Effekseer_IU) {
 		// エフェクシア 鉄球足元
-		VECTOR pos = VGet(0, 0, 0);
-		CreateEffeckseer(param.second, &pos);
+		VECTOR* pos = Player::GetInstance()->GetIBPosPtr();
+		CreateEffeckseer(param.second, pos);
 	}
 	else {
 #ifdef _DEBUG
@@ -87,6 +87,6 @@ void ClassificationEffect::SetClassification(CommandParam param) {
 void ClassificationEffect::CreateEffeckseer(float param, VECTOR* pos) {
 	int effectName = static_cast<int>(param);
 	int handle = ResourceServer::SearchSingle(_commandList[effectName].first.c_str(), ResourceServer::TYPE::Efk);
-	EffekseerBase* effekseer = new EffekseerBase(handle, pos, _commandList[effectName].second);
+	EffekseerBase* effekseer = new EffekseerPosSynchro(handle, pos, _commandList[effectName].second);
 	EffectManeger::GetInstance()->LoadEffect(effekseer);
 };
