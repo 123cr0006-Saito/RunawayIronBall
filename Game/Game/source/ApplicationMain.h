@@ -1,5 +1,6 @@
 #pragma once
 #include "appframe.h"
+#include"ModeGame.h"
 
 class ApplicationMain : public ApplicationBase
 {

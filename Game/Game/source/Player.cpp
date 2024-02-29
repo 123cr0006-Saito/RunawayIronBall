@@ -31,13 +31,25 @@ namespace {
 	constexpr float MOVE_RUN_THRESHOLD = 0.6f;
 
 
-	// 仮
 	// スタミナの最大値
 	constexpr float STAMINA_MAX = 480.0f;
 	// 回転攻撃の1フレームあたりのスタミナ消費量
 	constexpr float ROTAION_SWING_STAMINA_DECREASE = 1.0f;
 	// スタミナが0になってから最大値まで回復するのにかかる時間
 	constexpr float STANIMA_RECOVERY_TIME = 120.0f;
+
+	// フレームデータのコマンド
+	constexpr unsigned int	C_P_CHANGE_MOTION							= 0;
+	constexpr unsigned int 	C_P_ENABLE_MOVE								= 1;
+	constexpr unsigned int 	C_P_MOVE_FORWARD							= 2;
+	constexpr unsigned int 	C_P_ACCEPT_COMBO_INPUT					= 3;
+	constexpr unsigned int 	C_P_CHECK_CHANGE_COMBO				= 4;
+	constexpr unsigned int 	C_P_CHECK_CHANGE_ATTACK_STATE		= 5;
+	constexpr unsigned int 	C_P_ENACLE_MOTION_CANCEL				= 6;
+
+	constexpr unsigned int 	C_P_ENABLE_IB_ATTACK_COLLISION		= 100;
+	constexpr unsigned int 	C_P_ENABLE_IB_FOLLOWING_MODE		= 101;
+	constexpr unsigned int 	C_P_ENABLE_IB_INTERPOLATION			= 102;
 }
 
 Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
@@ -63,13 +75,19 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	_capsuleCollision.up = 65.0f;
 	UpdateCollision();
 
-	// 鉄球の移動状態を「追従」に設定
-	_ibMoveState = IB_MOVE_STATE::FOLLOWING;
+
 
 	_isAttackState = false;
 
+	_canMotionCancel = true;
 	_playNextComboAnim = true;
 
+	// 鉄球の初期化
+	_chain = new Chain();
+	_chain->Init();
+	_chain->SetPlayerModelHandle(_modelHandle);
+	// 鉄球の移動状態を「追従」に設定
+	_chain->SetMoveState(IB_MOVE_STATE::FOLLOWING);
 
 	// ステートを「待機」に設定
 	_animStatus = ANIM_STATE::IDLE;
@@ -91,31 +109,23 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 
 	_idleFightingRemainingCnt = 0;
 
+
+	_nowLevel = 0;
+	SetNextExp("res/JsonFile/ExpList.json");
+	SetPowerScale("res/JsonFile/IronState.json");
+	UpdateLevel();
+
 	// モーションリストの読み込み
 	MotionList::Load("Player", "MotionList_Player.csv");
 	auto motionList = MotionList::GetMotionList("Player");
 
 	// アニメーションマネージャーの初期設定
 	_animManager = new AnimationManager();
-	//_animManager->InitMap("Player", _modelHandle, "MotionList_Player.csv");
 	_animManager->InitMap("Player", _modelHandle, *motionList);
 
-
+	// フレームデータの初期設定
 	_frameData = new FrameData();
 	_frameData->LoadData("Player", *motionList);
-
-	//_animManager->InitMap(&_animMap);
-
-	//// _animMapが空の場合、アニメーション情報を設定する
-	//// _animMapは静的メンバ変数なので、インスタンス間で共有する
-	//if (_animMap.empty() ){
-	//	// _animMapの初期設定
-	//	_animManager->SetupAnimationInfo(static_cast<int>(STATUS::WAIT), MV1GetAnimIndex(_modelHandle, "MO_PL_Stay"), 0);
-	//	_animManager->SetupAnimationInfo(static_cast<int>(STATUS::RUN), MV1GetAnimIndex(_modelHandle, "MO_PL_Run"), 0);
-	//	_animManager->SetupAnimationInfo(static_cast<int>(STATUS::HORISONTAL_SWING_01), MV1GetAnimIndex(_modelHandle, "MO_PL_Horizontal_first"), 1);
-	//	_animManager->SetupAnimationInfo(static_cast<int>(STATUS::HORISONTAL_SWING_02), MV1GetAnimIndex(_modelHandle, "MO_PL_Horizontal_second"), 1);
-	//	_animManager->SetupAnimationInfo(static_cast<int>(STATUS::SPIN_SWING), MV1GetAnimIndex(_modelHandle, "MO_PL_roteate_loop"), 1);
-	//}
 
 	_modelColor = new ModelColor();
 	_modelColor->Init(_modelHandle);
@@ -189,17 +199,20 @@ bool Player::UpdateExp() {
 		if (_nowExp >= _nextLevel[_nowLevel]) {
 			_nowExp -= _nextLevel[_nowLevel];
 			_nowLevel++;
+			UpdateLevel();
 		}
 	}
 
 	if (_input->GetTrg(XINPUT_BUTTON_A)) {
 		if (_nowLevel <= _maxLevel) {
 			_nowLevel--;
+			UpdateLevel();
 		}
 	}
 	if (_input->GetTrg(XINPUT_BUTTON_B)) {
 		if (_nowLevel < _maxLevel) {
 			_nowLevel++;
+			UpdateLevel();
 		}
 	}
 	return true;
@@ -236,7 +249,7 @@ bool Player::Process(float camAngleY)
 		// 左スティックの入力情報を取得する
 		auto lStick = _input->GetAdjustedStick_L();
 		VECTOR vMoveDir = VGet(lStick.x, 0, lStick.y);
-		if (_canMove) {
+		if (_canMove || _canMotionCancel) {
 			float size = VSize(vMoveDir);
 			// 左スティックの入力があったら
 			if (size > 0.000000f) {
@@ -265,9 +278,10 @@ bool Player::Process(float camAngleY)
 
 		if (_moveSpeedFWD != 0.f) {
 			_pos = VAdd(_pos, VScale(VNorm(_forwardDir), _moveSpeedFWD));
+			_moveSpeedFWD = 0.f;
 		}
 
-		if (!_isAttackState && _animStatus != ANIM_STATE::AVOIDANCE && _animStatus != ANIM_STATE::HIT) {
+		if (_canMotionCancel) {
 			if (_isMoved) {
 				if (_isTired) {
 					_animStatus = ANIM_STATE::WALK_TIRED;
@@ -293,7 +307,7 @@ bool Player::Process(float camAngleY)
 					_forwardDir = VTransform(_forwardDir, MGetRotAxis(vN, rotRad));
 				}
 			}
-			else {
+			else if(!_isAttackState) {
 				if (_isTired) {
 					_animStatus = ANIM_STATE::IDLE_TIRED;
 					_idleFightingRemainingCnt = 0;
@@ -304,7 +318,7 @@ bool Player::Process(float camAngleY)
 						_idleFightingRemainingCnt -= 1;
 					}
 					else {
-						_animStatus = ANIM_STATE::IDLE_FIGHTING;
+						_animStatus = ANIM_STATE::IDLE;
 					}
 				}
 			}
@@ -328,18 +342,19 @@ bool Player::Process(float camAngleY)
 		if (_stamina < 0.0f) {
 			_stamina = 0.0f;
 			_isTired = true;
-			_isConsumingStamina = false;
 			_isRotationSwinging = false;
 			_rotationCnt = 0;
-			_isAttackState = false;
+			_forwardDir = _stickDir;
+			_animStatus = ANIM_STATE::HORISONTAL_SWING_03;
 		}
 	}
-	else {
+
+	if(!_isAttackState ){
 		_isConsumingStamina = false;
 	}
 
 	// 攻撃状態の更新
-	if (_isTired == false && _animStatus != ANIM_STATE::AVOIDANCE) {
+	if (_isTired == false && _animStatus != ANIM_STATE::AVOIDANCE && _animStatus != ANIM_STATE::HIT) {
 		// 回転攻撃
 		if (_rotationCnt > 90) {
 			if (!_isRotationSwinging) {
@@ -374,6 +389,7 @@ bool Player::Process(float camAngleY)
 				// モデルの正面方向を更新する
 				_forwardDir = _stickDir;
 				_rotationCnt = 0;
+				_idleFightingRemainingCnt = 240;
 			}
 		}
 	}
@@ -397,13 +413,20 @@ bool Player::Process(float camAngleY)
 	UpdateBone();
 	//-------------------
 
+	
+
+
+	_chain->Process();
+
+
+
+	return true;
+}
+
+bool Player::AnimationProcess()
+{
 	_animManager->Process(static_cast<int>(_animStatus));
 	_frameData->Process(static_cast<int>(_animStatus), _animManager->GetPlayTime());
-
-
-
-
-
 	return true;
 }
 
@@ -423,6 +446,7 @@ bool Player::BlastOffProcess()
 bool Player::Render()
 {
 	CharacterBase::Render();
+	_chain->Render();
 	return true;
 }
 
@@ -432,6 +456,27 @@ void Player::UpdateCollision()
 {
 	_capsuleCollision.down_pos = VAdd(_pos, VGet(0, _capsuleCollision.r, 0));
 	_capsuleCollision.Update();
+}
+
+void Player::SetPowerScale(std::string FileName)
+{
+	myJson json(FileName);
+	int level = 0;
+	int power = 0;
+	float scale = 0;
+	for (auto& list : json._json) {
+		list.at("Level").get_to(level);
+		list.at("Power").get_to(power);
+		list.at("Magnification").get_to(scale);
+		_powerAndScale[level] = std::make_pair(power, scale);
+	}
+}
+
+bool Player::UpdateLevel()
+{
+	_power = _powerAndScale[_nowLevel].first;
+	_chain->UpdateLevel(_powerAndScale[_nowLevel].second);
+	return true;
 }
 
 void Player::UpdateBone() {
@@ -529,13 +574,21 @@ void Player::CheckFrameDataCommand()
 			_isAttackState = nextState;
 			break;
 		}
+		case C_P_ENACLE_MOTION_CANCEL:
+			_canMotionCancel = static_cast<bool>(param);
+			break;
+
 		case C_P_ENABLE_IB_ATTACK_COLLISION:
+			_chain->SetEnabledAttackCollision(static_cast<bool>(param));
 			break;
 		case C_P_ENABLE_IB_FOLLOWING_MODE:
-			_ibMoveState = static_cast<int>(param) == 0 ? IB_MOVE_STATE::PUTTING_ON_SOCKET : IB_MOVE_STATE::FOLLOWING;
+		{
+			IB_MOVE_STATE nextState = static_cast<int>(param) == 0 ? IB_MOVE_STATE::PUTTING_ON_SOCKET : IB_MOVE_STATE::FOLLOWING;
+			_chain->SetMoveState(nextState);
 			break;
+		}
 		case C_P_ENABLE_IB_INTERPOLATION:
-			_ibMoveState = IB_MOVE_STATE::INTERPOLATION;
+			_chain->SetMoveState(IB_MOVE_STATE::INTERPOLATION);
 			break;
 		}
 	}
@@ -549,13 +602,17 @@ void Player::DrawDebugInfo()
 
 	DrawCapsule3D(_capsuleCollision.up_pos, _capsuleCollision.down_pos, _capsuleCollision.r, 16, COLOR_RED, COLOR_RED, false);
 
-	int x = 0;
-	int y = 100;
-	int line = 0;
-	DrawFormatString(x, y + line * 16, COLOR_RED, "HP:%d", _hp); line++;
-	DrawFormatString(x, y + line * 16, COLOR_RED, "isInvincible:%d", _isInvincible); line++;
-	DrawFormatString(x, y + line * 16, COLOR_RED, "invincibleCnt:%d", _invincibleRemainingCnt); line++;
+	//int x = 0;
+	//int y = 100;
+	//int line = 0;
+	//DrawFormatString(x, y + line * 16, COLOR_RED, "HP:%d", _hp); line++;
+	//DrawFormatString(x, y + line * 16, COLOR_RED, "isInvincible:%d", _isInvincible); line++;
+	//DrawFormatString(x, y + line * 16, COLOR_RED, "invincibleCnt:%d", _invincibleRemainingCnt); line++;
 
-	DrawFormatString(x, y + line * 16, COLOR_RED, "ANIM:%d", _animStatus); line++;
+	//DrawFormatString(x, y + line * 16, COLOR_RED, "ANIM:%d", _animStatus); line++;
 	//DrawCapsule3D(_capsuleCollision._startPos, _capsuleCollision._endPos, _capsuleCollision._r, 16, COLOR_RED, COLOR_RED, false);
+
+
+	_animManager->DrawDebugInfo();
+	_chain->DrawDebugInfo();
 }

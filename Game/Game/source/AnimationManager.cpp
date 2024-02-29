@@ -126,31 +126,42 @@ void AnimationManager::AddAnimationItem(int statusNo)
 		float totalTime = MV1GetAttachAnimTotalTime(_modelHandle, attachIndex);
 		int loopTimes = info.loopTimes;
 
-		anim->Setup(attachIndex, totalTime, loopTimes);
+		anim->Setup(statusNo, attachIndex, totalTime, loopTimes);
 		_animContainer.push_back(anim);
 		_latestAnimItem = anim;
 	}
 }
 
 // アニメーションの再生処理
-void AnimationManager::Process(int StatusNo)
+void AnimationManager::Process(int statusNo)
 {
 	// 再生するアニメーションが変わった場合
-	if (_animNo != StatusNo) {
+	if (_animNo != statusNo) {
 		// アタッチされているアニメーションに閉じ時間を設定する
-		for (auto itrItem = _animContainer.begin(); itrItem != _animContainer.end(); ++itrItem)
+		for (auto itrItem = _animContainer.begin(); itrItem != _animContainer.end();)
 		{
+			// モーションを3つ以上ブレンドしないために、古いアニメーションを削除する
+			if ((*itrItem)->_stateNo != _animNo) {
+				// アニメーションをデタッチする
+				MV1DetachAnim(_modelHandle, (*itrItem)->_attachIndex);
+				// このアニメーションを削除
+				delete (*itrItem);
+				itrItem = _animContainer.erase(itrItem);
+				continue;
+			}
+
 			if ((*itrItem)->_closeTime == 0.0f) {
 				// 閉じ時間を設定する
-				(*itrItem)->_closeTotalTime = 4.0f;
+				(*itrItem)->_closeTotalTime = 6.0f;
 				(*itrItem)->_closeTime = (*itrItem)->_closeTotalTime;
 			}
+			++itrItem;
 		}
 
 		// アニメーション番号を更新する
-		_animNo = StatusNo;
+		_animNo = statusNo;
 		// アニメーションアイテムを追加する
-		AddAnimationItem(StatusNo);
+		AddAnimationItem(statusNo);
 	}
 
 	// 最後に追加されたアニメーションアイテムの再生時間を取得する
@@ -200,4 +211,21 @@ void AnimationManager::Process(int StatusNo)
 		// 次のアニメーションアイテムへ
 		++itrItem;
 	}
+}
+
+void AnimationManager::DrawDebugInfo()
+{
+	int y = 100;
+	int line = 0;
+
+	DrawBox(0, y, 300, y + 16 * 3, GetColor(128, 128, 128), TRUE);
+	DrawFormatString(0, y + line * 16, COLOR_BLUE, "PlayTime : %3.2f", _playTime); line++;
+
+	for (auto itr = _animContainer.begin(); itr != _animContainer.end(); ++itr)
+	{
+		DrawFormatString(0, y + line * 16, COLOR_BLUE, "アニメーション番号 : %d", (*itr)->_stateNo);
+		line++;
+	}
+
+	
 }

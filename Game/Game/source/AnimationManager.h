@@ -34,10 +34,13 @@ public:
 	void AddAnimationItem(int statusNo);
 
 	// アニメーションの再生処理
-	void Process(int StatusNo);
+	void Process(int statusNo);
 
 	// 最後に追加されたアニメーションの再生時間を取得する
 	float GetPlayTime() { return _playTime; }
+
+
+	void DrawDebugInfo();
 
 private:
 	static std::map<CHARA_NAME, ANIM_MAP> _allCharaAnimMap;

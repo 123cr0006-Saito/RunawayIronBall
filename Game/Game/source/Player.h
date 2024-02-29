@@ -4,6 +4,8 @@
 #include "bone.h"
 #include "myJson.h"
 
+#include "Chain.h"
+
 #include "AnimationManager.h"
 #include "AnimationItem.h"
 
@@ -11,24 +13,7 @@
 
 #include "ModelColor.h"
 
-// テスト用
-// フレームデータのコマンド
-#define C_P_CHANGE_MOTION							0
-#define	C_P_ENABLE_MOVE								1
-#define C_P_MOVE_FORWARD									2
-#define C_P_ACCEPT_COMBO_INPUT					3
-#define C_P_CHECK_CHANGE_COMBO				4
-#define C_P_CHECK_CHANGE_ATTACK_STATE		5
 
-#define C_P_ENABLE_IB_ATTACK_COLLISION		100
-#define C_P_ENABLE_IB_FOLLOWING_MODE		101
-#define C_P_ENABLE_IB_INTERPOLATION			102
-
-enum IB_MOVE_STATE {
-	FOLLOWING,
-	PUTTING_ON_SOCKET,
-	INTERPOLATION,
-};
 
 class Player : public CharacterBase
 {
@@ -66,6 +51,7 @@ public:
 	~Player() override;
 
 	bool Process(float camAngleY);
+	bool AnimationProcess();
 	bool BlastOffProcess();
 	bool Render() override;
 
@@ -101,11 +87,20 @@ public:
 	int GetNowExp() { return _nowExp; }
 	int GetNextExp() { return _nextLevel[_nowLevel]; }
 
+
+	void SetPowerScale(std::string FileName);//ファイル読み込みでレベルに合わせた攻撃力と拡大率を取得
+	bool UpdateLevel();// レベルアップ時に攻撃力と拡大率を設定
+	int GetPower() { return _power; }//ノックバック用の力を返します。
+
+
+
 	void UpdateBone();
 	void UpdateCollision();
 
 	Capsule GetCollision() { return _capsuleCollision; };
-
+	Sphere GetIBCollision() { return _chain->GetCollision(); };
+	VECTOR GetIBPos() { return _chain->GetBallPosition(); };
+	void SetIBPos(VECTOR pos) { _chain->SetBallPosition(pos); };
 
 	void SetBlastOffPower(VECTOR dir, float power) { _blastOffDir = dir; _blastOffPower = power; };
 
@@ -113,11 +108,11 @@ public:
 
 	VECTOR GetRightHandPos();
 
-	IB_MOVE_STATE GetIBMoveState() { return _ibMoveState; }
+	VECTOR* GetIBPosPtr() { return _chain->GetBallPosPtr(); }
 
 
-	bool GetIsAttackState() { return _isAttackState; }
-
+	bool GetAttackState() { return _isAttackState; }
+	bool GetEnabledIBAttackCollision() { return _chain->GetEnabledAttackCollision(); }
 
 	// フレームデータのコマンドをチェックする
 	void CheckFrameDataCommand();
@@ -132,6 +127,7 @@ private:
 	// Lスティック入力があった場合に更新する
 	VECTOR _stickDir;
 
+	/* ステータス関連 */
 	// HP
 	int _hp;
 	// 無敵かどうか
@@ -157,14 +153,17 @@ private:
 	// 移動速度（フレームデータを使った移動）
 	float _moveSpeedFWD;
 
-	Capsule _capsuleCollision;
-
-	// 鉄球が追従状態かどうか
-	IB_MOVE_STATE _ibMoveState;
-
 	// 攻撃状態かどうか
 	bool _isAttackState;
 
+	// 鉄球
+	Chain* _chain;
+
+	Capsule _capsuleCollision;
+
+	/* アニメーション関連 */
+	// モーション変更可能かどうか
+	bool  _canMotionCancel;
 	// 次のコンボモーションを再生するかどうか
 	bool _playNextComboAnim;
 
@@ -205,5 +204,8 @@ private:
 	int _nowExp; //現在持っている経験値を格納します。
 	int _maxLevel;//レベルの最大値
 	std::map<int, int> _nextLevel;// first 現在のレベル  second  次のレベルが上がるまでの経験値
+
+	int _power;//吹っ飛ばす力です。
+	std::map<int, std::pair<int, float>> _powerAndScale;//攻撃力と拡大率を格納したコンテナです。
 	//------------
 };

@@ -281,15 +281,15 @@ void EnemyBase::SetKnockBack(VECTOR vDir, float damage) {
 		VECTOR effectPos = VAdd(VAdd(_pos, _diffeToCenter), VScale(vDir, -50));
 
 		int effectHandle[30];
-		ResourceServer::LoadMultGraph("res/TemporaryMaterials/split/test", ".png", 30, effectHandle);
-		PlaneEffect::BoardPolygon* effect = new PlaneEffect::BoardPolygon(effectPos, GetCameraBillboardMatrix(), 200, effectHandle, 30, 0.5f / 60.0f * 1000.0f);
+		ResourceServer::LoadMultGraph("split", "res/TemporaryMaterials/split/test", ".png", 30, effectHandle);
+		BoardPolygon* effect = new BoardPolygon(effectPos, GetCameraBillboardMatrix(), 200, effectHandle, 30, 0.5f / 60.0f * 1000.0f);
 
-		PlaneEffect::PlaneEffectManeger::GetInstance()->LoadVertical(effect);
+		EffectManeger::GetInstance()->LoadEffect(effect);
 		_modeState = ENEMYTYPE::KNOCKBACK;
 		if (_hp <= 0) {
 
 			_knockBackSpeedFrame = damage;
-			EnemyPool::GetInstance()->SetSuppression(_suppression);
+			Suppression::GetInstance()->SubSuppression(_suppression);
 			_player->SetExp(_weightExp);
 			_modeState = ENEMYTYPE::DEAD;
 
@@ -356,7 +356,7 @@ bool EnemyBase::Process() {
 };
 
 bool  EnemyBase::DebugRender() {
-	DrawSphere3D(VAdd(_pos, _diffeToCenter), _r, 32, GetColor(255, 0, 0), GetColor(255, 0, 0), false);
+	DrawSphere3D(VAdd(_pos, _diffeToCenter), _r, 8, GetColor(255, 0, 0), GetColor(255, 0, 0), false);
 
 	//デバッグ用
 	//索敵範囲などの描画
@@ -383,7 +383,9 @@ bool EnemyBase::IndividualRendering() {
 
 bool EnemyBase::Render() {
 	if (_model != 0) {   
-		DebugRender();
+#ifdef _DEBUG
+		//DebugRender();
+#endif
 		MV1DrawModel(_model);
 		IndividualRendering();
 	}

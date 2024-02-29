@@ -1,11 +1,17 @@
 #pragma once
 #include "appframe.h"
-#include "Player.h"
 
 #define CHAIN_MAX 12
 
+enum IB_MOVE_STATE {
+	FOLLOWING,
+	PUTTING_ON_SOCKET,
+	INTERPOLATION,
+};
 class Chain {
 public:
+	Chain();
+	~Chain();
 
 	void Init();
 	void Process();
@@ -20,15 +26,29 @@ public:
 	void Render();
 
 	VECTOR GetBallPosition() { return _iPos; }
-	float GetBallRadius() { return _r; }
+	void SetBallPosition(VECTOR pos) { _iPos = pos; }
 
+	VECTOR* GetBallPosPtr() { return &_iPos; }
+
+	bool GetEnabledAttackCollision() { return _enabledAttackCollision; }
+	void SetEnabledAttackCollision(bool state) { _enabledAttackCollision = state; }
+
+	Sphere GetCollision() { return _sphereCollision; }
+	void UpdateCollision();
+
+
+
+	// プレイヤー関連
+	// プレイヤーのモデルハンドルをセット
+	void SetPlayerModelHandle(int handle);
+	void SetMoveState(IB_MOVE_STATE state) { _moveState = state; }
+
+
+	// デバッグ情報の表示
 	void DrawDebugInfo();
 
-	//齋藤が作成した関数です------------------------
-	void SetPowerScale(std::string FileName);//ファイル読み込みでレベルに合わせた攻撃力と拡大率を取得
-	bool UpdateLevel();//プレイヤーから取得した、レベルで攻撃力と拡大率を設定
-	int GetPower() { return _power; }//ノックバック用の力を返します。
-	//----------------------------------------------------------
+
+	bool UpdateLevel(float scale);//プレイヤーから取得した、レベルで攻撃力と拡大率を設定
 
 
 private:
@@ -42,7 +62,9 @@ private:
 	int _iModelHandle;
 	VECTOR _iPos;
 	VECTOR _iForwardDir;
-	float _r = 55.0f; //// 後でSphereクラスを作る
+
+	Sphere _sphereCollision;
+
 	VECTOR _ibDefaultScale;
 
 	// 配置ソケット
@@ -67,14 +89,12 @@ private:
 	bool _followingMode;
 	
 	IB_MOVE_STATE _moveState;
+	bool _enabledAttackCollision;
 
 
-	Player* _playerInstance;
 	int _playerModelHandle;
 
 	//-------------------
 	// 齋藤が作成した変数です。
-	const int _originR = 50;
-	int _power;//吹っ飛ばす力です。
 	std::map<int, std::pair<int, float>> _powerAndScale;//攻撃力と拡大率を格納したコンテナです。
 };

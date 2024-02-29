@@ -135,7 +135,7 @@ bool SlaBlock::ModeAttack() {
 		if (_pos.y <= 0.0f) {
 			_pos.y = 0.0f;
 			_easingFrame = 0;
-			ScreenVibration::GetInstance()->SetVibration(0, 20, 20);
+			ScreenVibration::GetInstance()->SetVibration(0, 10, 10);
 			_currentTime = GetNowCount();
 			_animState = ANIMSTATE::STAN;
 			_modeState = ENEMYTYPE::COOLTIME;

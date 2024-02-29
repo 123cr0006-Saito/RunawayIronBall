@@ -26,17 +26,12 @@ Tower::~Tower()
 		delete* itr;
 	}
 	_towerParts.clear();
-
 }
 
-bool Tower::Init(std::array<int, 3> modelHandle, VECTOR startPos)
+void Tower::Init(std::array<int, 3> modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale)
 {
 	_pos = startPos;
 	for (int i = 0; i < 3; i++) {
-		if (modelHandle[i] == -1) {
-			return false;
-		}
-
 		TowerParts* tp = new TowerParts();
 		VECTOR tmpPos = VGet(0.0f, 0.0f, 0.0f);
 		if (i == 0) {
@@ -44,7 +39,7 @@ bool Tower::Init(std::array<int, 3> modelHandle, VECTOR startPos)
 		}
 		else {
 			VECTOR vOrigin = VGet(0.0f, 0.0f, 0.0f);
-			MATRIX m = MV1GetFrameLocalWorldMatrix(_towerParts[i - 1]->_modelHandle, 3);
+			MATRIX m = MV1GetFrameLocalWorldMatrix(_towerParts[i - 1]->_modelHandle, 1);
 			tmpPos = VTransform(vOrigin, m);
 		}
 		
@@ -53,10 +48,9 @@ bool Tower::Init(std::array<int, 3> modelHandle, VECTOR startPos)
 	}
 
 	_partsNum = _towerParts.size();
-	return true;
 }
 
-bool Tower::Process()
+void Tower::Process()
 {
 	if (_use) {
 		//if (_isFalling) {
@@ -131,24 +125,13 @@ bool Tower::Process()
 	for (int i = 0; i < _partsNum; i++) {
 		_towerParts[i]->Process();
 	}
-	return true;
 }
 
-bool Tower::Render()
+void Tower::Render()
 {
-	bool successAll = true;
-	//for (auto itr = _partsInfo.begin(); itr != _partsInfo.end(); ++itr) {
-	//	MV1SetPosition((*itr)->modelHandle, (*itr)->pos);
-	//	int success = MV1DrawModel((*itr)->modelHandle);
-	//	if (success == -1) {
-	//		successAll = false;
-	//	}
-	//}
-
 	for (int i = 0; i < _partsNum; i++) {
 		_towerParts[i]->Render();
 	}
-	return successAll;
 }
 
 void Tower::SetBlast(VECTOR vDir)
@@ -162,6 +145,7 @@ void Tower::SetBlast(VECTOR vDir)
 			// 最下部のパーツのみ吹っ飛び処理
 			if (i == _bottomIndex) {
 				_towerParts[i]->SetBlast(VNorm(vDir));
+				TowerParts::AddBlastTowerParts(_towerParts[i]);
 			}
 			// それ以外のパーツは落下処理
 			else {
@@ -184,12 +168,9 @@ void Tower::UpdateCollision()
 	//}
 }
 
-bool Tower::DrawDebugInfo()
+void Tower::DrawDebugInfo()
 {
-	if (!base::DrawDebugInfo()) { return false; }
-
 	for(auto itr = _towerParts.begin(); itr != _towerParts.end(); ++itr) {
 		DrawSphere3D((*itr)->_sphereCollision.centerPos, (*itr)->_sphereCollision.r, 16, COLOR_WHITE, COLOR_WHITE, false);
 	}
-	return true;
 }

@@ -26,7 +26,7 @@ void ModelColor::Init(int modelHandle)
 	}
 
 	_flickerEmissiveColor = GetColorF(1.0f, 1.0f, 1.0f, 1.0f);
-	_flickerTextureHandle = ResourceServer::LoadGraph("res/Character/cg_player_girl/white.png");
+	_flickerTextureHandle = ResourceServer::LoadGraph("GirlTexWhite","res/Character/cg_player_girl/white.png");
 }
 
 void ModelColor::SetTexture(int textureHandle)

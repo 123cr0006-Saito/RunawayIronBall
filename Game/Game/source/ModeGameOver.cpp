@@ -6,9 +6,9 @@
 bool ModeGameOver::Initialize() {
 	if (!base::Initialize()) { return false; }
 	_input = XInput::GetInstance();
-	_handle["Logo"] = ResourceServer::LoadGraph("res/TemporaryMaterials/GameOver/ui_gameover_01.png");
-	_handle["Retry"] = ResourceServer::LoadGraph("res/TemporaryMaterials/GameOver/UI_Game_Over_Retry.png");
-	_handle["Give"] = ResourceServer::LoadGraph("res/TemporaryMaterials/GameOver/UI_Game_over_Give_Up.png");
+	_handle["Logo"] = ResourceServer::LoadGraph("Logo","res/ModeGameOver/UI_Game_Over.png");
+	_handle["Retry"] = ResourceServer::LoadGraph("Retry","res/ModeGameOver/UI_Game_Over_Retry.png");
+	_handle["Give"] = ResourceServer::LoadGraph("Give","res/ModeGameOver/UI_Game_Over_Title_Back.png");
 	_selectItem = 0;
 	return true;
 };
@@ -34,7 +34,7 @@ bool ModeGameOver::Process() {
 	if (_input->GetTrg(XINPUT_BUTTON_A)) {
 		global._soundServer->DirectPlay("SE_Press");
 		if (_selectItem == 0) {
-			ModeServer::GetInstance()->Add(new ModeTest(), 1, "Test");
+			ModeServer::GetInstance()->Add(new ModeGame(), 1, "Game");
 			ModeServer::GetInstance()->Del(this);
 		}
 		else {
@@ -51,7 +51,7 @@ bool ModeGameOver::Render() {
 	int handleX, handleY;
 	std::vector<std::string> name = { "Logo","Retry","Give" };
 
-	DrawRotaGraph(1920/2, 300, 4.0f, 0.0f, _handle[name[0]], true);
+	DrawRotaGraph(1920/2, 300, 1.0f, 0.0f, _handle[name[0]], true);
 	for (int i = 1; i < name.size(); i++) {
 		float exrate = 1.0f;
 		if (i == _selectItem + 1)exrate = 1.1f;

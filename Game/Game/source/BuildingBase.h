@@ -8,7 +8,7 @@ public:
 	BuildingBase();
 	virtual ~BuildingBase();
 
-	virtual bool Init(int modelHandle, VECTOR startPos);
+	virtual bool Init(int modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale);
 	virtual bool Process();
 	virtual bool Render();
 

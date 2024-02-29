@@ -15,7 +15,7 @@ void CrystarPattern2::InheritanceInit() {
 
 void CrystarPattern2::AnimInit() {
 
-	_roof = new CrystarRoof(ResourceServer::MV1LoadModel("res/Enemy/Crystar/cg_crystar_roof.mv1"), _model);
+	_roof = new CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof","res/Enemy/Crystar/cg_crystar_roof.mv1"), _model);
 
 	//// モーションリストのロード
 	MotionList::Load("Crystarl", "MotionList_Crystarl.csv");
@@ -202,6 +202,6 @@ bool CrystarPattern2::IndividualRendering() {
 };
 
 bool CrystarPattern2::DebugRender() {
-//	DrawSphere3D(VAdd(_pos, _diffeToCenter), _r, 32, GetColor(0, 255, 0), GetColor(0, 0, 255), false);
+	DrawSphere3D(VAdd(_pos, _diffeToCenter), _r, 8, GetColor(0, 255, 0), GetColor(0, 0, 255), false);
 	return true;
 };

@@ -1,4 +1,5 @@
 #include "FrameData.h"
+#include "ClassificationEffect.h"
 
 std::map<std::string, std::map<int, std::multimap<int, CommandParam>>>  FrameData::_kindFrameData;//キャラクターの種類別に持つデータ
 
@@ -106,6 +107,7 @@ void FrameData::Process(int state, int animTime) {
 		}
 		else {
 			//エフェクト
+			ClassificationEffect::GetInstance()->SetClassification(it->second);
 		}
 	}
 };
