@@ -14,10 +14,20 @@ bool House::Init(int modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale
 	if (!base::Init(modelHandle, startPos, rotation, scale)){ return false;}
 
 	// ìñÇΩÇËîªíËÇÃê›íË
-	obb.pos = VAdd(startPos, VGet(0.0f, obbLength.y / 2.0f, 0.0f));
-	obb.length[0] = obbLength.x;
-	obb.length[1] = obbLength.y;
-	obb.length[2] = obbLength.z;
+	obb.length[0] = obbLength.x * scale.x;
+	obb.length[1] = obbLength.y * scale.y;
+	obb.length[2] = obbLength.z * scale.z;
+
+	MATRIX mRot = MGetRotX(rotation.x);
+	mRot = MMult(mRot, MGetRotY(rotation.y));
+	mRot = MMult(mRot, MGetRotZ(rotation.z));
+
+	obb.dir_vec[0] = VTransform(obb.dir_vec[0], mRot);
+	obb.dir_vec[1] = VTransform(obb.dir_vec[1], mRot);
+	obb.dir_vec[2] = VTransform(obb.dir_vec[2], mRot);
+
+	obb.pos = VAdd(startPos, VGet(0.0f, obb.length[1] / 2.0f, 0.0f));
+
 
 	//// _breakFrameÇ™ãÛÇÃèÍçáÇÕèâä˙âª
 	//if (_breakFrame.empty()) {
