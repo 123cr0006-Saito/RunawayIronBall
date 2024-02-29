@@ -1,6 +1,6 @@
 #pragma once
 #include "UIBase.h"
-#include "EnemyPool.h"
+#include "Suppression.h"
 class UISuppressionGauge : public UIBase
 {
 public : 
@@ -9,7 +9,7 @@ public :
 	virtual bool Process()override;
 	virtual bool Draw()override;
 protected:
-	EnemyPool* _enemyPool; // 制圧ゲージを持ってくる用の変数
+	Suppression* _suppressionValue; // 制圧ゲージを持ってくる用の変数
 	VERTEX2D _residue[4];//2dポリゴンで使う頂点データ 残りのゲージ部分
 	VERTEX2D _suppression[4];//2dポリゴンで使う頂点データ 制圧部分
 

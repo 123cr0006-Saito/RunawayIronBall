@@ -284,7 +284,7 @@ void EnemyBase::SetKnockBack(VECTOR vDir, float damage) {
 		if (_hp <= 0) {
 
 			_knockBackSpeedFrame = damage;
-			EnemyPool::GetInstance()->SetSuppression(_suppression);
+			Suppression::GetInstance()->SubSuppression(_suppression);
 			_player->SetExp(_weightExp);
 			_modeState = ENEMYTYPE::DEAD;
 

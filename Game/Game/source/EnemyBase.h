@@ -5,6 +5,7 @@
 #include "EnemyStract.h"
 #include "BoardPolygon.h"
 #include "EffectManeger.h"
+#include "Suppression.h"
 
 #include <string>
 

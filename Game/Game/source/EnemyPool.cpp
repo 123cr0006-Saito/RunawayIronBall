@@ -34,12 +34,13 @@ void EnemyPool::Create(myJson json){
 	int i = 0;
 	//読み込む敵の名前のリスト
 	int handle = 0;
+	int suppression = 0;
 	std::vector<std::string> enemyName = { "CryStar_Glass","CryStar_Rock", "CryStar_Iron", "Slablock_Glass","Slablock_Rock","Slablock_Iron"/*,"ChainGuard"*/ };
 	
 	// データの読み込み
 	for (auto&& name : enemyName) {
 		std::vector<std::pair<std::string, VECTOR>> enemyData = LoadJsonData(json, name);
-		_maxSuppression += _enemyParametersMap[name]._suppression * enemyData.size();
+		suppression += _enemyParametersMap[name]._suppression * enemyData.size();
 		// データの分配
 		for (auto& enemyDataList : enemyData) {
 			if (enemyDataList.first == "CryStar_Glass") {
@@ -72,7 +73,7 @@ void EnemyPool::Create(myJson json){
 			i++;
 		}
 	}
-	_nowSuppression = _maxSuppression;
+	Suppression::GetInstance()->AddSuppression(suppression);
 };
 
 void EnemyPool::Create() {

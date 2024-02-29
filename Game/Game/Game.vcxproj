@@ -203,6 +203,7 @@
     <ClCompile Include="source\UISuppressionGauge.cpp" />
     <ClCompile Include="source\TimeLimit.cpp" />
     <ClCompile Include="source\UITimeLimit.cpp" />
+    <ClCompile Include="source\Suppression.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\EffectBase.h" />
@@ -254,6 +255,7 @@
     <ClInclude Include="source\UISuppressionGauge.h" />
     <ClInclude Include="source\TimeLimit.h" />
     <ClInclude Include="source\UITimeLimit.h" />
+    <ClInclude Include="source\Suppression.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
