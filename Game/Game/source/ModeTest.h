@@ -1,6 +1,7 @@
 #pragma once
 #include "appframe.h"
 #include "ModePause.h"
+#include "ModeFade.h"
 #include "ModeGameOver.h"
 
 #include "Camera.h"

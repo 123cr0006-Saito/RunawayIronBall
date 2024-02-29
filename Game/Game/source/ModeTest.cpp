@@ -435,6 +435,7 @@ bool ModeTest::Process() {
 
 
 bool ModeTest::GateProcess() {
+	// À•W‚ÌÝ’è•û–@‚ÍŒã‚Ål‚¦‚Ü‚·@âV“¡
 	if (_suppression->GetIsRatio()) {
 		if (_gate == nullptr) {
 			int handle[43];
@@ -450,7 +451,8 @@ bool ModeTest::GateProcess() {
 		float pR = _player->GetCollision().r;
 		VECTOR vDir = VSub(pPos, gatePos);
 		if (VSize(vDir) <= pR + gateR) {
-		
+			int time = 4 * 1000; // 4•b
+			ModeServer::GetInstance()->Add(new ModeFade(time),100,"Fade");
 		}
 	}
 	
