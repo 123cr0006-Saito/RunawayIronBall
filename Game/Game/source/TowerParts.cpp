@@ -2,6 +2,7 @@
 
 namespace {
 	constexpr float BLAST_SPEED = 60.0f;
+	constexpr int BLAST_CNT_MAX = 180;
 	constexpr float FALL_CNT_MAX = 30;
 }
 TowerParts::TowerParts()
@@ -11,6 +12,7 @@ TowerParts::TowerParts()
 
 	_blast = false;
 	_blastDir = VGet(0.0f, 0.0f, 0.0f);
+	_blastCnt = 0;
 
 	_isFalling = false;
 	_fallCnt = 0;
@@ -91,6 +93,10 @@ void TowerParts::Process()
 void TowerParts::BlastOffProcess()
 {
 	_pos = VAdd(_pos, VScale(_blastDir, BLAST_SPEED));
+	_blastCnt++;
+	if (_blastCnt > BLAST_CNT_MAX) {
+		_use = false;
+	}
 }
 
 void TowerParts::FallProcess()
@@ -108,8 +114,10 @@ void TowerParts::FallProcess()
 
 void TowerParts::Render()
 {
-	MV1SetPosition(_modelHandle, _pos);
-	MV1DrawModel(_modelHandle);
+	if (_use) {
+		MV1SetPosition(_modelHandle, _pos);
+		MV1DrawModel(_modelHandle);
+	}
 }
 
 void TowerParts::UpdateCollision()

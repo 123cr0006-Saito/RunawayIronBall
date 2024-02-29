@@ -61,6 +61,7 @@ protected:
 
 	bool _blast;
 	VECTOR _blastDir;
+	int _blastCnt;
 
 	bool _isFalling;
 	int _fallCnt;
