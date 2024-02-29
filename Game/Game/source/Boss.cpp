@@ -9,6 +9,8 @@ Boss::Boss()
 	_stakeCapsuleCol.up_pos = VGet(0.0f, 0.0f, 0.0f);
 	_stakeCapsuleCol.r = 0.0f;
 	_stakeCapsuleCol.up = 0.0f;
+
+	_ironBall = new BossIronBall();
 }
 
 Boss::~Boss()
@@ -18,6 +20,7 @@ Boss::~Boss()
 void Boss::LoadModel()
 {
 	_stakeModelHandle = MV1LoadModel("res/Enemy/Bossnake/Stake/test_Tower_01.mv1");
+	_ironBall->LoadModel();
 }
 
 void Boss::Init(VECTOR polePos)
@@ -29,16 +32,19 @@ void Boss::Init(VECTOR polePos)
 	_stakeCapsuleCol.up = 500.0f;
 	_stakeCapsuleCol.up_pos = VAdd(_stakePos, VGet(0.0f, _stakeCapsuleCol.up, 0.0f));
 	_stakeCapsuleCol.r = 100.0f;
+
+	_ironBall->Init(&_stakePos);
 }
 
 void Boss::Process()
 {
-	
+	_ironBall->Process();
 }
 
 void Boss::Render()
 {
 	MV1DrawModel(_stakeModelHandle);
+	_ironBall->Render();
 }
 
 void Boss::DrawDebugInfo()

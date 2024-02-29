@@ -1,5 +1,6 @@
 #pragma once
 #include "appframe.h"
+#include "BossIronBall.h"
 
 class Boss
 {
@@ -32,4 +33,6 @@ private:
 	VECTOR _stakePos;
 	// çYÇÃìñÇΩÇËîªíË
 	Capsule _stakeCapsuleCol;
+
+	BossIronBall* _ironBall;
 };
