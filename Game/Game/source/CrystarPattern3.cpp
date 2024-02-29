@@ -51,7 +51,7 @@ void CrystarPattern3::CommandProcess() {
 void CrystarPattern3::Init(VECTOR pos) {
 	_IsUse = true;
 
-	SetPos(pos);
+	SetKindPos(pos);
 	_hp = _maxHp;
 	_knockBackSpeedFrame = 0;
 	_gravity = 0;

@@ -52,7 +52,7 @@ void EnemyBase::Init(VECTOR pos, float scale) {
 void EnemyBase::Init(VECTOR pos) {
 	_IsUse = true;
 
-	SetPos(pos);
+	SetKindPos(pos);
 	_hp = _maxHp;
 	_knockBackSpeedFrame = 0;
 	_gravity = 0;
@@ -80,10 +80,14 @@ void EnemyBase::AnimInit() {
 
 void EnemyBase::SetPos(VECTOR pos) {
 	_pos = pos;
-	_saveNextPoint = pos;;
-	/*_orignPos = pos;
+	_saveNextPoint = pos;
+};
+
+void EnemyBase::SetKindPos(VECTOR pos) {
+	_pos = pos;
+	_orignPos = pos;
 	_savePos = pos;
-	_nextMovePoint = pos;*/
+	_nextMovePoint = pos;
 };
 
 bool EnemyBase::ModeSearchToTurn() {
