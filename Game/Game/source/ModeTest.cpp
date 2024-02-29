@@ -443,7 +443,17 @@ bool ModeTest::GateProcess() {
 			_gate = new Gate(VGet(0, 300, 0), 300, handle, 43, time, 1000);
 		}
 		_gate->Process();
+
+		VECTOR gatePos = _gate->GetPos();
+		float gateR = _gate->GetR();
+        VECTOR pPos = _player->GetPosition();
+		float pR = _player->GetCollision().r;
+		VECTOR vDir = VSub(pPos, gatePos);
+		if (VSize(vDir) <= pR + gateR) {
+		
+		}
 	}
+	
 	return true;
 };
 
