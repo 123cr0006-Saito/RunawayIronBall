@@ -1,5 +1,5 @@
 #include "BoardPolygonDust.h"
-namespace PlaneEffect {
+
 
 	BoardPolygonDust::BoardPolygonDust(VECTOR pos, int sizeX, int* handle, int handleMax, int speed,int animspeed) 
 	: PlaneEffectBase(pos,  sizeX, handle, handleMax, animspeed) {
@@ -16,8 +16,8 @@ namespace PlaneEffect {
 		PlaneEffectBase::~PlaneEffectBase();
 	};
 
-	bool BoardPolygonDust::Update() {
-		PlaneEffectBase::Update();
+	bool BoardPolygonDust::Process() {
+		PlaneEffectBase::Process();
 		MATRIX billboardMatrix = GetCameraBillboardMatrix();
 		_vLength.y += static_cast<float>(_speed) / 2;
 		_vLength.z += static_cast<float>(_speed);
@@ -38,4 +38,3 @@ namespace PlaneEffect {
 		}
 		return true;
 	};
-}

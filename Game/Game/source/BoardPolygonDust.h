@@ -1,13 +1,14 @@
 #pragma once
 #include "BoardPolygon.h"
-namespace PlaneEffect {
+#include "PlaneEffectBase.h"
+
 	class BoardPolygonDust : public PlaneEffectBase
 	{
 	public:
 		// X‚Ì’·‚³‚ğŠî€‚É‰æ‘œ‚Ì‘å‚«‚³‚©‚çY‚ğ“±‚«o‚µ‚Ü‚·B
 		BoardPolygonDust(VECTOR pos,int sizeX, int* handle, int handleMax,int animspeed ,int speed = 10);
 		~BoardPolygonDust();
-		bool Update()override;
+		bool Process()override;
 		bool Render()override;
 	protected:
 		static const int _dustMax = 10;
@@ -16,6 +17,6 @@ namespace PlaneEffect {
 		VECTOR _standardPos;
 		VECTOR _vLength;
 	};
-};
+
 
 

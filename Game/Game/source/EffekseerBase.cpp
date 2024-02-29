@@ -5,11 +5,11 @@
 //何回も呼び出すとそのぶん一緒に処理される
 
 EffekseerBase::EffekseerBase(std::string name, VECTOR* pos,float size,float speed,bool loopFlag) :
+	EffectBase(),
 	_effectResourceHandle(ResourceServer::LoadEffekseerEffect(_T(name.c_str()),_T(name.c_str()))),
 	_pos(*pos),
 	_speed(speed),
 	_size(size),
-	_useFlag(true),
 	_loopFlag(loopFlag)
 {
 	_playingEffectHandle = PlayEffekseer3DEffect(_effectResourceHandle);
@@ -17,11 +17,11 @@ EffekseerBase::EffekseerBase(std::string name, VECTOR* pos,float size,float spee
 	SetScalePlayingEffekseer3DEffect(_playingEffectHandle, _size, _size, _size);
 };
 EffekseerBase::EffekseerBase(int handle, VECTOR* pos, float size, float speed , bool loopFlag ) :
+	EffectBase(),
 	_effectResourceHandle(handle),
 	_pos(*pos),
 	_speed(speed),
 	_size(size),
-	_useFlag(true),
 	_loopFlag(loopFlag)
 {
 	_playingEffectHandle = PlayEffekseer3DEffect(_effectResourceHandle);
@@ -44,24 +44,14 @@ bool EffekseerBase::Process() {
 			SetScalePlayingEffekseer3DEffect(_playingEffectHandle, _size, _size, _size);
 		}
 		else {
-			_useFlag = false;
+			_IsPlay = false;
 		}
 	}
 
 	return true;
 };
 
-
-void EffekseerBase::processOnce() {
-	//Effekseerの更新
-	UpdateEffekseer3D();
-};
-
 bool EffekseerBase::Render() {
-	// DXライブラリのカメラとEffekseerのカメラを同期する。
-	Effekseer_Sync3DSetting();
-
-	// Effekseerにより再生中のエフェクトを描画する。
-	DrawEffekseer3D();
+	PlayEffekseer3DEffect(_playingEffectHandle);
 	return true;
 };

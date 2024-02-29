@@ -26,6 +26,16 @@ bool ModeTest::Initialize() {
 	_chain = new Chain();
 	_chain->Init();
 
+	_classificationEffect = new ClassificationEffect();
+	_effectManeger = new EffectManeger();
+
+	{
+		ResourceServer::LoadMultGraph("split", "res/TemporaryMaterials/split/test", ".png", 30, _effectSheet);
+		int handle[44];
+		ResourceServer::LoadDivGraph("Dust", "res/TemporaryMaterials/FX_Dust_2D.png",44,20,3,1000,1000, handle);
+		ResourceServer::LoadEffekseerEffect("Stanp", "res/Effekseer/Attack/HorizontalThird.efkefc");
+	}
+
 	
 
 	//int objHandle = MV1LoadModel("res/Building/House_test_01.mv1");
@@ -96,8 +106,6 @@ bool ModeTest::Initialize() {
 
 	
 
-	_planeEffectManeger = new PlaneEffect::PlaneEffectManeger();
-	ResourceServer::LoadMultGraph("split","res/TemporaryMaterials/split/test", ".png", 30, _effectSheet);
 	//global._soundServer->DirectPlay("Stage03");
 	global._soundServer->BgmFadeIn("Stage03", 2000);
 	return true;
@@ -254,7 +262,7 @@ bool ModeTest::Process() {
 
 	_player->AnimationProcess();
 	
-	_planeEffectManeger->Update();
+	_effectManeger->Update();
 	_camera->Process(_player->GetPosition(), _tile);
 	return true;
 }
@@ -309,7 +317,7 @@ bool ModeTest::Render() {
 		_chain->Render();
 		//_chain->DrawDebugInfo();
 
-		_planeEffectManeger->Render();
+		_effectManeger->Render();
 		//}
 		for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
 			(*itr)->Render();

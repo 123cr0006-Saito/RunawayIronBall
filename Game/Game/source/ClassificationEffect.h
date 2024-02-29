@@ -2,7 +2,7 @@
 #include "appframe.h"
 #include "EffekseerBase.h"
 #include "EffekseerPosSynchro.h"
-#include "PlaneEffectManeger.h"
+#include "EffectManeger.h"
 #include "BoardPolygon.h"
 #include "BoardPolygonDust.h"
 #include "ScreenVibration.h"
@@ -31,6 +31,6 @@ public:
 	static ClassificationEffect* _instance;
 	static ClassificationEffect* GetInstance () { return _instance; }
 protected:
-	std::map<int, std::string> _commandList;
+	std::map<int, std::pair<std::string,int> > _commandList;
 };
 

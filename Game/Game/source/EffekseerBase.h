@@ -1,27 +1,21 @@
 #pragma once
-#include <string>
-#include "appframe.h"
+#include "EffectBase.h"
 #include "EffekseerForDXLib.h"
 
 //effekseer‚ðŽg‚¤‚½‚ß‚ÌŒ³‚Æ‚È‚éƒNƒ‰ƒX
-class EffekseerBase
+class EffekseerBase : public EffectBase
 {
 public:
 	EffekseerBase(std::string name, VECTOR* pos, float size,float speed =1.0f , bool loopFlag = false);
 	EffekseerBase(int handle, VECTOR* pos, float size, float speed = 1.0f, bool loopFlag = false);
-	~EffekseerBase();
+	virtual ~EffekseerBase()override;
+	virtual bool Process()override;
+	virtual bool Render()override;
 
-	virtual bool Process();
-	static bool Render();
-
-	static void processOnce();
-
-	bool GetFlag() { return _useFlag; }
 protected:
 	int _effectResourceHandle;
 	int _playingEffectHandle;
 	VECTOR  _pos;
-	bool _useFlag;
 	float _speed;
 	float _size;
 	bool _loopFlag;

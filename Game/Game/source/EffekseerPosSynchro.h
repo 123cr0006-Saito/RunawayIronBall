@@ -7,9 +7,9 @@ class EffekseerPosSynchro : public EffekseerBase
 public :
 	EffekseerPosSynchro(std::string name, VECTOR* pos, float size, float speed = 1.0f, bool loopFlag = false);
 	EffekseerPosSynchro(int handle, VECTOR* pos, float size, float speed = 1.0f, bool loopFlag = false);
-	~EffekseerPosSynchro();
-
-	virtual bool Process()override;
+	~EffekseerPosSynchro()override;
+	bool Process()override;
+	bool Render()override;
 private :
 	const VECTOR* const _pos; //ポインタの先の値の書き換えを禁止 変数の再代入も不可
 };

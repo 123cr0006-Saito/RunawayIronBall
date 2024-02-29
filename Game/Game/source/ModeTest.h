@@ -20,8 +20,9 @@
 #include "House.h"
 #include "Tower.h"
 
+#include "ClassificationEffect.h"
 #include "EnemyPool.h"
-#include "PlaneEffectManeger.h"
+#include "EffectManeger.h"
 
 class ModeTest : public ModeBase
 {
@@ -68,7 +69,8 @@ protected:
 	int _tile;
 	
 	int _effectSheet[30];
-	PlaneEffect::PlaneEffectManeger* _planeEffectManeger;
+	ClassificationEffect* _classificationEffect;
+	EffectManeger* _effectManeger;
 	OBB obb;
 
 	int _shadowHandle;
