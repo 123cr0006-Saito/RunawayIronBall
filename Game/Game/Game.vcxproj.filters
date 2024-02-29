@@ -50,6 +50,7 @@
     <ClCompile Include="source\EffectBase.cpp" />
     <ClCompile Include="source\EffectManeger.cpp" />
     <ClCompile Include="source\Suppression.cpp" />
+    <ClCompile Include="source\Gate.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -102,5 +103,6 @@
     <ClInclude Include="source\EffectBase.h" />
     <ClInclude Include="source\EffectManeger.h" />
     <ClInclude Include="source\Suppression.h" />
+    <ClInclude Include="source\Gate.h" />
   </ItemGroup>
 </Project>

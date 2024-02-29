@@ -59,7 +59,7 @@ bool ModeTest::Initialize() {
 	_gaugeHandle[2] = ResourceServer::LoadGraph("Stamina01",_T("res/UI/UI_Stamina_01.png"));
 	_gaugeHandle[3] = ResourceServer::LoadGraph("Stamina04",_T("res/UI/UI_Stamina_04.png"));
 	_sVib = new ScreenVibration();
-
+	_gate = nullptr;
 	
 
 	//global._soundServer->DirectPlay("Stage03");
@@ -312,6 +312,7 @@ bool ModeTest::Process() {
 
 	}
 
+	_suppression->SubSuppression(1);
 
 	for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
 		EnemyBase* enemy = _enemyPool->GetEnemy(i);
@@ -426,11 +427,25 @@ bool ModeTest::Process() {
 	
 	_effectManeger->Update();
 	_camera->Process(_player->GetPosition(), _tile);
+
+	GateProcess();
+
 	return true;
 }
 
 
-bool GateProcess();// ゴールゲートの処理
+bool ModeTest::GateProcess() {
+	if (_suppression->GetIsRatio()) {
+		if (_gate == nullptr) {
+			int handle[43];
+			ResourceServer::LoadDivGraph("Gate", "res/TemporaryMaterials/FX_Hole_2D00_sheet.png", 43, 16, 3, 1200, 1200, handle);
+			float time = 1.0f / 60.0f * 1000.0f;
+			_gate = new Gate(VGet(0, 300, 0), 300, handle, 43, time, 1000);
+		}
+		_gate->Process();
+	}
+	return true;
+};
 
 
 bool ModeTest::Render() {
@@ -446,6 +461,7 @@ bool ModeTest::Render() {
 	// 描画に使用するシャドウマップの設定を解除
 	SetUseShadowMap(0, -1);
 
+	
 
 	// ライト設定
 	SetUseLighting(TRUE);
@@ -513,18 +529,25 @@ bool ModeTest::Render() {
 	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
 		(*itr)->DrawDebugInfo();
 	}
+
+	if (_gate != nullptr) {
+		_gate->Draw();
+	}
+
 	SetUseZBuffer3D(FALSE);
 
 	//SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
-	//for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
-	//	ui[i]->Draw();
-	//}
+	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
+		ui[i]->Draw();
+	}
 
 	if (_player->GetStaminaRate() < 1.0f) {
 		int handleNum = floorf(_player->GetStaminaRate() * 100.0f / 33.4f);
 		_gaugeUI[1]->Draw(_gaugeHandle[handleNum]);
 		_gaugeUI[0]->Draw(_gaugeHandle[3]);
 	}
+
+
 
 	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
