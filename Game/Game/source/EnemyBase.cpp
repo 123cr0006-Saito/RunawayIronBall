@@ -80,9 +80,10 @@ void EnemyBase::AnimInit() {
 
 void EnemyBase::SetPos(VECTOR pos) {
 	_pos = pos;
-	_orignPos = pos;
+	_saveNextPoint = pos;;
+	/*_orignPos = pos;
 	_savePos = pos;
-	_nextMovePoint = pos;
+	_nextMovePoint = pos;*/
 };
 
 bool EnemyBase::ModeSearchToTurn() {

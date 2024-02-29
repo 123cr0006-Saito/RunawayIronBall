@@ -161,17 +161,37 @@ bool ModeTest::Process() {
 			//エネミーがノックバック状態の時、建物にぶつかったら破壊する
 			for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
 				EnemyBase* en = _enemyPool->GetEnemy(i);
-				if (!en) {continue;}
+				if (!en) { continue; }
 				if (!en->GetUse()) { continue; }
 
 				ENEMYTYPE enState = en->GetEnemyState();
 				float enR = en->GetR();
-				if (enState == ENEMYTYPE::DEAD) {
-					VECTOR enPos = en->GetCollisionPos();
-					if (Collision3D::OBBSphereCol(houseObb, enPos, enR)) {
+
+				VECTOR enPos = en->GetCollisionPos();
+				VECTOR hitPos = VGet(0, 0, 0);
+
+				OBB houseObbPos = houseObb; houseObbPos.pos.y = 0; houseObbPos.length[1] = 0; //建物のy軸の長さを0にする]
+				VECTOR enPos2 = enPos; enPos2.y = 0;
+
+				if (Collision3D::OBBSphereCol(houseObbPos, enPos2, enR,&hitPos)) {
+					if (enState == ENEMYTYPE::DEAD) {
 						VECTOR vDir = VSub(houseObb.pos, pPos);
 						(*itr)->ActivateBreakObject(true, vDir);
 						global._soundServer->DirectPlay("OBJ_RockBreak");
+					}
+					else {
+					    //フォワードベクトルを取得
+						//VECTOR dirVec = Math::MatrixToVector(MGetRotY(en->GetRotation().y), 2); 
+						////モデルが-ｚ方向を向いているので、逆方向にする
+						//dirVec = VScale(dirVec, -1);
+						//hitPos.y -= enR;
+						//en->SetPos(VAdd(hitPos, VScale(dirVec,-enR)));
+						VECTOR dirVec = VSub(enPos2, hitPos);
+						dirVec = VNorm(dirVec);
+						//hitPos.y -= enR;
+						VECTOR movePos = VAdd(hitPos, VScale(dirVec, enR));
+						movePos.y = enPos.y- enR;
+						en->SetPos(movePos);
 					}
 				}
 			}
