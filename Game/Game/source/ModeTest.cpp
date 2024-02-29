@@ -36,8 +36,13 @@ bool ModeTest::Initialize() {
 		ResourceServer::LoadEffekseerEffect("Stanp", "res/Effekseer/Attack/HorizontalThird.efkefc");
 	}
 
+	_suppression = new Suppression();
+
 	_enemyPool = new EnemyPool("res/JsonFile/EnemyData.json");
 
+	// オブジェクトのデータの読み込み
+	LoadObjectParam("BuildingtList.csv");
+	// ステージのデータの読み込み
 	LoadStage("Data/ObjectList/Stage_03.json");
 
 	int size = 100;
@@ -96,23 +101,59 @@ std::vector<ModeTest::OBJECTDATA> ModeTest::LoadJsonObject(nlohmann::json json, 
 	return _objectList;
 };
 
+bool ModeTest::LoadObjectParam(std::string fileName) {
+	std::vector<std::tuple<std::string, VECTOR, bool> > paramList;
+	std::string filePath = "Data/BuildingData/" + fileName;
+	// csvファイルを読み込む
+	CFile file(filePath);
+	// ファイルが開けた場合
+	if (file.Success()) {
+		int c = 0;
+		const char* p = (const char*)file.Data();
+		int size = file.Size();
+		while (c < size) {
+			std::string modelName;
+			int x,y,z;
+            int IsBreaking;
+			c += GetString(&p[c], &modelName); // モデルの名前を取得
+			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &x); // obbのXサイズを取得
+			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &y); // obbのYサイズを取得
+			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &z); // obbのZサイズを取得
+			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &IsBreaking); // 破壊可能化
+			c += SkipSpace(&p[c], &p[size]); // 空白やコントロールコードをスキップする
+			_objectParam.push_back(std::make_tuple(modelName, VGet(x,y,z), IsBreaking));
+		}
+	}
+	else {
+		return false;
+	}
+	return true;
+};
+
 bool ModeTest::LoadStage(std::string fileName) {
 	myJson json(fileName);
 
 	_enemyPool->Create(json);
 
-	int objHandle = MV1LoadModel("res/Building/House/House_test_03.mv1");
+	//int objHandle = MV1LoadModel("res/Building/House/House_test_03.mv1");
 	//int objHandle = MV1LoadModel("res/Building/TrafficLight/cg_object_shingou.mv1");
 	//int objHandle = MV1LoadModel("res/Building/Pole/cg_object_denchu.mv1");
 	//int objHandle = MV1LoadModel("res/Building/StoneLantern/cg_object_tourou.mv1");
 
-	std::vector<std::string> loadName{ "House_Iron","House_Rock","House_Glass" };
-	for (auto&& nameList : loadName) {
-		std::vector<ModeTest::OBJECTDATA> objectData = LoadJsonObject(json._json, nameList);
-		for (auto&& objectList : objectData) {
-			House* building = new House();
-			building->Init(MV1DuplicateModel(objHandle), objectList._pos, objectList._rotate, objectList._scale);
-			_house.push_back(building);
+	for (auto&& nameList : _objectParam) {
+		std::vector<ModeTest::OBJECTDATA> objectData = LoadJsonObject(json._json, std::get<0>(nameList));
+		std::string modelName = "res/Building/" + std::get<0>(nameList) + "/" + std::get<0>(nameList) + ".mv1";
+		int objHandle = MV1LoadModel(modelName.c_str());
+		for (auto&& object : objectData) {
+			if (std::get<2>(nameList) == 1) {
+				// 壊れるオブジェクト
+				House* building = new House();
+				building->Init(MV1DuplicateModel(objHandle), object._pos, object._rotate, object._scale);
+				_house.push_back(building);
+			}
+			else {
+				// 壊れないオブジェクト
+			}
 		}
 	}
 
@@ -133,7 +174,7 @@ bool ModeTest::LoadStage(std::string fileName) {
 		_tower.push_back(tower);
 	}
 
-
+	return true;
 };
 
 bool ModeTest::Process() {
@@ -310,6 +351,7 @@ bool ModeTest::Render() {
 
 		_player->Render();
 		_chain->Render();
+		_enemyPool->Render();
 		//_chain->DrawDebugInfo();
 
 		_effectManeger->Render();

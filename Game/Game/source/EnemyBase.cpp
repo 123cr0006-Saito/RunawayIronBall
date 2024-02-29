@@ -351,7 +351,7 @@ bool EnemyBase::Process() {
 };
 
 bool  EnemyBase::DebugRender() {
-	DrawSphere3D(VAdd(_pos, _diffeToCenter), _r, 32, GetColor(255, 0, 0), GetColor(255, 0, 0), false);
+	DrawSphere3D(VAdd(_pos, _diffeToCenter), _r, 8, GetColor(255, 0, 0), GetColor(255, 0, 0), false);
 
 	//デバッグ用
 	//索敵範囲などの描画
@@ -379,7 +379,7 @@ bool EnemyBase::IndividualRendering() {
 bool EnemyBase::Render() {
 	if (_model != 0) {   
 #ifdef _DEBUG
-		DebugRender();
+		//DebugRender();
 #endif
 		MV1DrawModel(_model);
 		IndividualRendering();

@@ -40,7 +40,7 @@ public:
 
 	EnemyBase* GetEnemy(int i);
 
-	static const int ENEMY_MAX_SIZE = 100;
+	static const int ENEMY_MAX_SIZE = 300;
 private:
 	EnemyBase* _enemy[ENEMY_MAX_SIZE];
 	std::map<std::string, EnemyParam> _enemyParametersMap;

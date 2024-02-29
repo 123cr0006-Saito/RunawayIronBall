@@ -215,6 +215,6 @@ bool SlaBlockPattern2::IndividualRendering() {
 };
 
 bool SlaBlockPattern2::DebugRender() {
-	DrawSphere3D(VAdd(_pos, _diffeToCenter), _r, 16, GetColor(0, 0, 255), GetColor(0, 0, 255), false);
+	DrawSphere3D(VAdd(_pos, _diffeToCenter), _r, 8, GetColor(0, 0, 255), GetColor(0, 0, 255), false);
 	return true;
 }

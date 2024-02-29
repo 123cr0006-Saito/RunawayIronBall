@@ -42,7 +42,9 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
+	bool LoadObjectParam(std::string fileName); // オブジェクトのパラメータを読み込む
 	bool LoadStage(std::string fileName);// ステージの読み込み 敵も含む
+
 	bool GateProcess();// ゴールゲートの処理
 
 	//デバッグ用
@@ -64,6 +66,7 @@ protected:
 
 	ScreenVibration* _sVib;
 	EnemyPool* _enemyPool;
+	Suppression* _suppression;
 
 	std::vector<House*> _house;
 	std::vector<Tower*> _tower;
@@ -81,4 +84,6 @@ protected:
 
 	// デバッグ表示をするかどうか
 	bool _drawDebug = false;
+
+	std::vector<std::tuple<std::string, VECTOR, int>>_objectParam;
 };
