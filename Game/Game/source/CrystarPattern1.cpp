@@ -60,11 +60,11 @@ void CrystarPattern1::Init(VECTOR pos) {
 	_rotation = VGet(0, 0, 0);
 
 	float randSize = (float)(rand() % 75) / 100 + 0.75;// 1 + 0.0 ~ 0.5
-	MV1SetScale(_model, VScale(VGet(1.0f, 1.0f, 1.0f), randSize));
+	MV1SetScale(_model, VScale(VGet(1.0f, 1.0f, 1.0f), 2.0f * randSize));
 
-	_diffeToCenter = VGet(0, 20.0f * randSize, 0);
-	_r = 25.0f * randSize;
-	_weightExp = _weightExp * randSize;
+	_diffeToCenter = VGet(0, 20.0f * 2.0f * randSize, 0);
+	_r = 25.0f * 2.0f * randSize;
+	_weightExp = _weightExp * 2.0f * randSize;
 
 	InheritanceInit();
 };
