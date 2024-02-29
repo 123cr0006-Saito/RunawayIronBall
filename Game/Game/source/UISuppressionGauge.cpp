@@ -3,7 +3,7 @@
 const unsigned short UISuppressionGauge::vertex[6]{ 0,1,2,2,1,3 };
 
 UISuppressionGauge::UISuppressionGauge(VECTOR pos, int size, int* handle) : UIBase::UIBase( pos,  size,  handle){
-	_enemyPool = EnemyPool::GetInstance();
+	_suppressionValue = Suppression::GetInstance();
 	//     x,      y,    u,    v
 	float posTbl[][4] = {
 		{-_cx,-_cy,0.0f,0.0f},
@@ -38,8 +38,8 @@ UISuppressionGauge::~UISuppressionGauge() {
 };
 
 bool UISuppressionGauge::Process(){
-	int nowSuppression =_enemyPool->GetNowSuppression();
-	int maxSuppression = _enemyPool->GetMaxSuppression();
+	int nowSuppression = _suppressionValue->GetNowSuppression();
+	int maxSuppression = _suppressionValue->GetMaxSuppression();
 
 	float ratio = static_cast<float>(nowSuppression) / maxSuppression;
 

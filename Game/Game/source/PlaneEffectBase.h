@@ -1,15 +1,14 @@
 #pragma once
-#include "appframe.h"
-namespace PlaneEffect {
+#include "EffectBase.h"
 
-	class PlaneEffectBase
+	class PlaneEffectBase : public EffectBase
 	{
 	public:
 		PlaneEffectBase(VECTOR pos, int sizeX, int* handle,int handleMax,int speed);
 		virtual ~PlaneEffectBase();
-		virtual bool Update();
-		virtual bool Render();
-		bool GetFlag() { return _IsPlay; }
+		virtual bool Process()override;
+		virtual bool Render()override;
+		
 	protected:
 		static const unsigned short vertexOrder[6];
 		float _sizeX, _sizeY;
@@ -20,4 +19,4 @@ namespace PlaneEffect {
 		int _animMax;
 		bool _IsPlay;
 	};
-}
+

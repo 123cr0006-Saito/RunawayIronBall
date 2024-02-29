@@ -11,7 +11,7 @@ public:
 	House();
 	~House();
 
-	bool Init(int modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale) override;
+	bool Init(int modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength);
 	bool Process() override;
 	bool Render() override;
 
@@ -23,10 +23,6 @@ public:
 protected:
 	// 当たり判定用
 	OBB obb;
-
-	// 配置座標からモデルの中心座標までの差分ベクトル
-	// obbの位置を求めるために使用
-	VECTOR vDiffToCenter;
 
 	static std::vector<int> _breakFrame;
 };

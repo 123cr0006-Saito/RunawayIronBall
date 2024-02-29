@@ -54,7 +54,7 @@ public:
 	static  VECTOR PointOBB(VECTOR point, OBB obb);
 	
 	//OBB‚Æ‹…‚Ì“–‚½‚è”»’è
-	static bool OBBSphereCol(OBB obb, VECTOR point, float r);
+	static bool OBBSphereCol(OBB obb, VECTOR point, float r, VECTOR * hitPos = nullptr);
 	static bool OBBSphereCol(const OBB& obb, const Sphere& sphere);
 
 	//OBB‚ÆƒJƒvƒZƒ‹‚Ì“–‚½‚è”»’è

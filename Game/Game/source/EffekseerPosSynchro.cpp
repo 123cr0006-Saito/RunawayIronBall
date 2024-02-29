@@ -22,9 +22,14 @@ bool EffekseerPosSynchro::Process() {
 			SetScalePlayingEffekseer3DEffect(_playingEffectHandle, _size, _size, _size);
 		}
 		else {
-			_useFlag = false;
+			_IsPlay = false;
 		}
 	}
 
+	return true;
+};
+
+bool EffekseerPosSynchro::Render() {
+	PlayEffekseer3DEffect(_playingEffectHandle);
 	return true;
 };

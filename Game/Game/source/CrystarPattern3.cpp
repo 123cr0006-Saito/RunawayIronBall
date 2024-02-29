@@ -51,7 +51,7 @@ void CrystarPattern3::CommandProcess() {
 void CrystarPattern3::Init(VECTOR pos) {
 	_IsUse = true;
 
-	SetPos(pos);
+	SetKindPos(pos);
 	_hp = _maxHp;
 	_knockBackSpeedFrame = 0;
 	_gravity = 0;
@@ -200,6 +200,6 @@ bool CrystarPattern3::IndividualRendering() {
 };
 
 bool CrystarPattern3::DebugRender() {
-	DrawSphere3D(VAdd(VAdd(_pos, _diffeToCenter), _attackPos), _r, 32, GetColor(0, 255, 0), GetColor(0, 0, 255), false);
+	DrawSphere3D(VAdd(VAdd(_pos, _diffeToCenter), _attackPos), _r, 8, GetColor(0, 255, 0), GetColor(0, 0, 255), false);
 	return true;
 };

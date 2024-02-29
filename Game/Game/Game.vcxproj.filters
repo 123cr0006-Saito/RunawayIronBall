@@ -26,7 +26,6 @@
     <ClCompile Include="source\CrystarPattern4.cpp" />
     <ClCompile Include="source\SlaBlockPattern2.cpp" />
     <ClCompile Include="source\ScreenVibration.cpp" />
-    <ClCompile Include="source\PlaneEffectManeger.cpp" />
     <ClCompile Include="source\BoardPolygon.cpp" />
     <ClCompile Include="source\ModePause.cpp" />
     <ClCompile Include="source\ModeInstructions.cpp" />
@@ -50,6 +49,9 @@
     <ClCompile Include="source\BoardPolygonDust.cpp" />
     <ClCompile Include="source\PlaneEffectBase.cpp" />
     <ClCompile Include="source\BossIronBall.cpp" />
+    <ClCompile Include="source\EffectBase.cpp" />
+    <ClCompile Include="source\EffectManeger.cpp" />
+    <ClCompile Include="source\Suppression.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -78,7 +80,6 @@
     <ClInclude Include="source\CrystarPattern4.h" />
     <ClInclude Include="source\SlaBlockPattern2.h" />
     <ClInclude Include="source\ScreenVibration.h" />
-    <ClInclude Include="source\PlaneEffectManeger.h" />
     <ClInclude Include="source\BoardPolygon.h" />
     <ClInclude Include="source\ModePause.h" />
     <ClInclude Include="source\ModeInstructions.h" />
@@ -102,5 +103,8 @@
     <ClInclude Include="source\BoardPolygonDust.h" />
     <ClInclude Include="source\PlaneEffectBase.h" />
     <ClInclude Include="source\BossIronBall.h" />
+    <ClInclude Include="source\EffectBase.h" />
+    <ClInclude Include="source\EffectManeger.h" />
+    <ClInclude Include="source\Suppression.h" />
   </ItemGroup>
 </Project>

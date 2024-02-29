@@ -52,7 +52,7 @@ void EnemyBase::Init(VECTOR pos, float scale) {
 void EnemyBase::Init(VECTOR pos) {
 	_IsUse = true;
 
-	SetPos(pos);
+	SetKindPos(pos);
 	_hp = _maxHp;
 	_knockBackSpeedFrame = 0;
 	_gravity = 0;
@@ -79,6 +79,11 @@ void EnemyBase::AnimInit() {
 };
 
 void EnemyBase::SetPos(VECTOR pos) {
+	_pos = pos;
+	_saveNextPoint = pos;
+};
+
+void EnemyBase::SetKindPos(VECTOR pos) {
 	_pos = pos;
 	_orignPos = pos;
 	_savePos = pos;
@@ -277,14 +282,14 @@ void EnemyBase::SetKnockBack(VECTOR vDir, float damage) {
 
 		int effectHandle[30];
 		ResourceServer::LoadMultGraph("split", "res/TemporaryMaterials/split/test", ".png", 30, effectHandle);
-		PlaneEffect::BoardPolygon* effect = new PlaneEffect::BoardPolygon(effectPos, GetCameraBillboardMatrix(), 200, effectHandle, 30, 0.5f / 60.0f * 1000.0f);
+		BoardPolygon* effect = new BoardPolygon(effectPos, GetCameraBillboardMatrix(), 200, effectHandle, 30, 0.5f / 60.0f * 1000.0f);
 
-		PlaneEffect::PlaneEffectManeger::GetInstance()->LoadVertical(effect);
+		EffectManeger::GetInstance()->LoadEffect(effect);
 		_modeState = ENEMYTYPE::KNOCKBACK;
 		if (_hp <= 0) {
 
 			_knockBackSpeedFrame = damage;
-			EnemyPool::GetInstance()->SetSuppression(_suppression);
+			Suppression::GetInstance()->SubSuppression(_suppression);
 			_player->SetExp(_weightExp);
 			_modeState = ENEMYTYPE::DEAD;
 
@@ -351,7 +356,7 @@ bool EnemyBase::Process() {
 };
 
 bool  EnemyBase::DebugRender() {
-	DrawSphere3D(VAdd(_pos, _diffeToCenter), _r, 32, GetColor(255, 0, 0), GetColor(255, 0, 0), false);
+	DrawSphere3D(VAdd(_pos, _diffeToCenter), _r, 8, GetColor(255, 0, 0), GetColor(255, 0, 0), false);
 
 	//デバッグ用
 	//索敵範囲などの描画
@@ -379,7 +384,7 @@ bool EnemyBase::IndividualRendering() {
 bool EnemyBase::Render() {
 	if (_model != 0) {   
 #ifdef _DEBUG
-		DebugRender();
+		//DebugRender();
 #endif
 		MV1DrawModel(_model);
 		IndividualRendering();

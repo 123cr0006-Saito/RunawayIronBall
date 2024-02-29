@@ -1,14 +1,14 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 #include "../../Header/Resource/ResourceServer.h"
 
-std::map<const char*, int> ResourceServer::_handleMap;
-std::map<const char*, int> ResourceServer::_soundMap;
-std::map<const char*, ResourceServer::Mult> ResourceServer::_multMap;
-std::map<const char*, int >ResourceServer::_effekseerMap;
-std::map<const char*, std::vector<int> >ResourceServer::_modelMap;
+std::unordered_map<std::string, int> ResourceServer::_handleMap;
+std::unordered_map<std::string, int> ResourceServer::_soundMap;
+std::unordered_map<std::string, ResourceServer::Mult> ResourceServer::_multMap;
+std::unordered_map<std::string, int >ResourceServer::_effekseerMap;
+std::unordered_map<std::string, std::vector<int> >ResourceServer::_modelMap;
 
 
-int ResourceServer::LoadGraph(const char* key_name, const char* handle_name) {
+int ResourceServer::LoadGraph(std::string key_name, std::string handle_name) {
 
 	int value = 0;
 
@@ -19,14 +19,14 @@ int ResourceServer::LoadGraph(const char* key_name, const char* handle_name) {
 	}
 	else {
 		//記録された名前がなかったので読み込み
-		value = ::LoadGraph(handle_name);
+		value = ::LoadGraph(handle_name.c_str());
 		_handleMap[key_name] = value;
 	}
 
 	return value;
 };
 
-int ResourceServer::LoadSound(const char* key_name, const char* sound_name) {
+int ResourceServer::LoadSound(std::string key_name, std::string sound_name) {
 
 	int value = 0;
 
@@ -37,14 +37,14 @@ int ResourceServer::LoadSound(const char* key_name, const char* sound_name) {
 	}
 	else {
 		//記録された名前がなかったので読み込み
-		value = ::LoadSoundMem(sound_name);
+		value = ::LoadSoundMem(sound_name.c_str());
 		_soundMap[key_name] = value;
 	}
 
 	return value;
 };
 
-int ResourceServer::LoadDivGraph(const char* key_name, const char* handle_name, int AllNum, int XNum, int YNum, int XSize, int YSize, int* HandleBuf) {
+int ResourceServer::LoadDivGraph(std::string key_name, std::string handle_name, int AllNum, int XNum, int YNum, int XSize, int YSize, int* HandleBuf) {
 
 	int value = 0;
 	auto itr = _multMap.find(key_name);
@@ -59,7 +59,7 @@ int ResourceServer::LoadDivGraph(const char* key_name, const char* handle_name, 
 		//記録された名前がなかったので読み込み
 		//読み込む枚数がわからないためメモリを動的確保
 		int* buf = new int[AllNum];
-		value = ::LoadDivGraph(handle_name, AllNum, XNum, YNum, XSize, YSize, buf);
+		value = ::LoadDivGraph(handle_name.c_str(), AllNum, XNum, YNum, XSize, YSize, buf);
 
 		if (value != -1) {
 			//エラーではなかった場合
@@ -77,7 +77,7 @@ int ResourceServer::LoadDivGraph(const char* key_name, const char* handle_name, 
 	return value;
 };
 
-int ResourceServer::LoadMultGraph(const char* key_name, std::string handle_name, const char* extension, int AllNum, int* HandleBuf) {
+int ResourceServer::LoadMultGraph(std::string key_name, std::string handle_name, std::string extension, int AllNum, int* HandleBuf) {
 
 	int value = 0;
 	auto itr = _multMap.find(key_name);
@@ -115,7 +115,7 @@ int ResourceServer::LoadMultGraph(const char* key_name, std::string handle_name,
 	return value;
 };
 
-int ResourceServer::LoadEffekseerEffect(const char* key_name, const char* handle_name) {
+int ResourceServer::LoadEffekseerEffect(std::string key_name, std::string handle_name) {
 
 	int value = 0;
 
@@ -126,14 +126,14 @@ int ResourceServer::LoadEffekseerEffect(const char* key_name, const char* handle
 	}
 	else {
 		//記録された名前がなかったので読み込み
-		value = ::LoadEffekseerEffect(handle_name);
-		_handleMap[key_name] = value;
+		value = ::LoadEffekseerEffect(handle_name.c_str());
+		_effekseerMap[key_name] = value;
 	}
 
 	return value;
 };
 
-int ResourceServer::MV1LoadModel(const char* key_name, const char* model_name) {
+int ResourceServer::MV1LoadModel(std::string key_name, std::string model_name) {
 	int value = 0;
 
 	auto itr = _modelMap.find(key_name);
@@ -145,15 +145,15 @@ int ResourceServer::MV1LoadModel(const char* key_name, const char* model_name) {
 	}
 	else {
 		//記録された名前がなかったので読み込み
-		value = ::MV1LoadModel(model_name);
+		value = ::MV1LoadModel(model_name.c_str());
 		_modelMap[key_name].push_back(value);
 	}
 
 	return value;
 };
 
-int ResourceServer::SearchSingle(const char* search_key, TYPE resouceType) {
-	std::map<const char*, int>* resourceMap = nullptr;
+int ResourceServer::SearchSingle(std::string search_key, TYPE resouceType) {
+	std::unordered_map<std::string, int>* resourceMap = nullptr;
 	//リソースの種類によって検索するリソースを変更
 	switch (resouceType) {
 	case TYPE::Handle:
@@ -167,16 +167,16 @@ int ResourceServer::SearchSingle(const char* search_key, TYPE resouceType) {
 		break;
 	}
 
-	auto itr = (*resourceMap).find(const_cast<char*>(search_key));
+	auto itr = (*resourceMap).find(const_cast<char*>(search_key.c_str()));
 	if (itr != (*resourceMap).end()) {
 		return itr->second;
 	}
 
-	return itr->second;
+	return -1;
 };
 
-bool ResourceServer::SearchMult(const char* search_key, int* handle, int size) {
-	auto itr = _multMap.find(const_cast<char*>(search_key));
+bool ResourceServer::SearchMult(std::string search_key, int* handle, int size) {
+	auto itr = _multMap.find(search_key);
 	if (itr != _multMap.end()) {
 		for (int i = 0; i < size; i++) {
 			handle[i] = itr->second.handle[i];
@@ -186,8 +186,17 @@ bool ResourceServer::SearchMult(const char* search_key, int* handle, int size) {
 	return false;
 };
 
-std::pair<bool, int> ResourceServer::DeleteSearchSingle(const char* search_key, std::map<const char*, int>* resourceMap){
-	auto itr = (*resourceMap).find(const_cast<char*>(search_key));
+ResourceServer::Mult ResourceServer::SearchMult(std::string search_key) {
+	auto itr = _multMap.find(search_key);
+	if (itr != _multMap.end()) {
+		return itr->second;
+	}
+	Mult mult;
+	return mult;
+};
+
+std::pair<bool, int> ResourceServer::DeleteSearchSingle(std::string search_key, std::unordered_map<std::string, int>* resourceMap){
+	auto itr = (*resourceMap).find(search_key);
 	if (itr != (*resourceMap).end()) {
 		auto value = itr->second;
 		(*resourceMap).erase(itr);
@@ -196,8 +205,8 @@ std::pair<bool, int> ResourceServer::DeleteSearchSingle(const char* search_key, 
 	return std::make_pair(false, itr->second);
 };
 
-std::pair<bool, ResourceServer::Mult> ResourceServer::DeleteSearchMult(const char* search_key, std::map<const char*, ResourceServer::Mult>* resourceMap) {
-	auto itr = (*resourceMap).find(const_cast<char*>(search_key));
+std::pair<bool, ResourceServer::Mult> ResourceServer::DeleteSearchMult(std::string search_key, std::unordered_map<std::string, ResourceServer::Mult>* resourceMap) {
+	auto itr = (*resourceMap).find(search_key);
 	if (itr != (*resourceMap).end()) {
 		auto value = itr->second;
 		(*resourceMap).erase(itr);
@@ -206,7 +215,7 @@ std::pair<bool, ResourceServer::Mult> ResourceServer::DeleteSearchMult(const cha
 	return std::make_pair(false, itr->second);
 };
 
-bool ResourceServer::Delete(const char* key, TYPE resouceType) {
+bool ResourceServer::Delete(std::string key, TYPE resouceType) {
 	if (resouceType == TYPE::Handle) {
 		auto handleValue = ResourceServer::DeleteSearchSingle(key, &_handleMap);
 		if (handleValue.first) {

@@ -3,23 +3,21 @@
 std::vector<int>House:: _breakFrame;
 
 House::House() :BuildingBase::BuildingBase() {
-	vDiffToCenter = VGet(0.0f, 0.0f, 0.0f);
 }
 
 House::~House()
 {
 }
 
-bool House::Init(int modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale)
+bool House::Init(int modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength)
 {
 	if (!base::Init(modelHandle, startPos, rotation, scale)){ return false;}
 
 	// “–‚½‚è”»’è‚Ìİ’è
-	vDiffToCenter = VGet(0.0f, -250.0f, 0.0f);
-	obb.pos = VSub(_pos, vDiffToCenter);
-	obb.length[0] = 500.0f;
-	obb.length[1] = 500.0f;
-	obb.length[2] = 500.0f;
+	obb.pos = VAdd(startPos, VGet(0.0f, obbLength.y / 2.0f, 0.0f));
+	obb.length[0] = obbLength.x;
+	obb.length[1] = obbLength.y;
+	obb.length[2] = obbLength.z;
 
 	//// _breakFrame‚ª‹ó‚Ìê‡‚Í‰Šú‰»
 	//if (_breakFrame.empty()) {
