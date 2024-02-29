@@ -160,9 +160,9 @@ bool ModeGame::LoadStage(std::string fileName) {
 		v.z -= 2000.0f;
 
 		std::array<int, 3> towerModelHandle;
-		towerModelHandle[0] = ResourceServer::MV1LoadModel("Tower01", "res/Building/Tower/test_Tower_01.mv1");
-		towerModelHandle[1] = ResourceServer::MV1LoadModel("Tower02", "res/Building/Tower/test_Tower_02.mv1");
-		towerModelHandle[2] = ResourceServer::MV1LoadModel("Tower03", "res/Building/Tower/test_Tower_03.mv1");
+		towerModelHandle[0] = ResourceServer::MV1LoadModel("Tower01", "res/Building/CG_OBJ_Tower/CG_OBJ_Tower_Under.mv1");
+		towerModelHandle[1] = ResourceServer::MV1LoadModel("Tower02", "res/Building/CG_OBJ_Tower/CG_OBJ_Tower_Under.mv1");
+		towerModelHandle[2] = ResourceServer::MV1LoadModel("Tower03", "res/Building/CG_OBJ_Tower/CG_OBJ_Tower_Top.mv1");
 
 		Tower* tower = new Tower();
 		tower->Init(towerModelHandle, v, VGet(0, 0, 0), VGet(1, 1, 1));

@@ -39,7 +39,7 @@ void Tower::Init(std::array<int, 3> modelHandle, VECTOR startPos, VECTOR rotatio
 		}
 		else {
 			VECTOR vOrigin = VGet(0.0f, 0.0f, 0.0f);
-			MATRIX m = MV1GetFrameLocalWorldMatrix(_towerParts[i - 1]->_modelHandle, 3);
+			MATRIX m = MV1GetFrameLocalWorldMatrix(_towerParts[i - 1]->_modelHandle, 1);
 			tmpPos = VTransform(vOrigin, m);
 		}
 		
