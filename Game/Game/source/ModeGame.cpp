@@ -261,53 +261,54 @@ bool ModeGame::Process() {
 	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
 		(*itr)->Process();
 
-		VECTOR tPos = (*itr)->GetPos();
-		Sphere tSphere = (*itr)->GetBottomSphereCollision();
-		if ((*itr)->GetCanBlast()) {
-			if (isAttackState) {
-				if (Collision3D::SphereCol(ibSphere, tSphere)) {
+		if ((*itr)->GetUse()) {
+			VECTOR tPos = (*itr)->GetPos();
+			Sphere tSphere = (*itr)->GetBottomSphereCollision();
+			if ((*itr)->GetCanBlast()) {
+				if (isAttackState) {
+					if (Collision3D::SphereCol(ibSphere, tSphere)) {
 
-					VECTOR vDir = VSub(tPos, pPos);
-					(*itr)->SetBlast(vDir);
+						VECTOR vDir = VSub(tPos, pPos);
+						(*itr)->SetBlast(vDir);
+					}
 				}
 			}
-		}
 
-		// エネミーの押出処理
-		for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
-			EnemyBase* en = _enemyPool->GetEnemy(i);
-			if (!en) { continue; }
-			if (!en->GetUse()) { continue; }
+			// エネミーの押出処理
+			for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
+				EnemyBase* en = _enemyPool->GetEnemy(i);
+				if (!en) { continue; }
+				if (!en->GetUse()) { continue; }
 
-			float tR = tSphere.r;
-			VECTOR enPos = en->GetCollisionPos();
-			float enR = en->GetR();
+				float tR = tSphere.r;
+				VECTOR enPos = en->GetCollisionPos();
+				float enR = en->GetR();
 
-			enPos.y = 0;
-			tSphere.centerPos.y = 0;
+				enPos.y = 0;
+				tSphere.centerPos.y = 0;
 
-			VECTOR vDir = VSub(enPos, tSphere.centerPos);
-			if (VSize(vDir) <= enR + tR) {
-				float len = (enR + tR) - VSize(vDir);
-				vDir = VNorm(vDir);
-				en->SetPos(VAdd(enPos, VScale(vDir, len)));
+				VECTOR vDir = VSub(enPos, tSphere.centerPos);
+				if (VSize(vDir) <= enR + tR) {
+					float len = (enR + tR) - VSize(vDir);
+					vDir = VNorm(vDir);
+					en->SetPos(VAdd(enPos, VScale(vDir, len)));
+				}
+				en = nullptr;
 			}
-			en = nullptr;
+
+			// プレイヤーの押出
+			VECTOR pColPos = _player->GetPosition(); pColPos.y = 0;
+			float pR = _player->GetCollision().r;
+			float tR = tSphere.r;
+
+
+			VECTOR vDir = VSub(pColPos, tSphere.centerPos);
+			if (VSize(vDir) <= pR + tR) {
+				float len = (pR + tR) - VSize(vDir);
+				vDir = VNorm(vDir);
+				_player->SetPos(VAdd(pColPos, VScale(vDir, len)));
+			}
 		}
-
-		// プレイヤーの押出
-		VECTOR pColPos = _player->GetPosition(); pColPos.y = 0;
-		float pR = _player->GetCollision().r;
-		float tR = tSphere.r;
-
-
-		VECTOR vDir = VSub(pColPos, tSphere.centerPos);
-		if (VSize(vDir) <= pR + tR) {
-			float len = (pR + tR) - VSize(vDir);
-			vDir = VNorm(vDir);
-			_player->SetPos(VAdd(pColPos, VScale(vDir, len)));
-		}
-
 	}
 
 

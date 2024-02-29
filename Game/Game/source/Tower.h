@@ -15,8 +15,9 @@ public:
 	bool Process() override;
 	bool Render() override;
 
-	void SetBlast(VECTOR vDir);
+	bool GetUse() { return _use; }
 
+	void SetBlast(VECTOR vDir);
 	bool GetCanBlast() { return _canBlast; }
 
 	void UpdateCollision();
