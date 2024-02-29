@@ -1,5 +1,48 @@
 #include "Chain.h"
+#include "Player.h"
 
+namespace {
+	constexpr float IB_COLLISION_RADIUS = 50.0f;
+}
+
+Chain::Chain()
+{
+	_cModelHandle = -1;
+	_iModelHandle = -1;
+	_playerModelHandle = -1;
+	_input = nullptr;
+	_iForwardDir = VGet(0, 0, 0);
+
+	for(int i = 0; i < CHAIN_MAX; i++) {
+		_cPos[i] = VGet(0, 0, 0);
+	}
+	for(int i = 0; i < CHAIN_MAX; i++) {
+		_m[i] = MGetIdent();
+	}
+
+	_iPos = VGet(0, 0, 0);
+	_ibDefaultScale = VGet(0, 0, 0);
+	_sphereCollision.centerPos = VGet(0, 0, 0);
+	_sphereCollision.r = 0;
+	_animIndex = 0;
+	_animTotalTime = 0;
+	_playTime = 0;
+	_attackAnimCnt = 0;
+	_cnt = 0;
+	_attackDir = 1;
+	_length = 0;
+	_followingMode = false;
+	_moveState = IB_MOVE_STATE::FOLLOWING;
+	_enabledAttackCollision = false;
+	_socketNo[0] = -1;
+	_socketNo[1] = -1;
+	_socketNo[2] = -1;
+}
+
+Chain::~Chain()
+{
+
+}
 
 void Chain::Init() {
 	_input = XInput::GetInstance();
@@ -20,16 +63,15 @@ void Chain::Init() {
 	MV1SetPosition(_iModelHandle, _iPos);
 
 
-
+	_sphereCollision.centerPos = _iPos;
+	_sphereCollision.r = IB_COLLISION_RADIUS;
 
 
 	_animIndex = MV1AttachAnim(_iModelHandle, 0);
 	_animTotalTime = MV1GetAnimTotalTime(_iModelHandle, _animIndex);
 	_playTime = 0.0f;
 
-	//齋藤が書きました------------------------------------------------------------------
-	SetPowerScale("res/JsonFile/IronState.json");
-	//------------------------------------------------------------------
+
 	_iForwardDir = VGet(0, 0, 0);
 
 
@@ -47,53 +89,16 @@ void Chain::Init() {
 	_followingMode = false;
 	_moveState = IB_MOVE_STATE::FOLLOWING;
 
-	_attackState = false;
-
-	_playerInstance = Player::GetInstance();
-	_playerModelHandle = _playerInstance->GetModelHandle();
-	_socketNo[0] = MV1SearchFrame(_playerModelHandle, "chain1");
-	_socketNo[1] = MV1SearchFrame(_playerModelHandle, "chain2");
-	_socketNo[2] = MV1SearchFrame(_playerModelHandle, "chain3");
-
+	_enabledAttackCollision = false;
 }
 
-void Chain::SetPowerScale(std::string FileName) {
-	myJson json(FileName);
-	int level = 0;
-	int power = 0;
-	float scale = 0;
-	for (auto& list : json._json) {
-		list.at("Level").get_to(level);
-		list.at("Power").get_to(power);
-		list.at("Magnification").get_to(scale);
-		_powerAndScale[level] = std::make_pair(power,scale);
-	}
-};
-
-bool Chain::UpdateLevel() {
-	static int _oldLevel = -1; //前フレームのレベルです。
-	int level = _playerInstance->GetNowLevel();
-
-	if (_oldLevel != level) {
-		_power = _powerAndScale[level].first;
-		MV1SetScale(_iModelHandle, VScale(_ibDefaultScale, _powerAndScale[level].second));
-		_r = _originR * _powerAndScale[level].second;
-	}
-
-	_oldLevel = level;
-	return true;
-};
 
 void Chain::Process() {
-	_moveState = _playerInstance->GetIBMoveState();
-	_attackState = _playerInstance->GetEnabledIBAttackCollision();
-
-	_cPos[0] = _playerInstance->GetRightHandPos();
+	MATRIX m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, _socketNo[0]);
+	VECTOR v = VGet(0.0f, 0.0f, 0.0f);
+	_cPos[0] = VTransform(v, m);
 
 	MoveProcess();
-
-	
-	UpdateLevel();
 
 	_iPos = _cPos[CHAIN_MAX - 1];
 	MV1SetPosition(_iModelHandle, _iPos);
@@ -108,9 +113,11 @@ void Chain::Process() {
 		_attackAnimCnt = 0;
 	}
 
-	if (_iPos.y - _r < 0.0f) {
-		_iPos.y = 0.0f + _r;
+	if (_iPos.y - _sphereCollision.r < 0.0f) {
+		_iPos.y = 0.0f + _sphereCollision.r;
 	}
+
+	UpdateCollision();
 
 	AnimProcess();
 }
@@ -126,7 +133,7 @@ void Chain::MoveProcess()
 		PuttingOnSocketProcess();
 		break;
 	case INTERPOLATION:
-		InterpolationProcess();
+		//InterpolationProcess();
 		break;
 	}
 }
@@ -300,9 +307,23 @@ void Chain::Render()
 	MV1DrawModel(_iModelHandle);
 }
 
+void Chain::UpdateCollision()
+{
+	_sphereCollision.centerPos = _iPos;
+}
+
+void Chain::SetPlayerModelHandle(int handle)
+{
+	_playerModelHandle = handle;
+
+	_socketNo[0] = MV1SearchFrame(_playerModelHandle, "chain1");
+	_socketNo[1] = MV1SearchFrame(_playerModelHandle, "chain2");
+	_socketNo[2] = MV1SearchFrame(_playerModelHandle, "chain3");
+}
+
 void Chain::DrawDebugInfo() {
-	unsigned int color = _attackState ? COLOR_RED : COLOR_WHITE;
-	DrawSphere3D(_iPos, _r, 16, color, color, false);
+	unsigned int color = _enabledAttackCollision ? COLOR_RED : COLOR_WHITE;
+	DrawSphere3D(_sphereCollision.centerPos, _sphereCollision.r, 16, color, color, false);
 
 	//int x = 0;
 	//int y = 0;
@@ -310,4 +331,11 @@ void Chain::DrawDebugInfo() {
 	//DrawFormatString(x, y + line * 16, COLOR_WHITE, "_pos: x %3.2f, y %3.2f, z  %3.2f", _pos.x, _pos.y, _pos.z); line++;
 	//DrawFormatString(x, y + line * 16, COLOR_WHITE, "_dir: x %3.2f, y %3.2f, z  %3.2f", _dir.x, _dir.y, _dir.z); line++;
 	//DrawFormatString(x, y + line * 16, COLOR_WHITE, "_speed %3.2f", _speed); line++;
+}
+
+bool Chain::UpdateLevel(float scale)
+{
+	MV1SetScale(_iModelHandle, VScale(_ibDefaultScale, scale));
+	_sphereCollision.r = IB_COLLISION_RADIUS * scale;
+	return true;
 }
