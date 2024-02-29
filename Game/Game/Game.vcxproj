@@ -157,6 +157,7 @@
   <ItemGroup>
     <ClCompile Include="source\EffectBase.cpp" />
     <ClCompile Include="source\EffectManeger.cpp" />
+    <ClCompile Include="source\Boss.cpp" />
     <ClCompile Include="source\PlaneEffectBase.cpp" />
     <ClCompile Include="source\BoardPolygonDust.cpp" />
     <ClCompile Include="source\CrystarPattern1.cpp" />
@@ -208,6 +209,7 @@
   <ItemGroup>
     <ClInclude Include="source\EffectBase.h" />
     <ClInclude Include="source\EffectManeger.h" />
+    <ClInclude Include="source\Boss.h" />
     <ClInclude Include="source\PlaneEffectBase.h" />
     <ClInclude Include="source\BoardPolygonDust.h" />
     <ClInclude Include="source\CrystarPattern1.h" />

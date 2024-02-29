@@ -148,7 +148,7 @@ bool ModeTest::LoadStage(std::string fileName) {
 			if (std::get<2>(nameList) == 1) {
 				// 壊れるオブジェクト
 				House* building = new House();
-				building->Init(MV1DuplicateModel(objHandle), object._pos, object._rotate, object._scale);
+				//building->Init(MV1DuplicateModel(objHandle), object._pos, object._rotate, object._scale);
 				_house.push_back(building);
 			}
 			else {

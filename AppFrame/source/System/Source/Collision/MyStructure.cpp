@@ -40,3 +40,8 @@ void OBB::Render(unsigned int color)
 		}
 	}
 }
+
+void Capsule::Render(unsigned int color)
+{
+	DrawCapsule3D(down_pos, up_pos, r, 16, color, color, false);
+}

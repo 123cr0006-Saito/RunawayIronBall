@@ -19,12 +19,8 @@ bool ModeGame::Initialize() {
 	MV1SetScale(_skySphere, VGet(3, 3, 3));
 	MV1SetPosition(_tile, VGet(0, 0, 0));
 
-	int playerModelHandle = MV1LoadModel("res/Character/cg_player_girl/cg_player_girl_TEST.mv1");
+	int playerModelHandle = ResourceServer::MV1LoadModel("Player", "res/Character/cg_player_girl/cg_player_girl_TEST_Ver.2.mv1");
 	_player = new Player(playerModelHandle, VGet(0, 0, 0));
-	_player->SetNextExp("res/JsonFile/ExpList.json");
-
-	_chain = new Chain();
-	_chain->Init();
 
 	_classificationEffect = new ClassificationEffect();
 	_effectManeger = new EffectManeger();
@@ -148,7 +144,7 @@ bool ModeGame::LoadStage(std::string fileName) {
 			if (std::get<2>(nameList) == 1) {
 				// 壊れるオブジェクト
 				House* building = new House();
-				building->Init(MV1DuplicateModel(objHandle), object._pos, object._rotate, object._scale);
+				building->Init(MV1DuplicateModel(objHandle), object._pos, object._rotate, object._scale, std::get<1>(nameList));
 				_house.push_back(building);
 			}
 			else {
