@@ -1,10 +1,14 @@
 #include "ModeScenario.h"
 
+bool ModeScenario::IsLoadHandle = false;
 std::unordered_map<int, int> ModeScenario::_charaHandleMap;
 std::unordered_map<int, std::string> ModeScenario::_nameHandleMap;
 std::unordered_map<int, int> ModeScenario::_BackGroundHandleMap;
 
 ModeScenario::ModeScenario(std::string scenarioFile) {
+
+	LoadOnceHandleData();
+
 	CFile ScenarioFile(scenarioFile);
 	if (ScenarioFile.Success()) {
 		const char* data = (const char*) ScenarioFile.Data();
@@ -33,6 +37,87 @@ ModeScenario::ModeScenario(std::string scenarioFile) {
 		MessageBox(NULL, message.c_str(), "エラー", MB_OK);
 	}
 #endif
+};
+
+bool ModeScenario::LoadOnceHandleData() {
+	//読み込みが終わっている状態
+	if (IsLoadHandle) {return true;}
+
+	// 初回だけ画像ハンドルを読み込む
+	std::string commonPath = "res/Scenario/";
+
+	// キャラ画像ハンドル
+	{
+		std::string Path = "CharaHandle";
+		std::string scenarioFile = commonPath + "Data/" + Path + ".csv";
+		CFile ScenarioFile(scenarioFile);
+		if (ScenarioFile.Success()) {
+			const char* data = (const char*)ScenarioFile.Data();
+			int c = 0;
+			int size = ScenarioFile.Size();
+			while (c < size) {
+				std::string handleName;
+				int key;
+				// textを取得
+				c += GetString(&data[c], &handleName);
+				// voiceを取得する
+				c += FindString(&data[c], ',', &data[size]); c++; c += GetDecNum(&data[c], &key);
+				// 改行コードや空白を埋める
+				c += SkipSpace(&data[c], &data[size]);
+				std::string handlePath = commonPath + Path + "/" + handleName + ".png";
+				_charaHandleMap[key] = ResourceServer::LoadGraph(handleName, handlePath);
+			}
+		}
+	}
+
+	// 名前の読み込み
+	{
+		std::string Path = "NameHandle";
+		std::string scenarioFile = commonPath + "Data/" + Path + ".csv";
+		CFile ScenarioFile(scenarioFile);
+		if (ScenarioFile.Success()) {
+			const char* data = (const char*)ScenarioFile.Data();
+			int c = 0;
+			int size = ScenarioFile.Size();
+			while (c < size) {
+				std::string charaName;
+				int key;
+				// textを取得
+				c += GetString(&data[c], &charaName);
+				// voiceを取得する
+				c += FindString(&data[c], ',', &data[size]); c++; c += GetDecNum(&data[c], &key);
+				// 改行コードや空白を埋める
+				c += SkipSpace(&data[c], &data[size]);
+				_nameHandleMap[key] = charaName;
+			}
+		}
+	}
+
+	// 背景の画像の読み込み
+	{
+		std::string Path = "BackGround";
+		std::string scenarioFile = commonPath + "Data/" + Path + ".csv";
+		CFile ScenarioFile(scenarioFile);
+		if (ScenarioFile.Success()) {
+			const char* data = (const char*)ScenarioFile.Data();
+			int c = 0;
+			int size = ScenarioFile.Size();
+			while (c < size) {
+				std::string handleName;
+				int key;
+				// textを取得
+				c += GetString(&data[c], &handleName);
+				// voiceを取得する
+				c += FindString(&data[c], ',', &data[size]); c++; c += GetDecNum(&data[c], &key);
+				// 改行コードや空白を埋める
+				c += SkipSpace(&data[c], &data[size]);
+				std::string handlePath = commonPath + Path + "/" + handleName + ".png";
+				_charaHandleMap[key] = ResourceServer::LoadGraph(handleName, handlePath);
+			}
+		}
+	}
+
+	return true;
 };
 
 bool ModeScenario::Initialize(){

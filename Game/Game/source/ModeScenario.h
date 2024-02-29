@@ -5,7 +5,7 @@ class ModeScenario : public ModeBase
 	typedef ModeBase base;
 public:
 	ModeScenario(std::string scenarioFile);
-	bool LoadHandleData();
+	bool LoadOnceHandleData();
 	virtual bool Initialize();
 	virtual bool Terminate();
 	virtual bool Process();
@@ -14,6 +14,7 @@ public:
 	bool SearchLetter(std::string text, int byte);
 
 protected:
+	static bool IsLoadHandle;
 	static std::unordered_map<int,int>_charaHandleMap;
 	static std::unordered_map<int, std::string>_nameHandleMap;
 	static std::unordered_map<int, int>_BackGroundHandleMap;
