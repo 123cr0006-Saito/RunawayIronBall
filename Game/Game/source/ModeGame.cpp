@@ -516,9 +516,9 @@ bool ModeGame::Render() {
 	SetUseZBuffer3D(FALSE);
 
 	//SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
-	//for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
-	//	ui[i]->Draw();
-	//}
+	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
+		ui[i]->Draw();
+	}
 
 	if (_player->GetStaminaRate() < 1.0f) {
 		int handleNum = floorf(_player->GetStaminaRate() * 100.0f / 33.4f);
