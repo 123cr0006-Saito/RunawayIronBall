@@ -63,13 +63,13 @@ bool Camera::UpdateCameraToMatrix(VECTOR pos, int map) {
 	//トリガ入力でカメラの距離を変更
 	//カメラが遠くに移動
 	if (_input->GetRTrg() > 25) {
-		if (_pointDistance.z > -2500) {
+		if (_pointDistance.z > _cameraMaxDistance) {
 			_pointDistance.z -= _input->GetRTrg() / 25;
 		}
 	}
 	//カメラが近くに移動
 	if (_input->GetLTrg() > 25) {
-		if (_pointDistance.z < -150) {
+		if (_pointDistance.z < _cameraMinDistance) {
 			_pointDistance.z += _input->GetLTrg() / 25;
 		}
 	}
