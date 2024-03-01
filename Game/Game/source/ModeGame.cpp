@@ -381,16 +381,16 @@ bool ModeGame::Process() {
 		for (int j = 0; j < _enemyPool->ENEMY_MAX_SIZE; j++) {
 			if (i == j) { continue; }
 
-			EnemyBase* en = _enemyPool->GetEnemy(i);
+			EnemyBase* en = _enemyPool->GetEnemy(j);
 			if (!en) { continue; }
-			if (en->GetUse()) { continue; }
+			if (!en->GetUse()) { continue; }
 
 			VECTOR en2Pos = en->GetCollisionPos();
 			float en2R = en->GetR();
 			VECTOR dirVec = VSub(en2Pos, en1Pos);
 			float length = VSize(dirVec);
 			if (length <= en1R + en2R) {
-				float pushLength = length - en1R - en2R;
+				float pushLength = (en1R + en2R) - length;
 				dirVec = VNorm(dirVec);
 				en->SetExtrusionPos(VScale(dirVec, pushLength));
 			}
