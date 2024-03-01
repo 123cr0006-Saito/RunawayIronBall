@@ -10,7 +10,8 @@ bool ModeGame::Initialize() {
 	_lightHandle[0] = CreateDirLightHandle(VGet(-1, -1, -1));
 	_lightHandle[1] = CreateDirLightHandle(VGet(1, 1, 1));
 
-	_shadowHandle = MakeShadowMap(2048, 2048);
+	int resolution = 8192;
+	_shadowHandle = MakeShadowMap(resolution, resolution);
 
 	_skySphere = MV1LoadModel(_T("res/SkySphere/skysphere.mv1"));
 	_tile = MV1LoadModel(_T("res/TemporaryMaterials/stage_normal_01.mv1"));
@@ -400,7 +401,7 @@ bool ModeGame::Process() {
 
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_START)) {
-		_enemyPool->Init();
+		//_enemyPool->Init();
 		//_player->SetDamage();
 		ModeServer::GetInstance()->Add(new ModePause(), 10, "Pause");
 	}
@@ -418,14 +419,14 @@ bool ModeGame::Process() {
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_BACK)) {
 		_drawDebug = !_drawDebug;
-		VECTOR pPos = _player->GetPosition();
-		for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
-			
-			VECTOR hPos = (*itr)->GetPos();
-			VECTOR tmpDir = VSub(hPos, pPos);
-			tmpDir.y = 0.0f;
-			(*itr)->SetBlast(tmpDir);
-		}
+		//VECTOR pPos = _player->GetPosition();
+		//for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
+		//	
+		//	VECTOR hPos = (*itr)->GetPos();
+		//	VECTOR tmpDir = VSub(hPos, pPos);
+		//	tmpDir.y = 0.0f;
+		//	(*itr)->SetBlast(tmpDir);
+		//}
 	}
 
 	if (_player->GetHP() <= 0) {
