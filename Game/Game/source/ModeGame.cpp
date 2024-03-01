@@ -6,8 +6,7 @@ bool ModeGame::Initialize() {
 	if (!base::Initialize()) { return false; }
 
 
-	_camera = new Camera();
-
+	
 	_lightHandle[0] = CreateDirLightHandle(VGet(-1, -1, -1));
 	_lightHandle[1] = CreateDirLightHandle(VGet(1, 1, 1));
 
@@ -21,6 +20,8 @@ bool ModeGame::Initialize() {
 
 	int playerModelHandle = ResourceServer::MV1LoadModel("Player", "res/Character/cg_player_girl/cg_player_girl_TEST_Ver.2.mv1");
 	_player = new Player(playerModelHandle, VGet(0, 0, 0));
+	_camera = new Camera(_player->GetPosition());
+
 
 	_classificationEffect = new ClassificationEffect();
 	_effectManeger = new EffectManeger();

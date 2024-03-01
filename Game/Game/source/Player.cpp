@@ -203,18 +203,18 @@ bool Player::UpdateExp() {
 		}
 	}
 
-	if (_input->GetTrg(XINPUT_BUTTON_A)) {
-		if (_nowLevel <= _maxLevel) {
-			_nowLevel--;
-			UpdateLevel();
-		}
-	}
-	if (_input->GetTrg(XINPUT_BUTTON_B)) {
-		if (_nowLevel < _maxLevel) {
-			_nowLevel++;
-			UpdateLevel();
-		}
-	}
+	//if (_input->GetTrg(XINPUT_BUTTON_A)) {
+	//	if (_nowLevel <= _maxLevel) {
+	//		_nowLevel--;
+	//		UpdateLevel();
+	//	}
+	//}
+	//if (_input->GetTrg(XINPUT_BUTTON_B)) {
+	//	if (_nowLevel < _maxLevel) {
+	//		_nowLevel++;
+	//		UpdateLevel();
+	//	}
+	//}
 	return true;
 };
 

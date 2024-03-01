@@ -6,7 +6,7 @@ bool ModeTest::Initialize() {
 	if (!base::Initialize()) { return false; }
 
 
-	_camera = new Camera();
+	
 
 	_lightHandle[0] = CreateDirLightHandle(VGet(- 1, -1, -1));
 	_lightHandle[1] = CreateDirLightHandle(VGet(1, 1, 1));
@@ -22,6 +22,7 @@ bool ModeTest::Initialize() {
 	int playerModelHandle = MV1LoadModel("res/Character/cg_player_girl/cg_player_girl_TEST.mv1");
 	_player = new Player(playerModelHandle, VGet(0, 0, 0));
 	_player->SetNextExp("res/JsonFile/ExpList.json");
+	_camera = new Camera(_player->GetPosition());
 
 	_chain = new Chain();
 	_chain->Init();

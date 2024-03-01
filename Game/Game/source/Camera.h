@@ -4,7 +4,7 @@
 class Camera
 {
 public:
-	Camera();
+	Camera(VECTOR InitPos);
 	~Camera();
 
 	virtual bool Process(VECTOR pos, int map);
