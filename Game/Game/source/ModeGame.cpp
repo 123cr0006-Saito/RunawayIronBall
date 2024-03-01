@@ -5,11 +5,8 @@
 bool ModeGame::Initialize() {
 	if (!base::Initialize()) { return false; }
 
-
+	_light = new Light("LightData");
 	
-	_lightHandle[0] = CreateDirLightHandle(VGet(-1, -1, -1));
-	_lightHandle[1] = CreateDirLightHandle(VGet(1, 1, 1));
-
 	int resolution = 8192;
 	_shadowHandle = MakeShadowMap(resolution, resolution);
 
@@ -73,9 +70,8 @@ bool ModeGame::Initialize() {
 
 bool ModeGame::Terminate() {
 	base::Terminate();
-	for (int i = 0; i < 2; i++) {
-		DeleteLightHandle(_lightHandle[i]);
-	}
+
+	delete _light;
 	return true;
 }
 
@@ -485,7 +481,7 @@ bool ModeGame::Render() {
 	//------------------------------------
 	// シャドウマップの設定　
 	// shadowCount 0 シャドウマップに描画 1 モデルの描画
-	VECTOR lightDir = VGet(0, -1, 0);
+	VECTOR lightDir = VGet(-0.5f, -1.0f, -0.5f);
 	SetShadowMapLightDirection(_shadowHandle, lightDir);
 
 	// シャドウマップに描画する範囲を設定

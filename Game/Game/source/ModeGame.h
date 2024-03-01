@@ -20,6 +20,7 @@
 #include "House.h"
 #include "Tower.h"
 
+#include "Light.h"
 #include "ClassificationEffect.h"
 #include "EnemyPool.h"
 #include "EffectManeger.h"
@@ -79,15 +80,11 @@ protected:
 	OBB obb;
 
 	int _shadowHandle;
-	int _lightHandle[2];
 
 	// デバッグ表示をするかどうか
 	bool _drawDebug = false;
 
 	std::vector<std::tuple<std::string, VECTOR, int>>_objectParam;
 
-
-
-
-
+	Light* _light;
 };
