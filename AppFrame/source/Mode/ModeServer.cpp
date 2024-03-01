@@ -90,6 +90,14 @@ void ModeServer::Clear() {
 	_vModeDel.clear();
 }
 
+bool ModeServer::Search(const char* name) {
+	for (auto itr = _vMode.begin(); itr != _vMode.end(); ++itr) {
+        if ((*itr)->_szName == name) {
+			return true;
+		}
+	}
+	return false;
+};
 
 
 // 削除予約されているか？
