@@ -155,6 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\ModeScenario.cpp" />
     <ClCompile Include="source\EffectBase.cpp" />
     <ClCompile Include="source\EffectManeger.cpp" />
     <ClCompile Include="source\Boss.cpp" />
@@ -207,6 +208,7 @@
     <ClCompile Include="source\Suppression.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\ModeScenario.h" />
     <ClInclude Include="source\EffectBase.h" />
     <ClInclude Include="source\EffectManeger.h" />
     <ClInclude Include="source\Boss.h" />
