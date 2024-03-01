@@ -107,7 +107,7 @@ bool DrawGauge::Process(VECTOR pos, float parcent, float parcent_max) {
     return true;
 }
 
-bool DrawGauge::Process(VECTOR pos, float parcent, float parcent_max, float size) {
+bool DrawGauge::Process(VECTOR pos, float parcent, float parcent_max, float ratio) {
     vertex[0].pos = pos;
     vertex[0].rhw = 1.0f;//‚±‚±‚ÍŠî–{“I‚É1.0‚†‚Å‚æ‚¢‚ç‚µ‚¢
     vertex[0].dif = GetColorU8(255, 255, 255, 255);
@@ -160,8 +160,8 @@ bool DrawGauge::Process(VECTOR pos, float parcent, float parcent_max, float size
         vertex[i].rhw = 1.0f;//‚±‚±‚ÍŠî–{“I‚É1.0‚†‚Å‚æ‚¢‚ç‚µ‚¢
         vertex[i].dif = GetColorU8(255, 255, 255, 255);
 
-        vertex[i].pos.x = vertex[i].pos.x * size + vertex[0].pos.x;//‘å‚«‚³‚ð“K“–‚É50”{‚É‚µ‚Ä‚¢‚é
-        vertex[i].pos.y = vertex[i].pos.y * size + vertex[0].pos.y;//‘å‚«‚³‚ð“K“–‚É50”{‚É‚µ‚Ä‚¢‚é
+        vertex[i].pos.x = vertex[i].pos.x * (_size *ratio) + vertex[0].pos.x;//‘å‚«‚³‚ð“K“–‚É50”{‚É‚µ‚Ä‚¢‚é
+        vertex[i].pos.y = vertex[i].pos.y * (_size * ratio) + vertex[0].pos.y;//‘å‚«‚³‚ð“K“–‚É50”{‚É‚µ‚Ä‚¢‚é
 
     }
     return true;

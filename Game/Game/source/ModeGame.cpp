@@ -27,6 +27,7 @@ bool ModeGame::Initialize() {
 	_effectManeger = new EffectManeger();
 
 	{
+
 		ResourceServer::LoadMultGraph("split", "res/TemporaryMaterials/split/test", ".png", 30, _effectSheet);
 		int handle[44];
 		ResourceServer::LoadDivGraph("Dust", "res/TemporaryMaterials/FX_Dust_2D.png", 44, 20, 3, 1000, 1000, handle);
@@ -342,8 +343,6 @@ bool ModeGame::Process() {
 				VECTOR vDir = VSub(enPos, pPos);
 				vDir = VNorm(vDir);
 				enemy->SetKnockBack(vDir, ibPower);
-				BoardPolygon* effect = new BoardPolygon(VAdd(ibSphere.centerPos, VGet(0, 100, 0)), GetCameraBillboardMatrix(), 200, _effectSheet, 30, 1.0f / 60.0f * 1000.0f);
-				_effectManeger->LoadEffect(effect);
 			}
 		}
 		// “G‚ÆƒvƒŒƒCƒ„[‚Ì“–‚½‚è”»’è
@@ -436,8 +435,10 @@ bool ModeGame::Process() {
 	}
 
 	VECTOR box_vec = ConvWorldPosToScreenPos(VAdd(_player->GetPosition(), VGet(0, 170, 0)));
-	_gaugeUI[0]->Process(box_vec, _player->GetStamina(), _player->GetStaminaMax());
-	_gaugeUI[1]->Process(box_vec, 100, 100);
+
+	float ratio = 1.0f - _camera->GetTargetDistance() / _camera->GetMaxLength();
+	_gaugeUI[0]->Process(box_vec, _player->GetStamina(), _player->GetStaminaMax(),ratio);
+	_gaugeUI[1]->Process(box_vec, 100, 100,ratio);
 
 	_player->AnimationProcess();
 
@@ -510,7 +511,7 @@ bool ModeGame::Render() {
 		_enemyPool->Render();
 		//_chain->DrawDebugInfo();
 
-		_effectManeger->Render();
+		
 		//}
 		for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
 			(*itr)->Render();
@@ -532,8 +533,11 @@ bool ModeGame::Render() {
 		}
 	}
 
-
+	
 	SetUseZBuffer3D(FALSE);
+
+	_effectManeger->Render();
+
 
 	//SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
 	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
