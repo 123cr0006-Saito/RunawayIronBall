@@ -47,10 +47,10 @@ Chain::~Chain()
 void Chain::Init() {
 	_input = XInput::GetInstance();
 
-	_cModelHandle = MV1LoadModel("res/Chain/Cg_Chain.mv1");
+	_cModelHandle = MV1LoadModel("res/Chain/chain02.mv1");
 	_cPos[0] = VGet(0.0f, 0.0f, 0.0f);
 	MV1SetPosition(_cModelHandle, _cPos[0]);
-	//MV1SetScale(_cModelHandle, VGet(0.5f, 0.5f, 0.5f));
+	MV1SetScale(_cModelHandle, VGet(0.5f, 0.5f, 0.5f));
 
 	for (int i = 1; i < CHAIN_MAX; i++) {
 		_cPos[i] = VAdd(_cPos[i - 1], VGet(0.0f, 0.0f, -100.0f));
