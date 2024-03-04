@@ -18,7 +18,6 @@
 
 	bool BoardPolygonDust::Process() {
 		PlaneEffectBase::Process();
-		MATRIX billboardMatrix = GetCameraBillboardMatrix();
 		_vLength.y += static_cast<float>(_speed) / 2;
 		_vLength.z += static_cast<float>(_speed);
 		MATRIX matrix = MGetTranslate(_vLength);

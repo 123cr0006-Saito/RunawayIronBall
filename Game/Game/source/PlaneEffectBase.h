@@ -17,6 +17,5 @@
 		int _currentTime;
 		int _animCount;
 		int _animMax;
-		bool _IsPlay;
 	};
 

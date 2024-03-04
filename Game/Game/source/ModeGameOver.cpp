@@ -34,7 +34,7 @@ bool ModeGameOver::Process() {
 	if (_input->GetTrg(XINPUT_BUTTON_A)) {
 		global._soundServer->DirectPlay("SE_Press");
 		if (_selectItem == 0) {
-			ModeServer::GetInstance()->Add(new ModeTest(), 1, "Test");
+			ModeServer::GetInstance()->Add(new ModeGame(), 1, "Game");
 			ModeServer::GetInstance()->Del(this);
 		}
 		else {

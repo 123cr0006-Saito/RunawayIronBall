@@ -106,5 +106,366 @@
     <ClInclude Include="source\Suppression.h" />
     <ClInclude Include="source\Gate.h" />
     <ClInclude Include="source\ModeFade.h" />
+    <ClCompile Include="source\CharacterBase.cpp">
+      <Filter>Character</Filter>
+    </ClCompile>
+    <ClCompile Include="source\CrystarPattern1.cpp">
+      <Filter>Character\Enemy\Crystar</Filter>
+    </ClCompile>
+    <ClCompile Include="source\CrystarPattern2.cpp">
+      <Filter>Character\Enemy\Crystar</Filter>
+    </ClCompile>
+    <ClCompile Include="source\CrystarPattern3.cpp">
+      <Filter>Character\Enemy\Crystar</Filter>
+    </ClCompile>
+    <ClCompile Include="source\CrystarPattern4.cpp">
+      <Filter>Character\Enemy\Crystar</Filter>
+    </ClCompile>
+    <ClCompile Include="source\CrystarRoof.cpp">
+      <Filter>Character\Enemy\Crystar</Filter>
+    </ClCompile>
+    <ClCompile Include="source\SlaBlock.cpp">
+      <Filter>Character\Enemy\Slablock</Filter>
+    </ClCompile>
+    <ClCompile Include="source\SlaBlockPattern2.cpp">
+      <Filter>Character\Enemy\Slablock</Filter>
+    </ClCompile>
+    <ClCompile Include="source\EnemyBase.cpp">
+      <Filter>Character\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="source\EnemyPool.cpp">
+      <Filter>Character\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Chain.cpp">
+      <Filter>Character\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Player.cpp">
+      <Filter>Character\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="source\BreakObject.cpp">
+      <Filter>Building</Filter>
+    </ClCompile>
+    <ClCompile Include="source\BuildingBase.cpp">
+      <Filter>Building</Filter>
+    </ClCompile>
+    <ClCompile Include="source\House.cpp">
+      <Filter>Building</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Tower.cpp">
+      <Filter>Building</Filter>
+    </ClCompile>
+    <ClCompile Include="source\TowerParts.cpp">
+      <Filter>Building</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ModeClear.cpp">
+      <Filter>Mode</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ModeGameOver.cpp">
+      <Filter>Mode</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ModeInstructions.cpp">
+      <Filter>Mode</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ModePause.cpp">
+      <Filter>Mode</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ModeScenario.cpp">
+      <Filter>Mode</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ModeTest.cpp">
+      <Filter>Mode</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ModeTitle.cpp">
+      <Filter>Mode</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UIBase.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UIExpPoint.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UIHeart.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UISuppressionGauge.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UITimeLimit.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\BoardPolygon.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="source\BoardPolygonDust.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="source\EffectBase.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="source\EffectManeger.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="source\EffekseerBase.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="source\EffekseerPosSynchro.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="source\PlaneEffectBase.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ScreenVibration.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ClassificationEffect.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
+    <ClCompile Include="source\bone.cpp">
+      <Filter>Character\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="source\AnimationItem.cpp">
+      <Filter>Character\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="source\AnimationManager.cpp">
+      <Filter>Character\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="source\FrameData.cpp">
+      <Filter>Character\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="source\MotionList.cpp">
+      <Filter>Character\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Boss.cpp">
+      <Filter>Character\Enemy\Bossnake</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ApplicationMain.cpp">
+      <Filter>Application</Filter>
+    </ClCompile>
+    <ClCompile Include="source\myJson.cpp">
+      <Filter>Json</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ModelColor.cpp">
+      <Filter>Character</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Camera.cpp">
+      <Filter>Mode\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Light.cpp">
+      <Filter>Mode\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Suppression.cpp">
+      <Filter>Mode\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="source\TimeLimit.cpp">
+      <Filter>Mode\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ModeGame.cpp">
+      <Filter>Mode\Game</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="source\CharacterBase.h">
+      <Filter>Character</Filter>
+    </ClInclude>
+    <ClInclude Include="source\CrystarRoof.h">
+      <Filter>Character\Enemy\Crystar</Filter>
+    </ClInclude>
+    <ClInclude Include="source\CrystarPattern1.h">
+      <Filter>Character\Enemy\Crystar</Filter>
+    </ClInclude>
+    <ClInclude Include="source\CrystarPattern2.h">
+      <Filter>Character\Enemy\Crystar</Filter>
+    </ClInclude>
+    <ClInclude Include="source\CrystarPattern3.h">
+      <Filter>Character\Enemy\Crystar</Filter>
+    </ClInclude>
+    <ClInclude Include="source\CrystarPattern4.h">
+      <Filter>Character\Enemy\Crystar</Filter>
+    </ClInclude>
+    <ClInclude Include="source\SlaBlock.h">
+      <Filter>Character\Enemy\Slablock</Filter>
+    </ClInclude>
+    <ClInclude Include="source\SlaBlockPattern2.h">
+      <Filter>Character\Enemy\Slablock</Filter>
+    </ClInclude>
+    <ClInclude Include="source\EnemyStract.h">
+      <Filter>Character\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="source\EnemyBase.h">
+      <Filter>Character\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="source\EnemyPool.h">
+      <Filter>Character\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Chain.h">
+      <Filter>Character\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Player.h">
+      <Filter>Character\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="source\BreakObject.h">
+      <Filter>Building</Filter>
+    </ClInclude>
+    <ClInclude Include="source\BuildingBase.h">
+      <Filter>Building</Filter>
+    </ClInclude>
+    <ClInclude Include="source\House.h">
+      <Filter>Building</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Tower.h">
+      <Filter>Building</Filter>
+    </ClInclude>
+    <ClInclude Include="source\TowerParts.h">
+      <Filter>Building</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ModeClear.h">
+      <Filter>Mode</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ModeGameOver.h">
+      <Filter>Mode</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ModeInstructions.h">
+      <Filter>Mode</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ModePause.h">
+      <Filter>Mode</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ModeScenario.h">
+      <Filter>Mode</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ModeTest.h">
+      <Filter>Mode</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ModeTitle.h">
+      <Filter>Mode</Filter>
+    </ClInclude>
+    <ClInclude Include="source\UIBase.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="source\UIExpPoint.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="source\UIHeart.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="source\UISuppressionGauge.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="source\UITimeLimit.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="source\BoardPolygon.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="source\BoardPolygonDust.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="source\EffectBase.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="source\EffectManeger.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="source\EffekseerBase.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="source\EffekseerPosSynchro.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ScreenVibration.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="source\PlaneEffectBase.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ClassificationEffect.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
+    <ClInclude Include="source\bone.h">
+      <Filter>Character\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="source\AnimationItem.h">
+      <Filter>Character\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="source\AnimationManager.h">
+      <Filter>Character\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="source\FrameData.h">
+      <Filter>Character\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="source\MotionList.h">
+      <Filter>Character\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Boss.h">
+      <Filter>Character\Enemy\Bossnake</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ApplicationMain.h">
+      <Filter>Application</Filter>
+    </ClInclude>
+    <ClInclude Include="source\myJson.h">
+      <Filter>Json</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ModelColor.h">
+      <Filter>Character</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Camera.h">
+      <Filter>Mode\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Light.h">
+      <Filter>Mode\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Suppression.h">
+      <Filter>Mode\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="source\TimeLimit.h">
+      <Filter>Mode\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ModeGame.h">
+      <Filter>Mode\Game</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Character">
+      <UniqueIdentifier>{6bdf78de-a369-4733-9b5a-9f1e161ba210}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Character\Player">
+      <UniqueIdentifier>{3b972810-79c2-468b-b63c-e61fe2fd32d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Character\Enemy">
+      <UniqueIdentifier>{63c48768-dc29-4f80-a575-8daa188efe7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Character\Enemy\Crystar">
+      <UniqueIdentifier>{4add95a4-5643-4838-9306-ef505df55862}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Character\Enemy\Slablock">
+      <UniqueIdentifier>{eda0fadf-7794-4b2f-a1f3-f2140bd398a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Building">
+      <UniqueIdentifier>{d3cde89e-74ca-441a-9e9a-90676f35c46b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mode">
+      <UniqueIdentifier>{ed629125-c122-41fb-a56e-b5e9cd74cd31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{44a790f9-dc63-4743-adc5-34ec74184a6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Effect">
+      <UniqueIdentifier>{09f33998-531f-4506-b801-77e17cd69c91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Character\Animation">
+      <UniqueIdentifier>{f6c87ae4-32a0-470d-a8ac-d151e4921211}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Character\Enemy\Bossnake">
+      <UniqueIdentifier>{f1d9c693-423c-4627-86d9-fc95aa2dfe70}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application">
+      <UniqueIdentifier>{128dbd40-6d54-4924-953d-daf000d6981c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Json">
+      <UniqueIdentifier>{fc5c2537-8acf-42a5-beb2-6d8c1d68d4d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mode\Game">
+      <UniqueIdentifier>{83bca989-3fef-431d-bc70-e6602cf6729d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

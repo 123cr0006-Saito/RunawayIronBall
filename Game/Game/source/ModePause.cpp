@@ -68,7 +68,9 @@ void ModePause::SelectGameEnd() {
 	if (_input->GetTrg(XINPUT_BUTTON_A)) {
 		ModeServer::GetInstance()->Del("Game");
 		ModeServer::GetInstance()->Del(this);
-		ModeServer::GetInstance()->Add(new ModeTitle(), 1, "Title");
+		if (!ModeServer::GetInstance()->Search("Title")) {
+			ModeServer::GetInstance()->Add(new ModeTitle(), 1, "Title");
+		}
 		global._soundServer->DirectPlay("SE_Press");
 	}
 };

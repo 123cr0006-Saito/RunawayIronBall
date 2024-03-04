@@ -157,8 +157,11 @@
   <ItemGroup>
     <ClCompile Include="source\ModeFade.cpp" />
     <ClCompile Include="source\Gate.cpp" />
+    <ClCompile Include="source\Light.cpp" />
+    <ClCompile Include="source\ModeScenario.cpp" />
     <ClCompile Include="source\EffectBase.cpp" />
     <ClCompile Include="source\EffectManeger.cpp" />
+    <ClCompile Include="source\Boss.cpp" />
     <ClCompile Include="source\PlaneEffectBase.cpp" />
     <ClCompile Include="source\BoardPolygonDust.cpp" />
     <ClCompile Include="source\CrystarPattern1.cpp" />
@@ -210,8 +213,11 @@
   <ItemGroup>
     <ClInclude Include="source\ModeFade.h" />
     <ClInclude Include="source\Gate.h" />
+    <ClInclude Include="source\Light.h" />
+    <ClInclude Include="source\ModeScenario.h" />
     <ClInclude Include="source\EffectBase.h" />
     <ClInclude Include="source\EffectManeger.h" />
+    <ClInclude Include="source\Boss.h" />
     <ClInclude Include="source\PlaneEffectBase.h" />
     <ClInclude Include="source\BoardPolygonDust.h" />
     <ClInclude Include="source\CrystarPattern1.h" />

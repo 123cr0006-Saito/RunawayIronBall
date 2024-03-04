@@ -1,5 +1,5 @@
 #include "Camera.h"
-Camera::Camera() {
+Camera::Camera(VECTOR InitPos) {
 	this->_input = XInput::GetInstance();//コンストラクタで入力用のクラスのポインタを取得
 
 	_cameraDirX = 0.53f;
@@ -9,6 +9,29 @@ Camera::Camera() {
 	_gazeShift = VGet(0, 80, 0);
 	_reverseX = -1;
 	_reverseY = 1;
+
+	//カメラの位置を計算
+	MATRIX origin = MGetIdent();
+	MATRIX MatrixX = MGetRotX(_cameraDirX);
+	MATRIX MatrixY = MGetRotY(_cameraDirY);
+
+	VECTOR playerPos = InitPos;
+
+	//行列の掛け算
+	origin = MMult(origin, MatrixX);
+	origin = MMult(origin, MatrixY);
+
+	//注視点からの距離に行列を変換する
+	VECTOR Vecter = VTransform(_pointDistance, origin);
+
+	//注視点の位置に移動
+	VECTOR VecAdd = VAdd(Vecter, playerPos);
+	float shiftY = 0;
+
+
+	VECTOR target = VAdd(playerPos, VAdd(_gazeShift, VGet(0, shiftY, 0)));
+
+	SetCameraPositionAndTarget_UpVecY(VecAdd, target);
 };
 
 Camera::~Camera() {
@@ -40,13 +63,13 @@ bool Camera::UpdateCameraToMatrix(VECTOR pos, int map) {
 	//トリガ入力でカメラの距離を変更
 	//カメラが遠くに移動
 	if (_input->GetRTrg() > 25) {
-		if (_pointDistance.z > -2500) {
+		if (_pointDistance.z > _cameraMaxDistance) {
 			_pointDistance.z -= _input->GetRTrg() / 25;
 		}
 	}
 	//カメラが近くに移動
 	if (_input->GetLTrg() > 25) {
-		if (_pointDistance.z < -150) {
+		if (_pointDistance.z < _cameraMinDistance) {
 			_pointDistance.z += _input->GetLTrg() / 25;
 		}
 	}
