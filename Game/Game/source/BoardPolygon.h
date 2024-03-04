@@ -10,7 +10,6 @@
 		~BoardPolygon();
 		bool Process()override;
 		bool Render()override;
-		bool GetFlag() { return _IsPlay; }
 	protected:
 		VERTEX3D polygon[4];
 	};

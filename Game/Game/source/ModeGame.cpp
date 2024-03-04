@@ -5,13 +5,10 @@
 bool ModeGame::Initialize() {
 	if (!base::Initialize()) { return false; }
 
-
-	_camera = new Camera();
-
-	_lightHandle[0] = CreateDirLightHandle(VGet(-1, -1, -1));
-	_lightHandle[1] = CreateDirLightHandle(VGet(1, 1, 1));
-
-	_shadowHandle = MakeShadowMap(2048, 2048);
+	_light = new Light("LightData");
+	
+	int resolution = 8192;
+	_shadowHandle = MakeShadowMap(resolution, resolution);
 
 	_skySphere = MV1LoadModel(_T("res/SkySphere/skysphere.mv1"));
 	_tile = MV1LoadModel(_T("res/TemporaryMaterials/stage_normal_01.mv1"));
@@ -21,11 +18,14 @@ bool ModeGame::Initialize() {
 
 	int playerModelHandle = ResourceServer::MV1LoadModel("Player", "res/Character/cg_player_girl/cg_player_girl_TEST_Ver.2.mv1");
 	_player = new Player(playerModelHandle, VGet(0, 0, 0));
+	_camera = new Camera(_player->GetPosition());
+
 
 	_classificationEffect = new ClassificationEffect();
 	_effectManeger = new EffectManeger();
 
 	{
+
 		ResourceServer::LoadMultGraph("split", "res/TemporaryMaterials/split/test", ".png", 30, _effectSheet);
 		int handle[44];
 		ResourceServer::LoadDivGraph("Dust", "res/TemporaryMaterials/FX_Dust_2D.png", 44, 20, 3, 1000, 1000, handle);
@@ -47,7 +47,7 @@ bool ModeGame::Initialize() {
 	ui[0] = new UIHeart(VGet(20, 20, 0), 3, heartHandle, 2);
 	ui[1] = new UIExpPoint(VGet(0, 150, 0), "res/TemporaryMaterials/UI_EXP_01.png");
 	ResourceServer::LoadMultGraph("Suppressiongauge", "res/TemporaryMaterials/SuppressionGauge/suppressiongauge", ".png", 3, heartHandle);
-	ui[2] = new UISuppressionGauge(VGet(500, 100, 0), 3, heartHandle);
+	ui[2] = new UISuppressionGauge(VGet(700, 100, 0), 3, heartHandle);
 	_gaugeUI[0] = new DrawGauge(0, 3, size, true);
 	_gaugeUI[1] = new DrawGauge(0, 3, size, true);
 	_gaugeHandle[0] = ResourceServer::LoadGraph("Stamina03", _T("res/UI/UI_Stamina_03.png"));
@@ -60,14 +60,18 @@ bool ModeGame::Initialize() {
 
 	//global._soundServer->DirectPlay("Stage03");
 	global._soundServer->BgmFadeIn("Stage03", 2000);
+
+
+
+	TowerParts::InitBlastTowerParts();
+
 	return true;
 }
 
 bool ModeGame::Terminate() {
 	base::Terminate();
-	for (int i = 0; i < 2; i++) {
-		DeleteLightHandle(_lightHandle[i]);
-	}
+
+	delete _light;
 	return true;
 }
 
@@ -154,15 +158,15 @@ bool ModeGame::LoadStage(std::string fileName) {
 	}
 
 	// タワー
-	for (int i = 0; i < 10; i++) {
-		VECTOR v = VGet(rand() % 4000, 0.0f, rand() % 4000);
-		v.x -= 2000.0f;
-		v.z -= 2000.0f;
+	for (int i = 0; i < 5; i++) {
+		VECTOR v = VGet(rand() % 8000, 0.0f, rand() % 8000);
+		v.x -= 4000.0f;
+		v.z -= 4000.0f;
 
 		std::array<int, 3> towerModelHandle;
-		towerModelHandle[0] = ResourceServer::MV1LoadModel("Tower01", "res/Building/Tower/test_Tower_01.mv1");
-		towerModelHandle[1] = ResourceServer::MV1LoadModel("Tower02", "res/Building/Tower/test_Tower_02.mv1");
-		towerModelHandle[2] = ResourceServer::MV1LoadModel("Tower03", "res/Building/Tower/test_Tower_03.mv1");
+		towerModelHandle[0] = ResourceServer::MV1LoadModel("Tower01", "res/Building/CG_OBJ_Tower/CG_OBJ_Tower_Under.mv1");
+		towerModelHandle[1] = ResourceServer::MV1LoadModel("Tower02", "res/Building/CG_OBJ_Tower/CG_OBJ_Tower_Under.mv1");
+		towerModelHandle[2] = ResourceServer::MV1LoadModel("Tower03", "res/Building/CG_OBJ_Tower/CG_OBJ_Tower_Top.mv1");
 
 		Tower* tower = new Tower();
 		tower->Init(towerModelHandle, v, VGet(0, 0, 0), VGet(1, 1, 1));
@@ -211,6 +215,7 @@ bool ModeGame::Process() {
 					(*itr)->ActivateBreakObject(true, vDir);
 					_player->SetExp(50);
 					global._soundServer->DirectPlay("OBJ_RockBreak");
+					continue;
 				}
 			}
 
@@ -232,6 +237,7 @@ bool ModeGame::Process() {
 						VECTOR vDir = VSub(houseObb.pos, pPos);
 						(*itr)->ActivateBreakObject(true, vDir);
 						global._soundServer->DirectPlay("OBJ_RockBreak");
+						continue;
 					}
 					else {
 						VECTOR dirVec = VSub(enPos, hitPos);
@@ -239,6 +245,15 @@ bool ModeGame::Process() {
 						VECTOR movePos = VAdd(hitPos, VScale(dirVec, enR));
 						en->SetPos(movePos);
 					}
+				}
+			}
+
+			for (auto tpItr = TowerParts::_blastTowerParts.begin(); tpItr != TowerParts::_blastTowerParts.end(); ++tpItr) {
+				Sphere tpSphere = (*tpItr)->GetSphereCollision();
+				if (Collision3D::OBBSphereCol(houseObb, tpSphere)) {
+					VECTOR vDir = VSub(houseObb.pos, tpSphere.centerPos);
+					(*itr)->ActivateBreakObject(true, vDir);
+					continue;
 				}
 			}
 
@@ -261,53 +276,54 @@ bool ModeGame::Process() {
 	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
 		(*itr)->Process();
 
-		VECTOR tPos = (*itr)->GetPos();
-		Sphere tSphere = (*itr)->GetBottomSphereCollision();
-		if ((*itr)->GetCanBlast()) {
-			if (isAttackState) {
-				if (Collision3D::SphereCol(ibSphere, tSphere)) {
+		if ((*itr)->GetUse()) {
+			VECTOR tPos = (*itr)->GetPos();
+			Sphere tSphere = (*itr)->GetBottomSphereCollision();
+			if ((*itr)->GetCanBlast()) {
+				if (isAttackState) {
+					if (Collision3D::SphereCol(ibSphere, tSphere)) {
 
-					VECTOR vDir = VSub(tPos, pPos);
-					(*itr)->SetBlast(vDir);
+						VECTOR vDir = VSub(tPos, pPos);
+						(*itr)->SetBlast(vDir);
+					}
 				}
 			}
-		}
 
-		// エネミーの押出処理
-		for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
-			EnemyBase* en = _enemyPool->GetEnemy(i);
-			if (!en) { continue; }
-			if (!en->GetUse()) { continue; }
+			// エネミーの押出処理
+			for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
+				EnemyBase* en = _enemyPool->GetEnemy(i);
+				if (!en) { continue; }
+				if (!en->GetUse()) { continue; }
 
-			float tR = tSphere.r;
-			VECTOR enPos = en->GetCollisionPos();
-			float enR = en->GetR();
+				float tR = tSphere.r;
+				VECTOR enPos = en->GetCollisionPos();
+				float enR = en->GetR();
 
-			enPos.y = 0;
-			tSphere.centerPos.y = 0;
+				enPos.y = 0;
+				tSphere.centerPos.y = 0;
 
-			VECTOR vDir = VSub(enPos, tSphere.centerPos);
-			if (VSize(vDir) <= enR + tR) {
-				float len = (enR + tR) - VSize(vDir);
-				vDir = VNorm(vDir);
-				en->SetPos(VAdd(enPos, VScale(vDir, len)));
+				VECTOR vDir = VSub(enPos, tSphere.centerPos);
+				if (VSize(vDir) <= enR + tR) {
+					float len = (enR + tR) - VSize(vDir);
+					vDir = VNorm(vDir);
+					en->SetPos(VAdd(enPos, VScale(vDir, len)));
+				}
+				en = nullptr;
 			}
-			en = nullptr;
+
+			// プレイヤーの押出
+			VECTOR pColPos = _player->GetPosition(); pColPos.y = 0;
+			float pR = _player->GetCollision().r;
+			float tR = tSphere.r;
+
+
+			VECTOR vDir = VSub(pColPos, tSphere.centerPos);
+			if (VSize(vDir) <= pR + tR) {
+				float len = (pR + tR) - VSize(vDir);
+				vDir = VNorm(vDir);
+				_player->SetPos(VAdd(pColPos, VScale(vDir, len)));
+			}
 		}
-
-		// プレイヤーの押出
-		VECTOR pColPos = _player->GetPosition(); pColPos.y = 0;
-		float pR = _player->GetCollision().r;
-		float tR = tSphere.r;
-
-
-		VECTOR vDir = VSub(pColPos, tSphere.centerPos);
-		if (VSize(vDir) <= pR + tR) {
-			float len = (pR + tR) - VSize(vDir);
-			vDir = VNorm(vDir);
-			_player->SetPos(VAdd(pColPos, VScale(vDir, len)));
-		}
-
 	}
 
 
@@ -324,8 +340,6 @@ bool ModeGame::Process() {
 				VECTOR vDir = VSub(enPos, pPos);
 				vDir = VNorm(vDir);
 				enemy->SetKnockBack(vDir, ibPower);
-				BoardPolygon* effect = new BoardPolygon(VAdd(ibSphere.centerPos, VGet(0, 100, 0)), GetCameraBillboardMatrix(), 200, _effectSheet, 30, 1.0f / 60.0f * 1000.0f);
-				_effectManeger->LoadEffect(effect);
 			}
 		}
 		// 敵とプレイヤーの当たり判定
@@ -364,16 +378,16 @@ bool ModeGame::Process() {
 		for (int j = 0; j < _enemyPool->ENEMY_MAX_SIZE; j++) {
 			if (i == j) { continue; }
 
-			EnemyBase* en = _enemyPool->GetEnemy(i);
+			EnemyBase* en = _enemyPool->GetEnemy(j);
 			if (!en) { continue; }
-			if (en->GetUse()) { continue; }
+			if (!en->GetUse()) { continue; }
 
 			VECTOR en2Pos = en->GetCollisionPos();
 			float en2R = en->GetR();
 			VECTOR dirVec = VSub(en2Pos, en1Pos);
 			float length = VSize(dirVec);
 			if (length <= en1R + en2R) {
-				float pushLength = length - en1R - en2R;
+				float pushLength = (en1R + en2R) - length;
 				dirVec = VNorm(dirVec);
 				en->SetExtrusionPos(VScale(dirVec, pushLength));
 			}
@@ -383,7 +397,7 @@ bool ModeGame::Process() {
 
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_START)) {
-		_enemyPool->Init();
+		//_enemyPool->Init();
 		//_player->SetDamage();
 		ModeServer::GetInstance()->Add(new ModePause(), 10, "Pause");
 	}
@@ -401,14 +415,14 @@ bool ModeGame::Process() {
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_BACK)) {
 		_drawDebug = !_drawDebug;
-		VECTOR pPos = _player->GetPosition();
-		for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
-			
-			VECTOR hPos = (*itr)->GetPos();
-			VECTOR tmpDir = VSub(hPos, pPos);
-			tmpDir.y = 0.0f;
-			(*itr)->SetBlast(tmpDir);
-		}
+		//VECTOR pPos = _player->GetPosition();
+		//for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
+		//	
+		//	VECTOR hPos = (*itr)->GetPos();
+		//	VECTOR tmpDir = VSub(hPos, pPos);
+		//	tmpDir.y = 0.0f;
+		//	(*itr)->SetBlast(tmpDir);
+		//}
 	}
 
 	if (_player->GetHP() <= 0) {
@@ -418,10 +432,14 @@ bool ModeGame::Process() {
 	}
 
 	VECTOR box_vec = ConvWorldPosToScreenPos(VAdd(_player->GetPosition(), VGet(0, 170, 0)));
-	_gaugeUI[0]->Process(box_vec, _player->GetStamina(), _player->GetStaminaMax());
-	_gaugeUI[1]->Process(box_vec, 100, 100);
+
+	float ratio = 1.0f - _camera->GetTargetDistance() / _camera->GetMaxLength();
+	_gaugeUI[0]->Process(box_vec, _player->GetStamina(), _player->GetStaminaMax(),ratio);
+	_gaugeUI[1]->Process(box_vec, 100, 100,ratio);
 
 	_player->AnimationProcess();
+
+	TowerParts::CheckFinishedBlastTowerParts();
 
 	_effectManeger->Update();
 	_camera->Process(_player->GetPosition(), _tile);
@@ -463,7 +481,7 @@ bool ModeGame::Render() {
 	//------------------------------------
 	// シャドウマップの設定　
 	// shadowCount 0 シャドウマップに描画 1 モデルの描画
-	VECTOR lightDir = VGet(0, -1, 0);
+	VECTOR lightDir = VGet(-0.5f, -1.0f, -0.5f);
 	SetShadowMapLightDirection(_shadowHandle, lightDir);
 
 	// シャドウマップに描画する範囲を設定
@@ -490,7 +508,7 @@ bool ModeGame::Render() {
 		_enemyPool->Render();
 		//_chain->DrawDebugInfo();
 
-		_effectManeger->Render();
+		
 		//}
 		for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
 			(*itr)->Render();
@@ -507,17 +525,21 @@ bool ModeGame::Render() {
 		for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
 			(*itr)->DrawDebugInfo();
 		}
+		for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
+			(*itr)->DrawDebugInfo();
+		}
 	}
 
-	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
-		(*itr)->DrawDebugInfo();
-	}
+	
 	SetUseZBuffer3D(FALSE);
 
+	_effectManeger->Render();
+
+
 	//SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
-	//for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
-	//	ui[i]->Draw();
-	//}
+	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
+		ui[i]->Draw();
+	}
 
 	if (_player->GetStaminaRate() < 1.0f) {
 		int handleNum = floorf(_player->GetStaminaRate() * 100.0f / 33.4f);
