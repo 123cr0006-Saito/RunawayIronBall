@@ -137,6 +137,12 @@ void EnemyPool::DeleteEnemy() {
 			_enemy[i] = nullptr;
 		}
 	}
+	ResourceServer::MV1DeleteModelAll("CryStar_Glass");
+	ResourceServer::MV1DeleteModelAll("CryStar_Rock");
+	ResourceServer::MV1DeleteModelAll("CryStar_Iron");
+	ResourceServer::MV1DeleteModelAll("CrystarRoof");
+	ResourceServer::MV1DeleteModelAll("Slablock");
+	ResourceServer::MV1DeleteModelAll("Slablock_Iron");
 };
 
 EnemyBase* EnemyPool::Recicle() {

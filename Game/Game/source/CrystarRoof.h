@@ -1,5 +1,6 @@
 #pragma once
 #include "DxLib.h"
+#include "appframe.h"
 class CrystarRoof
 {
 public:

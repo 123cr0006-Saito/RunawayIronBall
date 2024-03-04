@@ -40,6 +40,7 @@ int SkipSpace(const char* p, const void* last);
 // ","までの文字列を取得する
 // csv用
 int GetString(const char* p, std::string* out);
+int GetString(const char* p,const char find, std::string* out);
 // 10進数の整数値を取得する
 int GetDecNum(const char* p, int* answer, int* digits = nullptr);
 // 10進数の浮動小数点数を含めた値を取得する

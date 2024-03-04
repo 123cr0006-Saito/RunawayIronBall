@@ -40,6 +40,8 @@ public:
 
 	
 	static bool Delete(std::string key, TYPE resouceType);
+	static bool MV1DeleteModel(std::string key, int model);
+	static bool MV1DeleteModelAll(std::string key);
 
 	static void DeleteResourceAll();//全てのリソースを削除
 

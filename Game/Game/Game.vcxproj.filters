@@ -52,6 +52,7 @@
     <ClCompile Include="source\Suppression.cpp" />
     <ClCompile Include="source\Gate.cpp" />
     <ClCompile Include="source\ModeFade.cpp" />
+    <ClCompile Include="source\ModeLoading.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -262,6 +263,7 @@
     <ClCompile Include="source\ModeGame.cpp">
       <Filter>Mode\Game</Filter>
     </ClCompile>
+    <ClInclude Include="source\ModeLoading.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CharacterBase.h">

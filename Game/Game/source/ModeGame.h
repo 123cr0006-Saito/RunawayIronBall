@@ -1,7 +1,11 @@
 #pragma once
 #include "appframe.h"
+
+#include <thread>
+
 #include "ModePause.h"
 #include "ModeGameOver.h"
+#include "ModeLoading.h"
 
 #include "Camera.h"
 #include "Player.h"
@@ -21,6 +25,7 @@
 #include "Tower.h"
 
 #include "Light.h"
+#include "Gate.h"
 #include "ClassificationEffect.h"
 #include "EnemyPool.h"
 #include "EffectManeger.h"
@@ -43,10 +48,12 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
+	std::vector<std::string> LoadObjectName(std::string fileName); // オブジェクトの名前を読み込む
 	bool LoadObjectParam(std::string fileName); // オブジェクトのパラメータを読み込む
 	bool LoadStage(std::string fileName);// ステージの読み込み 敵も含む
-
+	bool StageMutation();// ステージクリア処理
 	bool GateProcess();// ゴールゲートの処理
+
 
 	//デバッグ用
 	std::vector<OBJECTDATA> LoadJsonObject(nlohmann::json json, std::string loadName);//引数 読み込みたいオブジェクトの名前
@@ -75,6 +82,8 @@ protected:
 	int _tile;
 
 	int _effectSheet[30];
+	Gate* _gate;
+	int _stageNum;
 	ClassificationEffect* _classificationEffect;
 	EffectManeger* _effectManeger;
 	OBB obb;
@@ -87,4 +96,8 @@ protected:
 	std::vector<std::tuple<std::string, VECTOR, int>>_objectParam;
 
 	Light* _light;
+
+	// ステージ読み込み用変数
+	bool IsLoading;
+	std::thread* LoadFunctionThread;
 };

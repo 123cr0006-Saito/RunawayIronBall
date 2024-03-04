@@ -155,6 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\ModeLoading.cpp" />
     <ClCompile Include="source\ModeFade.cpp" />
     <ClCompile Include="source\Gate.cpp" />
     <ClCompile Include="source\Light.cpp" />
@@ -211,6 +212,7 @@
     <ClCompile Include="source\Suppression.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\ModeLoading.h" />
     <ClInclude Include="source\ModeFade.h" />
     <ClInclude Include="source\Gate.h" />
     <ClInclude Include="source\Light.h" />
