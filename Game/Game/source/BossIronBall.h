@@ -19,6 +19,11 @@ public:
 	// デバッグ情報の表示
 	void DrawDebugInfo();
 
+
+private:
+	void RotationProcess();
+	void RotationAcceleration();
+
 private:
 	// 鉄球のモデルハンドル
 	int _ibModelHandle;
@@ -26,6 +31,18 @@ private:
 	VECTOR _ibPos;
 	// 鉄球の当たり判定
 	Sphere _ibSphereCol;
+
+	enum class IB_STATE {
+		IB_STATE_IDLE,
+		IB_STATE_ROTATION,
+	} _ibState;
+
+
+	bool _activeRotationAcceleration;
+	int _rotationAccelerationCnt;
+
+	float _rotAngularVelocity;
+	float _rotAngle;
 
 	// 鎖のモデルハンドル
 	int _chainModelHandle;
@@ -36,4 +53,18 @@ private:
 
 	// 杭の座標
 	VECTOR* _stakePos;
+
+	// 原点から杭の座標への平行移動行列
+	MATRIX _mStakePos;
+	// _mStakePosの逆行列
+	MATRIX _mStakePosInv;
+
+
+
+
+
+
+	// デバッグ用
+	// 一周にかかるまでのフレーム数
+	float debugRotFrame = 60.0f;
 };
