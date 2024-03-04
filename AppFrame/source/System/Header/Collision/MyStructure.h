@@ -58,6 +58,9 @@ public:
 		this->r = r;
 	}
 
+	// •`‰æˆ—
+	void Render(unsigned int color);
+
 	VECTOR centerPos;
 	float r;
 };
