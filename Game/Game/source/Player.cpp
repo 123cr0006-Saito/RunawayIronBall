@@ -143,7 +143,6 @@ void Player::ChangeIsInvincible(bool b, int frame)
 	if (b) {
 		if (!_isInvincible) {
 			_invincibleRemainingCnt = frame;
-			_animStatus = ANIM_STATE::HIT;
 		}
 	}
 	else {
@@ -158,6 +157,10 @@ void Player::SetDamage()
 	if (_hp < 0) {
 		_hp = 0;
 	}
+	_isSwinging = false;
+	_isRotationSwinging = false;
+	_rotationCnt = 0;
+	_animStatus = ANIM_STATE::HIT;
 	ChangeIsInvincible(true, INVINCIBLE_CNT_MAX);
 }
 
@@ -381,7 +384,9 @@ bool Player::Process(float camAngleY)
 				_forwardDir = _stickDir;
 			}
 		}
+	}
 
+	if (_canMotionCancel) {
 		// ‰ñ”ð
 		if (_input->GetTrg(XINPUT_BUTTON_A)) {
 			if (!_isSwinging || _isRotationSwinging) {
@@ -393,7 +398,6 @@ bool Player::Process(float camAngleY)
 			}
 		}
 	}
-
 
 	if (_isRotationSwinging) {
 		float angle = _animStatus == ANIM_STATE::TO_ROTATION_SWING ? -(2.0f * DX_PI_F) / 80.0f : -(2.0f * DX_PI_F) / 30.0f;
