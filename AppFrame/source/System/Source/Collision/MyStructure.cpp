@@ -13,6 +13,11 @@ void OBB::Rotate(VECTOR vRot)
 	}
 }
 
+void Sphere::Render(unsigned int color)
+{
+	DrawSphere3D(centerPos, r, 6, color, color, false);
+}
+
 // •`‰æˆ—
 void OBB::Render(unsigned int color)
 {
