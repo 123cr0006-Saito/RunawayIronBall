@@ -7,6 +7,8 @@
 #include "Player.h"
 #include "Chain.h"
 
+#include "Boss.h"
+
 #include "UIBase.h"
 #include "UIExpPoint.h"
 #include "UISuppressionGauge.h"
@@ -55,6 +57,8 @@ protected:
 	Camera* _camera;
 	Player* _player;
 
+	Boss* _boss;
+
 	Chain* _chain;
 	UIBase* ui[3];
 	DrawGauge* _gaugeUI[2];
@@ -65,11 +69,9 @@ protected:
 
 
 	ScreenVibration* _sVib;
-	EnemyPool* _enemyPool;
+
 	Suppression* _suppression;
 
-	std::vector<House*> _house;
-	std::vector<Tower*> _tower;
 
 	int _skySphere;
 	int _tile;
@@ -83,7 +85,7 @@ protected:
 	int _lightHandle[2];
 
 	// デバッグ表示をするかどうか
-	bool _drawDebug = false;
+	bool _drawDebug = true;
 
 	std::vector<std::tuple<std::string, VECTOR, int>>_objectParam;
 };
