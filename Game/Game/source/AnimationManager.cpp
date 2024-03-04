@@ -215,11 +215,17 @@ void AnimationManager::Process(int statusNo)
 
 void AnimationManager::DrawDebugInfo()
 {
-	int y = 0;
+	int y = 100;
 	int line = 0;
+
+	DrawBox(0, y, 300, y + 16 * 3, GetColor(128, 128, 128), TRUE);
+	DrawFormatString(0, y + line * 16, COLOR_BLUE, "PlayTime : %3.2f", _playTime); line++;
+
 	for (auto itr = _animContainer.begin(); itr != _animContainer.end(); ++itr)
 	{
 		DrawFormatString(0, y + line * 16, COLOR_BLUE, "アニメーション番号 : %d", (*itr)->_stateNo);
 		line++;
 	}
+
+	
 }

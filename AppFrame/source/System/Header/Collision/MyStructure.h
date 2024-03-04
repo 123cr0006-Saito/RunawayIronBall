@@ -58,6 +58,9 @@ public:
 		this->r = r;
 	}
 
+	// •`‰æˆ—
+	void Render(unsigned int color);
+
 	VECTOR centerPos;
 	float r;
 };
@@ -106,6 +109,9 @@ public:
 	void Update() {
 		up_pos = VAdd(down_pos,VGet(0,up,0));
 	};
+
+	// •`‰æˆ—
+	void Render(unsigned int color);
 
 	VECTOR up_pos = VGet(0, 0, 0);
 	VECTOR down_pos = VGet(0, 0, 0);

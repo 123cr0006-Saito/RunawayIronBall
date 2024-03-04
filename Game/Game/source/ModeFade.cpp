@@ -32,6 +32,11 @@ bool ModeFade::Process() {
 		// FadeOut
 		_alphaFade = Easing::Linear(GetNowCount() - _currentTime, 0, 255, _fadeTime);
 	}
+
+    if (GetNowCount() - _currentTime > _fadeTime) {
+		ModeServer::GetInstance()->Del(this);
+	}
+
 	return true;
 };
 

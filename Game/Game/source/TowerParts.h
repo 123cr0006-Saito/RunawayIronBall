@@ -61,6 +61,7 @@ protected:
 
 	bool _blast;
 	VECTOR _blastDir;
+	int _blastCnt;
 
 	bool _isFalling;
 	int _fallCnt;
@@ -75,4 +76,25 @@ protected:
 	Sphere _sphereCollision;
 
 	VECTOR _localCenterPos;
+
+
+public:
+	// ベータ版　仮
+	static std::vector<TowerParts*> _blastTowerParts;
+	static void InitBlastTowerParts() {
+		_blastTowerParts.clear();
+	}
+	static void AddBlastTowerParts(TowerParts* towerParts) {
+		_blastTowerParts.push_back(towerParts);
+	}
+	static void CheckFinishedBlastTowerParts() {
+		for (auto itr = _blastTowerParts.begin(); itr != _blastTowerParts.end();) {
+			if ((*itr)->GetUse() == false) {
+				itr = _blastTowerParts.erase(itr);
+			}
+			else {
+				++itr;
+			}
+		}
+	}
 };
