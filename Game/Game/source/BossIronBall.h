@@ -14,6 +14,7 @@ public:
 	void Render();
 
 
+	void UpdateIBCollision();
 
 	// デバッグ情報の表示
 	void DrawDebugInfo();
@@ -23,6 +24,8 @@ private:
 	int _ibModelHandle;
 	// 鉄球の座標
 	VECTOR _ibPos;
+	// 鉄球の当たり判定
+	Sphere _ibSphereCol;
 
 	// 鎖のモデルハンドル
 	int _chainModelHandle;

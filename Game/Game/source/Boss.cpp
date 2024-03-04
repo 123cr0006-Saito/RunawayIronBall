@@ -50,4 +50,6 @@ void Boss::Render()
 void Boss::DrawDebugInfo()
 {
 	_stakeCapsuleCol.Render(COLOR_GREEN);
+
+	_ironBall->DrawDebugInfo();
 }

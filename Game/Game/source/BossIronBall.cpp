@@ -2,16 +2,23 @@
 
 namespace {
 	constexpr int CHAIN_MAX = 10;
-	constexpr float CHAIN_TOTAL_LENGTH = 1000.0f;
+	constexpr float CHAIN_TOTAL_LENGTH = 500.0f;
+
+	// ‰¼
+	constexpr float SCALE = 12.8f;
 }
 
 BossIronBall::BossIronBall()
 {
 	_ibModelHandle = -1;
 	_ibPos = VGet(0.0f, 0.0f, 0.0f);
+	_ibSphereCol.centerPos = _ibPos;
+	_ibSphereCol.r = 0.0f;
+
 	_chainModelHandle = -1;
 	_chainPos.clear();
 	_chainDistance = 0.0f;
+
 	_stakePos = nullptr;
 }
 
@@ -36,10 +43,17 @@ void BossIronBall::Init(VECTOR* stakePos)
 
 
 	_ibPos = _chainPos[CHAIN_MAX - 1];
+	_ibSphereCol.centerPos = _ibPos;
+	_ibSphereCol.r = 20.0f * SCALE;
+	MV1SetScale(_ibModelHandle, VScale(VGet(1.0f, 1.0f, 1.0f), SCALE));
 }
 
 void BossIronBall::Process()
 {
+	_ibPos.y -= 1.0f;
+	if (_ibPos.y - _ibSphereCol.r < 0.0f) _ibPos.y = _ibSphereCol.r;
+	UpdateIBCollision();
+
 	//static float angle = 0.0f;
 	//angle += 0.05f;
 	//MATRIX mStake = MGetTranslate(*_stakePos);
@@ -85,6 +99,17 @@ void BossIronBall::Render()
 		MV1SetPosition(_chainModelHandle, _chainPos[i]);
 		MV1DrawModel(_chainModelHandle);
 	}
+
 	MV1SetPosition(_ibModelHandle, _ibPos);
 	MV1DrawModel(_ibModelHandle);
+}
+
+void BossIronBall::UpdateIBCollision()
+{
+	_ibSphereCol.centerPos = _ibPos;
+}
+
+void BossIronBall::DrawDebugInfo()
+{
+	_ibSphereCol.Render(COLOR_GREEN);
 }
