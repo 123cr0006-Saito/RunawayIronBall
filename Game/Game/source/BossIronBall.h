@@ -21,6 +21,19 @@ public:
 
 
 private:
+	void CheckState();
+
+
+
+
+	// 待機状態の処理
+	void IdleProcess();
+
+	// 硬直状態の処理
+	void StiffenProcess();
+	void SetStiffen(int cnt) { _ibState = IB_STATE::IB_STATE_STIFFEN; _ibStiffenCnt = cnt; }
+
+	// 回転攻撃
 	void RotationProcess();
 	void RotationAcceleration();
 
@@ -34,13 +47,23 @@ private:
 
 	enum class IB_STATE {
 		IB_STATE_IDLE,
-		IB_STATE_ROTATION,
+		IB_STATE_STIFFEN,
+		IB_STATE_ATTACK_RUSH,
+		IB_STATE_ATTACK_DROP,
+		IB_STATE_ATTACK_ROTATION,
 	} _ibState;
 
+	//
+	int _ibIdleCnt;
+	VECTOR _ibMoveDir;
 
+	int _ibStiffenCnt;
+
+
+
+	// 
 	bool _activeRotationAcceleration;
 	int _rotationAccelerationCnt;
-
 	float _rotAngularVelocity;
 	float _rotAngle;
 
@@ -65,6 +88,10 @@ private:
 
 
 	// デバッグ用
-	// 一周にかかるまでのフレーム数
-	float debugRotFrame = 60.0f;
+	// 特定のアクションのフレーム数
+	int debugFrame = 30;
+	int debugFrameMax = 30;
+
+	float debugValue = 100.0f;
+	float debugValueMax = 100.0f;
 };
