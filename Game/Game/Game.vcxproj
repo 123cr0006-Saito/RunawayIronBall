@@ -207,6 +207,7 @@
     <ClCompile Include="source\TimeLimit.cpp" />
     <ClCompile Include="source\UITimeLimit.cpp" />
     <ClCompile Include="source\Suppression.cpp" />
+    <ClCompile Include="source\UnbreakableObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Light.h" />
@@ -262,6 +263,7 @@
     <ClInclude Include="source\TimeLimit.h" />
     <ClInclude Include="source\UITimeLimit.h" />
     <ClInclude Include="source\Suppression.h" />
+    <ClInclude Include="source\UnbreakableObject.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

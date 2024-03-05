@@ -157,6 +157,7 @@
     <ClCompile Include="source\ModeGame.cpp">
       <Filter>Mode\Game</Filter>
     </ClCompile>
+    <ClCompile Include="source\UnbreakableObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CharacterBase.h">
@@ -317,6 +318,9 @@
     </ClInclude>
     <ClInclude Include="source\ModeGame.h">
       <Filter>Mode\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="source\UnbreakableObject.h">
+      <Filter>Building</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
