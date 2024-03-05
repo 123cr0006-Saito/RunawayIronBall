@@ -4,14 +4,15 @@ class EffekseerRotation :  public EffekseerBase
 {
 	typedef EffekseerBase base;
 public:
-	EffekseerRotation(std::string name, VECTOR* pos, float size, VECTOR* rotation,float speed = 1.0f, bool loopFlag = false);
 	EffekseerRotation(int handle, VECTOR* pos, float size, VECTOR* rotation, float speed = 1.0f, bool loopFlag = false);
 	~EffekseerRotation()override;
 	bool Process()override;
 	bool Render()override;
 	void SetLoop(bool Loop) { _loopFlag = Loop;}
 protected: 
-	int _playingEffectHandle[5];
+	static const int _maxEffect = 1;
+	int _playingEffectHandle[_maxEffect];
+	int _currentTime;
 	VECTOR* _pos;
 	VECTOR* _rotation;
 };
