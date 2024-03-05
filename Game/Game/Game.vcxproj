@@ -156,6 +156,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="source\EffectBase.cpp" />
+    <ClCompile Include="source\Light.cpp" />
+    <ClCompile Include="source\ModeScenario.cpp" />
+    <ClCompile Include="source\EffectBase.cpp" />
+    <ClCompile Include="source\EffectManeger.cpp" />
+    <ClCompile Include="source\Boss.cpp" />
     <ClCompile Include="source\PlaneEffectBase.cpp" />
     <ClCompile Include="source\BoardPolygonDust.cpp" />
     <ClCompile Include="source\CrystarPattern1.cpp" />
@@ -172,7 +177,6 @@
     <ClCompile Include="source\ModeInstructions.cpp" />
     <ClCompile Include="source\ModelColor.cpp" />
     <ClCompile Include="source\ModePause.cpp" />
-    <ClCompile Include="source\PlaneEffectManeger.cpp" />
     <ClCompile Include="source\SlaBlockPattern2.cpp" />
     <ClCompile Include="source\CrystarPattern4.cpp" />
     <ClCompile Include="source\EnemyPool.cpp" />
@@ -203,9 +207,15 @@
     <ClCompile Include="source\UISuppressionGauge.cpp" />
     <ClCompile Include="source\TimeLimit.cpp" />
     <ClCompile Include="source\UITimeLimit.cpp" />
+    <ClCompile Include="source\Suppression.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\EffectBase.h" />
+    <ClInclude Include="source\Light.h" />
+    <ClInclude Include="source\ModeScenario.h" />
+    <ClInclude Include="source\EffectBase.h" />
+    <ClInclude Include="source\EffectManeger.h" />
+    <ClInclude Include="source\Boss.h" />
     <ClInclude Include="source\PlaneEffectBase.h" />
     <ClInclude Include="source\BoardPolygonDust.h" />
     <ClInclude Include="source\CrystarPattern1.h" />
@@ -222,7 +232,6 @@
     <ClInclude Include="source\ModeInstructions.h" />
     <ClInclude Include="source\ModelColor.h" />
     <ClInclude Include="source\ModePause.h" />
-    <ClInclude Include="source\PlaneEffectManeger.h" />
     <ClInclude Include="source\SlaBlockPattern2.h" />
     <ClInclude Include="source\CrystarPattern4.h" />
     <ClInclude Include="source\EnemyPool.h" />
@@ -254,6 +263,7 @@
     <ClInclude Include="source\UISuppressionGauge.h" />
     <ClInclude Include="source\TimeLimit.h" />
     <ClInclude Include="source\UITimeLimit.h" />
+    <ClInclude Include="source\Suppression.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

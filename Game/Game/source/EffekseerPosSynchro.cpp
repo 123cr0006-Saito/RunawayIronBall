@@ -6,9 +6,15 @@ EffekseerPosSynchro::EffekseerPosSynchro(std::string name, VECTOR* pos, float si
 {
 };
 
+EffekseerPosSynchro::EffekseerPosSynchro(int handle, VECTOR* pos, float size, float speed, bool loopFlag):base(handle, pos, size, speed, loopFlag), 
+_pos(pos)
+{
+
+};
+
 EffekseerPosSynchro::~EffekseerPosSynchro() {
 	base::~EffekseerBase();
-	delete _pos;
+	_pos = nullptr;
 };
 
 bool EffekseerPosSynchro::Process() {
@@ -26,5 +32,10 @@ bool EffekseerPosSynchro::Process() {
 		}
 	}
 
+	return true;
+};
+
+bool EffekseerPosSynchro::Render() {
+	PlayEffekseer3DEffect(_playingEffectHandle);
 	return true;
 };

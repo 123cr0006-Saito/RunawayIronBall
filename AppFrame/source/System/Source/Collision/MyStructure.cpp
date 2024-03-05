@@ -13,6 +13,11 @@ void OBB::Rotate(VECTOR vRot)
 	}
 }
 
+void Sphere::Render(unsigned int color)
+{
+	DrawSphere3D(centerPos, r, 6, color, color, false);
+}
+
 // ï`âÊèàóù
 void OBB::Render(unsigned int color)
 {
@@ -39,4 +44,9 @@ void OBB::Render(unsigned int color)
 			}
 		}
 	}
+}
+
+void Capsule::Render(unsigned int color)
+{
+	DrawCapsule3D(down_pos, up_pos, r, 16, color, color, false);
 }

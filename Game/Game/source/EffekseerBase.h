@@ -7,8 +7,10 @@ class EffekseerBase : public EffectBase
 {
 public:
 	EffekseerBase(std::string name, VECTOR* pos, float size,float speed =1.0f , bool loopFlag = false);
+	EffekseerBase(int handle, VECTOR* pos, float size, float speed = 1.0f, bool loopFlag = false);
 	virtual ~EffekseerBase()override;
-	bool Process()override;
+	virtual bool Process()override;
+	virtual bool Render()override;
 
 protected:
 	int _effectResourceHandle;

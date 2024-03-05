@@ -51,7 +51,7 @@ void CrystarPattern3::CommandProcess() {
 void CrystarPattern3::Init(VECTOR pos) {
 	_IsUse = true;
 
-	SetPos(pos);
+	SetKindPos(pos);
 	_hp = _maxHp;
 	_knockBackSpeedFrame = 0;
 	_gravity = 0;
@@ -61,11 +61,11 @@ void CrystarPattern3::Init(VECTOR pos) {
 	_rotation = VGet(0, 0, 0);
 
 	float randSize = (float)(rand() % 75) / 100 + 0.75;// 1 + 0.0 ~ 0.5
-	MV1SetScale(_model, VScale(VGet(1.0f, 1.0f, 1.0f), randSize));
+	MV1SetScale(_model, VScale(VGet(1.0f, 1.0f, 1.0f), 2.0f * randSize));
 
-	_diffeToCenter = VGet(0, 20.0f * randSize, 0);
-	_r = 25.0f * randSize;
-	_weightExp = _weightExp * randSize;
+	_diffeToCenter = VGet(0, 20.0f * 2.0f * randSize, 0);
+	_r = 25.0f * 2.0f * randSize;
+	_weightExp = _weightExp * 2.0f * randSize;
 
 	InheritanceInit();
 };
@@ -200,6 +200,6 @@ bool CrystarPattern3::IndividualRendering() {
 };
 
 bool CrystarPattern3::DebugRender() {
-	DrawSphere3D(VAdd(VAdd(_pos, _diffeToCenter), _attackPos), _r, 32, GetColor(0, 255, 0), GetColor(0, 0, 255), false);
+	DrawSphere3D(VAdd(VAdd(_pos, _diffeToCenter), _attackPos), _r, 8, GetColor(0, 255, 0), GetColor(0, 0, 255), false);
 	return true;
 };

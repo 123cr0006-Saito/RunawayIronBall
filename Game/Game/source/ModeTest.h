@@ -20,8 +20,9 @@
 #include "House.h"
 #include "Tower.h"
 
+#include "ClassificationEffect.h"
 #include "EnemyPool.h"
-#include "PlaneEffectManeger.h"
+#include "EffectManeger.h"
 
 class ModeTest : public ModeBase
 {
@@ -40,6 +41,11 @@ public:
 	virtual bool Terminate();
 	virtual bool Process();
 	virtual bool Render();
+
+	bool LoadObjectParam(std::string fileName); // オブジェクトのパラメータを読み込む
+	bool LoadStage(std::string fileName);// ステージの読み込み 敵も含む
+
+	bool GateProcess();// ゴールゲートの処理
 
 	//デバッグ用
 	std::vector<OBJECTDATA> LoadJsonObject(nlohmann::json json,std::string loadName);//引数 読み込みたいオブジェクトの名前
@@ -60,6 +66,7 @@ protected:
 
 	ScreenVibration* _sVib;
 	EnemyPool* _enemyPool;
+	Suppression* _suppression;
 
 	std::vector<House*> _house;
 	std::vector<Tower*> _tower;
@@ -68,7 +75,8 @@ protected:
 	int _tile;
 	
 	int _effectSheet[30];
-	PlaneEffect::PlaneEffectManeger* _planeEffectManeger;
+	ClassificationEffect* _classificationEffect;
+	EffectManeger* _effectManeger;
 	OBB obb;
 
 	int _shadowHandle;
@@ -76,4 +84,6 @@ protected:
 
 	// デバッグ表示をするかどうか
 	bool _drawDebug = false;
+
+	std::vector<std::tuple<std::string, VECTOR, int>>_objectParam;
 };

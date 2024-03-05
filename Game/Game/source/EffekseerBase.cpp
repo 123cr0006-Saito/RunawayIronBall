@@ -16,6 +16,18 @@ EffekseerBase::EffekseerBase(std::string name, VECTOR* pos,float size,float spee
 	SetSpeedPlayingEffekseer3DEffect(_playingEffectHandle, _speed);
 	SetScalePlayingEffekseer3DEffect(_playingEffectHandle, _size, _size, _size);
 };
+EffekseerBase::EffekseerBase(int handle, VECTOR* pos, float size, float speed , bool loopFlag ) :
+	EffectBase(),
+	_effectResourceHandle(handle),
+	_pos(*pos),
+	_speed(speed),
+	_size(size),
+	_loopFlag(loopFlag)
+{
+	_playingEffectHandle = PlayEffekseer3DEffect(_effectResourceHandle);
+	SetSpeedPlayingEffekseer3DEffect(_playingEffectHandle, _speed);
+	SetScalePlayingEffekseer3DEffect(_playingEffectHandle, _size, _size, _size);
+};
 
 EffekseerBase::~EffekseerBase() {
 	
@@ -39,17 +51,7 @@ bool EffekseerBase::Process() {
 	return true;
 };
 
-
-//void EffekseerBase::processOnce() {
-//	//Effekseerの更新
-//	UpdateEffekseer3D();
-//};
-//
-//bool EffekseerBase::Render() {
-//	// DXライブラリのカメラとEffekseerのカメラを同期する。
-//	Effekseer_Sync3DSetting();
-//
-//	// Effekseerにより再生中のエフェクトを描画する。
-//	DrawEffekseer3D();
-//	return true;
-//};
+bool EffekseerBase::Render() {
+	PlayEffekseer3DEffect(_playingEffectHandle);
+	return true;
+};

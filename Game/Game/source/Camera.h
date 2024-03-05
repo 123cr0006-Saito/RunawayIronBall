@@ -4,7 +4,7 @@
 class Camera
 {
 public:
-	Camera();
+	Camera(VECTOR InitPos);
 	~Camera();
 
 	virtual bool Process(VECTOR pos, int map);
@@ -16,9 +16,14 @@ public:
 
 	float GetCamX() { return _cameraDirX; }//プレイヤーなどで使うかもしれないためゲッターとして作っておく
 	float GetCamY() { return _cameraDirY; }//プレイヤーなどで使うかもしれないためゲッターとして作っておく
+	float GetTargetDistance() { return _pointDistance.z; }//プレイヤーなどで使うかもしれないためゲッターとして作っておく
+	float GetMaxLength() { return _cameraMaxDistance - _cameraMinDistance; }
 
 
 protected:
+
+	const float _cameraMinDistance = -150.0f;//カメラの最小距離
+    const float _cameraMaxDistance = -2500.0f;//カメラの最大距離
 	XInput* _input;//コントローラーでの入力を受け付けるためのinputクラス
 
 	float _cameraDirX;//カメラのＸ軸回転行列で使用する変数

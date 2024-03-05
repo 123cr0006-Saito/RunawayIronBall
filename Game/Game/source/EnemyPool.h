@@ -13,7 +13,7 @@
 #include "CrystarPattern2.h"
 #include "CrystarPattern3.h"
 #include "SlaBlockPattern2.h"
-
+#include "Suppression.h"
 // create Å®model param 
 // init Å®pos
 
@@ -39,16 +39,13 @@ public:
 	static EnemyPool* _instance;
 
 	EnemyBase* GetEnemy(int i);
-	void SetSuppression(int suppression) { _nowSuppression -= suppression; }
-	int GetNowSuppression() { return _nowSuppression; }
-	int GetMaxSuppression() { return _maxSuppression; }
 
-	static const int ENEMY_MAX_SIZE = 100;
+	static const int ENEMY_MAX_SIZE = 300;
 private:
 	EnemyBase* _enemy[ENEMY_MAX_SIZE];
 	std::map<std::string, EnemyParam> _enemyParametersMap;
 	std::vector<VECTOR> _enemyInitPos;
 
-	int _nowSuppression,_maxSuppression;
+	
 };
 

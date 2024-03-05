@@ -154,7 +154,7 @@ bool SlaBlockPattern2::ModeAttack() {
 			_savePos = _pos;
 			_saveNextPoint = VAdd(_player->GetPosition(), VGet(0, 200, 0));
 			_animState = ANIMSTATE::DROP;
-			ScreenVibration::GetInstance()->SetVibration(0, 20*(_fallCount+1), 20);
+			ScreenVibration::GetInstance()->SetVibration(0, 5*(_fallCount+1), 10);
 			if (_fallCount > 2) {
 				_fallCount = 0;
 				_animState = ANIMSTATE::STAN;
@@ -215,6 +215,6 @@ bool SlaBlockPattern2::IndividualRendering() {
 };
 
 bool SlaBlockPattern2::DebugRender() {
-	DrawSphere3D(VAdd(_pos, _diffeToCenter), _r, 16, GetColor(0, 0, 255), GetColor(0, 0, 255), false);
+	DrawSphere3D(VAdd(_pos, _diffeToCenter), _r, 8, GetColor(0, 0, 255), GetColor(0, 0, 255), false);
 	return true;
 }
