@@ -120,6 +120,8 @@ public:
 	static Player* GetInstance() { return _instance; }
 
 	void DrawDebugInfo();
+
+	VECTOR GetStickDir() { return _stickDir; }
 private:
 	// “ü—Íî•ñ
 	XInput* _input;

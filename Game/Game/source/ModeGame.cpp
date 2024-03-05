@@ -30,6 +30,7 @@ bool ModeGame::Initialize() {
 		int handle[44];
 		ResourceServer::LoadDivGraph("Dust", "res/TemporaryMaterials/FX_Dust_2D.png", 44, 20, 3, 1000, 1000, handle);
 		ResourceServer::LoadEffekseerEffect("Stanp", "res/Effekseer/Attack/HorizontalThird.efkefc");
+		ResourceServer::LoadEffekseerEffect("EffekseerRotation", "res/Effekseer/FX_3D_Rotate_2/FX_3D_Rotate.efkefc");
 	}
 
 	_suppression = new Suppression();

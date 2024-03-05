@@ -26,7 +26,6 @@
     <ClCompile Include="source\CrystarPattern4.cpp" />
     <ClCompile Include="source\SlaBlockPattern2.cpp" />
     <ClCompile Include="source\ScreenVibration.cpp" />
-    <ClCompile Include="source\PlaneEffectManeger.cpp" />
     <ClCompile Include="source\BoardPolygon.cpp" />
     <ClCompile Include="source\ModePause.cpp" />
     <ClCompile Include="source\ModeInstructions.cpp" />
@@ -49,6 +48,9 @@
     <ClCompile Include="source\BoardPolygonDust.cpp" />
     <ClCompile Include="source\PlaneEffectBase.cpp" />
     <ClCompile Include="source\EffectBase.cpp" />
+    <ClCompile Include="source\EffekseerRotation.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -77,7 +79,6 @@
     <ClInclude Include="source\CrystarPattern4.h" />
     <ClInclude Include="source\SlaBlockPattern2.h" />
     <ClInclude Include="source\ScreenVibration.h" />
-    <ClInclude Include="source\PlaneEffectManeger.h" />
     <ClInclude Include="source\BoardPolygon.h" />
     <ClInclude Include="source\ModePause.h" />
     <ClInclude Include="source\ModeInstructions.h" />
@@ -256,6 +257,9 @@
     <ClCompile Include="source\ModeGame.cpp">
       <Filter>Mode\Game</Filter>
     </ClCompile>
+    <ClInclude Include="source\EffekseerRotation.h">
+      <Filter>Effect</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CharacterBase.h">

@@ -11,6 +11,6 @@ public :
 	bool Process()override;
 	bool Render()override;
 private :
-	 VECTOR*  _pos; //ポインタの先の値の書き換えを禁止 変数の再代入も不可
+	VECTOR* _pos;
 };
 

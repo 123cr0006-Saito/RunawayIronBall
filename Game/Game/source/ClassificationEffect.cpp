@@ -77,6 +77,17 @@ void ClassificationEffect::SetClassification(CommandParam param) {
 		VECTOR* pos = Player::GetInstance()->GetIBPosPtr();
 		CreateEffeckseer(param.second, pos);
 	}
+	else if (param.first == Play_Effekseer_Rotation) {
+		int effectName = static_cast<int>(param.second);
+		int handle = ResourceServer::LoadEffekseerEffect("EffekseerRotation", _commandList[effectName].first.c_str());
+		if (handle != 0) {
+			VECTOR* pos = Player::GetInstance()->GetPositionPtr();
+			VECTOR  rotation = Player::GetInstance()->GetStickDir();
+			float animSpeed = 1.0f / 60.0f * 1000;
+			EffekseerBase* effect = new EffekseerRotation(handle, pos,_commandList[effectName].second, rotation);
+			EffectManeger::GetInstance()->LoadEffect(effect);
+		}
+	}
 	else {
 #ifdef _DEBUG
 		MessageBox(NULL, "エフェクトコマンドが見つかりませんでした。", "エラー", MB_OK);

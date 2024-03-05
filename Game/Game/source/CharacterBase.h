@@ -16,7 +16,7 @@ public:
 
 	void SetPos(VECTOR pos) { this->_pos = pos; };
 	VECTOR GetPosition() { return _pos; };
-	
+	VECTOR* GetPositionPtr() { return &_pos; };
 
 protected:
 	int _modelHandle;
