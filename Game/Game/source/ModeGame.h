@@ -19,6 +19,7 @@
 #include "BuildingBase.h"
 #include "House.h"
 #include "Tower.h"
+#include "UnbreakableObject.h"
 
 #include "Light.h"
 #include "ClassificationEffect.h"
@@ -70,6 +71,7 @@ protected:
 
 	std::vector<House*> _house;
 	std::vector<Tower*> _tower;
+	std::vector<UnbreakableObject*> _uObj;
 
 	int _skySphere;
 	int _tile;

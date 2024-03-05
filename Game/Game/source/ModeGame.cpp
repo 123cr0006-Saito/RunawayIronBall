@@ -153,6 +153,9 @@ bool ModeGame::LoadStage(std::string fileName) {
 			}
 			else {
 				// 壊れないオブジェクト
+				UnbreakableObject* uObj = new UnbreakableObject();
+				uObj->Init(MV1DuplicateModel(objHandle), object._pos, object._rotate, object._scale, std::get<1>(nameList));
+				_uObj.push_back(uObj);
 			}
 		}
 	}
@@ -517,6 +520,10 @@ bool ModeGame::Render() {
 		for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
 			(*itr)->Render();
 		}
+
+		for (auto itr = _uObj.begin(); itr != _uObj.end(); ++itr) {
+			(*itr)->Render();
+		}
 	}
 
 
@@ -526,6 +533,9 @@ bool ModeGame::Render() {
 			(*itr)->DrawDebugInfo();
 		}
 		for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
+			(*itr)->DrawDebugInfo();
+		}
+		for (auto itr = _uObj.begin(); itr != _uObj.end(); ++itr) {
 			(*itr)->DrawDebugInfo();
 		}
 	}
