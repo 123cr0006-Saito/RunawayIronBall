@@ -37,5 +37,6 @@ bool EffekseerPosSynchro::Process() {
 
 bool EffekseerPosSynchro::Render() {
 	PlayEffekseer3DEffect(_playingEffectHandle);
+	//DrawEffekseer3D_Draw(_playingEffectHandle);
 	return true;
 };

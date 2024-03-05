@@ -185,7 +185,7 @@ bool ModeGame::Process() {
 	_sVib->UpdateScreenVibration();
 
 	_player->Process(_camera->GetCamY());
-	//_enemyPool->Process();
+	_enemyPool->Process();
 
 	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
 		ui[i]->Process();
@@ -511,9 +511,9 @@ bool ModeGame::Render() {
 
 		
 		//}
-		for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
+		/*for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
 			(*itr)->Render();
-		}
+		}*/
 
 		for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
 			(*itr)->Render();

@@ -185,7 +185,7 @@ bool ModeGame::Process() {
 	_sVib->UpdateScreenVibration();
 
 	_player->Process(_camera->GetCamY());
-	//_enemyPool->Process();
+	_enemyPool->Process();
 
 	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
 		ui[i]->Process();

@@ -82,7 +82,7 @@ void ClassificationEffect::SetClassification(CommandParam param) {
 		int handle = ResourceServer::LoadEffekseerEffect("EffekseerRotation", _commandList[effectName].first.c_str());
 		if (handle != 0) {
 			VECTOR* pos = Player::GetInstance()->GetPositionPtr();
-			VECTOR  rotation = Player::GetInstance()->GetStickDir();
+			VECTOR*  rotation = Player::GetInstance()->GetForwardDir();
 			float animSpeed = 1.0f / 60.0f * 1000;
 			EffekseerBase* effect = new EffekseerRotation(handle, pos,_commandList[effectName].second, rotation);
 			EffectManeger::GetInstance()->LoadEffect(effect);

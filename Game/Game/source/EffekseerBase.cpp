@@ -53,5 +53,6 @@ bool EffekseerBase::Process() {
 
 bool EffekseerBase::Render() {
 	PlayEffekseer3DEffect(_playingEffectHandle);
+	//DrawEffekseer3D_Draw(_playingEffectHandle);
 	return true;
 };
