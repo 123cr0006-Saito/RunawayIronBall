@@ -160,6 +160,7 @@ std::vector<std::string> ModeGame::LoadObjectName(std::string fileName) {
 bool ModeGame::LoadStage(std::string fileName) {
 	myJson json(fileName);
 
+	//auto& nameaaa = [](std::string, std::vector<std::tuple<std::string, VECTOR, int> >) {}
 
 	_enemyPool->Create(json);
 	//int objHandle = MV1LoadModel("res/Building/House/House_test_03.mv1");
@@ -169,23 +170,24 @@ bool ModeGame::LoadStage(std::string fileName) {
 	std::string buildingName = "Building";
 	std::vector<std::string> objectName = LoadObjectName(buildingName);
 	for (auto&& nameList : objectName) {
-		for (auto&& paramList : _objectParam) {
 
-			if (nameList != std::get<0>(paramList))continue;
+		auto itr = std::find_if(_objectParam.begin(), _objectParam.end(), [=](std::tuple<std::string, VECTOR, int> temp)
+		{
+				return std::get<0>(temp) == nameList;
+		});
 
-			std::vector<ModeGame::OBJECTDATA> objectData = LoadJsonObject(json._json, nameList);
-			std::string modelName = "res/Building/" + std::get<0>(paramList) + "/" + std::get<0>(paramList) + ".mv1";
-			int objHandle = MV1LoadModel(modelName.c_str());
-			for (auto&& object : objectData) {
-				if (std::get<2>(paramList) == 1) {
-					// 壊れるオブジェクト
-					House* building = new House();
-					building->Init(MV1DuplicateModel(objHandle), object._pos, object._rotate, object._scale, std::get<1>(paramList));
-					_house.push_back(building);
-				}
-				else {
-					// 壊れないオブジェクト
-				}
+		std::vector<ModeGame::OBJECTDATA> objectData = LoadJsonObject(json._json, nameList);
+		std::string modelName = "res/Building/" + std::get<0>((*itr)) + "/" + std::get<0>((*itr)) + ".mv1";
+		int objHandle = MV1LoadModel(modelName.c_str());
+		for (auto&& object : objectData) {
+			if (std::get<2>((*itr)) == 1) {
+				// 壊れるオブジェクト
+				House* building = new House();
+				building->Init(MV1DuplicateModel(objHandle), object._pos, object._rotate, object._scale, std::get<1>((*itr)));
+				_house.push_back(building);
+			}
+			else {
+				// 壊れないオブジェクト
 			}
 		}
 	}
