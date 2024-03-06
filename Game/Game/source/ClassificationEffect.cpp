@@ -64,13 +64,16 @@ void ClassificationEffect::SetClassification(CommandParam param) {
 	}
 	else if (param.first == Play_Effekseer_PC) {
 		// エフェクシア プレイヤー中心
-		VECTOR vec = VGet(0,0,0);
-		CreateEffeckseer(param.second, &vec);
+		VECTOR* vec = Player::GetInstance()->GetPositionPtr();
+		VECTOR rotation = (*Player::GetInstance()->GetForwardDir());
+		float height = Player::GetInstance()->GetCollision().up_pos.y/2.0f;
+		CreateEffeckseer(param.second, vec, height,rotation);
 	}
 	else if (param.first == Play_Effekseer_IC) {
 		// エフェクシア 鉄球中心
 		VECTOR* pos = Player::GetInstance()->GetIBPosPtr();
-		CreateEffeckseer(param.second, pos);
+		float height = Player::GetInstance()->GetIBCollision().r;
+		CreateEffeckseer(param.second, pos,height);
 	}
 	else if (param.first == Play_Effekseer_IU) {
 		// エフェクシア 鉄球足元
@@ -95,9 +98,9 @@ void ClassificationEffect::SetClassification(CommandParam param) {
 	}
 };
 
-void ClassificationEffect::CreateEffeckseer(float param, VECTOR* pos) {
+void ClassificationEffect::CreateEffeckseer(float param, VECTOR* pos, float height, VECTOR rotation) {
 	int effectName = static_cast<int>(param);
 	int handle = ResourceServer::SearchSingle(_commandList[effectName].first.c_str(), ResourceServer::TYPE::Efk);
-	EffekseerBase* effekseer = new EffekseerPosSynchro(handle, pos, _commandList[effectName].second);
+	EffekseerBase* effekseer = new EffekseerPosSynchro(handle, pos,_commandList[effectName].second, rotation,height);
 	EffectManeger::GetInstance()->LoadEffect(effekseer);
 };

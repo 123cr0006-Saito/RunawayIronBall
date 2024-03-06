@@ -4,7 +4,7 @@ class EffekseerRotation :  public EffekseerBase
 {
 	typedef EffekseerBase base;
 public:
-	EffekseerRotation(int handle, VECTOR* pos, float size, VECTOR* rotation, float speed = 1.0f, bool loopFlag = false);
+	EffekseerRotation(int handle, VECTOR* pos, float size, VECTOR* rotation, float height = 0.0f, float speed = 1.0f, bool loopFlag = false);
 	~EffekseerRotation()override;
 	bool Process()override;
 	bool Render()override;
