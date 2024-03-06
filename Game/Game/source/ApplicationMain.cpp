@@ -6,8 +6,12 @@
 #include "ModeGameOver.h"
 #include "ModeScenario.h"
 
+#include "ModeLoading.h"
+
 // ŽÀ‘Ì
 ApplicationMain				g_oApplicationMain;
+
+bool a = false;
 
 bool ApplicationMain::Initialize(HINSTANCE hInstance) {
 	if (!base::Initialize(hInstance)) { return false; }
@@ -17,8 +21,9 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance) {
 	//ModeServer::GetInstance()->Add(new ModeGameOver(), 1, "Title");
 	//ModeServer::GetInstance()->Add(new ModeTest(), 1, "Game");
 	//ModeServer::GetInstance()->Add(new ModeScenario("Data/ScenarioData/Scenario01.csv"), 2, "Scenario");
-	ModeServer::GetInstance()->Add(new ModeGame(), 1, "Game");
-	
+	//ModeServer::GetInstance()->Add(new ModeGame(), 1, "Game");
+
+	ModeServer::GetInstance()->Add(new ModeLoading(&a), 1, "Game");
 
 	global.Init();
 
