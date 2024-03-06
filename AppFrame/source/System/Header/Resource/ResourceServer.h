@@ -49,8 +49,9 @@ public:
 
 	
 	static bool Delete(std::string key, TYPE resouceType);
-	static bool MV1DeleteModel(std::string key, int model);
-	static bool MV1DeleteModelAll(std::string key);
+	static bool MV1DeleteModel(std::string key, int model); // 指定したkeyとmodelの値から探し出し削除　多分重いです
+	static bool MV1DeleteModelAll(std::string key);// 指定したkeyのモデルがあった場合keyのすべてを削除する
+	static bool MV1DeleteModelOrigin(std::string key);//指定したkeyのモデルが読み込んであった場合 Duplicateするためのオリジナルハンドルを削除する
 
 	static void DeleteResourceAll();//全てのリソースを削除
 

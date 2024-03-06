@@ -333,7 +333,7 @@ bool ResourceServer::MV1DeleteModel(std::string key, int model) {
 		 }
 	  }
    }
-	return true;
+	return false;
 };
 
 bool ResourceServer::MV1DeleteModelAll(std::string key) {
@@ -343,6 +343,19 @@ bool ResourceServer::MV1DeleteModelAll(std::string key) {
 			::MV1DeleteModel(itr->second.at(i));
 		}
 		_modelMap.at(key).clear();
+		return true;
+	}
+	return false;
+};
+
+bool ResourceServer::MV1DeleteModelOrigin(std::string key) {
+	std::string originKey = key + "_Origin";
+	auto itr = _modelMap.find(originKey);
+	if (itr != _modelMap.end()) {
+		for (int i = 0; i < itr->second.size(); i++) {
+			::MV1DeleteModel(itr->second.at(i));
+		}
+		_modelMap.at(originKey).clear();
 		return true;
 	}
 	return false;
