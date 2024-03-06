@@ -155,6 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\CollisionManager.cpp" />
     <ClCompile Include="source\Light.cpp" />
     <ClCompile Include="source\ModeScenario.cpp" />
     <ClCompile Include="source\EffectBase.cpp" />
@@ -210,6 +211,7 @@
     <ClCompile Include="source\UnbreakableObject.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\CollisionManager.h" />
     <ClInclude Include="source\Light.h" />
     <ClInclude Include="source\ModeScenario.h" />
     <ClInclude Include="source\EffectBase.h" />
