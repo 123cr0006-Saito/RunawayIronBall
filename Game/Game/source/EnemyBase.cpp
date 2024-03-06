@@ -15,7 +15,7 @@ EnemyBase::EnemyBase() {
 };
 
 EnemyBase::~EnemyBase() {
-	MV1DeleteModel(_model);
+	//ResourceServer::MV1DeleteModel(_model);
 };
 
 bool EnemyBase::Create(int model, VECTOR pos, EnemyParam param, std::string name) {

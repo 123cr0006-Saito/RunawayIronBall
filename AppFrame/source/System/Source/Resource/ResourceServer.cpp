@@ -209,7 +209,7 @@ int ResourceServer::LoadEffekseerEffect(std::string key_name, std::string handle
 int ResourceServer::MV1LoadModel(std::string key_name, std::string model_name) {
 	int value = 0;
 
-	auto itr = _modelMap.find(key_name);
+	auto itr = _modelMap.find(key_name + "_Origin");
 	if (itr != _modelMap.end()) {
 		//記録されたものが見つかったのでオリジナルをコピーして返す
 		value = ::MV1DuplicateModel(itr->second.at(0));
@@ -219,7 +219,7 @@ int ResourceServer::MV1LoadModel(std::string key_name, std::string model_name) {
 	else {
 		//記録された名前がなかったので読み込み
 		value = ::MV1LoadModel(model_name.c_str());
-		_modelMap[key_name].push_back(value);
+		_modelMap[key_name + "_Origin"].push_back(value);
 	}
 
 	return value;
@@ -322,6 +322,32 @@ bool ResourceServer::Delete(std::string key, TYPE resouceType) {
 	return false;
 };
 
+bool ResourceServer::MV1DeleteModel(std::string key, int model) {
+   auto itr = _modelMap.at(key);
+   if (itr.size() > 0) {
+	  for (int i = 0; i < itr.size(); i++) {
+		 if (itr.at(i) == model) {
+			::MV1DeleteModel(model);
+			_modelMap.at(key).erase(itr.begin() + i);
+			return true;
+		 }
+	  }
+   }
+	return true;
+};
+
+bool ResourceServer::MV1DeleteModelAll(std::string key) {
+	auto itr = _modelMap.find(key);
+	if(itr != _modelMap.end()){
+		for (int i = 0; i < itr->second.size(); i++) {
+			::MV1DeleteModel(itr->second.at(i));
+		}
+		_modelMap.at(key).clear();
+		return true;
+	}
+	return false;
+};
+
 void ResourceServer::DeleteResourceAll() {
 	//画像の削除
 	for (auto itr = _handleMap.begin(); itr != _handleMap.end(); itr++) {
@@ -334,7 +360,7 @@ void ResourceServer::DeleteResourceAll() {
 	//モデルの削除
 	for (auto itr = _modelMap.begin(); itr != _modelMap.end(); itr++) {
 		for (int i = 0; i < itr->second.size(); i++) {
-			MV1DeleteModel(itr->second.at(i));
+			::MV1DeleteModel(itr->second.at(i));
 		}
 	}
 

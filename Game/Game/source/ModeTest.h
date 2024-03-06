@@ -1,6 +1,7 @@
 #pragma once
 #include "appframe.h"
 #include "ModePause.h"
+#include "ModeFade.h"
 #include "ModeGameOver.h"
 
 #include "Camera.h"
@@ -20,6 +21,7 @@
 #include "House.h"
 #include "Tower.h"
 
+#include "Gate.h"
 #include "ClassificationEffect.h"
 #include "EnemyPool.h"
 #include "EffectManeger.h"
@@ -75,6 +77,7 @@ protected:
 	int _tile;
 	
 	int _effectSheet[30];
+	Gate* _gate;
 	ClassificationEffect* _classificationEffect;
 	EffectManeger* _effectManeger;
 	OBB obb;

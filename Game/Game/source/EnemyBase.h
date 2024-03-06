@@ -16,7 +16,7 @@ class EnemyBase
 {
 public:
 	EnemyBase();
-	~EnemyBase();
+	virtual ~EnemyBase();
 
 	bool Create(int model, VECTOR pos, EnemyParam param,std::string name);
 	virtual void Init(VECTOR pos, float scale);

@@ -33,6 +33,7 @@ int WINAPI WinMain(
 	while (ProcessMessage() == 0)		// プログラムが終了するまでループ
 	{
 		appBase->Input();
+
 		appBase->Process();
 
 		ClearDrawScreen();		// 画面を初期化する

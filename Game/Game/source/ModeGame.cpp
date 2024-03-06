@@ -5,6 +5,11 @@
 bool ModeGame::Initialize() {
 	if (!base::Initialize()) { return false; }
 
+	_gate = nullptr;
+	_stageNum = 1;
+	IsLoading = true;
+	LoadFunctionThread = nullptr;
+
 	_light = new Light("LightData");
 	
 	int resolution = 8192;
@@ -55,11 +60,10 @@ bool ModeGame::Initialize() {
 	_gaugeHandle[3] = ResourceServer::LoadGraph("Stamina04", _T("res/UI/UI_Stamina_04.png"));
 	_sVib = new ScreenVibration();
 
-
+	
 
 	//global._soundServer->DirectPlay("Stage03");
 	global._soundServer->BgmFadeIn("Stage03", 2000);
-
 
 
 	TowerParts::InitBlastTowerParts();
@@ -129,25 +133,56 @@ bool ModeGame::LoadObjectParam(std::string fileName) {
 	return true;
 };
 
+std::vector<std::string> ModeGame::LoadObjectName(std::string fileName) {
+	std::vector<std::string> nameList;
+	std::string filePath = "Data/LoadStageName/" + fileName + "/" + fileName + std::to_string(_stageNum) + ".csv";
+	// csvファイルを読み込む
+	CFile file(filePath);
+	// ファイルが開けた場合
+	if (file.Success()) {
+		int c = 0;
+		const char* p = (const char*)file.Data();
+		int size = file.Size();
+		while (c < size) {
+			std::string objectName;
+			c += GetString(&p[c], '\r\n', &objectName); // モデルの名前を取得
+			c += SkipSpace(&p[c], &p[size]); // 空白やコントロールコードをスキップする
+			nameList.push_back(objectName);
+		}
+	}
+	else {
+		return nameList;
+	}
+	return nameList;
+}
+
 bool ModeGame::LoadStage(std::string fileName) {
 	myJson json(fileName);
 
-	_enemyPool->Create(json);
+	//auto& nameaaa = [](std::string, std::vector<std::tuple<std::string, VECTOR, int> >) {}
 
+	_enemyPool->Create(json);
 	//int objHandle = MV1LoadModel("res/Building/House/House_test_03.mv1");
 	//int objHandle = MV1LoadModel("res/Building/TrafficLight/cg_object_shingou.mv1");
 	//int objHandle = MV1LoadModel("res/Building/Pole/cg_object_denchu.mv1");
 	//int objHandle = MV1LoadModel("res/Building/StoneLantern/cg_object_tourou.mv1");
+	std::string buildingName = "Building";
+	std::vector<std::string> objectName = LoadObjectName(buildingName);
+	for (auto&& nameList : objectName) {
 
-	for (auto&& nameList : _objectParam) {
-		std::vector<ModeGame::OBJECTDATA> objectData = LoadJsonObject(json._json, std::get<0>(nameList));
-		std::string modelName = "res/Building/" + std::get<0>(nameList) + "/" + std::get<0>(nameList) + ".mv1";
+		auto itr = std::find_if(_objectParam.begin(), _objectParam.end(), [=](std::tuple<std::string, VECTOR, int> temp)
+		{
+				return std::get<0>(temp) == nameList;
+		});
+
+		std::vector<ModeGame::OBJECTDATA> objectData = LoadJsonObject(json._json, nameList);
+		std::string modelName = "res/Building/" + std::get<0>((*itr)) + "/" + std::get<0>((*itr)) + ".mv1";
 		int objHandle = MV1LoadModel(modelName.c_str());
 		for (auto&& object : objectData) {
-			if (std::get<2>(nameList) == 1) {
+			if (std::get<2>((*itr)) == 1) {
 				// 壊れるオブジェクト
 				House* building = new House();
-				building->Init(MV1DuplicateModel(objHandle), object._pos, object._rotate, object._scale, std::get<1>(nameList));
+				building->Init(MV1DuplicateModel(objHandle), object._pos, object._rotate, object._scale, std::get<1>((*itr)));
 				_house.push_back(building);
 			}
 			else {
@@ -178,6 +213,26 @@ bool ModeGame::LoadStage(std::string fileName) {
 
 	return true;
 };
+
+bool ModeGame::StageMutation() {
+	// ロード開始
+	IsLoading = false;
+
+	// 中身がいらないものはdeleteする
+	delete _gate; _gate = nullptr;
+	_enemyPool->DeleteEnemy();
+
+
+    // オブジェクトのデータの読み込み ファイル名は 1 から始まるので +1 する
+	std::string fileName = "Data/ObjectList/Stage_0" + std::to_string(_stageNum + 1) + ".json";
+	LoadStage(fileName);
+
+	IsLoading = true;
+	LoadFunctionThread->detach();
+	delete LoadFunctionThread; LoadFunctionThread = nullptr;
+	// ロード終了
+	return true;
+}
 
 bool ModeGame::Process() {
 	base::Process();
@@ -445,16 +500,48 @@ bool ModeGame::Process() {
 
 	_effectManeger->Update();
 	_camera->Process(_player->GetPosition(), _tile);
+
+	GateProcess();
+
 	return true;
 }
 
 
 bool ModeGame::GateProcess() {
+	_suppression->SubSuppression(1);
+	if (_suppression->GetIsRatio()) {
+		if (_gate == nullptr) {
+			int handle[43];
+			ResourceServer::LoadDivGraph("Gate", "res/TemporaryMaterials/FX_Hole_2D00_sheet.png", 43, 16, 3, 1200, 1200, handle);
+			float time = 1.0f / 60.0f * 1000.0f;
+			_gate = new Gate(VGet(0, 300, 0), 300, handle, 43, time, 1000);
+		}
+		_gate->Process();
+
+		VECTOR pPos = _player->GetPosition();
+		float pR = _player->GetCollision().r;
+		VECTOR gPos = _gate->GetPos();
+		float gR = _gate->GetR();
+
+		// ゴールゲートの当たり判定
+		if (Collision3D::SphereCol(pPos, pR, gPos, gR)) {
+			// ここでリアルタイムレンダリングのアニメーションが入る
+			// それが終わったらフェードアウト　→　ローディング・評価（引数　時間）　→　ローディングが終わったら次のステージ
+			// 今はここにステージ繊維関数を追加
+			int time = 4 * 1000; // 4秒
+			_stageNum++;
+			LoadFunctionThread = new std::thread(&ModeGame::StageMutation, this);
+			ModeServer::GetInstance()->Add(new ModeLoading(&IsLoading, LoadFunctionThread), 100, "Loading");
+		}
+	}
 	return true;
 };// ゴールゲートの処理
 
 
+
 bool ModeGame::Render() {
+	if (LoadFunctionThread)return true;
+
 	SetUseZBuffer3D(TRUE);
 	SetWriteZBuffer3D(TRUE);
 	SetUseBackCulling(TRUE);
@@ -539,6 +626,9 @@ bool ModeGame::Render() {
 		}
 	}
 
+	if (_gate != nullptr) {
+		_gate->Draw();
+	}
 	
 	SetUseZBuffer3D(FALSE);
 
