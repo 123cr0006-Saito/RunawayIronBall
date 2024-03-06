@@ -3,7 +3,7 @@
 
 namespace {
 	constexpr float STAGE_LENGTH = 27000.0f;
-	constexpr int STAGE_DIVISION = 1;
+	constexpr int STAGE_DIVISION = 5;
 }
 
 CollisionManager::CollisionManager()
@@ -14,16 +14,6 @@ CollisionManager::CollisionManager()
 	_segmentLength = 0.0f;
 	treeSize = 0;
 	_tree.clear();
-
-	B* b = new B();
-	Test1* t1 = new Test2();
-	Test1* t = b->GetTest2();
-
-	Test2* t2 = dynamic_cast<Test2*>(t);
-	Test3* t3 = dynamic_cast<Test3*>(t);
-
-	EnemyBase* e = new SlaBlock();
-	SlaBlock* s = dynamic_cast<SlaBlock*>(e);
 }
 
 CollisionManager::~CollisionManager()
@@ -46,20 +36,117 @@ void CollisionManager::Init()
 	}
 }
 
-void CollisionManager::AddEnemy(EnemyBase* enemy)
+void CollisionManager::UpdateTree()
 {
-	if(enemy == nullptr) return;
-	unsigned int areaIndex = CheckArea(enemy->GetCollisionPos());
-	Cell* prevCell = _tree[areaIndex];
+	for (int i = 0; i < treeSize; i++) {
+		Cell* cell = _tree[i]->_next;
+		while (cell)
+		{
+			Cell* nextCell = cell->_next;
+
+			EnemyBase* e = cell->_obj;
+			if (e == nullptr || e->GetUse() == false) {
+				cell = cell->_next;
+				continue;
+			}
+			VECTOR centerPos = e->GetCollisionPos();
+			float r = e->GetR();
+			VECTOR pos1 = VGet(centerPos.x - r, 0.0f, centerPos.z - r);
+			VECTOR pos2 = VGet(centerPos.x + r, 0.0f, centerPos.z - r);
+
+
+			unsigned int newIndex = CalcTreeIndex(pos1, pos2);
+			if(newIndex != i) {
+				Cell* prevCell = cell->_prev;
+				prevCell->_next = nextCell;
+				if(nextCell != nullptr) {
+					nextCell->_prev = prevCell;
+				}
+				InsertCellIntoTree(newIndex, cell);
+			}
+			cell = nextCell;
+		}
+	}
+}
+
+void CollisionManager::AddObject(EnemyBase* enemy)
+{
+	if (enemy == nullptr) return;
+	VECTOR centerPos = enemy->GetCollisionPos();
+	float r = enemy->GetR();
+
+	VECTOR pos1 = VGet(centerPos.x - r, 0.0f, centerPos.z - r);
+	VECTOR pos2 = VGet(centerPos.x + r, 0.0f, centerPos.z - r);
+
+	InsertNewObjectIntoTree(CalcTreeIndex(pos1, pos2), enemy);
+}
+
+unsigned int CollisionManager::CalcTreeIndex(VECTOR pos1, VECTOR pos2)
+{
+	unsigned int areaIndex1 = CheckArea(pos1);
+	unsigned int areaIndex2 = CheckArea(pos2);
+	unsigned int xorIndex = areaIndex1 ^ areaIndex2;
+
+	unsigned int areaIndex = areaIndex1;
+	int shift = 0;
+	if (xorIndex != 0) {
+		int tmpShift = 0;
+
+		for (int i = 0; i < STAGE_DIVISION; i++) {
+			tmpShift += 2;
+			// 下位2ビットを取り出す
+			unsigned int bit = xorIndex & 0x11;
+			if (bit != 0) {
+				shift = tmpShift;
+			}
+			xorIndex = xorIndex >> 2;
+		}
+	}
+
+	areaIndex = areaIndex >> shift;
+	int parentDivNum = STAGE_DIVISION - shift / 2;
+	int treeIndex = (pow(4, parentDivNum) - 1) / 3;
+	treeIndex += areaIndex;
+
+	return treeIndex;
+}
+
+void CollisionManager::InsertNewObjectIntoTree(unsigned int treeIndex, EnemyBase* enemy)
+{
+	Cell* baseCell = _tree[treeIndex];
+	Cell* nextCell = baseCell->_next;
+
 	Cell* newCell = new Cell();
 	newCell->_obj = enemy;
-	newCell->_segment = prevCell;
-	while (prevCell->_next != nullptr)
-	{
-		prevCell = prevCell->_next;
+	newCell->_shouldUpdateCollision = true;
+
+	newCell->_segment = baseCell;
+
+
+
+	baseCell->_next = newCell;
+	newCell->_prev = baseCell;
+
+	if(nextCell != nullptr) {
+		nextCell->_prev = newCell;
+		newCell->_next = nextCell;
 	}
-	prevCell->_next = newCell;
-	newCell->_prev = prevCell;
+}
+
+void CollisionManager::InsertCellIntoTree(unsigned int treeIndex, Cell* cell)
+{
+	Cell* baseCell = _tree[treeIndex];
+	Cell* nextCell = baseCell->_next;
+
+	cell->_segment = baseCell;
+
+	baseCell->_next = cell;
+	cell->_prev = baseCell;
+
+	if (nextCell != nullptr) {
+		nextCell->_prev = cell;
+		cell->_next = nextCell;
+	}
 }
 
 unsigned int CollisionManager::CheckArea(VECTOR pos)
@@ -133,17 +220,19 @@ void CollisionManager::DrawSegmentLine()
 
 void CollisionManager::DrawAreaIndex()
 {
-	for(int i = 0; i < treeSize; i++) {
-		Cell* cell = _tree[i];
-		while (cell->_next != nullptr)
+	for (int i = 0; i < treeSize; i++) {
+		Cell* cell = _tree[i]->_next;
+		while (cell != nullptr)
 		{
 			EnemyBase* e = cell->_obj;
-			if(e == nullptr) {
+			if (e == nullptr || e->GetUse() == false) {
 				cell = cell->_next;
 				continue;
 			}
 			VECTOR screenPos = ConvWorldPosToScreenPos(e->GetCollisionPos());
-			DrawFormatString(screenPos.x, screenPos.y, COLOR_WHITE, "%d", i);
+			if (0.0f < screenPos.z && screenPos.z < 1.0f) {
+				DrawFormatString(screenPos.x, screenPos.y, COLOR_RED, "%d", i);				
+			}
 			cell = cell->_next;
 		}
 	}

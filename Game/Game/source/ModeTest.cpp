@@ -72,7 +72,7 @@ bool ModeTest::Initialize() {
 	for(int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
 		EnemyBase* en = _enemyPool->GetEnemy(i);
 		if (en == nullptr) { continue; }
-		_collisionManager->AddEnemy(en);
+		_collisionManager->AddObject(en);
 	}
 
 	return true;
@@ -377,6 +377,7 @@ bool ModeTest::Process() {
 		}
 	}
 
+
 	////‹óŠÔ•ªŠ„‚ğl‚¦‚Ä‚¢‚È‚¢‚Ì‚Å–³‘Ê‚ª‘½‚¢‚Å‚·B
 	//for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
 	//	EnemyBase* en = _enemyPool->GetEnemy(i);
@@ -404,6 +405,7 @@ bool ModeTest::Process() {
 	//	}
 	//}
 
+	_collisionManager->UpdateTree();
 	_collisionManager->CheckHit();
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_START)) {

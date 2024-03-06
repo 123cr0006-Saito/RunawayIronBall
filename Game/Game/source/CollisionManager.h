@@ -9,6 +9,7 @@ public:
 	Cell() {
 		_segment = nullptr;
 		_obj = nullptr;
+		_shouldUpdateCollision = false;
 		_prev = nullptr;
 		_next = nullptr;
 	}
@@ -21,11 +22,13 @@ public:
 
 	Cell* _segment;
 	EnemyBase* _obj;
+	bool _shouldUpdateCollision;
 
 	Cell* _prev;
 	Cell* _next;
 };
 
+// XZ平面上で4分木空間分割を行い、当たり判定を行うクラス
 class CollisionManager
 {
 public:
@@ -33,8 +36,12 @@ public:
 	~CollisionManager();
 
 	void Init();
+	void UpdateTree();
 
-	void AddEnemy(EnemyBase* enemy);
+	void AddObject(EnemyBase* enemy);
+	unsigned int CalcTreeIndex(VECTOR pos1, VECTOR pos2);
+	void InsertNewObjectIntoTree(unsigned int treeIndex, EnemyBase* enemy);
+	void InsertCellIntoTree(unsigned int treeIndex, Cell* cell);
 
 	unsigned int CheckArea(VECTOR pos);
 
