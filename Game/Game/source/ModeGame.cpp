@@ -25,10 +25,9 @@ bool ModeGame::Initialize() {
 	_effectManeger = new EffectManeger();
 
 	{
-
+		ResourceServer::Load("Stanp", "res/Effekseer/Attack/HorizontalThird.efkefc");
 		ResourceServer::LoadMultGraph("split", "res/TemporaryMaterials/split/test", ".png", 30, _effectSheet);
-		int handle[44];
-		ResourceServer::LoadDivGraph("Dust", "res/TemporaryMaterials/FX_Dust_2D.png", 44, 20, 3, 1000, 1000, handle);
+		ResourceServer::LoadDivGraph("Dust", "res/TemporaryMaterials/FX_Dust_2D.png", 44, 20, 3, 1000, 1000);
 		ResourceServer::LoadEffekseerEffect("Stanp", "res/Effekseer/Attack/HorizontalThird.efkefc");
 	}
 

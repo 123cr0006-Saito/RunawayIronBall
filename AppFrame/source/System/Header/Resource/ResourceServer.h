@@ -24,6 +24,11 @@ public:
 		int* handle = nullptr;//画像を保存する用の変数   枚数が動的に変化するためポインタ
 	};
 
+	// 画像エフェクシアmv1ハンドルを判別し読み込む関数です 
+	// 複数に分割する読み込みには対応していません
+	static int Load(std::string key, std::string handleName);
+
+	// 値を返す読み込み関数
 	static int LoadGraph(std::string key_name, std::string handle_name);//画像ハンドルの読み込み
 	static int LoadDivGraph(std::string key_name, std::string handle_name, int AllNum, int XNum, int YNum, int XSize, int YSize, int* HandleBuf); //画像ハンドルの複数分割の読み込み
 	//画像の複数読み込み　名前は 拡張子と分けてください 名前はファイルのところでまとめて変更すればそのまま使えるはずです。
@@ -32,6 +37,10 @@ public:
 	static int MV1LoadModel(std::string key_name, std::string  model_name);//dxlibの.mv1形式に対応した３Ｄモデルの読み込み
 	static int LoadSound(std::string key_name, std::string sound_name);//サウンドの読み込み
 	
+	// 値を返さない読み込み関数
+	static int LoadDivGraph(std::string key_name, std::string handle_name, int AllNum, int XNum, int YNum, int XSize, int YSize); //画像ハンドルの複数分割の読み込み
+	static int LoadMultGraph(std::string key_name, std::string handle_name, std::string extension, int AllNum);
+
 	static int SearchSingle(std::string search_key, TYPE resouceType);
 	static bool SearchMult(std::string search_key,int* handle, int size);
 	static ResourceServer::Mult SearchMult(std::string search_key);
