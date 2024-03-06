@@ -53,6 +53,9 @@
     <ClCompile Include="source\Gate.cpp" />
     <ClCompile Include="source\ModeFade.cpp" />
     <ClCompile Include="source\ModeLoading.cpp" />
+    <ClCompile Include="source\Floor.cpp">
+      <Filter>Building</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -265,6 +268,9 @@
     </ClCompile>
     <ClCompile Include="source\UnbreakableObject.cpp" />
     <ClInclude Include="source\ModeLoading.h" />
+    <ClInclude Include="source\Floor.h">
+      <Filter>Building</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CharacterBase.h">

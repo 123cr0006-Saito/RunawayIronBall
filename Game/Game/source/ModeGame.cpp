@@ -150,22 +150,14 @@ std::vector<std::string> ModeGame::LoadObjectName(std::string fileName) {
 			nameList.push_back(objectName);
 		}
 	}
-	else {
-		return nameList;
-	}
 	return nameList;
 }
 
 bool ModeGame::LoadStage(std::string fileName) {
 	myJson json(fileName);
 
-	//auto& nameaaa = [](std::string, std::vector<std::tuple<std::string, VECTOR, int> >) {}
-
 	_enemyPool->Create(json);
-	//int objHandle = MV1LoadModel("res/Building/House/House_test_03.mv1");
-	//int objHandle = MV1LoadModel("res/Building/TrafficLight/cg_object_shingou.mv1");
-	//int objHandle = MV1LoadModel("res/Building/Pole/cg_object_denchu.mv1");
-	//int objHandle = MV1LoadModel("res/Building/StoneLantern/cg_object_tourou.mv1");
+
 	std::string buildingName = "Building";
 	std::vector<std::string> objectName = LoadObjectName(buildingName);
 	for (auto&& nameList : objectName) {
@@ -188,7 +180,7 @@ bool ModeGame::LoadStage(std::string fileName) {
 			else {
 				// 壊れないオブジェクト
 				UnbreakableObject* uObj = new UnbreakableObject();
-				uObj->Init(MV1DuplicateModel(objHandle), object._pos, object._rotate, object._scale, std::get<1>(nameList));
+				uObj->Init(MV1DuplicateModel(objHandle), object._pos, object._rotate, object._scale, std::get<1>((*itr)));
 				_uObj.push_back(uObj);
 			}
 		}

@@ -155,6 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\Floor.cpp" />
     <ClCompile Include="source\ModeLoading.cpp" />
     <ClCompile Include="source\ModeFade.cpp" />
     <ClCompile Include="source\Gate.cpp" />
@@ -213,6 +214,7 @@
     <ClCompile Include="source\UnbreakableObject.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\Floor.h" />
     <ClInclude Include="source\ModeLoading.h" />
     <ClInclude Include="source\ModeFade.h" />
     <ClInclude Include="source\Gate.h" />
