@@ -16,7 +16,7 @@ EnemyPool::EnemyPool(std::string paramJsonFile){
 		list.at("FlontAngle").get_to(param._flontAngle);
 		list.at("HearingRange").get_to(param._hearingRangeSize);
 		list.at("MoveRange").get_to(param._moveRange);
-		list.at("SartchRange").get_to(param._sartchRange);
+		list.at("SearchRange").get_to(param._searchRange);
 		list.at("DiscoverRange").get_to(param._discoverRangeSize);
 		list.at("AttackRange").get_to(param._attackRangeSize);
 		list.at("Suppression").get_to(param._suppression);

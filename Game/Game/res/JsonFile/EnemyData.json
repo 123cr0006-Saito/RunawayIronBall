@@ -8,7 +8,7 @@
 		"FlontAngle": 0.7853981,
 		"HearingRange": 3000,
 		"MoveRange": 300,
-		"SartchRange": 3000,
+		"SearchRange": 3000,
 		"DiscoverRange": 3000,
 		"AttackRange": 500,
 		"Suppression": 1
@@ -22,7 +22,7 @@
 		"FlontAngle": 0.7853981,
 		"HearingRange": 3000,
 		"MoveRange": 300,
-		"SartchRange": 3000,
+		"SearchRange": 3000,
 		"DiscoverRange": 3000,
 		"AttackRange": 200,
 		"Suppression": 2
@@ -36,7 +36,7 @@
 		"FlontAngle": 0.7853981,
 		"HearingRange": 3000,
 		"MoveRange": 300,
-		"SartchRange": 3000,
+		"SearchRange": 3000,
 		"DiscoverRange": 3000,
 		"AttackRange": 1000,
 		"Suppression": 3
@@ -50,7 +50,7 @@
 		"FlontAngle": 0.7853981,
 		"HearingRange": 3000,
 		"MoveRange": 300,
-		"SartchRange": 3000,
+		"SearchRange": 3000,
 		"DiscoverRange": 3000,
 		"AttackRange": 500,
 		"Suppression": 7
@@ -64,7 +64,7 @@
 		"FlontAngle": 0.7853981,
 		"HearingRange": 3000,
 		"MoveRange": 300,
-		"SartchRange": 3000,
+		"SearchRange": 3000,
 		"DiscoverRange": 3000,
 		"AttackRange": 750,
 		"Suppression": 8
@@ -78,7 +78,7 @@
 		"FlontAngle": 0.7853981,
 		"HearingRange": 3000,
 		"MoveRange": 300,
-		"SartchRange": 3000,
+		"SearchRange": 3000,
 		"DiscoverRange": 3000,
 		"AttackRange": 1100,
 		"Suppression": 9
@@ -92,7 +92,7 @@
 		"FlontAngle": 0.7853981,
 		"HearingRange": 2500,
 		"MoveRange": 300,
-		"SartchRange": 3000,
+		"SearchRange": 3000,
 		"DiscoverRange": 3000,
 		"AttackRange": 1500,
 		"Suppression": 20
@@ -106,7 +106,7 @@
 		"FlontAngle": 0.7853981,
 		"HearingRange": 500,
 		"MoveRange": 1,
-		"SartchRange": 1,
+		"SearchRange": 1,
 		"DiscoverRange": 1,
 		"AttackRange": 5000,
 		"Suppression": 0

@@ -35,7 +35,7 @@ bool EnemyBase::Create(int model, VECTOR pos, EnemyParam param, std::string name
 	_flontAngle = param._flontAngle;
 	_hearingRangeSize = param._hearingRangeSize;
 	_moveRange = param._moveRange;
-	_sartchRange = param._sartchRange;
+	_searchRange = param._searchRange;
 	_discoverRangeSize = param._discoverRangeSize;
 	_attackRangeSize = param._attackRangeSize;
 	_suppression = param._suppression;
@@ -169,18 +169,18 @@ bool EnemyBase::ModeSearch() {
 	}
 
 	//õ“Gˆ—
-	VECTOR v_length = VSub(_player->GetCollision().down_pos, _pos);
-	float len = VSize(v_length);
-	if (VSize(v_length) <= _sartchRange) {
+	VECTOR dirVec = VSub(_player->GetCollision().down_pos, _pos);
+	float length = VSize(dirVec);
+	if (length <= _searchRange) {
 
 		MATRIX matrix = Math::MMultXYZ(0.0f, _rotation.y, 0.0f);
 		VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
-		VECTOR pla_dir = VNorm(v_length);
+		VECTOR pla_dir = VNorm(dirVec);
 		float range_dir = Math::CalcVectorAngle(ene_dir, pla_dir);
 
 		if (range_dir <= _flontAngle) {
 			_modeState = ENEMYTYPE::DISCOVER;//ó‘Ô‚ğ”­Œ©‚É‚·‚é
-			_sartchRange = _discoverRangeSize;//õ“G”ÍˆÍ‚ğ”­Œ©‚Ì”¼Œa‚É•ÏX
+			_searchRange = _discoverRangeSize;//õ“G”ÍˆÍ‚ğ”­Œ©‚Ì”¼Œa‚É•ÏX
 			_currentTime = 0;
 		}
 	}
@@ -201,17 +201,17 @@ bool EnemyBase::ModeDisCover() {
 
 	//“G‚ÆƒvƒŒƒCƒ„[‚Ì‹——£‚ğZo
 	move = VSub(_player->GetCollision().down_pos, _pos);
-	float p_distance = VSize(move);//“G‚ÆƒvƒŒƒCƒ„[‚Ì‹——£
+	float pl_distance = VSquareSize(move);//“G‚ÆƒvƒŒƒCƒ„[‚Ì‹——£
 
 	//õ“Gˆ—
-	if (p_distance >= _sartchRange) {
+	if (pl_distance >= _searchRange * _searchRange) {
 		_modeState = ENEMYTYPE::SEARCH;//ó‘Ô‚ğõ“G‚É‚·‚é
-		_sartchRange = _hearingRangeSize;//õ“G”ÍˆÍ‚ğ”­Œ©‚Ì”¼Œa‚É•ÏX
+		_searchRange = _hearingRangeSize;//õ“G”ÍˆÍ‚ğ”­Œ©‚Ì”¼Œa‚É•ÏX
 		_orignPos = _nextMovePoint = _pos;
 	}
 
 	//UŒ‚ˆ—
-	if (p_distance <= _attackRangeSize) {
+	if (pl_distance <= _attackRangeSize * _attackRangeSize) {
 		_modeState = ENEMYTYPE::ATTACK;//ó‘Ô‚ğõ“G‚É‚·‚é
 		_currentTime = GetNowCount();
 		_saveNextPoint = VAdd(_player->GetCollision().down_pos, VGet(0, 500, 0));

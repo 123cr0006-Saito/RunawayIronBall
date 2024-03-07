@@ -89,20 +89,19 @@ bool CrystarPattern3::ModeSearch() {
 	}
 
 	//õ“Gˆ—
-	VECTOR v_length = VSub(_player->GetCollision().down_pos, _pos);
-	float len = VSize(v_length);
-	if (VSize(v_length) <= _sartchRange) {
+	VECTOR dirVec = VSub(_player->GetCollision().down_pos, _pos);
+	float length = VSize(dirVec);
+	if (length <= _searchRange) {
 
 		MATRIX matrix = Math::MMultXYZ(0.0f, _rotation.y, 0.0f);
 		VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
-		VECTOR pla_dir = VNorm(v_length);
+		VECTOR pla_dir = VNorm(dirVec);
 		float range_dir = Math::CalcVectorAngle(ene_dir, pla_dir);
 
 		if (range_dir <= _flontAngle) {
-			_modeState = ENEMYTYPE::ATTACK;//ó‘Ô‚ð”­Œ©‚É‚·‚é
-			_animState = ANIMSTATE::HANDSTAND;
-			_currentTime = GetNowCount();
-			_stopTime = 0;
+			_modeState = ENEMYTYPE::DISCOVER;//ó‘Ô‚ð”­Œ©‚É‚·‚é
+			_searchRange = _discoverRangeSize;//õ“G”ÍˆÍ‚ð”­Œ©Žž‚Ì”¼Œa‚É•ÏX
+			_currentTime = 0;
 		}
 	}
 
