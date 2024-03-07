@@ -15,6 +15,9 @@ bool ModeTest::Initialize() {
 	MV1SetScale(_skySphere, VGet(3, 3, 3));
 	MV1SetPosition(_tile, VGet(0, 0, 0));
 
+	_collisionManager = new CollisionManager();
+	_collisionManager->Init();
+
 	int playerModelHandle = ResourceServer::MV1LoadModel("Player", "res/Character/cg_player_girl/cg_player_girl_TEST_Ver.2.mv1");
 	_player = new Player(playerModelHandle, VGet(0, 0, 0));
 	_camera = new Camera(_player->GetPosition());
@@ -67,14 +70,7 @@ bool ModeTest::Initialize() {
 
 
 
-	_collisionManager = new CollisionManager();
-	_collisionManager->Init();
 
-	for(int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
-		EnemyBase* en = _enemyPool->GetEnemy(i);
-		if (en == nullptr) { continue; }
-		_collisionManager->UpdateCell(en->_cell);
-	}
 
 	return true;
 }
@@ -196,6 +192,12 @@ bool ModeTest::Process() {
 
 	_player->Process(_camera->GetCamY());
 	_enemyPool->Process();
+	for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
+		EnemyBase* en = _enemyPool->GetEnemy(i);
+		if (!en) { continue; }
+		if (!en->GetUse()) { continue; }
+		//_collisionManager->UpdateCell(en->_cell);
+	}
 
 	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
 		ui[i]->Process();
@@ -406,19 +408,11 @@ bool ModeTest::Process() {
 	//	}
 	//}
 
-	for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
-			EnemyBase* enemy = _enemyPool->GetEnemy(i);
-			if (!enemy) { continue; }
-			if (!enemy->GetUse()) { continue; }
-			_collisionManager->UpdateCell(enemy->_cell);
-	}
-
-	//_collisionManager->UpdateTree();
-	_collisionManager->CheckHit();
+	_collisionManager->Process();
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_START)) {
 		//_enemyPool->Init();
-		//_player->SetDamage();
+		_player->SetDamage();
 		ModeServer::GetInstance()->Add(new ModePause(), 10, "Pause");
 	}
 
@@ -432,6 +426,10 @@ bool ModeTest::Process() {
 			nowParcent += 1.0f / 120 * 100;
 		}
 	}
+	
+	//VECTOR pos1 = VGet(10, 0, -10);
+	//VECTOR pos2 = VGet(20, 0, 20);
+	//auto result = _collisionManager->CalcTreeIndex(pos1, pos2);
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_BACK)) {
 		_drawDebug = !_drawDebug;
@@ -597,7 +595,7 @@ bool ModeTest::Render() {
 	//VECTOR screenPos = ConvWorldPosToScreenPos(pPos);
 	//DrawFormatString(screenPos.x, screenPos.y, GetColor(255, 255, 255), "AreaIndex:%u", areaIndex);
 
-	_collisionManager->DrawAreaIndex();
+	//_collisionManager->DrawAreaIndex();
 
 	return true;
 }

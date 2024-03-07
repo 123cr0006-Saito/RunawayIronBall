@@ -7,21 +7,35 @@
 
 namespace {
 	constexpr float STAGE_LENGTH = 27000.0f;
-	constexpr int STAGE_DIVISION = 1;
+	constexpr int STAGE_DIVISION = 5;
 }
+
+CollisionManager* CollisionManager::_instance = nullptr;
 
 CollisionManager::CollisionManager()
 {
+#ifdef _DEBUG
+	if (_instance != nullptr) {
+		MessageBox(0, "CollisionManagerクラスは既に生成されています", "エラー", MB_OK);
+}
+#endif // _DEBUG
+
+	_instance = this;
 	_offsetX = 0.0f;
 	_offsetZ = 0.0f;
 	_segmentNumPerSide = 0;
 	_segmentLength = 0.0f;
-	treeSize = 0;
+	_treeSize = 0;
 	_tree.clear();
 }
 
 CollisionManager::~CollisionManager()
 {
+	for (int i = 0; i < _treeSize; i++) {
+		delete _tree[i];
+	}
+	_tree.clear();
+	_colList.clear();
 }
 
 void CollisionManager::Init()
@@ -32,45 +46,21 @@ void CollisionManager::Init()
 	_segmentLength = STAGE_LENGTH / static_cast<float>(_segmentNumPerSide);
 
 
-	treeSize = (pow(4, STAGE_DIVISION + 1) - 1) / 3;
-	_tree.resize(treeSize);
+	_treeSize = (pow(4, STAGE_DIVISION + 1) - 1) / 3;
+	_tree.resize(_treeSize);
 
-	for(int i = 0; i < treeSize; i++) {
+	for(int i = 0; i < _treeSize; i++) {
 		_tree[i] = new Cell();
 	}
 }
 
-void CollisionManager::UpdateTree()
+void CollisionManager::Process()
 {
-	//for (int i = 0; i < treeSize; i++) {
-	//	Cell* cell = _tree[i]->_next;
-	//	while (cell)
-	//	{
-	//		Cell* nextCell = cell->_next;
+	_colList.clear();
+	std::list<Cell*> colStack;
+	CreateColList(0, colStack);
 
-	//		EnemyBase* e = cell->_enObj;
-	//		if (e == nullptr || e->GetUse() == false) {
-	//			cell = cell->_next;
-	//			continue;
-	//		}
-	//		VECTOR centerPos = e->GetCollisionPos();
-	//		float r = e->GetR();
-	//		VECTOR pos1 = VGet(centerPos.x - r, 0.0f, centerPos.z - r);
-	//		VECTOR pos2 = VGet(centerPos.x + r, 0.0f, centerPos.z - r);
-
-
-	//		unsigned int newIndex = CalcTreeIndex(pos1, pos2);
-	//		if(newIndex != i) {
-	//			Cell* prevCell = cell->_prev;
-	//			prevCell->_next = nextCell;
-	//			if(nextCell != nullptr) {
-	//				nextCell->_prev = prevCell;
-	//			}
-	//			InsertCellIntoTree(newIndex, cell);
-	//		}
-	//		cell = nextCell;
-	//	}
-	//}
+	CheckColList();
 }
 
 void CollisionManager::UpdateCell(Cell* cell)
@@ -93,7 +83,7 @@ void CollisionManager::UpdateCell(Cell* cell)
 		VECTOR centerPos = enemy->GetCollisionPos();
 		float r = enemy->GetR();
 		VECTOR pos1 = VGet(centerPos.x - r, 0.0f, centerPos.z - r);
-		VECTOR pos2 = VGet(centerPos.x + r, 0.0f, centerPos.z - r);
+		VECTOR pos2 = VGet(centerPos.x + r, 0.0f, centerPos.z + r);
 		treeIndex = CalcTreeIndex(pos1, pos2);
 	}
 		break;
@@ -121,7 +111,7 @@ unsigned int CollisionManager::CalcTreeIndex(VECTOR pos1, VECTOR pos2)
 		for (int i = 0; i < STAGE_DIVISION; i++) {
 			tmpShift += 2;
 			// 下位2ビットを取り出す
-			unsigned int bit = xorIndex & 0x11;
+			unsigned int bit = xorIndex & 0b11;
 			if (bit != 0) {
 				shift = tmpShift;
 			}
@@ -191,34 +181,29 @@ unsigned int CollisionManager::SeparateBit(unsigned int n)
 	return (n | (n << 1)) & 0x55555555;
 }
 
-void CollisionManager::CheckHit()
+void CollisionManager::CheckColList()
 {
-	for(int i = 0; i < treeSize; i++) {
-		Cell* cell1 = _tree[i]->_next;
-		while (cell1 != nullptr)
+	for (auto& colPair : _colList) {
+		Cell* cell1 = colPair.first;
+		Cell* cell2 = colPair.second;
+		if (cell1->_obj == nullptr || cell2->_obj == nullptr) continue;
+
+		switch (cell1->_objType) {
+		case OBJ_TYPE::EN:
 		{
-
-			EnemyBase* en1 = dynamic_cast<EnemyBase*>(cell1->_obj);
-			VECTOR en1Pos = en1->GetCollisionPos();
-			float en1R = en1->GetR();
-			Cell* cell2 = cell1->_next;
-
-			while (cell2 != nullptr)
+			EnemyBase* enemy1 = static_cast<EnemyBase*>(cell1->_obj);
+			switch (cell2->_objType) {
+			case OBJ_TYPE::EN:
 			{
-				EnemyBase* en2 = dynamic_cast<EnemyBase*>(cell2->_obj);
-				VECTOR en2Pos = en2->GetCollisionPos();
-				float en2R = en2->GetR();
-				VECTOR vDir = VSub(en2Pos, en1Pos);
-				float sqLength = VSquareSize(vDir);
-				if(sqLength < (en1R + en2R) * (en1R + en2R)) {
-					float length = sqrt(sqLength);
-					vDir = VScale(vDir, 1.0f / length);
-					en2->SetExtrusionPos(VScale(vDir, (en1R + en2R) - length));
-				}
-				cell2 = cell2->_next;
+				EnemyBase* enemy2 = static_cast<EnemyBase*>(cell2->_obj);
+				CheckHit(enemy1, enemy2);
 			}
-			cell1 = cell1->_next;
+			break;
+			}
 		}
+		break;
+		}
+
 	}
 
 
@@ -239,6 +224,70 @@ void CollisionManager::CheckHit()
 	//int m = 0;
 }
 
+void CollisionManager::CheckHit(EnemyBase* enemy1, EnemyBase* enemy2)
+{
+	VECTOR en1Pos = enemy1->GetCollisionPos();
+	float en1R = enemy1->GetR();
+	VECTOR en2Pos = enemy2->GetCollisionPos();
+	float en2R = enemy2->GetR();
+
+	VECTOR vDir = VSub(en2Pos, en1Pos);
+	float sqLength = VSquareSize(vDir);
+	if (sqLength < (en1R + en2R) * (en1R + en2R)) {
+		float length = sqrt(sqLength);
+		vDir = VScale(vDir, 1.0f / length);
+		enemy2->SetExtrusionPos(VScale(vDir, (en1R + en2R) - length));
+	}
+}
+
+void CollisionManager::CreateColList(unsigned int treeIndex, std::list<Cell*>& colStack)
+{
+	Cell* cell1 = _tree[treeIndex]->_next;
+	// ① 同空間内のオブジェクト同士の衝突リストを作成
+	while (cell1 != nullptr)
+	{
+		Cell* cell2 = cell1->_next;
+		while (cell2 != nullptr)
+		{
+			_colList.push_back(std::make_pair(cell1, cell2));
+			cell2 = cell2->_next;
+		}
+		// ② 衝突スタックとの衝突リストを作成
+		for (auto& colCell : colStack) {
+			_colList.push_back(std::make_pair(cell1, colCell));
+		}
+		cell1 = cell1->_next;
+	}
+
+	bool childFlag = false;
+	// ③ 子空間を調べる
+	unsigned int objNum = 0;
+	// 1つの空間は4つの子空間を持つ
+	for (int j = 0; j < 4; j++) {
+		unsigned int childIndex = treeIndex * 4 + 1 + j;
+		if (childIndex < _treeSize && _tree[childIndex] != nullptr) {
+			if (!childFlag) {
+				// ④ treeIndexのCellをスタックに追加
+				cell1 = _tree[treeIndex]->_next;
+				while (cell1 != nullptr) {
+					colStack.push_back(cell1);
+					objNum++;
+					cell1 = cell1->_next;
+				}
+			}
+			childFlag = true;
+			CreateColList(childIndex, colStack);
+		}
+	}
+
+	// ⑤ スタックからCellを取り除く
+	if (childFlag) {
+		for (int i = 0; i < objNum; i++) {
+			colStack.pop_back();
+		}
+	}
+}
+
 void CollisionManager::DrawSegmentLine()
 {
 	for(int i = 0; i < _segmentNumPerSide + 1; i++)	{
@@ -257,7 +306,7 @@ void CollisionManager::DrawSegmentLine()
 
 void CollisionManager::DrawAreaIndex()
 {
-	for (int i = 0; i < treeSize; i++) {
+	for (int i = 0; i < _treeSize; i++) {
 		Cell* cell = _tree[i]->_next;
 		while (cell != nullptr)
 		{

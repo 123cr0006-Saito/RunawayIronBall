@@ -10,29 +10,32 @@ public:
 	CollisionManager();
 	~CollisionManager();
 
-	void Init();
-	void UpdateTree();
+	static CollisionManager* GetInstance(){ return _instance; }
 
+	void Init();
+	void Process();
 
 	void UpdateCell(Cell* cell);
 
 	unsigned int CalcTreeIndex(VECTOR pos1, VECTOR pos2);
-	void InsertCellIntoTree(unsigned int treeIndex, Cell* cell);
 	void RemoveCellFromTree(Cell* cell);
 
 	unsigned int CheckArea(VECTOR pos);
 
-	unsigned int SeparateBit(unsigned int n);
-
-
-	void CheckHit();
 
 	// デバッグ情報の表示
 	void DrawSegmentLine();
-
 	void DrawAreaIndex();
 
 private:
+	unsigned int SeparateBit(unsigned int n);
+	void InsertCellIntoTree(unsigned int treeIndex, Cell* cell);
+	void CreateColList(unsigned int treeIndex, std::list<Cell*>& colStack);
+	void CheckColList();
+	void CheckHit(EnemyBase* enemy1, EnemyBase* enemy2);
+
+	static CollisionManager* _instance;
+
 	float _offsetX;
 	float _offsetZ;
 
@@ -40,6 +43,9 @@ private:
 	float _segmentLength;
 
 
-	int treeSize;
+	int _treeSize;
 	std::vector<Cell*> _tree;
+
+	// 当たり判定を行うセルのリスト
+	std::list<std::pair<Cell*, Cell*>> _colList;
 };
