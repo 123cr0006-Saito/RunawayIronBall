@@ -18,6 +18,8 @@
 // create Å®model param 
 // init Å®pos
 
+#include "CollisionManager.h"
+
 class EnemyPool
 {
 public:
@@ -47,6 +49,6 @@ private:
 	std::map<std::string, EnemyParam> _enemyParametersMap;
 	std::vector<VECTOR> _enemyInitPos;
 
-	
+	CollisionManager* _collisionManager;
 };
 

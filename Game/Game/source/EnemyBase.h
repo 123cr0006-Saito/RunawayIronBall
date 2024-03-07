@@ -9,10 +9,13 @@
 
 #include <string>
 
+#include "ObjectBase.h"
+class ObjectBase;
+
 #define EN_MOTION_CHANGE 0
 
 //エネミー各種のもとになるクラス
-class EnemyBase
+class EnemyBase : public ObjectBase
 {
 public:
 	EnemyBase();

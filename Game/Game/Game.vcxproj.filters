@@ -59,6 +59,10 @@
     <ClCompile Include="source\Chainguard.cpp">
       <Filter>Character\Enemy\Chainguard</Filter>
     </ClCompile>
+    <ClCompile Include="source\CollisionManager.cpp">
+      <Filter>Mode\Game\CollisionManager</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ObjectBase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -276,6 +280,12 @@
     </ClInclude>
     <ClInclude Include="source\Chainguard.h">
       <Filter>Character\Enemy\Chainguard</Filter>
+    <ClInclude Include="source\ObjectBase.h" />
+    <ClInclude Include="source\CollisionManager.h">
+      <Filter>Mode\Game\CollisionManager</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Cell.h">
+      <Filter>Mode\Game\CollisionManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -487,6 +497,8 @@
     </Filter>
     <Filter Include="Character\Enemy\Chainguard">
       <UniqueIdentifier>{c97449d4-a05f-4a15-b844-b9a0900d6037}</UniqueIdentifier>
+    <Filter Include="Mode\Game\CollisionManager">
+      <UniqueIdentifier>{9085406b-b4fa-43a0-89f1-31d0c0cc0085}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

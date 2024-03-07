@@ -22,6 +22,7 @@ EnemyPool::EnemyPool(std::string paramJsonFile){
 		list.at("Suppression").get_to(param._suppression);
 		_enemyParametersMap[enemyName] = param;
 	}
+	_collisionManager = CollisionManager::GetInstance();
 };
 
 EnemyPool::~EnemyPool() {
@@ -159,6 +160,7 @@ bool EnemyPool::Process(){
 		if (!_enemy[i]) {continue;}
 		if (_enemy[i]->GetUse()) {
 			_enemy[i]->Process();
+			_collisionManager->UpdateCell(_enemy[i]->_cell);
 		}
 	}
 	return true;
