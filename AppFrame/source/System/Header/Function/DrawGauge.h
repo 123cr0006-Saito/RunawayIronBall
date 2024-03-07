@@ -10,6 +10,7 @@ public:
 	DrawGauge(const char* name, int start_pos, float size, bool flag);
 	~DrawGauge();
 	bool Process(VECTOR pos, float parcent, float parcent_max);//今の値と最大の値
+	bool Process(VECTOR pos, float parcent, float parcent_max,float size);//サイス指定版
 	bool Draw();
 	bool Draw(int handle);
 

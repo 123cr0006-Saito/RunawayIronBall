@@ -26,8 +26,8 @@
 // Input
 #include "System/Header/Input/XInput.h"
 //Sound
-#include "System/Header/Sound/FadeSound.h"
-#include "System/Header/Sound/music.h"
+#include "System/Header/Sound/SoundItem.h"
+#include "System/Header/Sound/SoundServer.h"
 //Function
 #include "System/Header/Function/Easing.h"
 #include "System/Header/Function/mydraw.h"

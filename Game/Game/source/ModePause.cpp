@@ -8,13 +8,27 @@ bool ModePause::Initialize() {
 	GetDrawScreenGraph(0, 0, 1920, 1080, gauss_handle);
 	GraphFilter(gauss_handle, DX_GRAPH_FILTER_GAUSS, 16, 1800);
 
+	SetUseASyncLoadFlag(TRUE);
+
+	_handleMap["back"] = ResourceServer::LoadGraph("back","res/ModePause/UI_Menu.png");
+	_handleMap["check"] = ResourceServer::LoadGraph("check","res/ModePause/UI_Menu_Check.png");
+	_handleMap["checkBox"] = ResourceServer::LoadGraph("checkBox","res/ModePause/UI_Menu_Check_Box.png");
+	_handleMap["volumBar"] = ResourceServer::LoadGraph("volumBar","res/ModePause/");
+	_handleMap["se"] = ResourceServer::LoadGraph("se","res/ModePause/UI_Menu_SE.png");
+	_handleMap["bgm"] = ResourceServer::LoadGraph("bgm","res/ModePause/UI_Menu_BGM.png");
+	_handleMap["vibration"] = ResourceServer::LoadGraph("vibration","res/ModePause/UI_Menu_Controll.png");
+	_handleMap["gide"] = ResourceServer::LoadGraph("gide","res/ModePause/UI_Menu_How_To.png");
+	_handleMap["return"] = ResourceServer::LoadGraph("return","res/ModePause/UI_Menu_Back.png");
+
+	SetUseASyncLoadFlag(FALSE);
+
 	//inputを作成
 	_input = XInput::GetInstance();
 
 	//初期化
 	_selectItem = 0;
-	_seVolum = 255;
-	_bgmVolum = 255;
+	_seVolum = global._soundServer->GetSeVolume();
+	_bgmVolum = global._soundServer->GetBgmVolume();
 	return true;
 };
 
@@ -25,10 +39,10 @@ bool ModePause::Terminate() {
 };
 
 void ModePause::SelectSetVolum(int& setVolum) {
-	if (_input->GetLx() > 0) {
+	if (_input->GetKey(XINPUT_BUTTON_DPAD_RIGHT)) {
 		if (setVolum < 255) setVolum++;
 	}
-	else if (_input->GetLx() < 0) {
+	else if (_input->GetKey(XINPUT_BUTTON_DPAD_LEFT)) {
 		if (setVolum > 0) setVolum--;
 	}
 };
@@ -36,6 +50,7 @@ void ModePause::SelectSetVolum(int& setVolum) {
 void ModePause::SelectSetVibration() {
 	if (_input->GetTrg(XINPUT_BUTTON_A)) {
 		_isVibration = 1 - _isVibration;
+		global._soundServer->DirectPlay("SE_Press");
 	}
 };
 
@@ -45,12 +60,18 @@ void ModePause::SelectOperationInstructions() {
 		//操作説明が終了した時ようにこのサーバーは削除しない
 		//削除しても良いが、操作説明でこのサーバーを作成してから削除する　※ガウスの背景はおかしくなると思われる
 		ModeServer::GetInstance()->Add(NEW ModeInstructions(), 100, "Instructions");
+		global._soundServer->DirectPlay("SE_Press");
 	}
 };
 
 void ModePause::SelectGameEnd() {
 	if (_input->GetTrg(XINPUT_BUTTON_A)) {
-		global.exit_count = true;
+		ModeServer::GetInstance()->Del("Game");
+		ModeServer::GetInstance()->Del(this);
+		if (!ModeServer::GetInstance()->Search("Title")) {
+			ModeServer::GetInstance()->Add(NEW ModeTitle(), 1, "Title");
+		}
+		global._soundServer->DirectPlay("SE_Press");
 	}
 };
 
@@ -65,9 +86,11 @@ bool ModePause::Process() {
 	//選択項目の切り替え
 	if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP)) {
 		count--;
+		global._soundServer->DirectPlay("SE_Select");
 	}
 	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN)) {
 		count++;
+		global._soundServer->DirectPlay("SE_Select");
 	}
 
 	_selectItem += count;
@@ -100,6 +123,8 @@ bool ModePause::Process() {
 
 	//オプションの終了
 	if (_input->GetTrg(XINPUT_BUTTON_START)) {
+		global._soundServer->SetSeVolume(_seVolum);
+		global._soundServer->SetBgmVolume(_bgmVolum);
 		ModeServer::GetInstance()->Del(this);
 	}
 	return true;
@@ -113,25 +138,41 @@ bool ModePause::Render() {
 
 	//----------------------------------------------------------------------------------
 	//ボリュームとかとかの描画（仮）
-	int x = 1920 / 2;
-	int y = 1080 / 2;
+	int handleX, handleY;
+
+	DrawGraph(0, 0, _handleMap["back"], true);
+	DrawGraph(1000, 550, _handleMap["checkBox"], true);
+
+	int length[] = { _seVolum,_bgmVolum };
+	GetGraphSize(_handleMap["volumBar"], &handleX, &handleY);
+	for (int i = 0; i < 2; i++) {
+		DrawExtendGraph(500, 250 + 110 * i, 500 + (handleX / 255 * length[i]), 250 + 110 * i + handleY, _handleMap["volumBar"],true);
+	}
+
+	std::array<std::string,5> _itemList = { "se","bgm","vibration","gide","return" };
 
 	for (int i = 0; i < MAX_MODE; i++) {
-		int color = GetColor(255, 0, 0);
+		int _selectedItems = 0;
+		int _gameEnd = 0;
+		float extRate = 1.0f;
+
+		int originX = 180;
+		int originY = 400;
+		
+		if (_selectItem == i)  extRate = 1.1f; 
 		int length = 50;
 		switch (i) {
-		case 0:
-			length = _seVolum;
-			break;
-		case 1:
-			length = _bgmVolum;
-			break;
 		case 2:
-			_isVibration ? color = GetColor(0, 255, 0) : NULL;
+			originY -= 50;
+			GetGraphSize(_handleMap["check"], &handleX, &handleY);
+			if (_isVibration)  DrawGraph(1000+handleX/2, 350 + 100 * i + handleY / 2,  _handleMap["check"], true);
+			break;
+		case 4:
+			_gameEnd = 400;
 			break;
 		}
-		if (_selectItem == i) color = GetColor(0, 0, 255);
-		DrawBox(x - 122, y - 50 + i * 100, x - 122 + length, y + 50 + i * 100, color, true);
+		GetGraphSize(_handleMap[_itemList[i]], &handleX, &handleY);
+		DrawRotaGraph(originX + handleX/2 + _gameEnd, originY + handleY/2 + 100 * i , extRate, 0.0f, _handleMap[_itemList[i]], true);
 	}
 
 	return true;

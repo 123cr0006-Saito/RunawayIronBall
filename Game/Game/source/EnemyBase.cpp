@@ -1,4 +1,5 @@
 #include "EnemyBase.h"
+#include "EnemyPool.h"
 
 EnemyBase::EnemyBase() {
 	_player = nullptr;
@@ -16,13 +17,14 @@ EnemyBase::EnemyBase() {
 EnemyBase::~EnemyBase() {
 	MV1DeleteModel(_model);
 	_player = nullptr;
+	delete _animManager;
+	delete _frameData;
 };
 
-bool EnemyBase::Create(int model, VECTOR pos, EnemyParam param) {
+bool EnemyBase::Create(int model, VECTOR pos, EnemyParam param, std::string name) {
 	_model = model;
 
 	_player = Player::GetInstance();
-	_r = 100.0f;
 
 	//Param------------------
 	_hp = param._hp;
@@ -37,10 +39,12 @@ bool EnemyBase::Create(int model, VECTOR pos, EnemyParam param) {
 	_sartchRange = param._sartchRange;
 	_discoverRangeSize = param._discoverRangeSize;
 	_attackRangeSize = param._attackRangeSize;
+	_suppression = param._suppression;
 
 	Init(pos);
 	InheritanceInit();
-	DebugSnail();
+	AnimInit();
+
 	return true;
 };
 
@@ -51,53 +55,43 @@ void EnemyBase::Init(VECTOR pos, float scale) {
 void EnemyBase::Init(VECTOR pos) {
 	_IsUse = true;
 
-	SetPos(pos);
+	SetKindPos(pos);
 	_hp = _maxHp;
 	_knockBackSpeedFrame = 0;
 	_gravity = 0;
-	_state = ENEMYTYPE::SEARCH;
+	_modeState = ENEMYTYPE::SEARCH;
 	_searchState = SEARCHTYPE::COOLTIME;
 	_rotation = VGet(0, 0, 0);
+	_forwardVec = VScale(Math::MatrixToVector(MGetRotY(_rotation.y), 2), -1);// モデルが-ｚの方向を正面としているので-1をかける
+
+	float randSize = (float)(rand() % 75) / 100 + 0.75;// 1 + 0.0 ~ 0.5
+	MV1SetScale(_model, VScale(VGet(1.0f, 1.0f, 1.0f), 2 * randSize));//スラブロックの借りが小さかったため2倍に設定
+
+	_diffeToCenter = VGet(0, 125 * randSize, 0);
+	_r = 150.0f * randSize;
+	_weightExp = _weightExp * randSize;
+
 };
 
 void EnemyBase::InheritanceInit() {
 
 };
 
-void  EnemyBase::DebugSnail() {
-	//今のモデルに貼り付けているテクスチャ
-	MV1SetTextureGraphHandle(_model, 0, ResourceServer::LoadGraph("res/katatumuri/14086_Snail_with_toy_house_for_ shell_v2_diff2.jpg"), true);
-	MV1SetTextureGraphHandle(_model, 1, ResourceServer::LoadGraph("res/katatumuri/14086_Snail_with_toy_house_for_ shell_v2_diff.jpg"), true);
-	float randSize = (float)(rand() % 75) / 100 + 0.75;// 1 + 0.0 ~ 0.5
-	MV1SetScale(_model, VScale(VGet(1.0f, 1.0f, 1.0f), 0.1 * randSize));//持ってきたモデルが大きかったため1/10に設定
-
-	//---------------------------------------------
-	//個別で設定できるようにする
-	_diffeToCenter = VGet(0, 125 * randSize, 0);
-	_r = 150.0f * randSize;
-	_weightExp = _weightExp * randSize;
-	//--------------------------------------------
+void EnemyBase::AnimInit() {
 
 };
 
 void EnemyBase::SetPos(VECTOR pos) {
 	_pos = pos;
+	_saveNextPoint = pos;
+};
+
+void EnemyBase::SetKindPos(VECTOR pos) {
+	_pos = pos;
 	_orignPos = pos;
 	_savePos = pos;
 	_nextMovePoint = pos;
 };
-
-
-bool EnemyBase::StopPos() {
-	if (_pos.x >= _nextMovePoint.x - _speed && _pos.x <= _nextMovePoint.x + _speed &&
-		_pos.y >= _nextMovePoint.y - _speed && _pos.y <= _nextMovePoint.y + _speed &&
-		_pos.z >= _nextMovePoint.z - _speed && _pos.z <= _nextMovePoint.z + _speed)
-	{
-		return true;
-	}
-	return false;
-};
-
 
 bool EnemyBase::ModeSearchToTurn() {
 	_easingFrame++;
@@ -105,12 +99,14 @@ bool EnemyBase::ModeSearchToTurn() {
 	if (_easingFrame >= 60) {
 		_easingFrame = 0;
 		_nextMovePoint = _saveNextPoint;
+		_currentTime = GetNowCount();
 		if (rand() % 4 == 0) {
-			_currentTime = GetNowCount();
 			_stopTime = 1;
 			_searchState = SEARCHTYPE::COOLTIME;
 		}
 		else {
+			_stopTime = (float)(rand() % 200) / 100.0f + 2.0f;//2秒から4秒まで止まる　小数点２桁までのランダム
+			_forwardVec = VScale(Math::MatrixToVector(MGetRotY(_rotation.y), 2),-1);// モデルが-ｚの方向を正面としているので-1をかける
 			_searchState = SEARCHTYPE::MOVE;
 		}
 	}
@@ -119,13 +115,16 @@ bool EnemyBase::ModeSearchToTurn() {
 
 bool EnemyBase::ModeSearchToMove() {
 	//移動処理
-	VECTOR move = VSub(_nextMovePoint, _pos);
+	/*VECTOR move = VSub(_nextMovePoint, _pos);
 	move = VNorm(move);
 	move = VScale(move, _speed);
+	_pos = VAdd(_pos, move);*/
+	VECTOR move = VScale(_forwardVec, _speed);
 	_pos = VAdd(_pos, move);
 
-	if (StopPos()) {
-		_stopTime = (float)(rand() % 200) / 100.0f + 2.0f;//1秒から3秒まで止まる　小数点２桁までのランダム
+	//if (StopPos()) {
+	if (GetNowCount() - _currentTime >= _stopTime * 1000) {
+		_stopTime = (float)(rand() % 200) / 100.0f + 2.0f;//2秒から4秒まで止まる　小数点２桁までのランダム
 		_currentTime = GetNowCount();
 		_searchState = SEARCHTYPE::COOLTIME;
 	}
@@ -134,7 +133,7 @@ bool EnemyBase::ModeSearchToMove() {
 };
 
 bool EnemyBase::ModeSearchToCoolTime() {
-	if ((float)(GetNowCount() - _currentTime) / 1000 >= _stopTime) {
+	if (GetNowCount() - _currentTime >= _stopTime * 1000) {
 
 		VECTOR vArrow = VGet((float)(rand() % 20 / 10.0f) - 1.0f, 1.0f, (float)(rand() % 20 / 10.0f) - 1.0f);//ランダムな方向ベクトルを取る
 		vArrow = VScale(vArrow, rand() % (int)_moveRange); vArrow.y = 0.0f;//基準点からの半径分をランダムで掛け、次に進むポイントを決める
@@ -181,7 +180,7 @@ bool EnemyBase::ModeSearch() {
 		float range_dir = Math::CalcVectorAngle(ene_dir, pla_dir);
 
 		if (range_dir <= _flontAngle) {
-			_state = ENEMYTYPE::DISCOVER;//状態を発見にする
+			_modeState = ENEMYTYPE::DISCOVER;//状態を発見にする
 			_sartchRange = _discoverRangeSize;//索敵範囲を発見時の半径に変更
 			_currentTime = 0;
 		}
@@ -207,14 +206,14 @@ bool EnemyBase::ModeDisCover() {
 
 	//索敵処理
 	if (p_distance >= _sartchRange) {
-		_state = ENEMYTYPE::SEARCH;//状態を索敵にする
+		_modeState = ENEMYTYPE::SEARCH;//状態を索敵にする
 		_sartchRange = _hearingRangeSize;//索敵範囲を発見時の半径に変更
 		_orignPos = _nextMovePoint = _pos;
 	}
 
 	//攻撃処理
 	if (p_distance <= _attackRangeSize) {
-		_state = ENEMYTYPE::ATTACK;//状態を索敵にする
+		_modeState = ENEMYTYPE::ATTACK;//状態を索敵にする
 		_currentTime = GetNowCount();
 		_saveNextPoint = VAdd(_player->GetCollision().down_pos, VGet(0, 500, 0));
 		_savePos = _pos;
@@ -235,7 +234,7 @@ bool EnemyBase::ModeKnockBack() {
 	_pos = VAdd(_pos, knockBackVecter);
 	_knockBackSpeedFrame--;
 	if (_knockBackSpeedFrame <= 0) {
-		_state = ENEMYTYPE::DISCOVER;
+		_modeState = ENEMYTYPE::DISCOVER;
 	}
 	return true;
 };
@@ -249,6 +248,10 @@ bool EnemyBase::ModeDead() {
 	}
 	return true;
 };
+
+bool EnemyBase::IndividualProcessing() {
+	return true;
+}
 
 bool EnemyBase::SetState() {
 	//最終的なモデルの位置や角度を調整
@@ -272,22 +275,41 @@ bool EnemyBase::SetGravity() {
 
 void EnemyBase::SetKnockBack(VECTOR vDir, float damage) {
 	if (_knockBackSpeedFrame <= 0) {
+		InheritanceInit();
+		_rotation.y = atan2(vDir.x, vDir.z);
 		_hp -= damage;
 		_knockBackDir = vDir;
-		_knockBackSpeedFrame = damage;
-		_state = ENEMYTYPE::KNOCKBACK;
+		_knockBackSpeedFrame = damage - _weightExp;
+
+		VECTOR effectPos = VAdd(VAdd(_pos, _diffeToCenter), VScale(vDir, -50));
+
+		int effectHandle[30];
+		ResourceServer::LoadMultGraph("split", "res/TemporaryMaterials/split/test", ".png", 30, effectHandle);
+		BoardPolygon* effect = new BoardPolygon(effectPos, GetCameraBillboardMatrix(), 200, effectHandle, 30, 0.5f / 60.0f * 1000.0f);
+		EffectManeger::GetInstance()->LoadEffect(effect);
+
+		_modeState = ENEMYTYPE::KNOCKBACK;
 		if (_hp <= 0) {
-			if (_knockBackSpeedFrame < 60) {
-				_knockBackSpeedFrame = 60;
-			}
-			_state = ENEMYTYPE::DEAD;
+
+			_knockBackSpeedFrame = damage;
+			Suppression::GetInstance()->SubSuppression(_suppression);
+			_player->SetExp(_weightExp);
+			_modeState = ENEMYTYPE::DEAD;
+
 		}
 	}
 };
 
+void EnemyBase::CommandProcess() {
+
+};
+
 bool EnemyBase::Process() {
 	if (_IsUse) {
-		switch (_state) {
+
+		
+
+		switch (_modeState) {
 		case ENEMYTYPE::SEARCH:
 			ModeSearch();
 			break;
@@ -315,7 +337,7 @@ bool EnemyBase::Process() {
 		}
 
 		//ノックバック中のけぞり処理 仮です
-		if (_state == ENEMYTYPE::KNOCKBACK) {
+		if (_modeState == ENEMYTYPE::KNOCKBACK) {
 			if (_pos.y > 0) {
 				if (_rotation.x < Math::DegToRad(60)) {
 					_rotation.x += Math::DegToRad(1.2f);
@@ -327,15 +349,17 @@ bool EnemyBase::Process() {
 				_rotation.x -= Math::DegToRad(2);
 			}
 		}
-
+		
 		SetState();
+		IndividualProcessing();
+		CommandProcess();
 	}
 
 	return true;
 };
 
 bool  EnemyBase::DebugRender() {
-	DrawSphere3D(VAdd(_pos, _diffeToCenter), _r, 32, GetColor(255, 0, 0), GetColor(255, 0, 0), false);
+	DrawSphere3D(VAdd(_pos, _diffeToCenter), _r, 8, GetColor(255, 0, 0), GetColor(255, 0, 0), false);
 
 	//デバッグ用
 	//索敵範囲などの描画
@@ -356,10 +380,17 @@ bool  EnemyBase::DebugRender() {
 	return true;
 };
 
+bool EnemyBase::IndividualRendering() {
+	return true;
+};
+
 bool EnemyBase::Render() {
-	if (_model != 0) {
-		DebugRender();
+	if (_model != 0) {   
+#ifdef _DEBUG
+		//DebugRender();
+#endif
 		MV1DrawModel(_model);
+		IndividualRendering();
 	}
 	return true;
 };

@@ -15,6 +15,7 @@ typedef struct {
 	float _sartchRange;//õ“G”ÍˆÍ‚Ì”¼Œa
 	float _discoverRangeSize;//”­Œ©A‘ÎÛ‚ÌŒ©¸‚¤‚Ü‚Å‚Ì‹——£‚Ì”¼Œa
 	float _attackRangeSize;//³–Ê‚ÌUŒ‚”ÍˆÍ
+	int _suppression;//§ˆ³’l
 }EnemyParam;
 
 //“G‚Ìó‘Ô
@@ -28,7 +29,7 @@ enum class ENEMYTYPE : int {
 };
 
 enum class SEARCHTYPE : int {
+	COOLTIME,
 	TURN,
-	MOVE,
-	COOLTIME
+	MOVE
 };

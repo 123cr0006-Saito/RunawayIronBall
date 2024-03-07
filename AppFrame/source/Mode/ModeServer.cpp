@@ -41,6 +41,17 @@ int ModeServer::Add(ModeBase *mode, int layer, const char *name ) {
 }
 
 // 削除予約
+int ModeServer::Del(const char *name) {
+	ModeBase *mode = Get(name);
+	if (mode) {
+		_vModeDel.push_back(mode);
+		return 0;
+	}
+	return -1;
+};
+
+
+// 削除予約
 int ModeServer::Del(ModeBase *mode) {
 	_vModeDel.push_back(mode);
 	return 0;
@@ -79,6 +90,14 @@ void ModeServer::Clear() {
 	_vModeDel.clear();
 }
 
+bool ModeServer::Search(const char* name) {
+	for (auto itr = _vMode.begin(); itr != _vMode.end(); ++itr) {
+        if ((*itr)->_szName == name) {
+			return true;
+		}
+	}
+	return false;
+};
 
 
 // 削除予約されているか？

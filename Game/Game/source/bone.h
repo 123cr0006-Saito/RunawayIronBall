@@ -39,10 +39,10 @@ public:
 
 	void PositionReset();
 
-private:
-
 	Vector3D* _massPosList; // 質点の座標リスト
 	Vector3D* _massAccelList; // 質点の速度リスト
+
+private:
 
 	// 今回は髪の毛だけなので定数宣言しているがほかのに使うときは
 	//変数として宣言し重力などの値をクラスを作るときの引数として入力するとできる

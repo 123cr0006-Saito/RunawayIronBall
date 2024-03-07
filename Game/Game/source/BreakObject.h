@@ -34,12 +34,13 @@ private:
 	// パーツの吹っ飛び処理を行うかどうか
 	bool _isActive;
 	// パーツの吹っ飛び処理が終了したかどうか
-	bool _finishedBreak;
+	bool _finishedBreakAll;
 
 	// モデルハンドル
 	// 各建物クラスのインスタンスから受け取る（そのインスタンスとモデルハンドルを共有する）
 	int _modelHandle;
-	
+	// モデルの回転値
+	VECTOR _modelRotation;
 
 	int _breakCnt;
 
@@ -47,24 +48,21 @@ private:
 		// 3Dモデルのパーツのインデックス番号
 		int frameIndex;
 
-		// 吹き飛ばし情報
+		bool finishedBreak;
 
+		// 吹き飛ばし情報
 		VECTOR horizontalDir; // 水平方向
 		float horizontalVelocity; // 水平方向の速度
 		float verticalVelocity; // 鉛直方向の速度
-
-		VECTOR rotVector; // 各軸における1フレームの回転値
+		VECTOR vRot; // 各軸における1フレームの回転値
 	};
 
-	std::vector<FRAME_INFO> _frameInfo;
+	std::vector<FRAME_INFO*> _frameInfo;
 
 
 	/*  */
-	VECTOR _pos;
 	// 吹っ飛び方向
 	VECTOR _blastDir;
-	// 吹っ飛びの強さ
-	float _blastPower;
 
 
 	// 軌跡表示をするかどうか
