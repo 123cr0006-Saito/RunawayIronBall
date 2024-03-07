@@ -5,6 +5,8 @@ Player* Player::_instance = NULL;
 std::map<int, ANIMATION_INFO> Player::_animMap;
 
 namespace {
+	// 最大レベル
+	constexpr int LEVEL_MAX = 10;
 	// 最大HP
 	constexpr int HP_MAX = 4;
 	// 最大無敵時間
@@ -83,7 +85,7 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	_playNextComboAnim = true;
 
 	// 鉄球の初期化
-	_chain = new Chain();
+	_chain = NEW Chain();
 	_chain->Init();
 	_chain->SetPlayerModelHandle(_modelHandle);
 	// 鉄球の移動状態を「追従」に設定
@@ -120,14 +122,14 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	auto motionList = MotionList::GetMotionList("Player");
 
 	// アニメーションマネージャーの初期設定
-	_animManager = new AnimationManager();
+	_animManager = NEW AnimationManager();
 	_animManager->InitMap("Player", _modelHandle, *motionList);
 
 	// フレームデータの初期設定
-	_frameData = new FrameData();
+	_frameData = NEW FrameData();
 	_frameData->LoadData("Player", *motionList);
 
-	_modelColor = new ModelColor();
+	_modelColor = NEW ModelColor();
 	_modelColor->Init(_modelHandle);
 }
 
@@ -182,7 +184,7 @@ void Player::SetBone() {
 	bone_left_list[3] = MV1SearchFrame(_modelHandle,"Left_mitsuami4");
 	bone_left_list[4] = MV1SearchFrame(_modelHandle,"Left_mitsuami5");
 	bone_left_list[5] = MV1SearchFrame(_modelHandle,"Left_mitsuami6");
-	_bone[0] = new bone(&_modelHandle, bone_left_list, bone_left_list.size() - 2, "res/JsonFile/hair_parameters.json");
+	_bone[0] = NEW bone(&_modelHandle, bone_left_list, bone_left_list.size() - 2, "res/JsonFile/hair_parameters.json");
 	//右髪
 	std::vector<int> bone_right_list(6);
 	bone_right_list[0] = MV1SearchFrame(_modelHandle,"Right_mitsuami1");
@@ -191,7 +193,7 @@ void Player::SetBone() {
 	bone_right_list[3] = MV1SearchFrame(_modelHandle,"Right_mitsuami4");
 	bone_right_list[4] = MV1SearchFrame(_modelHandle,"Right_mitsuami5");
 	bone_right_list[5] = MV1SearchFrame(_modelHandle,"Right_mitsuami6");
-	_bone[1] = new bone(&_modelHandle, bone_right_list, bone_right_list.size() - 2, "res/JsonFile/hair_parameters.json");
+	_bone[1] = NEW bone(&_modelHandle, bone_right_list, bone_right_list.size() - 2, "res/JsonFile/hair_parameters.json");
 };
 
 void Player::SetNextExp(std::string FileName) {

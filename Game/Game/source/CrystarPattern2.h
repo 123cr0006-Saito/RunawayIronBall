@@ -5,7 +5,7 @@ class CrystarPattern2 :public EnemyBase
 {
 public:
 	CrystarPattern2();
-	~CrystarPattern2();
+	~CrystarPattern2()override;
 
 	void Init(VECTOR pos)override;
 	void InheritanceInit()override;

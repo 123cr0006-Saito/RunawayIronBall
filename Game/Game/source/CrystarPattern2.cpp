@@ -5,7 +5,8 @@ CrystarPattern2::CrystarPattern2() :EnemyBase::EnemyBase() {
 };
 
 CrystarPattern2::~CrystarPattern2() {
-	//EnemyBase::~EnemyBase();
+	delete _frameData;
+	delete _animManager;
 	delete _roof;
 };
 
@@ -16,16 +17,16 @@ void CrystarPattern2::InheritanceInit() {
 
 void CrystarPattern2::AnimInit() {
 
-	_roof = new CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof","res/Enemy/Crystar/cg_crystar_roof.mv1"), _model);
+	_roof = NEW CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof","res/Enemy/Crystar/cg_crystar_roof.mv1"), _model);
 
 	//// モーションリストのロード
 	MotionList::Load("Crystarl", "MotionList_Crystarl.csv");
 	auto motionList = MotionList::GetMotionList("Crystarl");
 	// アニメーションマネージャーの初期化
-	_animManager = new AnimationManager();
+	_animManager = NEW AnimationManager();
 	_animManager->InitMap("Crystarl", _model, *motionList);
 	// フレームデータの初期化
-	_frameData = new FrameData();
+	_frameData = NEW FrameData();
 	_frameData->LoadData("Crystarl", *motionList);
 
 }
@@ -86,20 +87,19 @@ bool CrystarPattern2::ModeSearch() {
 	}
 
 	//索敵処理
-	VECTOR v_length = VSub(_player->GetCollision().down_pos, _pos);
-	float len = VSize(v_length);
-	if (VSize(v_length) <= _sartchRange) {
+	VECTOR dirVec = VSub(_player->GetCollision().down_pos, _pos);
+	float length = VSize(dirVec);
+	if (length <= _searchRange) {
 
 		MATRIX matrix = Math::MMultXYZ(0.0f, _rotation.y, 0.0f);
 		VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
-		VECTOR pla_dir = VNorm(v_length);
+		VECTOR pla_dir = VNorm(dirVec);
 		float range_dir = Math::CalcVectorAngle(ene_dir, pla_dir);
 
 		if (range_dir <= _flontAngle) {
 			_modeState = ENEMYTYPE::DISCOVER;//状態を発見にする
-			_animState = ANIMSTATE::WALK;
-			_currentTime = GetNowCount();
-			_stopTime = 0;
+			_searchRange = _discoverRangeSize;//索敵範囲を発見時の半径に変更
+			_currentTime = 0;
 		}
 	}
 
@@ -119,19 +119,18 @@ bool CrystarPattern2::ModeDisCover() {
 
 	//敵とプレイヤーの距離を算出
 	move = VSub(_player->GetCollision().down_pos, _pos);
-	float p_distance = VSize(move);//敵とプレイヤーの距離
+	float pl_distance = VSquareSize(move);//敵とプレイヤーの距離
 
 	//索敵処理
-	if (p_distance >= _sartchRange) {
+	if (pl_distance >= _searchRange * _searchRange) {
 		_modeState = ENEMYTYPE::SEARCH;//状態を索敵にする
-		_sartchRange = _hearingRangeSize;//索敵範囲を発見時の半径に変更
+		_searchRange = _hearingRangeSize;//索敵範囲を発見時の半径に変更
 		_orignPos = _nextMovePoint = _pos;
 	}
 
 	//攻撃処理
-	if (p_distance <= _attackRangeSize) {
+	if (pl_distance <= _attackRangeSize * _attackRangeSize) {
 		_modeState = ENEMYTYPE::ATTACK;//状態を索敵にする
-		_animState = ANIMSTATE::HANDSTAND;
 		_currentTime = GetNowCount();
 		_saveNextPoint = VAdd(_player->GetCollision().down_pos, VGet(0, 500, 0));
 		_savePos = _pos;

@@ -7,6 +7,7 @@
     <ClCompile Include="source\BuildingBase.cpp" />
     <ClCompile Include="source\CharacterBase.cpp" />
     <ClCompile Include="source\Crystarl.cpp" />
+    <ClCompile Include="source\CrystarPattern3.cpp" />
     <ClCompile Include="source\EnemyBase.cpp" />
     <ClCompile Include="source\ModeGameOver.cpp" />
     <ClCompile Include="source\ModeClear.cpp" />
@@ -31,6 +32,46 @@
     <ClCompile Include="source\ModePause.cpp" />
     <ClCompile Include="source\ModeInstructions.cpp" />
     <ClCompile Include="source\BoardArrow.cpp" />
+    <ClCompile Include="source\CrystarPattern4.cpp" />
+    <ClCompile Include="source\SlaBlockPattern2.cpp" />
+    <ClCompile Include="source\ScreenVibration.cpp" />
+    <ClCompile Include="source\BoardPolygon.cpp" />
+    <ClCompile Include="source\ModePause.cpp" />
+    <ClCompile Include="source\ModeInstructions.cpp" />
+    <ClCompile Include="source\AnimationItem.cpp" />
+    <ClCompile Include="source\AnimationManager.cpp" />
+    <ClCompile Include="source\Tower.cpp" />
+    <ClCompile Include="source\FrameData.cpp" />
+    <ClCompile Include="source\ModelColor.cpp" />
+    <ClCompile Include="source\TowerParts.cpp" />
+    <ClCompile Include="source\MotionList.cpp" />
+    <ClCompile Include="source\CrystarRoof.cpp" />
+    <ClCompile Include="source\CrystarPattern2.cpp" />
+    <ClCompile Include="source\CrystarPattern1.cpp" />
+    <ClCompile Include="source\ClassificationEffect.cpp" />
+    <ClCompile Include="source\EffekseerPosSynchro.cpp" />
+    <ClCompile Include="source\EffekseerBase.cpp" />
+    <ClCompile Include="source\UISuppressionGauge.cpp" />
+    <ClCompile Include="source\TimeLimit.cpp" />
+    <ClCompile Include="source\UITimeLimit.cpp" />
+    <ClCompile Include="source\BoardPolygonDust.cpp" />
+    <ClCompile Include="source\PlaneEffectBase.cpp" />
+    <ClCompile Include="source\EffectBase.cpp" />
+    <ClCompile Include="source\EffectManeger.cpp" />
+    <ClCompile Include="source\Suppression.cpp" />
+    <ClCompile Include="source\Gate.cpp" />
+    <ClCompile Include="source\ModeFade.cpp" />
+    <ClCompile Include="source\ModeLoading.cpp" />
+    <ClCompile Include="source\Floor.cpp">
+      <Filter>Building</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Chainguard.cpp">
+      <Filter>Character\Enemy\Chainguard</Filter>
+    </ClCompile>
+    <ClCompile Include="source\CollisionManager.cpp">
+      <Filter>Mode\Game\CollisionManager</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ObjectBase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -39,6 +80,7 @@
     <ClInclude Include="source\BuildingBase.h" />
     <ClInclude Include="source\CharacterBase.h" />
     <ClInclude Include="source\Crystarl.h" />
+    <ClInclude Include="source\CrystarPattern3.h" />
     <ClInclude Include="source\EnemyBase.h" />
     <ClInclude Include="source\ModeGameOver.h" />
     <ClInclude Include="source\ModeClear.h" />
@@ -64,6 +106,35 @@
     <ClInclude Include="source\ModePause.h" />
     <ClInclude Include="source\ModeInstructions.h" />
     <ClInclude Include="source\BoardArrow.h" />
+    <ClInclude Include="source\CrystarPattern4.h" />
+    <ClInclude Include="source\SlaBlockPattern2.h" />
+    <ClInclude Include="source\ScreenVibration.h" />
+    <ClInclude Include="source\BoardPolygon.h" />
+    <ClInclude Include="source\ModePause.h" />
+    <ClInclude Include="source\ModeInstructions.h" />
+    <ClInclude Include="source\AnimationItem.h" />
+    <ClInclude Include="source\AnimationManager.h" />
+    <ClInclude Include="source\Tower.h" />
+    <ClInclude Include="source\FrameData.h" />
+    <ClInclude Include="source\ModelColor.h" />
+    <ClInclude Include="source\TowerParts.h" />
+    <ClInclude Include="source\MotionList.h" />
+    <ClInclude Include="source\CrystarRoof.h" />
+    <ClInclude Include="source\CrystarPattern2.h" />
+    <ClInclude Include="source\CrystarPattern1.h" />
+    <ClInclude Include="source\ClassificationEffect.h" />
+    <ClInclude Include="source\EffekseerPosSynchro.h" />
+    <ClInclude Include="source\EffekseerBase.h" />
+    <ClInclude Include="source\UISuppressionGauge.h" />
+    <ClInclude Include="source\TimeLimit.h" />
+    <ClInclude Include="source\UITimeLimit.h" />
+    <ClInclude Include="source\BoardPolygonDust.h" />
+    <ClInclude Include="source\PlaneEffectBase.h" />
+    <ClInclude Include="source\EffectBase.h" />
+    <ClInclude Include="source\EffectManeger.h" />
+    <ClInclude Include="source\Suppression.h" />
+    <ClInclude Include="source\Gate.h" />
+    <ClInclude Include="source\ModeFade.h" />
     <ClCompile Include="source\CharacterBase.cpp">
       <Filter>Character</Filter>
     </ClCompile>
@@ -221,6 +292,19 @@
       <Filter>Mode\Game</Filter>
     </ClCompile>
     <ClCompile Include="source\UnbreakableObject.cpp" />
+    <ClInclude Include="source\ModeLoading.h" />
+    <ClInclude Include="source\Floor.h">
+      <Filter>Building</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Chainguard.h">
+      <Filter>Character\Enemy\Chainguard</Filter>
+    <ClInclude Include="source\ObjectBase.h" />
+    <ClInclude Include="source\CollisionManager.h">
+      <Filter>Mode\Game\CollisionManager</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Cell.h">
+      <Filter>Mode\Game\CollisionManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CharacterBase.h">
@@ -428,6 +512,11 @@
     </Filter>
     <Filter Include="Mode\Game">
       <UniqueIdentifier>{83bca989-3fef-431d-bc70-e6602cf6729d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Character\Enemy\Chainguard">
+      <UniqueIdentifier>{c97449d4-a05f-4a15-b844-b9a0900d6037}</UniqueIdentifier>
+    <Filter Include="Mode\Game\CollisionManager">
+      <UniqueIdentifier>{9085406b-b4fa-43a0-89f1-31d0c0cc0085}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -96,7 +96,14 @@ int SkipSpace(const char* p, const void* last)
 int GetString(const char* p, std::string* out)
 {
 	int c = 0;
-	int len = FindString(&p[c], ',', NULL);	// ","‚Ü‚Å‚Ì’·‚³‚ğ“¾‚é
+	c += GetString(p, ',', out);
+	return c;
+}
+
+int GetString(const char* p, const char find, std::string* out)
+{
+	int c = 0;
+	int len = FindString(&p[c], find, NULL);	// ","‚Ü‚Å‚Ì’·‚³‚ğ“¾‚é
 	std::string s(&p[c], &p[c + len]);	// •¶š—ñ‚ğstring‰»
 	*out = s;
 	c += len;	// ","‚Ü‚Åi‚ß‚é

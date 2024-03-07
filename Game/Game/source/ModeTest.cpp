@@ -20,15 +20,15 @@ bool ModeTest::Initialize() {
 	MV1SetPosition(_tile, VGet(0, 0, 0));
 
 	int playerModelHandle = MV1LoadModel("res/Character/cg_player_girl/cg_player_girl_TEST.mv1");
-	_player = new Player(playerModelHandle, VGet(0, 0, 0));
+	_player = NEW Player(playerModelHandle, VGet(0, 0, 0));
 	_player->SetNextExp("res/JsonFile/ExpList.json");
-	_camera = new Camera(_player->GetPosition());
+	_camera = NEW Camera(_player->GetPosition());
 
-	_chain = new Chain();
+	_chain = NEW Chain();
 	_chain->Init();
 
-	_classificationEffect = new ClassificationEffect();
-	_effectManeger = new EffectManeger();
+	_classificationEffect = NEW ClassificationEffect();
+	_effectManeger = NEW EffectManeger();
 
 	{
 		ResourceServer::LoadMultGraph("split", "res/TemporaryMaterials/split/test", ".png", 30, _effectSheet);
@@ -37,9 +37,9 @@ bool ModeTest::Initialize() {
 		ResourceServer::LoadEffekseerEffect("Stanp", "res/Effekseer/Attack/HorizontalThird.efkefc");
 	}
 
-	_suppression = new Suppression();
+	_suppression = NEW Suppression();
 
-	_enemyPool = new EnemyPool("res/JsonFile/EnemyData.json");
+	_enemyPool = NEW EnemyPool("res/JsonFile/EnemyData.json");
 
 	// オブジェクトのデータの読み込み
 	LoadObjectParam("BuildingtList.csv");
@@ -49,17 +49,17 @@ bool ModeTest::Initialize() {
 	int size = 100;
 	int heartHandle[3];
 	ResourceServer::LoadMultGraph("Heart","res/UI/UI_Heart", ".png", 3, heartHandle);
-	ui[0] = new UIHeart(VGet(20, 20, 0), 3,heartHandle,2);
-	ui[1] = new UIExpPoint(VGet(0, 150, 0), "res/TemporaryMaterials/UI_EXP_01.png");
+	ui[0] = NEW UIHeart(VGet(20, 20, 0), 3,heartHandle,2);
+	ui[1] = NEW UIExpPoint(VGet(0, 150, 0));
 	ResourceServer::LoadMultGraph("Suppressiongauge","res/TemporaryMaterials/SuppressionGauge/suppressiongauge", ".png", 3, heartHandle);
-	ui[2] = new UISuppressionGauge(VGet(500,100,0),3, heartHandle);
-	_gaugeUI[0] = new DrawGauge(0, 3, size, true);
-	_gaugeUI[1] = new DrawGauge(0, 3, size, true);
+	ui[2] = NEW UISuppressionGauge(VGet(500,100,0),3, heartHandle);
+	_gaugeUI[0] = NEW DrawGauge(0, 3, size, true);
+	_gaugeUI[1] = NEW DrawGauge(0, 3, size, true);
 	_gaugeHandle[0] = ResourceServer::LoadGraph("Stamina03",_T("res/UI/UI_Stamina_03.png"));
 	_gaugeHandle[1] = ResourceServer::LoadGraph("Stamina02",_T("res/UI/UI_Stamina_02.png"));
 	_gaugeHandle[2] = ResourceServer::LoadGraph("Stamina01",_T("res/UI/UI_Stamina_01.png"));
 	_gaugeHandle[3] = ResourceServer::LoadGraph("Stamina04",_T("res/UI/UI_Stamina_04.png"));
-	_sVib = new ScreenVibration();
+	_sVib = NEW ScreenVibration();
 
 	
 
@@ -70,9 +70,30 @@ bool ModeTest::Initialize() {
 
 bool ModeTest::Terminate() {
 	base::Terminate();
-	for (int i = 0; i < 2; i++) {
-	DeleteLightHandle(_lightHandle[i]);
+	delete _camera;
+	delete _player;
+	delete _sVib;
+	delete _enemyPool;
+	delete _suppression;
+	delete _effectManeger;
+	delete _classificationEffect;
+
+	for (int i = 0; i < 3; i++) {
+		delete ui[i];
 	}
+
+	for (int i = 0; i < 2; i++) {
+		delete _gaugeUI[i];
+	}
+
+	for (auto&& house : _house) {
+		delete house;
+	}
+
+	for (auto&& tower : _tower) {
+		delete tower;
+	}
+
 	return true;
 }
 
@@ -148,7 +169,7 @@ bool ModeTest::LoadStage(std::string fileName) {
 		for (auto&& object : objectData) {
 			if (std::get<2>(nameList) == 1) {
 				// 壊れるオブジェクト
-				House* building = new House();
+				House* building = NEW House();
 				//building->Init(MV1DuplicateModel(objHandle), object._pos, object._rotate, object._scale);
 				_house.push_back(building);
 			}
@@ -169,7 +190,7 @@ bool ModeTest::LoadStage(std::string fileName) {
 		towerModelHandle[1] = ResourceServer::MV1LoadModel("Tower02", "res/Building/Tower/test_Tower_02.mv1");
 		towerModelHandle[2] = ResourceServer::MV1LoadModel("Tower03", "res/Building/Tower/test_Tower_03.mv1");
 
-		Tower* tower = new Tower();
+		Tower* tower = NEW Tower();
 		tower->Init(towerModelHandle, v, VGet(0, 0, 0), VGet(1, 1, 1));
 
 		_tower.push_back(tower);
@@ -327,7 +348,7 @@ bool ModeTest::Process() {
 	//			VECTOR vDir = VSub(enPos, pPos);
 	//			vDir = VNorm(vDir);
 	//			enemy->SetKnockBack(vDir, ibPower);
-	//			BoardPolygon* effect = new BoardPolygon(VAdd(ibPos, VGet(0, 100, 0)), GetCameraBillboardMatrix(), 200, _effectSheet, 30, 1.0f / 60.0f * 1000.0f);
+	//			BoardPolygon* effect = NEW BoardPolygon(VAdd(ibPos, VGet(0, 100, 0)), GetCameraBillboardMatrix(), 200, _effectSheet, 30, 1.0f / 60.0f * 1000.0f);
 	//			_effectManeger->LoadEffect(effect);
 	//		}
 	//	}
@@ -388,7 +409,7 @@ bool ModeTest::Process() {
 	//if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_START)) {
 	//	_enemyPool->Init();
 	//	//_player->SetDamage();
-	//	ModeServer::GetInstance()->Add(new ModePause(), 10, "Pause");
+	//	ModeServer::GetInstance()->Add(NEW ModePause(), 10, "Pause");
 	//}
 
 	//if (XInput::GetInstance()->GetKey(XINPUT_BUTTON_Y)) {
@@ -416,7 +437,7 @@ bool ModeTest::Process() {
 	//if (_player->GetHP() <= 0) {
 	//	global._soundServer->BgmFadeOut(2000);
 	//	ModeServer::GetInstance()->Del(this);
-	//	ModeServer::GetInstance()->Add(new ModeGameOver(), 1, "gameover");
+	//	ModeServer::GetInstance()->Add(NEW ModeGameOver(), 1, "gameover");
 	//}
 
 	//VECTOR box_vec = ConvWorldPosToScreenPos(VAdd(_player->GetPosition(), VGet(0, 170, 0)));

@@ -5,7 +5,8 @@ CrystarPattern3::CrystarPattern3() :EnemyBase::EnemyBase() {
 };
 
 CrystarPattern3::~CrystarPattern3() {
-	//EnemyBase::~EnemyBase();
+	delete _frameData;
+	delete _animManager;
 	delete _roof;
 };
 
@@ -18,16 +19,16 @@ void CrystarPattern3::InheritanceInit() {
 
 void CrystarPattern3::AnimInit() {
 
-	_roof = new CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof","res/Enemy/Crystar/cg_crystar_roof.mv1"), _model);
+	_roof = NEW CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof","res/Enemy/Crystar/cg_crystar_roof.mv1"), _model);
 
 	//// モーションリストのロード
 	MotionList::Load("Crystarl", "MotionList_Crystarl.csv");
 	auto motionList = MotionList::GetMotionList("Crystarl");
 	// アニメーションマネージャーの初期化
-	_animManager = new AnimationManager();
+	_animManager = NEW AnimationManager();
 	_animManager->InitMap("Crystarl", _model, *motionList);
 	// フレームデータの初期化
-	_frameData = new FrameData();
+	_frameData = NEW FrameData();
 	_frameData->LoadData("Crystarl", *motionList);
 
 }
@@ -88,20 +89,19 @@ bool CrystarPattern3::ModeSearch() {
 	}
 
 	//索敵処理
-	VECTOR v_length = VSub(_player->GetCollision().down_pos, _pos);
-	float len = VSize(v_length);
-	if (VSize(v_length) <= _sartchRange) {
+	VECTOR dirVec = VSub(_player->GetCollision().down_pos, _pos);
+	float length = VSize(dirVec);
+	if (length <= _searchRange) {
 
 		MATRIX matrix = Math::MMultXYZ(0.0f, _rotation.y, 0.0f);
 		VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
-		VECTOR pla_dir = VNorm(v_length);
+		VECTOR pla_dir = VNorm(dirVec);
 		float range_dir = Math::CalcVectorAngle(ene_dir, pla_dir);
 
 		if (range_dir <= _flontAngle) {
-			_modeState = ENEMYTYPE::ATTACK;//状態を発見にする
-			_animState = ANIMSTATE::HANDSTAND;
-			_currentTime = GetNowCount();
-			_stopTime = 0;
+			_modeState = ENEMYTYPE::DISCOVER;//状態を発見にする
+			_searchRange = _discoverRangeSize;//索敵範囲を発見時の半径に変更
+			_currentTime = 0;
 		}
 	}
 

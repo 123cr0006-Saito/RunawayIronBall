@@ -13,9 +13,12 @@
 #include "CrystarPattern2.h"
 #include "CrystarPattern3.h"
 #include "SlaBlockPattern2.h"
+#include "Chainguard.h"
 #include "Suppression.h"
 // create Å®model param 
 // init Å®pos
+
+#include "CollisionManager.h"
 
 class EnemyPool
 {
@@ -46,6 +49,6 @@ private:
 	std::map<std::string, EnemyParam> _enemyParametersMap;
 	std::vector<VECTOR> _enemyInitPos;
 
-	
+	CollisionManager* _collisionManager;
 };
 
