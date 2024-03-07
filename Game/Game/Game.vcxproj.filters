@@ -56,6 +56,10 @@
     <ClCompile Include="source\Floor.cpp">
       <Filter>Building</Filter>
     </ClCompile>
+    <ClCompile Include="source\CollisionManager.cpp">
+      <Filter>Mode\Game\CollisionManager</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ObjectBase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -271,6 +275,13 @@
     <ClInclude Include="source\Floor.h">
       <Filter>Building</Filter>
     </ClInclude>
+    <ClInclude Include="source\ObjectBase.h" />
+    <ClInclude Include="source\CollisionManager.h">
+      <Filter>Mode\Game\CollisionManager</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Cell.h">
+      <Filter>Mode\Game\CollisionManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CharacterBase.h">
@@ -478,6 +489,9 @@
     </Filter>
     <Filter Include="Mode\Game">
       <UniqueIdentifier>{83bca989-3fef-431d-bc70-e6602cf6729d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mode\Game\CollisionManager">
+      <UniqueIdentifier>{9085406b-b4fa-43a0-89f1-31d0c0cc0085}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

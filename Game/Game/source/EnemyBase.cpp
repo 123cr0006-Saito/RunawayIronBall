@@ -1,7 +1,7 @@
 #include "EnemyBase.h"
 #include "EnemyPool.h"
 
-EnemyBase::EnemyBase() {
+EnemyBase::EnemyBase() : ObjectBase() {
 	_player = nullptr;
 
 	_stopTime = 0.0f;
@@ -12,6 +12,8 @@ EnemyBase::EnemyBase() {
 
 	_easingFrame = 0;
 	_saveNextPoint = VGet(0, 0, 0);
+
+	_cell->_objType = OBJ_TYPE::EN;
 };
 
 EnemyBase::~EnemyBase() {
