@@ -6,7 +6,8 @@ SlaBlockPattern2::SlaBlockPattern2() :EnemyBase::EnemyBase()
 };
 
 SlaBlockPattern2::~SlaBlockPattern2() {
-	EnemyBase::~EnemyBase();
+	delete _animManager;
+	delete _frameData;
 };
 
 void SlaBlockPattern2::InheritanceInit() {

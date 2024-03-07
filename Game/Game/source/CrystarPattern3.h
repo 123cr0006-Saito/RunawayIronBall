@@ -6,7 +6,7 @@ class CrystarPattern3 : public EnemyBase
 {
 public:
 	CrystarPattern3();
-	~CrystarPattern3();
+	~CrystarPattern3()override;
 
 	void Init(VECTOR pos)override;
 	void InheritanceInit()override;
