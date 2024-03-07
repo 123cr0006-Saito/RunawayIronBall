@@ -1,12 +1,22 @@
 #include "Camera.h"
 Camera::Camera(VECTOR InitPos) : CameraBase() {
 	
-
-
-	//_pointDistance = VGet(0, 0, -2360);
 	_gazeShift = VGet(0, 80, 0);
 	_reverseX = -1;
 	_reverseY = 1;
+
+	_cameraDistanceCount = 0;
+	_startDistance = 0.0f;
+	_endDistance = 0.0f;
+	_IsZoom = false;
+
+	float cameraChangeDistance[CAMERA_ZOOM_MAX] = { -400.0f, -600.0f, -800.0f };
+
+	for (int i = 0; i < CAMERA_ZOOM_MAX; i++) {
+		_cameraChangeDistance[i] = cameraChangeDistance[i];
+	}
+
+	_pointDistance.z =  _cameraChangeDistance[_cameraDistanceCount];
 
 	//カメラの位置を計算
 	MATRIX origin = MGetIdent();
@@ -47,18 +57,10 @@ bool Camera::Process(VECTOR pos, int map) {
 	if (_input->GetRy() != 0) {
 		_cameraDirX += move_speed_process(_input->GetRy(), 32768, 0.02) * _reverseX;
 	}
-	//トリガ入力でカメラの距離を変更
-	//カメラが遠くに移動
-	if (_input->GetRTrg() > 25) {
-		if (_pointDistance.z > _cameraMaxDistance) {
-			_pointDistance.z -= _input->GetRTrg() / 25;
-		}
-	}
-	//カメラが近くに移動
-	if (_input->GetLTrg() > 25) {
-		if (_pointDistance.z < _cameraMinDistance) {
-			_pointDistance.z += _input->GetLTrg() / 25;
-		}
+
+	//RB入力でカメラの距離を変更
+	if (_input->GetTrg(XINPUT_BUTTON_RIGHT_SHOULDER)) {
+		SetCameraDistance();
 	}
 
 	//±で1周回ったら０度に変換
@@ -69,12 +71,16 @@ bool Camera::Process(VECTOR pos, int map) {
 		_cameraDirY = 0;
 	}
 
+	// 回転値の上限
 	if (_cameraDirX >= 1.39491415f) {
 		_cameraDirX = 1.39491415f;
 	}
 	else if (_cameraDirX <= -1.39491415f) {
 		_cameraDirX = -1.39491415f;
 	}
+
+	// ZoomFlagが立っていればzoomのprocessを回す
+	ZoomProcess();
 
 	//カメラの位置を計算
 	MATRIX origin = MGetIdent();
@@ -113,5 +119,30 @@ bool Camera::Process(VECTOR pos, int map) {
 
 	//カメラのセット
 	SetCameraPositionAndTarget_UpVecY(VecAdd, target);
+	return true;
+};
+
+void Camera::SetCameraDistance() {
+	_cameraDistanceCount++;
+	_cameraDistanceCount = (_cameraDistanceCount + CAMERA_ZOOM_MAX) % CAMERA_ZOOM_MAX;
+
+	_startDistance = _pointDistance.z;
+	_endDistance = _cameraChangeDistance[_cameraDistanceCount];
+
+	_IsZoom = true;
+	_currentTime = GetNowCount();
+};
+
+bool Camera::ZoomProcess() {
+	if (_IsZoom) {
+		float moveTime = 5.0f / 60.0f * 1000;// 5フレームで移動
+		int nowTime = GetNowCount() - _currentTime;
+		// 移動
+		_pointDistance.z = Easing::Linear(nowTime,_startDistance,_endDistance,moveTime);
+		// 終了
+		if (nowTime >= moveTime) {
+			_IsZoom = false;
+		}
+	}
 	return true;
 };

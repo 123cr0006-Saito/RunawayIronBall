@@ -38,4 +38,5 @@ bool RotationCamera::Process() {
 	if (GetNowCount() - _currentTime >= _endTime) {
 	
 	}
+	return true;
 };
