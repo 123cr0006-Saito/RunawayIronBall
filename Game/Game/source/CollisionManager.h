@@ -1,35 +1,7 @@
 #pragma once
 #include "appframe.h"
-
+#include "Cell.h"
 #include "EnemyBase.h"
-
-class Cell
-{
-public:
-	Cell() {
-		_segment = nullptr;
-		_enObj = nullptr;
-		_obj = nullptr;
-		_shouldUpdateCollision = false;
-		_prev = nullptr;
-		_next = nullptr;
-	}
-	~Cell() {
-		_segment = nullptr;
-		_enObj = nullptr;
-		_obj = nullptr;
-		_prev = nullptr;
-		_next = nullptr;
-	}
-
-	Cell* _segment;
-	EnemyBase* _enObj;
-	ObjectBase* _obj;
-	bool _shouldUpdateCollision;
-
-	Cell* _prev;
-	Cell* _next;
-};
 
 // XZ平面上で4分木空間分割を行い、当たり判定を行うクラス
 class CollisionManager
@@ -41,10 +13,12 @@ public:
 	void Init();
 	void UpdateTree();
 
-	void AddObject(EnemyBase* enemy);
+
+	void UpdateCell(Cell* cell);
+
 	unsigned int CalcTreeIndex(VECTOR pos1, VECTOR pos2);
-	void InsertNewObjectIntoTree(unsigned int treeIndex, EnemyBase* enemy);
 	void InsertCellIntoTree(unsigned int treeIndex, Cell* cell);
+	void RemoveCellFromTree(Cell* cell);
 
 	unsigned int CheckArea(VECTOR pos);
 

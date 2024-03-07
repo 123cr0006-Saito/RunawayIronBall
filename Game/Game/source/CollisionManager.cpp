@@ -1,9 +1,13 @@
 #include "CollisionManager.h"
+
+#include "EnemyBase.h"
+
+
 #include <math.h>
 
 namespace {
 	constexpr float STAGE_LENGTH = 27000.0f;
-	constexpr int STAGE_DIVISION = 5;
+	constexpr int STAGE_DIVISION = 1;
 }
 
 CollisionManager::CollisionManager()
@@ -38,47 +42,69 @@ void CollisionManager::Init()
 
 void CollisionManager::UpdateTree()
 {
-	for (int i = 0; i < treeSize; i++) {
-		Cell* cell = _tree[i]->_next;
-		while (cell)
-		{
-			Cell* nextCell = cell->_next;
+	//for (int i = 0; i < treeSize; i++) {
+	//	Cell* cell = _tree[i]->_next;
+	//	while (cell)
+	//	{
+	//		Cell* nextCell = cell->_next;
 
-			EnemyBase* e = cell->_enObj;
-			if (e == nullptr || e->GetUse() == false) {
-				cell = cell->_next;
-				continue;
-			}
-			VECTOR centerPos = e->GetCollisionPos();
-			float r = e->GetR();
-			VECTOR pos1 = VGet(centerPos.x - r, 0.0f, centerPos.z - r);
-			VECTOR pos2 = VGet(centerPos.x + r, 0.0f, centerPos.z - r);
+	//		EnemyBase* e = cell->_enObj;
+	//		if (e == nullptr || e->GetUse() == false) {
+	//			cell = cell->_next;
+	//			continue;
+	//		}
+	//		VECTOR centerPos = e->GetCollisionPos();
+	//		float r = e->GetR();
+	//		VECTOR pos1 = VGet(centerPos.x - r, 0.0f, centerPos.z - r);
+	//		VECTOR pos2 = VGet(centerPos.x + r, 0.0f, centerPos.z - r);
 
 
-			unsigned int newIndex = CalcTreeIndex(pos1, pos2);
-			if(newIndex != i) {
-				Cell* prevCell = cell->_prev;
-				prevCell->_next = nextCell;
-				if(nextCell != nullptr) {
-					nextCell->_prev = prevCell;
-				}
-				InsertCellIntoTree(newIndex, cell);
-			}
-			cell = nextCell;
-		}
-	}
+	//		unsigned int newIndex = CalcTreeIndex(pos1, pos2);
+	//		if(newIndex != i) {
+	//			Cell* prevCell = cell->_prev;
+	//			prevCell->_next = nextCell;
+	//			if(nextCell != nullptr) {
+	//				nextCell->_prev = prevCell;
+	//			}
+	//			InsertCellIntoTree(newIndex, cell);
+	//		}
+	//		cell = nextCell;
+	//	}
+	//}
 }
 
-void CollisionManager::AddObject(EnemyBase* enemy)
+void CollisionManager::UpdateCell(Cell* cell)
 {
-	if (enemy == nullptr) return;
-	VECTOR centerPos = enemy->GetCollisionPos();
-	float r = enemy->GetR();
+	if(cell == nullptr || cell->_obj == nullptr) return;
 
-	VECTOR pos1 = VGet(centerPos.x - r, 0.0f, centerPos.z - r);
-	VECTOR pos2 = VGet(centerPos.x + r, 0.0f, centerPos.z - r);
+	unsigned int treeIndex = 0;
+	switch (cell->_objType)
+	{
+	case OBJ_TYPE::NONE:
+		return;
+		break;
+	case OBJ_TYPE::PL:
+		break;
+	case OBJ_TYPE::PL_IB:
+		break;
+	case OBJ_TYPE::EN:
+	{
+		EnemyBase* enemy = static_cast<EnemyBase*>(cell->_obj);
+		VECTOR centerPos = enemy->GetCollisionPos();
+		float r = enemy->GetR();
+		VECTOR pos1 = VGet(centerPos.x - r, 0.0f, centerPos.z - r);
+		VECTOR pos2 = VGet(centerPos.x + r, 0.0f, centerPos.z - r);
+		treeIndex = CalcTreeIndex(pos1, pos2);
+	}
+		break;
+	case OBJ_TYPE::EN_IB:
+		break;
+	}
 
-	InsertNewObjectIntoTree(CalcTreeIndex(pos1, pos2), enemy);
+	if (cell->_segment != _tree[treeIndex]) {
+		RemoveCellFromTree(cell);
+		InsertCellIntoTree(treeIndex, cell);
+	}
 }
 
 unsigned int CollisionManager::CalcTreeIndex(VECTOR pos1, VECTOR pos2)
@@ -111,28 +137,6 @@ unsigned int CollisionManager::CalcTreeIndex(VECTOR pos1, VECTOR pos2)
 	return treeIndex;
 }
 
-void CollisionManager::InsertNewObjectIntoTree(unsigned int treeIndex, EnemyBase* enemy)
-{
-	Cell* baseCell = _tree[treeIndex];
-	Cell* nextCell = baseCell->_next;
-
-	Cell* newCell = new Cell();
-	newCell->_enObj = enemy;
-	newCell->_shouldUpdateCollision = true;
-
-	newCell->_segment = baseCell;
-
-
-
-	baseCell->_next = newCell;
-	newCell->_prev = baseCell;
-
-	if(nextCell != nullptr) {
-		nextCell->_prev = newCell;
-		newCell->_next = nextCell;
-	}
-}
-
 void CollisionManager::InsertCellIntoTree(unsigned int treeIndex, Cell* cell)
 {
 	Cell* baseCell = _tree[treeIndex];
@@ -147,6 +151,22 @@ void CollisionManager::InsertCellIntoTree(unsigned int treeIndex, Cell* cell)
 		nextCell->_prev = cell;
 		cell->_next = nextCell;
 	}
+}
+
+void CollisionManager::RemoveCellFromTree(Cell* cell)
+{
+	Cell* prevCell = cell->_prev;
+	Cell* nextCell = cell->_next;
+
+	if (prevCell != nullptr) {
+		prevCell->_next = nextCell;
+	}
+	if (nextCell != nullptr) {
+		nextCell->_prev = prevCell;
+	}
+	cell->_segment = nullptr;
+	cell->_prev = nullptr;
+	cell->_next = nullptr;
 }
 
 unsigned int CollisionManager::CheckArea(VECTOR pos)
@@ -178,14 +198,14 @@ void CollisionManager::CheckHit()
 		while (cell1 != nullptr)
 		{
 
-			EnemyBase* en1 = cell1->_enObj;
+			EnemyBase* en1 = dynamic_cast<EnemyBase*>(cell1->_obj);
 			VECTOR en1Pos = en1->GetCollisionPos();
 			float en1R = en1->GetR();
 			Cell* cell2 = cell1->_next;
 
 			while (cell2 != nullptr)
 			{
-				EnemyBase* en2 = cell2->_enObj;
+				EnemyBase* en2 = dynamic_cast<EnemyBase*>(cell2->_obj);
 				VECTOR en2Pos = en2->GetCollisionPos();
 				float en2R = en2->GetR();
 				VECTOR vDir = VSub(en2Pos, en1Pos);
@@ -200,6 +220,23 @@ void CollisionManager::CheckHit()
 			cell1 = cell1->_next;
 		}
 	}
+
+
+
+
+
+
+	//int n = 0;
+	//for (int i = 0; i < treeSize; i++) {
+	//	Cell* cell = _tree[i]->_next;
+	//	while (cell != nullptr)
+	//	{
+	//		n++;
+	//		cell = cell->_next;
+	//	}
+	//}
+
+	//int m = 0;
 }
 
 void CollisionManager::DrawSegmentLine()
@@ -224,7 +261,7 @@ void CollisionManager::DrawAreaIndex()
 		Cell* cell = _tree[i]->_next;
 		while (cell != nullptr)
 		{
-			EnemyBase* e = cell->_enObj;
+			EnemyBase* e = dynamic_cast<EnemyBase*>(cell->_obj);
 			if (e == nullptr || e->GetUse() == false) {
 				cell = cell->_next;
 				continue;
