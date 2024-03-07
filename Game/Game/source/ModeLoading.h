@@ -1,7 +1,7 @@
 #pragma once
 #include "appframe.h"
 #include "ModeFade.h"
-#include "LoadPlayerChara.h"
+#include "LoadingPlayer.h"
 class ModeLoading : public ModeBase
 {
 public : 	
@@ -12,6 +12,6 @@ public :
 	virtual bool Render();
 protected:
 	bool* IsClear;
-	LoadPlayerChara* _chara;
+	LoadingPlayer* _chara;
 };
 

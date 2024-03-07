@@ -1,5 +1,5 @@
-#include "LoadPlayerChara.h"
-LoadPlayerChara::LoadPlayerChara(){
+#include "LoadingPlayer.h"
+LoadingPlayer::LoadingPlayer(){
 
 	//_modelHandle = ResourceServer::Load("Player", "res/Character/cg_player_girl/cg_player_girl_TEST_Ver.2.mv1");
 	_modelHandle = MV1LoadModel("res/Character/cg_player_girl/cg_player_girl_TEST_Ver.2.mv1");
@@ -9,11 +9,10 @@ LoadPlayerChara::LoadPlayerChara(){
 	_pos = VGet(0, 0, 0);
 	
 	// “S‹…‚Ì‰Šú‰»
-	_chain = new Chain();
+	_chain = new LoadingChain();
 	_chain->Init();
 	_chain->SetPlayerModelHandle(_modelHandle);
 	// “S‹…‚ÌˆÚ“®ó‘Ô‚ğu’Ç]v‚Éİ’è
-	_chain->SetMoveState(IB_MOVE_STATE::FOLLOWING);
 	_chain->SetBallPosition(VAdd(_pos, VGet(500, 0, 0)));
 
 	// F‚Ì’²®
@@ -37,11 +36,11 @@ LoadPlayerChara::LoadPlayerChara(){
 	_playTime = 0.0f;
 };
 
-LoadPlayerChara::~LoadPlayerChara() {
+LoadingPlayer::~LoadingPlayer() {
 	MV1DeleteModel(_modelHandle);
 };
 
-bool LoadPlayerChara::Process(){
+bool LoadingPlayer::Process(){
 	_chain->Process();
 
 	_pos.x -= 20;
@@ -50,7 +49,7 @@ bool LoadPlayerChara::Process(){
 	return true;
 };
 
-bool LoadPlayerChara::AnimationProcess(){
+bool LoadingPlayer::AnimationProcess(){
 
 	MV1SetAttachAnimTime(_modelHandle, _attachIndex, _playTime);
 
@@ -62,7 +61,7 @@ bool LoadPlayerChara::AnimationProcess(){
 	return true;
 };
 
-bool LoadPlayerChara::Render() {
+bool LoadingPlayer::Render() {
 	MV1DrawModel(_modelHandle);
 	_chain->Render();
 	return true;

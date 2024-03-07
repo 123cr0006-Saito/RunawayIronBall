@@ -1,7 +1,7 @@
 #pragma once
 #include "appframe.h"
 
-#define CHAIN_MAX 12
+#define CHAIN_MAX 5
 
 enum IB_MOVE_STATE {
 	FOLLOWING,

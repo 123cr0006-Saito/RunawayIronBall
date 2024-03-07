@@ -3,14 +3,14 @@
 #include "CharacterBase.h"
 #include "AnimationManager.h"
 #include "AnimationItem.h"
-#include "Chain.h"
+#include "LoadingChain.h"
 #include "FrameData.h"
 #include "ModelColor.h"
-class LoadPlayerChara
+class LoadingPlayer
 {
 public:
-	LoadPlayerChara();
-	~LoadPlayerChara();
+	LoadingPlayer();
+	~LoadingPlayer();
 
 	bool Process();
 	bool Render();
@@ -28,7 +28,7 @@ protected:
 
 	VECTOR _pos;
 
-	Chain* _chain;
+	LoadingChain* _chain;
 
 	ModelColor* _modelColor;
 };

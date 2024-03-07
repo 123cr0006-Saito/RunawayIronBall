@@ -56,7 +56,8 @@
     <ClCompile Include="source\Floor.cpp">
       <Filter>Building</Filter>
     </ClCompile>
-    <ClCompile Include="source\LoadPlayerChara.cpp" />
+    <ClCompile Include="source\LoadingPlayer.cpp" />
+    <ClCompile Include="source\LoadingChain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -272,7 +273,8 @@
     <ClInclude Include="source\Floor.h">
       <Filter>Building</Filter>
     </ClInclude>
-    <ClInclude Include="source\LoadPlayerChara.h" />
+    <ClInclude Include="source\LoadingPlayer.h" />
+    <ClInclude Include="source\LoadingChain.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CharacterBase.h">
