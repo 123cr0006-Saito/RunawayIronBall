@@ -169,6 +169,7 @@ bool SlaBlock::ModeKnockBack() {
 	return true;
 }
 
+
 bool SlaBlock::SetGravity() {
 	//d—Íˆ—
 	if (_modeState != ENEMYTYPE::ATTACK) {

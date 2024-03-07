@@ -270,7 +270,7 @@ bool EnemyBase::SetGravity() {
 	return true;
 };
 
-void EnemyBase::SetKnockBack(VECTOR vDir, float damage) {
+void EnemyBase::SetKnockBackAndDamage(VECTOR vDir, float damage) {
 	if (_knockBackSpeedFrame <= 0) {
 		InheritanceInit();
 		_rotation.y = atan2(vDir.x, vDir.z);

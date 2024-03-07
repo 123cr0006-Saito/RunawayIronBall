@@ -56,6 +56,9 @@
     <ClCompile Include="source\Floor.cpp">
       <Filter>Building</Filter>
     </ClCompile>
+    <ClCompile Include="source\Chainguard.cpp">
+      <Filter>Character\Enemy\Chainguard</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -271,6 +274,9 @@
     <ClInclude Include="source\Floor.h">
       <Filter>Building</Filter>
     </ClInclude>
+    <ClInclude Include="source\Chainguard.h">
+      <Filter>Character\Enemy\Chainguard</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CharacterBase.h">
@@ -478,6 +484,9 @@
     </Filter>
     <Filter Include="Mode\Game">
       <UniqueIdentifier>{83bca989-3fef-431d-bc70-e6602cf6729d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Character\Enemy\Chainguard">
+      <UniqueIdentifier>{c97449d4-a05f-4a15-b844-b9a0900d6037}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

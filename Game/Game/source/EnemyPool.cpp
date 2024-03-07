@@ -36,7 +36,7 @@ void EnemyPool::Create(myJson json){
 	//読み込む敵の名前のリスト
 	int handle = 0;
 	int suppression = 0;
-	std::vector<std::string> enemyName = { "CryStar_Glass","CryStar_Rock", "CryStar_Iron", "Slablock_Glass","Slablock_Rock","Slablock_Iron"/*,"ChainGuard"*/ };
+	std::vector<std::string> enemyName = { "CryStar_Glass","CryStar_Rock", "CryStar_Iron", "Slablock_Glass","Slablock_Rock","Slablock_Iron","ChainGuard" };
 	
 	// データの読み込み
 	for (auto&& name : enemyName) {
@@ -65,8 +65,8 @@ void EnemyPool::Create(myJson json){
 				handle = ResourceServer::MV1LoadModel("Slablock_Iron","res/Enemy/SlaBlock/cg_surablock_TEST.mv1");
 			}
 			else if (enemyDataList.first == "ChainGuard") {
-				/*_enemy[i] = new ChainGuard();
-				_enemy[i]->Create(handle, vPos, _enemyParametersMap[name]);*/
+				_enemy[i] = new Chainguard();
+				handle = ResourceServer::MV1LoadModel("Chainguard", "res/Enemy/Chainguard/cg_chain_guard_TEST.mv1");
 			}
 			_enemyInitPos.emplace_back(enemyDataList.second);
 			// データがないので今は個別
@@ -74,6 +74,7 @@ void EnemyPool::Create(myJson json){
 			i++;
 		}
 	}
+
 	Suppression::GetInstance()->AddSuppression(suppression);
 };
 

@@ -51,7 +51,7 @@ public:
 	virtual bool SetState();
 	virtual bool SetGravity();
 
-	void SetKnockBack(VECTOR vDir, float damage);//UŒ‚‚ğó‚¯‚½‚Ìˆ—
+	virtual void SetKnockBackAndDamage(VECTOR vDir, float damage);//UŒ‚‚ğó‚¯‚½‚Ìˆ—
 
 	bool GetUse() { return _IsUse; }
 	virtual VECTOR GetCollisionPos() { return VAdd(_pos, _diffeToCenter); }

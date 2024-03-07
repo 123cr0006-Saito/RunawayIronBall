@@ -388,7 +388,7 @@ bool ModeGame::Process() {
 			if (Collision3D::SphereCol(ibSphere.centerPos, ibSphere.r, enPos, enR)) {
 				VECTOR vDir = VSub(enPos, pPos);
 				vDir = VNorm(vDir);
-				enemy->SetKnockBack(vDir, ibPower);
+				enemy->SetKnockBackAndDamage(vDir, ibPower);
 			}
 		}
 		// “G‚ÆƒvƒŒƒCƒ„[‚Ì“–‚½‚è”»’è
