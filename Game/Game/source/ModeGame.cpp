@@ -44,7 +44,7 @@ bool ModeGame::Initialize() {
 	// オブジェクトのデータの読み込み
 	LoadObjectParam("BuildingtList.csv");
 	// ステージのデータの読み込み
-	LoadStage("Data/ObjectList/Stage_03.json");
+	LoadStage("Data/ObjectList/Stage_02.json");
 
 	int size = 100;
 	int heartHandle[3];
@@ -222,7 +222,7 @@ bool ModeGame::StageMutation() {
 
 
     // オブジェクトのデータの読み込み ファイル名は 1 から始まるので +1 する
-	std::string fileName = "Data/ObjectList/Stage_0" + std::to_string(_stageNum + 1) + ".json";
+	std::string fileName = "Data/ObjectList/Stage_0" + std::to_string(_stageNum) + ".json";
 	LoadStage(fileName);
 
 	IsLoading = true;
