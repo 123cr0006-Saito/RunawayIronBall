@@ -7,7 +7,7 @@ class SlaBlockPattern2 : public EnemyBase
 {
 public:
 	SlaBlockPattern2();
-	~SlaBlockPattern2();
+	~SlaBlockPattern2()override;
 
 	void InheritanceInit()override;
 	void AnimInit()override;

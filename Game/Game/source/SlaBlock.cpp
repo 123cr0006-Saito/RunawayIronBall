@@ -7,7 +7,8 @@ SlaBlock::SlaBlock() :EnemyBase::EnemyBase()
 };
 
 SlaBlock::~SlaBlock() {
-	EnemyBase::~EnemyBase();
+	delete _animManager;
+	delete _frameData;
 };
 
 void SlaBlock::InheritanceInit() {

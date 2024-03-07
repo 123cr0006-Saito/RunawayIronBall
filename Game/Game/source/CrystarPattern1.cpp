@@ -6,7 +6,9 @@ CrystarPattern1::CrystarPattern1() :EnemyBase::EnemyBase() {
 };
 
 CrystarPattern1::~CrystarPattern1() {
-	EnemyBase::~EnemyBase();
+	delete _frameData;
+    delete _animManager;
+	delete _roof;
 };
 
 void CrystarPattern1::InheritanceInit() {
