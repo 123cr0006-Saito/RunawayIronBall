@@ -26,7 +26,7 @@ EffekseerRotation::~EffekseerRotation() {
 
 bool EffekseerRotation::Process() {
 
-	int endTime = 6.0f/ 60.0f * 1000;
+	float endTime = 6.0f/ 60.0f * 1000;
 
 	VECTOR vBase = VGet(0.0f, 0.0f, -1.0f);
 	VECTOR Rotation = *(_rotation);
