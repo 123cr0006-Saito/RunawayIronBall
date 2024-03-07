@@ -405,7 +405,7 @@ bool ModeTest::Process() {
 	//	}
 	//}
 
-	_collisionManager->UpdateTree();
+	//_collisionManager->UpdateTree();
 	_collisionManager->CheckHit();
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_START)) {

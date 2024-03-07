@@ -1,13 +1,14 @@
 #pragma once
 #include "appframe.h"
 
-#include "EnemyPool.h"
+#include "EnemyBase.h"
 
 class Cell
 {
 public:
 	Cell() {
 		_segment = nullptr;
+		_enObj = nullptr;
 		_obj = nullptr;
 		_shouldUpdateCollision = false;
 		_prev = nullptr;
@@ -15,13 +16,15 @@ public:
 	}
 	~Cell() {
 		_segment = nullptr;
+		_enObj = nullptr;
 		_obj = nullptr;
 		_prev = nullptr;
 		_next = nullptr;
 	}
 
 	Cell* _segment;
-	EnemyBase* _obj;
+	EnemyBase* _enObj;
+	ObjectBase* _obj;
 	bool _shouldUpdateCollision;
 
 	Cell* _prev;

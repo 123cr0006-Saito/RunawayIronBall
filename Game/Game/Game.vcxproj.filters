@@ -56,6 +56,9 @@
     <ClCompile Include="source\Floor.cpp">
       <Filter>Building</Filter>
     </ClCompile>
+    <ClCompile Include="source\CollisionManager.cpp">
+      <Filter>Mode\Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -267,13 +270,11 @@
       <Filter>Mode\Game</Filter>
     </ClCompile>
     <ClCompile Include="source\UnbreakableObject.cpp" />
-    <ClCompile Include="source\CollisionManager.cpp">
-      <Filter>Mode\Game</Filter>
-    </ClCompile>
     <ClInclude Include="source\ModeLoading.h" />
     <ClInclude Include="source\Floor.h">
       <Filter>Building</Filter>
     </ClInclude>
+    <ClInclude Include="source\ObjectBase.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CharacterBase.h">

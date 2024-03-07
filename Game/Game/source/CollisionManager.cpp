@@ -44,7 +44,7 @@ void CollisionManager::UpdateTree()
 		{
 			Cell* nextCell = cell->_next;
 
-			EnemyBase* e = cell->_obj;
+			EnemyBase* e = cell->_enObj;
 			if (e == nullptr || e->GetUse() == false) {
 				cell = cell->_next;
 				continue;
@@ -117,7 +117,7 @@ void CollisionManager::InsertNewObjectIntoTree(unsigned int treeIndex, EnemyBase
 	Cell* nextCell = baseCell->_next;
 
 	Cell* newCell = new Cell();
-	newCell->_obj = enemy;
+	newCell->_enObj = enemy;
 	newCell->_shouldUpdateCollision = true;
 
 	newCell->_segment = baseCell;
@@ -178,14 +178,14 @@ void CollisionManager::CheckHit()
 		while (cell1 != nullptr)
 		{
 
-			EnemyBase* en1 = cell1->_obj;
+			EnemyBase* en1 = cell1->_enObj;
 			VECTOR en1Pos = en1->GetCollisionPos();
 			float en1R = en1->GetR();
 			Cell* cell2 = cell1->_next;
 
 			while (cell2 != nullptr)
 			{
-				EnemyBase* en2 = cell2->_obj;
+				EnemyBase* en2 = cell2->_enObj;
 				VECTOR en2Pos = en2->GetCollisionPos();
 				float en2R = en2->GetR();
 				VECTOR vDir = VSub(en2Pos, en1Pos);
@@ -224,7 +224,7 @@ void CollisionManager::DrawAreaIndex()
 		Cell* cell = _tree[i]->_next;
 		while (cell != nullptr)
 		{
-			EnemyBase* e = cell->_obj;
+			EnemyBase* e = cell->_enObj;
 			if (e == nullptr || e->GetUse() == false) {
 				cell = cell->_next;
 				continue;

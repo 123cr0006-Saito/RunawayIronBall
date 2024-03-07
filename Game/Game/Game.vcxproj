@@ -225,6 +225,7 @@
     <ClInclude Include="source\EffectBase.h" />
     <ClInclude Include="source\EffectManeger.h" />
     <ClInclude Include="source\Boss.h" />
+    <ClInclude Include="source\ObjectBase.h" />
     <ClInclude Include="source\PlaneEffectBase.h" />
     <ClInclude Include="source\BoardPolygonDust.h" />
     <ClInclude Include="source\CrystarPattern1.h" />
