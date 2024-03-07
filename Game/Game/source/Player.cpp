@@ -5,6 +5,8 @@ Player* Player::_instance = NULL;
 std::map<int, ANIMATION_INFO> Player::_animMap;
 
 namespace {
+	// Å‘åƒŒƒxƒ‹
+	constexpr int LEVEL_MAX = 10;
 	// Å‘åHP
 	constexpr int HP_MAX = 4;
 	// Å‘å–³“GŠÔ
