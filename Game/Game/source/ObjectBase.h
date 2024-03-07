@@ -1,11 +1,12 @@
 #pragma once
+#include "Cell.h"
+class Cell;
 
 class ObjectBase
 {
 public:
-	ObjectBase() { /*_cell = new Cell();*/ };
-	virtual ~ObjectBase() {};
+	ObjectBase();
+	virtual ~ObjectBase();
 
-private:
-	//Cell* _cell;
+	Cell* _cell;
 };
