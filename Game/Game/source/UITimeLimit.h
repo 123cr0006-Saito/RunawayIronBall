@@ -5,6 +5,7 @@ class UITimeLimit : public UIBase
 {
 public : 
 	UITimeLimit(VECTOR pos,VECTOR numPos, int size, int* numhandle ,int colonHandle,int _frameHandle);
+	UITimeLimit(VECTOR pos);
 	~UITimeLimit();
 	bool Process();
 	bool Draw();

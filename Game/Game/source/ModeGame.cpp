@@ -5,12 +5,17 @@
 bool ModeGame::Initialize() {
 	if (!base::Initialize()) { return false; }
 
+	_collisionManager = NEW CollisionManager();
+	_collisionManager->Init();
+
 	_gate = nullptr;
 	_stageNum = 1;
 	IsLoading = true;
 	LoadFunctionThread = nullptr;
 
 	_light = NEW Light("LightData");
+	_timeLimit = NEW TimeLimit();
+	_timeLimit->SetTimeLimit(12, 0);
 	
 	int resolution = 8192;
 	_shadowHandle = MakeShadowMap(resolution, resolution);
@@ -52,6 +57,7 @@ bool ModeGame::Initialize() {
 	ui[1] = NEW UIExpPoint(VGet(0, 150, 0));
 	ResourceServer::LoadMultGraph("Suppressiongauge", "res/TemporaryMaterials/SuppressionGauge/suppressiongauge", ".png", 3, heartHandle);
 	ui[2] = NEW UISuppressionGauge(VGet(700, 100, 0), 3, heartHandle);
+	ui[3] = NEW UITimeLimit(VGet(500, 100, 0));
 	_gaugeUI[0] = NEW DrawGauge(0, 3, size, true);
 	_gaugeUI[1] = NEW DrawGauge(0, 3, size, true);
 	_gaugeHandle[0] = ResourceServer::LoadGraph("Stamina03", _T("res/UI/UI_Stamina_03.png"));
@@ -73,6 +79,7 @@ bool ModeGame::Initialize() {
 
 bool ModeGame::Terminate() {
 	base::Terminate();
+	delete _timeLimit;
 	delete _camera;
 	delete _player;
 	delete _sVib;
@@ -269,6 +276,8 @@ bool ModeGame::Process() {
 
 	_player->Process(_camera->GetCamY());
 	_enemyPool->Process();
+
+	_timeLimit->Process();
 
 	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
 		ui[i]->Process();
@@ -668,9 +677,10 @@ bool ModeGame::Render() {
 	}
 
 	if (_player->GetStaminaRate() < 1.0f) {
-		int handleNum = floorf(_player->GetStaminaRate() * 100.0f / 33.4f);
-		_gaugeUI[1]->Draw(_gaugeHandle[handleNum]);
-		_gaugeUI[0]->Draw(_gaugeHandle[3]);
+		int gaugeHandle[2] = {3, floorf(_player->GetStaminaRate() * 100.0f / 33.4f) };
+		for (int i = 0; i < 2; i++) {
+			_gaugeUI[i]->Draw(gaugeHandle[i]);
+		}		
 	}
 
 	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);

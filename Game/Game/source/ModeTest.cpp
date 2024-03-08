@@ -53,6 +53,7 @@ bool ModeTest::Initialize() {
 	ui[1] = NEW UIExpPoint(VGet(0, 150, 0));
 	ResourceServer::LoadMultGraph("Suppressiongauge","res/TemporaryMaterials/SuppressionGauge/suppressiongauge", ".png", 3, heartHandle);
 	ui[2] = NEW UISuppressionGauge(VGet(500,100,0),3, heartHandle);
+	ui[3] = NEW UITimeLimit(VGet(1700, 100, 0));
 	_gaugeUI[0] = NEW DrawGauge(0, 3, size, true);
 	_gaugeUI[1] = NEW DrawGauge(0, 3, size, true);
 	_gaugeHandle[0] = ResourceServer::LoadGraph("Stamina03",_T("res/UI/UI_Stamina_03.png"));
