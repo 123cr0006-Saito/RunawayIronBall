@@ -6,6 +6,7 @@
 #include "ModePause.h"
 #include "ModeGameOver.h"
 #include "ModeLoading.h"
+#include "CollisionManager.h"
 
 #include "Camera.h"
 #include "Player.h"
@@ -60,6 +61,8 @@ public:
 	std::vector<OBJECTDATA> LoadJsonObject(nlohmann::json json, std::string loadName);//引数 読み込みたいオブジェクトの名前
 
 protected:
+
+	CollisionManager* _collisionManager;
 
 	Camera* _camera;
 	Player* _player;

@@ -5,6 +5,9 @@
 bool ModeGame::Initialize() {
 	if (!base::Initialize()) { return false; }
 
+	_collisionManager = NEW CollisionManager();
+	_collisionManager->Init();
+
 	_gate = nullptr;
 	_stageNum = 1;
 	IsLoading = true;
@@ -305,7 +308,8 @@ bool ModeGame::Process() {
 
 			//エネミーがノックバック状態の時、建物にぶつかったら破壊する
 			houseObb.pos.y = 0; houseObb.length[1] = 0; //平面での当たり判定のため建物のy軸の長さを0にする]
-			for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
+			int enemySize = _enemyPool->GetSize();
+			for (int i = 0; i < enemySize; i++) {
 				EnemyBase* en = _enemyPool->GetEnemy(i);
 				if (!en) { continue; }
 				if (!en->GetUse()) { continue; }
@@ -374,7 +378,8 @@ bool ModeGame::Process() {
 			}
 
 			// エネミーの押出処理
-			for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
+			int enemySize = _enemyPool->GetSize();
+			for (int i = 0; i < enemySize; i++) {
 				EnemyBase* en = _enemyPool->GetEnemy(i);
 				if (!en) { continue; }
 				if (!en->GetUse()) { continue; }
@@ -410,8 +415,8 @@ bool ModeGame::Process() {
 		}
 	}
 
-
-	for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
+	int enemySize = _enemyPool->GetSize();
+	for (int i = 0; i < enemySize; i++) {
 		EnemyBase* enemy = _enemyPool->GetEnemy(i);
 		if (!enemy) { continue; }
 		if (!enemy->GetUse()) { continue; }
@@ -452,14 +457,14 @@ bool ModeGame::Process() {
 	}
 
 	//空間分割を考えていないので無駄が多いです。
-	for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
+	for (int i = 0; i < enemySize; i++) {
 		EnemyBase* en = _enemyPool->GetEnemy(i);
 		if (!en) { continue; }
 		if (!en->GetUse()) { continue; }
 
 		VECTOR en1Pos = en->GetCollisionPos();
 		float en1R = en->GetR();
-		for (int j = 0; j < _enemyPool->ENEMY_MAX_SIZE; j++) {
+		for (int j = 0; j < enemySize; j++) {
 			if (i == j) { continue; }
 
 			EnemyBase* en = _enemyPool->GetEnemy(j);

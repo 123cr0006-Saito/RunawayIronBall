@@ -27,9 +27,7 @@ public:
 	~EnemyPool();
 
 	void Create(myJson json);//敵の作成
-	void Create();//敵の作成
 	void Init();//敵の配置などの初期化
-	void Init(VECTOR pos);//敵の配置　ループなし
 	std::vector<std::pair<std::string, VECTOR>> LoadJsonData(myJson jsonFile,std::string  loadName);//jsonファイルから敵の初期位置を読み込む
 	void DeleteEnemy();//敵の削除 すべて消すか いらないのを消すかは未定
 
@@ -41,11 +39,12 @@ public:
 	static EnemyPool* GetInstance() { return _instance; }
 	static EnemyPool* _instance;
 
+	std::vector<EnemyBase*> GetEnemyContainer() { return _enemy; }
 	EnemyBase* GetEnemy(int i);
+	int GetSize() { return _enemy.size(); };
 
-	static const int ENEMY_MAX_SIZE = 300;
 private:
-	EnemyBase* _enemy[ENEMY_MAX_SIZE];
+	std::vector<EnemyBase*> _enemy;
 	std::map<std::string, EnemyParam> _enemyParametersMap;
 	std::vector<VECTOR> _enemyInitPos;
 
