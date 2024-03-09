@@ -24,8 +24,12 @@ public:
 
 	bool SetGravity()override;
 	bool DebugRender()override;
+
+	VECTOR GetCollisionPos()override { return MV1GetFramePosition(_model, _collisionFrame); }
+
 protected:
 	int _fallCount;
+	static int _collisionFrame;
 	static enum ANIMSTATE : int {
 		IDLE = 0,
 		WALK,

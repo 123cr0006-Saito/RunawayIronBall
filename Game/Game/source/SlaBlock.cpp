@@ -1,5 +1,7 @@
 #include "SlaBlock.h"
 
+int SlaBlock::_collisionFrame = -1;
+
 SlaBlock::SlaBlock() :EnemyBase::EnemyBase()
 {
 	//デバック時登録
@@ -25,6 +27,11 @@ void SlaBlock::AnimInit() {
 	// フレームデータの初期化
 	_frameData = NEW FrameData();
 	_frameData->LoadData("Slablock", *motionList);
+
+	if (_collisionFrame == -1) {
+		_collisionFrame = MV1SearchFrame(_model,"face1");
+	}
+
 }
 
 void SlaBlock::CommandProcess() {
@@ -108,12 +115,14 @@ bool SlaBlock::ModeDisCover() {
 	//索敵処理
 	if (pl_distance >= _searchRange * _searchRange) {
 		_modeState = ENEMYTYPE::SEARCH;//状態を索敵にする
+		_animState = ANIMSTATE::IDLE;
 		_orignPos = _nextMovePoint = _pos;
 	}
 
 	//攻撃処理
 	if (pl_distance <= _attackRangeSize * _attackRangeSize) {
-		_modeState = ENEMYTYPE::ATTACK;//状態を索敵にする
+		_modeState = ENEMYTYPE::ATTACK;//状態を攻撃にする
+		_animState = ANIMSTATE::DROP;
 		_currentTime = GetNowCount();
 		_saveNextPoint = VAdd(_player->GetCollision().down_pos, VGet(0, 500, 0));
 		_savePos = _pos;
@@ -128,6 +137,7 @@ bool SlaBlock::ModeAttack() {
 	int enemyRigidityTime = 1.0f * 1000; //攻撃モーションに入っての硬直時間
 	int enemyToPlayerPosFrame = 20.0f / 60.0f * 1000;//敵がプレイヤーの位置につくまでの時間
 	int fallTime = 1.0f * 1000;//落下するまでの時間
+	float fallSpeed = 30.0f;
 
 	// 1秒待ってから20フレームでプレイヤーの頭上に到着
 	if (enemyRigidityTime <= nowTime && nowTime < enemyRigidityTime + enemyToPlayerPosFrame) {
@@ -138,7 +148,7 @@ bool SlaBlock::ModeAttack() {
 
 	//１秒待ってから落下
 	if (nowTime >= enemyRigidityTime + enemyToPlayerPosFrame + fallTime) {
-		_pos.y -= _speed * 10;
+		_pos.y -= fallSpeed;
 		//とりあえずyが0になるまで落下
 		if (_pos.y <= 0.0f) {
 			_pos.y = 0.0f;

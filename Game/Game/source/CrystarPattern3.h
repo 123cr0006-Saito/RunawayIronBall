@@ -23,7 +23,7 @@ public:
 	bool SetState()override;
 
 	bool DebugRender()override;
-	VECTOR GetCollisionPos()override { return VAdd(VAdd(_pos, _diffeToCenter), _attackPos); }
+	VECTOR GetCollisionPos()override { return MV1GetFramePosition(_model, _collisionFrame); }
 
 	int GetModelHandle() { return _model; }
 protected:
@@ -36,7 +36,7 @@ protected:
 		HANDSTANDLOOP,
 		HANDBUTT
 	};
-
+	static int _collisionFrame;
 	ANIMSTATE _animState;
 
 	VECTOR _attackPos;//çUåÇéûÇ…ëùÇ¶ÇÈíl

@@ -1,6 +1,8 @@
 #include "CrystarPattern1.h"
 #include "CrystarPattern2.h"
 
+int CrystarPattern1::_collisionFrame = -1;
+
 CrystarPattern1::CrystarPattern1() :EnemyBase::EnemyBase() {
 
 };
@@ -30,6 +32,9 @@ void CrystarPattern1::AnimInit() {
 	_frameData = NEW FrameData();
 	_frameData->LoadData("Crystarl", *motionList);
 
+	if (_collisionFrame == -1) {
+		_collisionFrame = MV1SearchFrame(_model, "Hip");
+	}
 }
 
 void CrystarPattern1::CommandProcess() {
@@ -135,6 +140,7 @@ bool CrystarPattern1::ModeDisCover() {
 	//çıìGèàóù
 	if (pl_distance >= _searchRange * _searchRange) {
 		_modeState = ENEMYTYPE::SEARCH;//èÛë‘ÇçıìGÇ…Ç∑ÇÈ
+		_animState = ANIMSTATE::IDLE;
 		_orignPos = _nextMovePoint = _pos;
 	}
 
@@ -187,6 +193,6 @@ bool CrystarPattern1::IndividualRendering() {
 };
 
 bool CrystarPattern1::DebugRender() {
-	DrawSphere3D(VAdd(_pos, _diffeToCenter), _r, 8, GetColor(0, 255, 0), GetColor(0, 0, 255), false);
+	DrawSphere3D(MV1GetFramePosition(_model, _collisionFrame), _r, 8, GetColor(0, 255, 0), GetColor(0, 0, 255), false);
 	return true;
 };

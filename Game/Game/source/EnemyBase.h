@@ -62,6 +62,8 @@ public:
 	float GetR() { return _r; }
 	ENEMYTYPE GetEnemyState() { return _modeState; }
 
+	int GetWeight() { return _weightExp; }
+
 	void SetExtrusionPos(VECTOR movePos) { _pos = VAdd(_pos, movePos); }
 
 protected:

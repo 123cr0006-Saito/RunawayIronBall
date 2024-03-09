@@ -1,5 +1,7 @@
 #include "CrystarPattern3.h"
 
+int CrystarPattern3::_collisionFrame = -1;
+
 CrystarPattern3::CrystarPattern3() :EnemyBase::EnemyBase() {
 
 };
@@ -30,6 +32,10 @@ void CrystarPattern3::AnimInit() {
 	// フレームデータの初期化
 	_frameData = NEW FrameData();
 	_frameData->LoadData("Crystarl", *motionList);
+
+	if (_collisionFrame == -1) {
+		_collisionFrame = MV1SearchFrame(_model, "Hip");
+	}
 
 }
 
@@ -94,7 +100,8 @@ bool CrystarPattern3::ModeSearch(bool plAttack) {
 	if (plAttack) {
 		// プレイヤーが攻撃時は聴覚範囲で探索
 		if (length <= _hearingRangeSize * _hearingRangeSize) {
-			_modeState = ENEMYTYPE::DISCOVER;//状態を発見にする
+			_modeState = ENEMYTYPE::ATTACK;//状態を発見にする
+			_animState = ANIMSTATE::HANDSTAND;
 			_currentTime = GetNowCount();
 		}
 	}
@@ -108,7 +115,8 @@ bool CrystarPattern3::ModeSearch(bool plAttack) {
 			float range_dir = Math::CalcVectorAngle(ene_dir, pla_dir);
 
 			if (range_dir <= _flontAngle) {
-				_modeState = ENEMYTYPE::DISCOVER;//状態を発見にする
+				_modeState = ENEMYTYPE::ATTACK;//状態を発見にする
+				_animState = ANIMSTATE::HANDSTAND;
 				_currentTime = GetNowCount();
 			}
 		}
@@ -155,6 +163,7 @@ bool CrystarPattern3::ModeAttack() {
 	//索敵処理
 	if (p_distance >= _discoverRangeSize) {
 		_modeState = ENEMYTYPE::SEARCH;//状態を索敵にする
+		_animState = ANIMSTATE::IDLE;
 		_orignPos = _nextMovePoint = _pos;
 		_attackDir = 0.0f;
 		_attackPos = VGet(0, 0, 0);
@@ -199,7 +208,6 @@ bool CrystarPattern3::SetState() {
 	//最終的なモデルの位置や角度を調整
 	if (_model != 0) {
 		MV1SetRotationXYZ(_model, VGet(0.0f, _rotation.y + _attackDir, 0.0f));
-		//MV1SetPosition(_model, VAdd(_pos, _attackPos));
 		MV1SetPosition(_model, _pos);
 	}
 	return true;
@@ -211,6 +219,6 @@ bool CrystarPattern3::IndividualRendering() {
 };
 
 bool CrystarPattern3::DebugRender() {
-	DrawSphere3D(VAdd(VAdd(_pos, _diffeToCenter), _attackPos), _r, 8, GetColor(0, 255, 0), GetColor(0, 0, 255), false);
+	DrawSphere3D(MV1GetFramePosition(_model, _collisionFrame), _r, 8, GetColor(0, 255, 0), GetColor(0, 0, 255), false);
 	return true;
 };
