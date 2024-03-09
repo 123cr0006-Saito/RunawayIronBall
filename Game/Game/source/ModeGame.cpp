@@ -267,16 +267,6 @@ bool ModeGame::StageMutation() {
 bool ModeGame::Process() {
 	base::Process();
 
-	global._timer->TimeElapsed();
-	_sVib->UpdateScreenVibration();
-
-	_player->Process(_camera->GetCamY());
-	_enemyPool->Process();
-
-	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
-		ui[i]->Process();
-	}
-
 	bool isAttackState = _player->GetEnabledIBAttackCollision();
 	bool isInvincible = _player->GetIsInvincible();
 	VECTOR pPos = _player->GetPosition();
@@ -289,6 +279,18 @@ bool ModeGame::Process() {
 
 	Capsule plCol = _player->GetCollision();
 	Sphere ibCol = _player->GetIBCollision();
+
+	global._timer->TimeElapsed();
+	_sVib->UpdateScreenVibration();
+
+	_player->Process(_camera->GetCamY());
+	_enemyPool->Process(isAttackState);
+
+	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
+		ui[i]->Process();
+	}
+
+
 
 	for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
 		(*itr)->Process();

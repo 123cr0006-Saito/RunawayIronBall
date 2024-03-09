@@ -155,7 +155,7 @@ bool EnemyBase::ModeSearchToCoolTime() {
 	return true;
 };
 
-bool EnemyBase::ModeSearch() {
+bool EnemyBase::ModeSearch(bool plAttack) {
 	switch (_searchState) {
 	case SEARCHTYPE::MOVE:
 		ModeSearchToMove();
@@ -170,18 +170,27 @@ bool EnemyBase::ModeSearch() {
 
 	//õ“Gˆ—
 	VECTOR dirVec = VSub(_player->GetCollision().down_pos, _pos);
-	float length = VSize(dirVec);
-	if (length <= _searchRange) {
-
-		MATRIX matrix = Math::MMultXYZ(0.0f, _rotation.y, 0.0f);
-		VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
-		VECTOR pla_dir = VNorm(dirVec);
-		float range_dir = Math::CalcVectorAngle(ene_dir, pla_dir);
-
-		if (range_dir <= _flontAngle) {
+	float length = VSquareSize(dirVec);
+	if (plAttack) {
+		// ƒvƒŒƒCƒ„[‚ªUŒ‚‚Í’®Šo”ÍˆÍ‚Å’Tõ
+		if (length <= _hearingRangeSize * _hearingRangeSize) {
 			_modeState = ENEMYTYPE::DISCOVER;//ó‘Ô‚ğ”­Œ©‚É‚·‚é
-			_searchRange = _discoverRangeSize;//õ“G”ÍˆÍ‚ğ”­Œ©‚Ì”¼Œa‚É•ÏX
-			_currentTime = 0;
+			_currentTime = GetNowCount();
+		}
+	}
+	else {
+		// ƒvƒŒƒCƒ„[‚ªUŒ‚‚µ‚Ä‚¢‚È‚¢‚Æ‚«‚Í‹ŠE‚Å‚ÌŒŸõ
+		if (length <= _searchRange * _searchRange) {
+
+			MATRIX matrix = Math::MMultXYZ(0.0f, _rotation.y, 0.0f);
+			VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
+			VECTOR pla_dir = VNorm(dirVec);
+			float range_dir = Math::CalcVectorAngle(ene_dir, pla_dir);
+
+			if (range_dir <= _flontAngle) {
+				_modeState = ENEMYTYPE::DISCOVER;//ó‘Ô‚ğ”­Œ©‚É‚·‚é
+				_currentTime = GetNowCount();
+			}
 		}
 	}
 
@@ -204,9 +213,8 @@ bool EnemyBase::ModeDisCover() {
 	float pl_distance = VSquareSize(move);//“G‚ÆƒvƒŒƒCƒ„[‚Ì‹——£
 
 	//õ“Gˆ—
-	if (pl_distance >= _searchRange * _searchRange) {
+	if (pl_distance >= _discoverRangeSize * _discoverRangeSize) {
 		_modeState = ENEMYTYPE::SEARCH;//ó‘Ô‚ğõ“G‚É‚·‚é
-		_searchRange = _hearingRangeSize;//õ“G”ÍˆÍ‚ğ”­Œ©‚Ì”¼Œa‚É•ÏX
 		_orignPos = _nextMovePoint = _pos;
 	}
 
@@ -303,14 +311,14 @@ void EnemyBase::CommandProcess() {
 
 };
 
-bool EnemyBase::Process() {
+bool EnemyBase::Process(bool plAttack) {
 	if (_IsUse) {
 
 		
 
 		switch (_modeState) {
 		case ENEMYTYPE::SEARCH:
-			ModeSearch();
+			ModeSearch(plAttack);
 			break;
 		case ENEMYTYPE::DISCOVER:
 			ModeDisCover();

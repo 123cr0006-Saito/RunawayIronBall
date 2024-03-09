@@ -33,7 +33,7 @@ public:
 
 	EnemyBase* Recicle();//使用していないオブジェクトを返す
 
-	bool Process();
+	bool Process(bool plAttack);
 	bool Render();
 
 	static EnemyPool* GetInstance() { return _instance; }

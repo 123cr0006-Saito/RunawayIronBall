@@ -30,14 +30,14 @@ public:
 	void SetPos(VECTOR pos);
 	void SetKindPos(VECTOR pos);
 
-	bool Process();
+	bool Process(bool plAttack);
 	bool Render();
 
 	virtual void CommandProcess();
 
 	virtual bool DebugRender();
 
-	virtual bool ModeSearch();
+	virtual bool ModeSearch(bool plAttack);
 	virtual bool ModeSearchToTurn();
 	virtual bool ModeSearchToMove();
 	virtual bool ModeSearchToCoolTime();

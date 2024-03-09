@@ -13,7 +13,7 @@ public:
 	void AnimInit()override;
 	void CommandProcess()override;
 
-	bool ModeSearch()override;
+	bool ModeSearch(bool plAttack)override;
 	bool ModeDisCover()override;
 	bool ModeAttack()override;
 	bool ModeCoolTime()override;

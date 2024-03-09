@@ -131,10 +131,10 @@ EnemyBase* EnemyPool::Recicle() {
 	}
 };
 
-bool EnemyPool::Process(){
+bool EnemyPool::Process(bool plAttack){
 	for (auto&& enemy : _enemy) {
 		if (enemy->GetUse()) {
-			enemy->Process();
+			enemy->Process(plAttack);
 			_collisionManager->UpdateCell(enemy->_cell);
 		}
 	}

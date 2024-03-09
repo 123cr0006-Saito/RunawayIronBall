@@ -72,7 +72,7 @@ void CrystarPattern3::Init(VECTOR pos) {
 	InheritanceInit();
 };
 
-bool CrystarPattern3::ModeSearch() {
+bool CrystarPattern3::ModeSearch(bool plAttack) {
 	switch (_searchState) {
 	case SEARCHTYPE::MOVE:
 		ModeSearchToMove();
@@ -90,20 +90,30 @@ bool CrystarPattern3::ModeSearch() {
 
 	//õ“Gˆ—
 	VECTOR dirVec = VSub(_player->GetCollision().down_pos, _pos);
-	float length = VSize(dirVec);
-	if (length <= _searchRange) {
-
-		MATRIX matrix = Math::MMultXYZ(0.0f, _rotation.y, 0.0f);
-		VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
-		VECTOR pla_dir = VNorm(dirVec);
-		float range_dir = Math::CalcVectorAngle(ene_dir, pla_dir);
-
-		if (range_dir <= _flontAngle) {
+	float length = VSquareSize(dirVec);
+	if (plAttack) {
+		// ƒvƒŒƒCƒ„[‚ªUŒ‚Žž‚Í’®Šo”ÍˆÍ‚Å’Tõ
+		if (length <= _hearingRangeSize * _hearingRangeSize) {
 			_modeState = ENEMYTYPE::DISCOVER;//ó‘Ô‚ð”­Œ©‚É‚·‚é
-			_searchRange = _discoverRangeSize;//õ“G”ÍˆÍ‚ð”­Œ©Žž‚Ì”¼Œa‚É•ÏX
-			_currentTime = 0;
+			_currentTime = GetNowCount();
 		}
 	}
+	else {
+		// ƒvƒŒƒCƒ„[‚ªUŒ‚‚µ‚Ä‚¢‚È‚¢‚Æ‚«‚ÍŽ‹ŠE‚Å‚ÌŒŸõ
+		if (length <= _searchRange * _searchRange) {
+
+			MATRIX matrix = Math::MMultXYZ(0.0f, _rotation.y, 0.0f);
+			VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
+			VECTOR pla_dir = VNorm(dirVec);
+			float range_dir = Math::CalcVectorAngle(ene_dir, pla_dir);
+
+			if (range_dir <= _flontAngle) {
+				_modeState = ENEMYTYPE::DISCOVER;//ó‘Ô‚ð”­Œ©‚É‚·‚é
+				_currentTime = GetNowCount();
+			}
+		}
+	}
+
 
 	return true;
 }
