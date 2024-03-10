@@ -7,6 +7,21 @@ std::unordered_map<std::string, ResourceServer::Mult> ResourceServer::_multMap;
 std::unordered_map<std::string, int >ResourceServer::_effekseerMap;
 std::unordered_map<std::string, std::vector<int> >ResourceServer::_modelMap;
 
+int ResourceServer::Load(std::string key, std::string handleName) {
+	int value = 0;
+	int size = handleName.length();
+	std::string extension = handleName.substr(size - 3); //3文字分の拡張子を取得
+	if (extension == "png" || extension == "jpg" || extension == "peg") {
+		value = LoadGraph(key, handleName);
+	}
+	else if (extension == "efk" || extension == "efc") {
+		value = LoadEffekseerEffect(key, handleName);
+	}
+	else if (extension == "mv1") {
+		value = MV1LoadModel(key, handleName);
+	}
+	return value;
+};
 
 int ResourceServer::LoadGraph(std::string key_name, std::string handle_name) {
 
@@ -77,6 +92,35 @@ int ResourceServer::LoadDivGraph(std::string key_name, std::string handle_name, 
 	return value;
 };
 
+int ResourceServer::LoadDivGraph(std::string key_name, std::string handle_name, int AllNum, int XNum, int YNum, int XSize, int YSize) {
+	// 返り値 -1 : 失敗 1 : 成功 2 : すでに値があります
+
+	int value = 0;
+	auto itr = _multMap.find(key_name);
+
+	if (itr != _multMap.end()) {
+		return 2;
+	}
+	else {
+		//記録された名前がなかったので読み込み
+		//読み込む枚数がわからないためメモリを動的確保
+		int* buf = new int[AllNum];
+		value = ::LoadDivGraph(handle_name.c_str(), AllNum, XNum, YNum, XSize, YSize, buf);
+
+		if (value != -1) {
+			//エラーではなかった場合
+			//最大枚数と読み込みんだ枚数分値を確保
+			_multMap[key_name].AllNum = AllNum;
+			_multMap[key_name].handle = buf;
+			//読み込んだ値を移動
+			//std::swap(HandleBuf, buf);
+			return 1;
+		}
+	}
+	//返すのは成功だった場合の0 失敗だった場合の-1
+	return -1;
+};
+
 int ResourceServer::LoadMultGraph(std::string key_name, std::string handle_name, std::string extension, int AllNum, int* HandleBuf) {
 
 	int value = 0;
@@ -113,6 +157,35 @@ int ResourceServer::LoadMultGraph(std::string key_name, std::string handle_name,
 	}
 	//返すのは成功だった場合の0 失敗だった場合の-1
 	return value;
+};
+
+
+int ResourceServer::LoadMultGraph(std::string key_name, std::string handle_name, std::string extension, int AllNum) {
+
+	auto itr = _multMap.find(key_name);
+
+	if (itr != _multMap.end()) {
+		return 2;
+	}
+	else {
+		//記録された名前がなかったので読み込み
+		//読み込む枚数がわからないためメモリを動的確保
+		int* buf = new int[AllNum];
+		char name[1024];
+		std::string fileName = handle_name + " (%d)" + extension;
+		for (int i = 1; i <= AllNum; i++) {
+			std::sprintf(name, fileName.c_str(), i);
+			buf[i - 1] = ::LoadGraph(name);
+			if (buf[i - 1] == -1) {
+				return -1;
+			}
+		}
+		//全て読み込んだ
+		//最大枚数と読み込みんだ枚数分値を確保
+		_multMap[key_name].AllNum = AllNum;
+		_multMap[key_name].handle = buf;
+	}
+	return 1;
 };
 
 int ResourceServer::LoadEffekseerEffect(std::string key_name, std::string handle_name) {
@@ -260,7 +333,7 @@ bool ResourceServer::MV1DeleteModel(std::string key, int model) {
 		 }
 	  }
    }
-	return true;
+	return false;
 };
 
 bool ResourceServer::MV1DeleteModelAll(std::string key) {
@@ -270,6 +343,19 @@ bool ResourceServer::MV1DeleteModelAll(std::string key) {
 			::MV1DeleteModel(itr->second.at(i));
 		}
 		_modelMap.at(key).clear();
+		return true;
+	}
+	return false;
+};
+
+bool ResourceServer::MV1DeleteModelOrigin(std::string key) {
+	std::string originKey = key + "_Origin";
+	auto itr = _modelMap.find(originKey);
+	if (itr != _modelMap.end()) {
+		for (int i = 0; i < itr->second.size(); i++) {
+			::MV1DeleteModel(itr->second.at(i));
+		}
+		_modelMap.at(originKey).clear();
 		return true;
 	}
 	return false;

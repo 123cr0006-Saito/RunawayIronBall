@@ -68,6 +68,9 @@ bool ApplicationBase::Initialize(HINSTANCE hInstance) {
 
 bool ApplicationBase::Terminate() {
 
+	delete _serverMode;
+	_lpInstance = nullptr;
+
 	// Effekseer‚ğI—¹‚·‚éB
 	Effkseer_End();
 

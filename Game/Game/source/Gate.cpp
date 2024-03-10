@@ -11,6 +11,7 @@ _handleSize(handlesize)
 		_handle[i] = handle[i];
 	}
 	_currentTime = GetNowCount();
+	_animCount = 0;
 };
 
 Gate::~Gate() {

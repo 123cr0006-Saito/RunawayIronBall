@@ -25,7 +25,7 @@ bool BuildingBase::Init(int modelHandle, VECTOR startPos, VECTOR rotation, VECTO
 	MV1SetRotationXYZ(_modelHandle, rotation);
 	MV1SetScale(_modelHandle, scale);
 
-	_breakObj = new BreakObject();
+	_breakObj = NEW BreakObject();
 	_breakObj->Init(_modelHandle);
 
 	return true;

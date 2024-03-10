@@ -9,10 +9,13 @@
 
 #include <string>
 
+#include "ObjectBase.h"
+class ObjectBase;
+
 #define EN_MOTION_CHANGE 0
 
 //ƒGƒlƒ~[Šeí‚Ì‚à‚Æ‚É‚È‚éƒNƒ‰ƒX
-class EnemyBase
+class EnemyBase : public ObjectBase
 {
 public:
 	EnemyBase();
@@ -27,14 +30,14 @@ public:
 	void SetPos(VECTOR pos);
 	void SetKindPos(VECTOR pos);
 
-	bool Process();
+	bool Process(bool plAttack);
 	bool Render();
 
 	virtual void CommandProcess();
 
 	virtual bool DebugRender();
 
-	virtual bool ModeSearch();
+	virtual bool ModeSearch(bool plAttack);
 	virtual bool ModeSearchToTurn();
 	virtual bool ModeSearchToMove();
 	virtual bool ModeSearchToCoolTime();
@@ -51,13 +54,15 @@ public:
 	virtual bool SetState();
 	virtual bool SetGravity();
 
-	void SetKnockBack(VECTOR vDir, float damage);//UŒ‚‚ğó‚¯‚½‚Ìˆ—
+	virtual void SetKnockBackAndDamage(VECTOR vDir, float damage);//UŒ‚‚ğó‚¯‚½‚Ìˆ—
 
 	bool GetUse() { return _IsUse; }
 	virtual VECTOR GetCollisionPos() { return VAdd(_pos, _diffeToCenter); }
 	VECTOR GetRotation() { return _rotation; }
 	float GetR() { return _r; }
 	ENEMYTYPE GetEnemyState() { return _modeState; }
+
+	int GetWeight() { return _weightExp; }
 
 	void SetExtrusionPos(VECTOR movePos) { _pos = VAdd(_pos, movePos); }
 
@@ -75,7 +80,7 @@ protected:
 
 	//õ“GŒn•Ï”
 	float _flontAngle;//‹ŠE”ÍˆÍ‚ÌŠp“x
-	float _sartchRange;//õ“G”ÍˆÍ‚Ì”¼Œa
+	float _searchRange;//õ“G”ÍˆÍ‚Ì”¼Œa
 	float _moveRange;//ˆÚ“®”ÍˆÍ‚Ì”¼Œa
 	float _hearingRangeSize;//’®Šo”ÍˆÍ‚Ì”¼Œa
 	float _discoverRangeSize;//”­Œ©A‘ÎÛ‚ÌŒ©¸‚¤‚Ü‚Å‚Ì‹——£‚Ì”¼Œa

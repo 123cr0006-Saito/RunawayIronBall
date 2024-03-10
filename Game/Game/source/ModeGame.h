@@ -6,6 +6,7 @@
 #include "ModePause.h"
 #include "ModeGameOver.h"
 #include "ModeLoading.h"
+#include "CollisionManager.h"
 
 #include "Camera.h"
 #include "Player.h"
@@ -23,6 +24,7 @@
 #include "BuildingBase.h"
 #include "House.h"
 #include "Tower.h"
+#include "UnbreakableObject.h"
 
 #include "Light.h"
 #include "Gate.h"
@@ -60,6 +62,8 @@ public:
 
 protected:
 
+	CollisionManager* _collisionManager;
+
 	Camera* _camera;
 	Player* _player;
 
@@ -77,6 +81,7 @@ protected:
 
 	std::vector<House*> _house;
 	std::vector<Tower*> _tower;
+	std::vector<UnbreakableObject*> _uObj;
 
 	int _skySphere;
 	int _tile;

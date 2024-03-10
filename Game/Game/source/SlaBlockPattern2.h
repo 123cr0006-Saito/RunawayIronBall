@@ -13,7 +13,7 @@ public:
 	void AnimInit()override;
 	void CommandProcess()override;
 
-	bool ModeSearch()override;
+	bool ModeSearch(bool plAttack)override;
 	bool ModeDisCover()override;
 	bool ModeAttack()override;
 	bool ModeCoolTime()override;
@@ -24,8 +24,12 @@ public:
 
 	bool SetGravity()override;
 	bool DebugRender()override;
+
+	VECTOR GetCollisionPos()override { return MV1GetFramePosition(_model, _collisionFrame); }
+
 protected:
 	int _fallCount;
+	static int _collisionFrame;
 	static enum ANIMSTATE : int {
 		IDLE = 0,
 		WALK,

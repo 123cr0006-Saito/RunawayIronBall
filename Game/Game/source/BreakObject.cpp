@@ -4,6 +4,7 @@ BreakObject::BreakObject()
 {
 	_isActive = false;
 	_finishedBreakAll = false;
+	
 
 	_modelHandle = -1;
 	//MV1SetPosition(_modelHandle, _pos);
@@ -54,7 +55,7 @@ void BreakObject::Init(int modelHandle)
 			}
 		}
 
-		FRAME_INFO* f = new FRAME_INFO();
+		FRAME_INFO* f = NEW FRAME_INFO();
 		f->frameIndex = i;
 		f->finishedBreak;
 		f->horizontalDir = vFrameLocalDir;

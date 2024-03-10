@@ -1,4 +1,12 @@
 #include "UIBase.h"
+
+UIBase::UIBase(VECTOR pos) {
+	_pos = pos;
+	_handleNum = 0;
+	_cx = 0;
+	_cy = 0;
+};
+
 UIBase::UIBase(VECTOR pos, std::string handleName) {
 	_handle = new int[1];
 	*_handle = ResourceServer::LoadGraph(handleName.c_str(),handleName.c_str());

@@ -5,6 +5,8 @@ Player* Player::_instance = NULL;
 std::map<int, ANIMATION_INFO> Player::_animMap;
 
 namespace {
+	// 最大レベル
+	constexpr int LEVEL_MAX = 10;
 	// 最大HP
 	constexpr int HP_MAX = 4;
 	// 最大無敵時間
@@ -83,7 +85,7 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	_playNextComboAnim = true;
 
 	// 鉄球の初期化
-	_chain = new Chain();
+	_chain = NEW Chain();
 	_chain->Init();
 	_chain->SetPlayerModelHandle(_modelHandle);
 	// 鉄球の移動状態を「追従」に設定
@@ -120,21 +122,30 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	auto motionList = MotionList::GetMotionList("Player");
 
 	// アニメーションマネージャーの初期設定
-	_animManager = new AnimationManager();
+	_animManager = NEW AnimationManager();
 	_animManager->InitMap("Player", _modelHandle, *motionList);
 
 	// フレームデータの初期設定
-	_frameData = new FrameData();
+	_frameData = NEW FrameData();
 	_frameData->LoadData("Player", *motionList);
 
-	_modelColor = new ModelColor();
+	_modelColor = NEW ModelColor();
 	_modelColor->Init(_modelHandle);
 }
 
 Player::~Player()
 {
 	_instance = nullptr;
+	_input = nullptr;
 	delete _animManager;
+	delete _frameData;
+	delete _modelColor;
+	delete _chain;
+
+	for (int i = 0; i < 2; i++) {
+		delete _bone[i];
+	}
+
 }
 
 // 無敵状態の更新
@@ -143,7 +154,6 @@ void Player::ChangeIsInvincible(bool b, int frame)
 	if (b) {
 		if (!_isInvincible) {
 			_invincibleRemainingCnt = frame;
-			_animStatus = ANIM_STATE::HIT;
 		}
 	}
 	else {
@@ -158,6 +168,10 @@ void Player::SetDamage()
 	if (_hp < 0) {
 		_hp = 0;
 	}
+	_isSwinging = false;
+	_isRotationSwinging = false;
+	_rotationCnt = 0;
+	_animStatus = ANIM_STATE::HIT;
 	ChangeIsInvincible(true, INVINCIBLE_CNT_MAX);
 }
 
@@ -170,7 +184,7 @@ void Player::SetBone() {
 	bone_left_list[3] = MV1SearchFrame(_modelHandle,"Left_mitsuami4");
 	bone_left_list[4] = MV1SearchFrame(_modelHandle,"Left_mitsuami5");
 	bone_left_list[5] = MV1SearchFrame(_modelHandle,"Left_mitsuami6");
-	_bone[0] = new bone(&_modelHandle, bone_left_list, bone_left_list.size() - 2, "res/JsonFile/hair_parameters.json");
+	_bone[0] = NEW bone(&_modelHandle, bone_left_list, bone_left_list.size() - 2, "res/JsonFile/hair_parameters.json");
 	//右髪
 	std::vector<int> bone_right_list(6);
 	bone_right_list[0] = MV1SearchFrame(_modelHandle,"Right_mitsuami1");
@@ -179,7 +193,7 @@ void Player::SetBone() {
 	bone_right_list[3] = MV1SearchFrame(_modelHandle,"Right_mitsuami4");
 	bone_right_list[4] = MV1SearchFrame(_modelHandle,"Right_mitsuami5");
 	bone_right_list[5] = MV1SearchFrame(_modelHandle,"Right_mitsuami6");
-	_bone[1] = new bone(&_modelHandle, bone_right_list, bone_right_list.size() - 2, "res/JsonFile/hair_parameters.json");
+	_bone[1] = NEW bone(&_modelHandle, bone_right_list, bone_right_list.size() - 2, "res/JsonFile/hair_parameters.json");
 };
 
 void Player::SetNextExp(std::string FileName) {
@@ -381,7 +395,9 @@ bool Player::Process(float camAngleY)
 				_forwardDir = _stickDir;
 			}
 		}
+	}
 
+	if (_canMotionCancel) {
 		// 回避
 		if (_input->GetTrg(XINPUT_BUTTON_A)) {
 			if (!_isSwinging || _isRotationSwinging) {
@@ -393,7 +409,6 @@ bool Player::Process(float camAngleY)
 			}
 		}
 	}
-
 
 	if (_isRotationSwinging) {
 		float angle = _animStatus == ANIM_STATE::TO_ROTATION_SWING ? -(2.0f * DX_PI_F) / 80.0f : -(2.0f * DX_PI_F) / 30.0f;

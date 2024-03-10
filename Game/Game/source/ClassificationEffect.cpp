@@ -58,7 +58,7 @@ void ClassificationEffect::SetClassification(CommandParam param) {
 		if (handle.AllNum != 0) {
 			VECTOR pos = Player::GetInstance()->GetIBPos();
 			float animSpeed = 1.0f / 60.0f * 1000;
-			BoardPolygonDust* dust = new BoardPolygonDust(pos, _commandList[effectName].second, handle.handle, handle.AllNum, animSpeed);
+			BoardPolygonDust* dust = NEW BoardPolygonDust(pos, _commandList[effectName].second, handle.handle, handle.AllNum, animSpeed);
 			EffectManeger::GetInstance()->LoadEffect(dust);
 		}
 	}
@@ -87,6 +87,6 @@ void ClassificationEffect::SetClassification(CommandParam param) {
 void ClassificationEffect::CreateEffeckseer(float param, VECTOR* pos) {
 	int effectName = static_cast<int>(param);
 	int handle = ResourceServer::SearchSingle(_commandList[effectName].first.c_str(), ResourceServer::TYPE::Efk);
-	EffekseerBase* effekseer = new EffekseerPosSynchro(handle, pos, _commandList[effectName].second);
+	EffekseerBase* effekseer = NEW EffekseerPosSynchro(handle, pos, _commandList[effectName].second);
 	EffectManeger::GetInstance()->LoadEffect(effekseer);
 };
