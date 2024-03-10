@@ -593,7 +593,7 @@ bool ModeGame::GateProcess() {
 			int time = 4 * 1000; // 4•b
 			_stageNum++;
 			LoadFunctionThread = NEW std::thread(&ModeGame::StageMutation, this);
-			ModeServer::GetInstance()->Add(NEW ModeLoading(&IsLoading, LoadFunctionThread), 100, "Loading");
+			ModeServer::GetInstance()->Add(NEW ModeLoading(&IsLoading), 100, "Loading");
 		}
 	}
 	return true;

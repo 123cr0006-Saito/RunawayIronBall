@@ -1,17 +1,17 @@
 #pragma once
 #include "appframe.h"
-#include <thread>
 #include "ModeFade.h"
+#include "LoadingPlayer.h"
 class ModeLoading : public ModeBase
 {
 public : 	
-	ModeLoading(bool* flag,std::thread* thread);
+	ModeLoading(bool* flag);
 	virtual bool Initialize();
 	virtual bool Terminate();
 	virtual bool Process();
 	virtual bool Render();
 protected:
 	bool* IsClear;
-    std::thread* _thread;
+	LoadingPlayer* _chara;
 };
 

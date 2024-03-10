@@ -75,6 +75,8 @@
       <Filter>Mode\Game\CollisionManager</Filter>
     </ClCompile>
     <ClCompile Include="source\ObjectBase.cpp" />
+    <ClCompile Include="source\LoadingPlayer.cpp" />
+    <ClCompile Include="source\LoadingChain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -310,6 +312,8 @@
     <ClInclude Include="source\Cell.h">
       <Filter>Mode\Game\CollisionManager</Filter>
     </ClInclude>
+    <ClInclude Include="source\LoadingPlayer.h" />
+    <ClInclude Include="source\LoadingChain.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CharacterBase.h">
