@@ -48,6 +48,7 @@ bool EffekseerBase::Process() {
 			SetScalePlayingEffekseer3DEffect(_playingEffectHandle, _size, _size, _size);
 		}
 		else {
+			StopEffekseer3DEffect(_playingEffectHandle);
 			_IsPlay = false;
 		}
 	}

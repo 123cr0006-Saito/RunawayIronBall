@@ -11,6 +11,8 @@ Global::Global() {
 };
 
 Global::~Global() {
+	delete _timer;
+	delete _soundServer;
 };
 
 bool Global::Init() {

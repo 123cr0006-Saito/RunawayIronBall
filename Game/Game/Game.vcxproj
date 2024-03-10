@@ -157,10 +157,18 @@
   <ItemGroup>
     <ClCompile Include="source\EffekseerRotation.cpp" />
     <ClCompile Include="source\EffectBase.cpp" />
+    <ClCompile Include="source\BoardArrow.cpp" />
+    <ClCompile Include="source\Chainguard.cpp" />
+    <ClCompile Include="source\CollisionManager.cpp" />
+    <ClCompile Include="source\Floor.cpp" />
+    <ClCompile Include="source\ModeLoading.cpp" />
+    <ClCompile Include="source\ModeFade.cpp" />
+    <ClCompile Include="source\Gate.cpp" />
     <ClCompile Include="source\Light.cpp" />
     <ClCompile Include="source\ModeScenario.cpp" />
     <ClCompile Include="source\EffectManeger.cpp" />
     <ClCompile Include="source\Boss.cpp" />
+    <ClCompile Include="source\ObjectBase.cpp" />
     <ClCompile Include="source\PlaneEffectBase.cpp" />
     <ClCompile Include="source\BoardPolygonDust.cpp" />
     <ClCompile Include="source\CrystarPattern1.cpp" />
@@ -208,14 +216,24 @@
     <ClCompile Include="source\TimeLimit.cpp" />
     <ClCompile Include="source\UITimeLimit.cpp" />
     <ClCompile Include="source\Suppression.cpp" />
+    <ClCompile Include="source\UnbreakableObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\EffekseerRotation.h" />
     <ClInclude Include="source\EffectBase.h" />
+    <ClInclude Include="source\BoardArrow.h" />
+    <ClInclude Include="source\Chainguard.h" />
+    <ClInclude Include="source\Cell.h" />
+    <ClInclude Include="source\CollisionManager.h" />
+    <ClInclude Include="source\Floor.h" />
+    <ClInclude Include="source\ModeLoading.h" />
+    <ClInclude Include="source\ModeFade.h" />
+    <ClInclude Include="source\Gate.h" />
     <ClInclude Include="source\Light.h" />
     <ClInclude Include="source\ModeScenario.h" />
     <ClInclude Include="source\EffectManeger.h" />
     <ClInclude Include="source\Boss.h" />
+    <ClInclude Include="source\ObjectBase.h" />
     <ClInclude Include="source\PlaneEffectBase.h" />
     <ClInclude Include="source\BoardPolygonDust.h" />
     <ClInclude Include="source\CrystarPattern1.h" />
@@ -264,6 +282,7 @@
     <ClInclude Include="source\TimeLimit.h" />
     <ClInclude Include="source\UITimeLimit.h" />
     <ClInclude Include="source\Suppression.h" />
+    <ClInclude Include="source\UnbreakableObject.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -58,36 +58,36 @@ void ClassificationEffect::SetClassification(CommandParam param) {
 		if (handle.AllNum != 0) {
 			VECTOR pos = Player::GetInstance()->GetIBPos();
 			float animSpeed = 1.0f / 60.0f * 1000;
-			BoardPolygonDust* dust = new BoardPolygonDust(pos, _commandList[effectName].second, handle.handle, handle.AllNum, animSpeed);
+			BoardPolygonDust* dust = NEW BoardPolygonDust(pos, _commandList[effectName].second, handle.handle, handle.AllNum, animSpeed);
 			EffectManeger::GetInstance()->LoadEffect(dust);
 		}
 	}
 	else if (param.first == Play_Effekseer_PC) {
 		// エフェクシア プレイヤー中心
 		VECTOR* vec = Player::GetInstance()->GetPositionPtr();
-		VECTOR rotation = (*Player::GetInstance()->GetForwardDir());
-		float height = Player::GetInstance()->GetCollision().up_pos.y/2.0f;
-		CreateEffeckseer(param.second, vec, height,rotation);
+		VECTOR* dir = Player::GetInstance()->GetForwardDir();
+		float height = Player::GetInstance()->GetCollision().up_pos.y / 2.0f; // 高さの半分を割り出す
+		CreateEffeckseer(param.second, vec,height,*dir);
 	}
 	else if (param.first == Play_Effekseer_IC) {
 		// エフェクシア 鉄球中心
 		VECTOR* pos = Player::GetInstance()->GetIBPosPtr();
-		float height = Player::GetInstance()->GetIBCollision().r;
-		CreateEffeckseer(param.second, pos,height);
+		CreateEffeckseer(param.second, pos);
 	}
 	else if (param.first == Play_Effekseer_IU) {
 		// エフェクシア 鉄球足元
 		VECTOR* pos = Player::GetInstance()->GetIBPosPtr();
-		CreateEffeckseer(param.second, pos);
+		float height = Player::GetInstance()->GetIBCollision().r * -1.0f; // 高さの半分を割り出す 今回は高さぶん下げるので -1を掛ける
+		CreateEffeckseer(param.second, pos,height);
 	}
 	else if (param.first == Play_Effekseer_Rotation) {
 		int effectName = static_cast<int>(param.second);
-		int handle = ResourceServer::LoadEffekseerEffect("EffekseerRotation", _commandList[effectName].first.c_str());
-		if (handle != 0) {
+		int handle = ResourceServer::SearchSingle(_commandList[effectName].first.c_str(), ResourceServer::TYPE::Efk);
+		if (handle != -1) {
 			VECTOR* pos = Player::GetInstance()->GetPositionPtr();
-			VECTOR*  rotation = Player::GetInstance()->GetForwardDir();
-			float animSpeed = 1.0f / 60.0f * 1000;
-			EffekseerBase* effect = new EffekseerRotation(handle, pos,_commandList[effectName].second, rotation);
+			VECTOR* dir = Player::GetInstance()->GetForwardDir();
+			float height = Player::GetInstance()->GetCollision().up_pos.y / 2.0f; // 高さの半分を割り出す
+			EffekseerRotation* effect = NEW EffekseerRotation(handle, pos, _commandList[effectName].second, dir, height);
 			EffectManeger::GetInstance()->LoadEffect(effect);
 		}
 	}
@@ -98,9 +98,9 @@ void ClassificationEffect::SetClassification(CommandParam param) {
 	}
 };
 
-void ClassificationEffect::CreateEffeckseer(float param, VECTOR* pos, float height, VECTOR rotation) {
+void ClassificationEffect::CreateEffeckseer(float param, VECTOR* pos, float height , VECTOR rotation ) {
 	int effectName = static_cast<int>(param);
 	int handle = ResourceServer::SearchSingle(_commandList[effectName].first.c_str(), ResourceServer::TYPE::Efk);
-	EffekseerBase* effekseer = new EffekseerPosSynchro(handle, pos,_commandList[effectName].second, rotation,height);
+	EffekseerBase* effekseer = NEW EffekseerPosSynchro(handle, pos, _commandList[effectName].second, rotation,height);
 	EffectManeger::GetInstance()->LoadEffect(effekseer);
 };

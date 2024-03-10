@@ -7,13 +7,13 @@ class SlaBlock : public EnemyBase
 {
 public:
 	SlaBlock();
-	~SlaBlock();
+	~SlaBlock()override;
 
 	void InheritanceInit()override;
 	void AnimInit()override;
 	void CommandProcess()override;
 
-	bool ModeSearch()override;
+	bool ModeSearch(bool plAttack)override;
 	bool ModeDisCover()override;
 	bool ModeAttack()override;
 	bool ModeCoolTime()override;
@@ -24,6 +24,8 @@ public:
 	bool IndividualProcessing()override;
 	bool IndividualRendering()override;
 
+	VECTOR GetCollisionPos()override { return MV1GetFramePosition(_model, _collisionFrame); }
+
 protected : 
 	static enum ANIMSTATE : int {
 		IDLE = 0,
@@ -33,5 +35,6 @@ protected :
 		STOMP,
 		STAN
 	};
+	static int _collisionFrame;
 	ANIMSTATE _animState;
 };

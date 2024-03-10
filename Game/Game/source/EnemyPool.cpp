@@ -16,102 +16,80 @@ EnemyPool::EnemyPool(std::string paramJsonFile){
 		list.at("FlontAngle").get_to(param._flontAngle);
 		list.at("HearingRange").get_to(param._hearingRangeSize);
 		list.at("MoveRange").get_to(param._moveRange);
-		list.at("SartchRange").get_to(param._sartchRange);
+		list.at("SearchRange").get_to(param._searchRange);
 		list.at("DiscoverRange").get_to(param._discoverRangeSize);
 		list.at("AttackRange").get_to(param._attackRangeSize);
 		list.at("Suppression").get_to(param._suppression);
 		_enemyParametersMap[enemyName] = param;
 	}
+	_enemy.clear();
+	_collisionManager = CollisionManager::GetInstance();
 };
 
 EnemyPool::~EnemyPool() {
+	DeleteEnemy();
 	_enemyParametersMap.clear();
 	_enemyInitPos.clear();
-	delete[] _enemy; 
 };
 
 void EnemyPool::Create(myJson json){
 	DeleteEnemy();
-	int i = 0;
 	//読み込む敵の名前のリスト
 	int handle = 0;
 	int suppression = 0;
-	std::vector<std::string> enemyName = { "CryStar_Glass","CryStar_Rock", "CryStar_Iron", "Slablock_Glass","Slablock_Rock","Slablock_Iron"/*,"ChainGuard"*/ };
-	
+	std::vector<std::string> enemyName = { "CryStar_Glass","CryStar_Rock", "CryStar_Iron", "Slablock_Glass","Slablock_Rock","Slablock_Iron","ChainGuard" };
 	// データの読み込み
 	for (auto&& name : enemyName) {
 		std::vector<std::pair<std::string, VECTOR>> enemyData = LoadJsonData(json, name);
 		suppression += _enemyParametersMap[name]._suppression * enemyData.size();
 		// データの分配
 		for (auto& enemyDataList : enemyData) {
+
+			EnemyBase* enemy = nullptr;
+
+			// 初期化
 			if (enemyDataList.first == "CryStar_Glass") {
-				_enemy[i] = new CrystarPattern1();
+				enemy = NEW CrystarPattern1();
 				handle = ResourceServer::MV1LoadModel("CryStar_Glass","res/Enemy/Crystar/cg_crystar.mv1");
 			}
 			else if (enemyDataList.first == "CryStar_Rock") {
-				_enemy[i] = new CrystarPattern2();
+				enemy = NEW CrystarPattern2();
 				handle = ResourceServer::MV1LoadModel("CryStar_Rock","res/Enemy/Crystar/cg_crystar.mv1");
 			}
 			else if (enemyDataList.first == "CryStar_Iron") {
-				_enemy[i] = new CrystarPattern3();
+				enemy = NEW CrystarPattern3();
 				handle = ResourceServer::MV1LoadModel("CryStar_Iron","res/Enemy/Crystar/cg_crystar.mv1");
 			}
 			else if (enemyDataList.first == "Slablock_Glass" || enemyDataList.first == "Slablock_Rock") {
-				_enemy[i] = new SlaBlock();
+				enemy = NEW SlaBlock();
 				handle = ResourceServer::MV1LoadModel("Slablock","res/Enemy/SlaBlock/cg_surablock_TEST.mv1");
 			}
 			else if (enemyDataList.first == "Slablock_Iron") {
-				_enemy[i] = new SlaBlockPattern2();
+				enemy = NEW SlaBlockPattern2();
 				handle = ResourceServer::MV1LoadModel("Slablock_Iron","res/Enemy/SlaBlock/cg_surablock_TEST.mv1");
 			}
 			else if (enemyDataList.first == "ChainGuard") {
-				/*_enemy[i] = new ChainGuard();
-				_enemy[i]->Create(handle, vPos, _enemyParametersMap[name]);*/
+				enemy = NEW Chainguard();
+				handle = ResourceServer::MV1LoadModel("Chainguard", "res/Enemy/Chainguard/cg_chain_guard_TEST.mv1");
 			}
-			_enemyInitPos.emplace_back(enemyDataList.second);
-			// データがないので今は個別
-			_enemy[i]->Create(handle, enemyDataList.second, _enemyParametersMap[enemyDataList.first], enemyDataList.first);
-			i++;
+
+			// 初期化されていたら追加
+			if (enemy != nullptr) {
+				enemy->Create(handle, enemyDataList.second, _enemyParametersMap[enemyDataList.first], enemyDataList.first);
+				_enemyInitPos.emplace_back(enemyDataList.second);
+				_enemy.push_back(enemy);
+			}
+
 		}
 	}
+
 	Suppression::GetInstance()->AddSuppression(suppression);
 };
 
-void EnemyPool::Create() {
-	//エネミー読み込み用ファイルができていないのでランダム
-
-	int range = 5000;
-	for (int i = 0; i < ENEMY_MAX_SIZE; i++) {
-		int enemyNum = rand() % 3;
-		VECTOR vPos = VGet(rand() % range - range/2, 0, rand() % range - range/2);
-		switch (enemyNum) {
-		case 0:
-			_enemy[i] = new SlaBlock();
-			_enemy[i]->Create(ResourceServer::MV1LoadModel("Slablock","res/Enemy/SlaBlock/SlaBlock.mv1"), vPos, _enemyParametersMap["Slablock"],"Slablock");
-			break;
-		case 1:
-			_enemy[i] = new CrystarPattern3();
-			_enemy[i]->Create(ResourceServer::MV1LoadModel("Crystar","res/Enemy/Crystar/cg_crystar.mv1"), vPos, _enemyParametersMap["Crystarl"],"Crystarl");
-			break;
-		case 2:
-			_enemy[i] = new SlaBlockPattern2();
-			_enemy[i]->Create(ResourceServer::MV1LoadModel("Slablock","res/Enemy/SlaBlock/SlaBlock.mv1"), vPos, _enemyParametersMap["Slablock"],"Slablock");
-			break;
-		}
-	}
-};
-
 void EnemyPool::Init(){
-	for (int i = 0; i < ENEMY_MAX_SIZE; i++) {
-		if (!_enemy[i])continue;
-		//VECTOR vPos = VGet(rand() % 3000 - 1500, 0, rand() % 3000 - 1500);
-		//_enemy[i]->Init(vPos);
+	for (int i = 0; i < _enemy.size(); i++) {
 		_enemy[i]->Init(_enemyInitPos[i]);
 	}
-};
-
-void EnemyPool::Init(VECTOR pos) {
-
 };
 
 std::vector<std::pair<std::string, VECTOR>> EnemyPool::LoadJsonData(myJson jsonFile, std::string  loadName) {
@@ -131,37 +109,42 @@ std::vector<std::pair<std::string, VECTOR>> EnemyPool::LoadJsonData(myJson jsonF
 };
 
 void EnemyPool::DeleteEnemy() {
-	for (int i = 0; i < ENEMY_MAX_SIZE; i++) {
-		if (_enemy[i] != nullptr) {
-			delete _enemy[i];
-			_enemy[i] = nullptr;
-		}
+	for (auto&& enemy : _enemy) {
+			delete enemy;
 	}
+
+	_enemy.clear();
+
+	ResourceServer::MV1DeleteModelAll("CryStar_Glass");
+	ResourceServer::MV1DeleteModelAll("CryStar_Rock");
+	ResourceServer::MV1DeleteModelAll("CryStar_Iron");
+	ResourceServer::MV1DeleteModelAll("CrystarRoof");
+	ResourceServer::MV1DeleteModelAll("Slablock");
+	ResourceServer::MV1DeleteModelAll("Slablock_Iron");
 };
 
 EnemyBase* EnemyPool::Recicle() {
-	for (int i = 0; i < ENEMY_MAX_SIZE; i++) {
+	for (int i = 0; i < _enemy.size() ; i++) {
 		if (_enemy[i]->GetUse() == false) {
 			return _enemy[i];
 		}
 	}
 };
 
-bool EnemyPool::Process(){
-	for (int i = 0; i < ENEMY_MAX_SIZE; i++) {
-		if (!_enemy[i]) {continue;}
-		if (_enemy[i]->GetUse()) {
-			_enemy[i]->Process();
+bool EnemyPool::Process(bool plAttack){
+	for (auto&& enemy : _enemy) {
+		if (enemy->GetUse()) {
+			enemy->Process(plAttack);
+			_collisionManager->UpdateCell(enemy->_cell);
 		}
 	}
 	return true;
 };
 
 bool EnemyPool::Render() {
-	for (int i = 0; i < ENEMY_MAX_SIZE; i++) {
-		if (!_enemy[i]) { continue; }
-		if (_enemy[i]->GetUse()) {
-			_enemy[i]->Render();
+	for (auto&& enemy : _enemy) {
+		if (enemy->GetUse()) {
+			enemy->Render();
 		}
 	}
 	return true;

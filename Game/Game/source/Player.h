@@ -8,6 +8,8 @@
 
 #include "AnimationManager.h"
 #include "AnimationItem.h"
+#include "EffectManeger.h"
+#include "EffekseerPosSynchro.h"
 
 #include "FrameData.h"
 

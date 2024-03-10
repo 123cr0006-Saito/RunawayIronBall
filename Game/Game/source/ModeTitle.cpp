@@ -25,8 +25,8 @@ bool ModeTitle::Initialize() {
 	 _currentTime = 0;
 	 _IsBreak = false;
 	 _frameSize = MV1GetFrameNum(_modelHandle);
-	 _MoveVec = new VECTOR[_frameSize];
-	 _rotVec = new VECTOR[_frameSize];
+	 _MoveVec = NEW VECTOR[_frameSize];
+	 _rotVec = NEW VECTOR[_frameSize];
 
 	 VECTOR breakPos = VGet(1020, -1080, 0);//äÑÇÍÇÈàÍÇÃíÜêSì_
 	 for (int i = 0; i < _frameSize; i++) {
@@ -56,12 +56,12 @@ bool ModeTitle::Terminate() {
 
 void ModeTitle::SelectGameStart() {
 	ModeServer::GetInstance()->Del(this);
-	ModeServer::GetInstance()->Add(new ModeScenario("Data/ScenarioData/Scenario01.csv"), 2, "Scenario");
-	ModeServer::GetInstance()->Add(new ModeGame(), 1, "Game");
+	ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario01.csv"), 2, "Scenario");
+	ModeServer::GetInstance()->Add(NEW ModeGame(), 1, "Game");
 };
 
 void ModeTitle::SelectOption() {
-	ModeServer::GetInstance()->Add(new ModePause(), 10, "Pause");
+	ModeServer::GetInstance()->Add(NEW ModePause(), 10, "Pause");
 };
 
 void ModeTitle::SelectGameEnd() {

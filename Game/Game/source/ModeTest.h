@@ -24,6 +24,8 @@
 #include "EnemyPool.h"
 #include "EffectManeger.h"
 
+#include "CollisionManager.h"
+
 class ModeTest : public ModeBase
 {
 	typedef ModeBase base;
@@ -86,4 +88,10 @@ protected:
 	bool _drawDebug = false;
 
 	std::vector<std::tuple<std::string, VECTOR, int>>_objectParam;
+
+
+
+
+
+	CollisionManager* _collisionManager;
 };

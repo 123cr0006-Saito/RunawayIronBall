@@ -20,6 +20,8 @@ int WINAPI WinMain(
 	LPSTR lpCmdLine,
 	int nCmdShow
 ) {
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);		// プログラム終了時メモリリークを検出する
+
 	SetBackgroundColor(16, 64, 88);
 
 	ApplicationBase *appBase = ApplicationBase::GetInstance();
@@ -33,6 +35,7 @@ int WINAPI WinMain(
 	while (ProcessMessage() == 0)		// プログラムが終了するまでループ
 	{
 		appBase->Input();
+
 		appBase->Process();
 
 		ClearDrawScreen();		// 画面を初期化する
