@@ -9,7 +9,7 @@ bool ModeGame::Initialize() {
 	_collisionManager->Init();
 
 	_gate = nullptr;
-	_stageNum = 1;
+	_stageNum = 2;
 	IsLoading = true;
 	LoadFunctionThread = nullptr;
 
@@ -42,11 +42,13 @@ bool ModeGame::Initialize() {
 	_suppression = NEW Suppression();
 
 	_enemyPool = NEW EnemyPool("res/JsonFile/EnemyData.json");
+	_floor = NEW Floor();
 
 	// オブジェクトのデータの読み込み
 	LoadObjectParam("BuildingtList.csv");
 	// ステージのデータの読み込み
-	LoadStage("Data/ObjectList/Stage_02.json");
+	std::string fileName = "Data/ObjectList/Stage_0" + std::to_string(_stageNum) + ".json";
+	LoadStage(fileName);
 
 	int size = 100;
 	int heartHandle[3];
@@ -116,6 +118,30 @@ bool ModeGame::Terminate() {
 	return true;
 }
 
+void ModeGame::DeleteObject() {
+
+	if (_gate != nullptr) {
+		delete _gate; _gate = nullptr;
+	}
+
+	_enemyPool->DeleteEnemy();
+
+	_floor->Delete();
+
+	//for (auto&& house : _house) {
+	//	delete house;
+	//}
+	// 
+	//for (auto&& tower : _tower) {
+	//	delete tower;
+	//}
+	// 
+	//for (auto&& uObj : _uObj) {
+	//	delete uObj;
+	//}
+
+};
+
 std::vector<ModeGame::OBJECTDATA> ModeGame::LoadJsonObject(nlohmann::json json, std::string loadName) {
 	nlohmann::json loadObject = json.at(loadName);
 	std::vector<ModeGame::OBJECTDATA> _objectList;
@@ -173,7 +199,7 @@ bool ModeGame::LoadObjectParam(std::string fileName) {
 
 std::vector<std::string> ModeGame::LoadObjectName(std::string fileName) {
 	std::vector<std::string> nameList;
-	std::string filePath = "Data/LoadStageName/" + fileName + "/" + fileName + std::to_string(_stageNum) + ".csv";
+	std::string filePath = "Data/LoadStageName/" + fileName + "/"  + fileName + "0" + std::to_string(_stageNum) + ".csv";
 	// csvファイルを読み込む
 	CFile file(filePath);
 	// ファイルが開けた場合
@@ -224,6 +250,8 @@ bool ModeGame::LoadStage(std::string fileName) {
 		}
 	}
 
+	_floor->Create(json,_stageNum);
+
 	// タワー
 	for (int i = 0; i < 5; i++) {
 		VECTOR v = VGet(rand() % 8000, 0.0f, rand() % 8000);
@@ -247,12 +275,8 @@ bool ModeGame::LoadStage(std::string fileName) {
 bool ModeGame::StageMutation() {
 	// ロード開始
 	IsLoading = false;
-
 	// 中身がいらないものはdeleteする
-	delete _gate; _gate = nullptr;
-	_enemyPool->DeleteEnemy();
-
-
+	DeleteObject();
     // オブジェクトのデータの読み込み ファイル名は 1 から始まるので +1 する
 	std::string fileName = "Data/ObjectList/Stage_0" + std::to_string(_stageNum) + ".json";
 	LoadStage(fileName);
@@ -543,7 +567,7 @@ bool ModeGame::Process() {
 
 bool ModeGame::GateProcess() {
 	_suppression->SubSuppression(1);
-	if (_suppression->GetIsRatio()) {
+	if (_suppression->GetIsRatio() && _stageNum < 3 ) {
 		if (_gate == nullptr) {
 			int handle[43];
 			ResourceServer::LoadDivGraph("Gate", "res/TemporaryMaterials/FX_Hole_2D00_sheet.png", 43, 16, 3, 1200, 1200, handle);
@@ -585,6 +609,7 @@ bool ModeGame::Render() {
 	// 描画に使用するシャドウマップを設定
 	SetUseShadowMap(0, _shadowHandle);
 	MV1DrawModel(_tile);
+	_floor->Render();
 	// 描画に使用するシャドウマップの設定を解除
 	SetUseShadowMap(0, -1);
 
