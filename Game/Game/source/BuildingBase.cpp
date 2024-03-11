@@ -2,10 +2,10 @@
 
 BuildingBase::BuildingBase()
 {
-	_useCollision = true;
 	_modelHandle = -1;
 	_pos = VGet(0.0f, 0.0f, 0.0f);
-	_breakObj = nullptr;
+	_useCollision = true;
+	_canBreak = false;
 }
 
 BuildingBase::~BuildingBase()
@@ -14,41 +14,46 @@ BuildingBase::~BuildingBase()
 		MV1DeleteModel(_modelHandle);
 		_modelHandle = -1;
 	}
-	SAFE_DELETE(_breakObj);
 }
 
-bool BuildingBase::Init(int modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale)
+void BuildingBase::Init(int modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength)
 {
+	// モデルの設定
 	_modelHandle = modelHandle;
 	_pos = startPos;
 	MV1SetPosition(_modelHandle, _pos);
 	MV1SetRotationXYZ(_modelHandle, rotation);
 	MV1SetScale(_modelHandle, scale);
 
-	_breakObj = NEW BreakObject();
-	_breakObj->Init(_modelHandle);
+	// 当たり判定の設定
+	// スケール
+	obb.length[0] = obbLength.x * scale.x;
+	obb.length[1] = obbLength.y * scale.y;
+	obb.length[2] = obbLength.z * scale.z;
+	// 回転
+	MATRIX mRot = MGetRotX(rotation.x);
+	mRot = MMult(mRot, MGetRotY(rotation.y));
+	mRot = MMult(mRot, MGetRotZ(rotation.z));
+	obb.dir_vec[0] = VTransform(obb.dir_vec[0], mRot);
+	obb.dir_vec[1] = VTransform(obb.dir_vec[1], mRot);
+	obb.dir_vec[2] = VTransform(obb.dir_vec[2], mRot);
+	// 座標
+	obb.pos = VAdd(startPos, VGet(0.0f, obb.length[1] / 2.0f, 0.0f));
 
-	return true;
+	_cell->_objType = OBJ_TYPE::BLDG;
 }
 
-bool BuildingBase::Process()
+void BuildingBase::Process()
 {
-	_breakObj->Process();
-	return true;
+
 }
 
-bool BuildingBase::Render()
+void BuildingBase::Render()
 {
-	return MV1DrawModel(_modelHandle);
+	MV1DrawModel(_modelHandle);
 }
 
-void BuildingBase::ActivateBreakObject(bool activate, VECTOR vDir)
+void BuildingBase::DrawDebugInfo()
 {
-	_breakObj->Activate(activate, vDir);
-	SetUseCollision(false);
-}
 
-bool BuildingBase::DrawDebugInfo()
-{
-	return true;
 }

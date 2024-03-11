@@ -7,7 +7,8 @@ enum OBJ_TYPE {
 	PL,
 	PL_IB,
 	EN,
-	EN_IB
+	EN_IB,
+	BLDG
 };
 
 class ObjectBase;
