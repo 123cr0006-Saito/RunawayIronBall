@@ -195,11 +195,37 @@ void CollisionManager::CheckColList()
 		Cell* cell2 = colPair.second;
 		if (cell1->_obj == nullptr || cell2->_obj == nullptr) continue;
 
+		// オブジェクト1のタイプを判別
 		switch (cell1->_objType) {
+		case OBJ_TYPE::NONE:
+			break;
+
+			// オブジェクト1がプレイヤーの場合
+		case OBJ_TYPE::PL:
+		{
+			Player* player = static_cast<Player*>(cell1->_obj);
+
+			// オブジェクト2のタイプを判別
+			switch (cell2->_objType) {
+			case OBJ_TYPE::EN:
+			{
+				EnemyBase* enemy = static_cast<EnemyBase*>(cell2->_obj);
+				CheckHit(player, enemy);
+			}
+			break;
+			}
+		}
+		break;
 		case OBJ_TYPE::EN:
 		{
 			EnemyBase* enemy1 = static_cast<EnemyBase*>(cell1->_obj);
 			switch (cell2->_objType) {
+			case OBJ_TYPE::PL:
+			{
+				Player* player = static_cast<Player*>(cell2->_obj);
+				CheckHit(player, enemy1);
+			}
+			break;
 			case OBJ_TYPE::EN:
 			{
 				EnemyBase* enemy2 = static_cast<EnemyBase*>(cell2->_obj);
@@ -229,6 +255,30 @@ void CollisionManager::CheckColList()
 	//}
 
 	//int m = 0;
+}
+
+void CollisionManager::CheckHit(Player* player, EnemyBase* enemy)
+{
+	Capsule pCol = player->GetCollision();
+	Sphere eCol = { enemy->GetCollisionPos(), enemy->GetR() };
+
+	if (Collision3D::SphereCapsuleCol(eCol, pCol)) {
+		bool isInvincible = player->GetIsInvincible();
+		if (!isInvincible) {
+			player->SetDamage();
+		}
+		VECTOR tmpPos = enemy->GetCollisionPos();
+		tmpPos.y = 0.0f;
+
+		VECTOR vDir = VSub(pCol.down_pos, tmpPos);
+		vDir.y = 0.0f;
+		float squareLength = VSquareSize(vDir);
+		if (squareLength >= 0.0001f) {
+			vDir = VNorm(vDir);
+			tmpPos = VAdd(tmpPos, VScale(vDir, eCol.r + pCol.r));
+			player->SetPos(tmpPos);
+		}
+	}
 }
 
 void CollisionManager::CheckHit(EnemyBase* enemy1, EnemyBase* enemy2)
