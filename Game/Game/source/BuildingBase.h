@@ -21,7 +21,7 @@ public:
 	OBB GetOBBCollision() { return obb; }
 
 
-	void SetHit(VECTOR vDir = VGet(0.0f, 0.0f, -1.0f)) {};
+	virtual void SetHit(VECTOR vDir = VGet(0.0f, 0.0f, -1.0f)) {};
 
 	// デバッグ情報の表示
 	virtual void DrawDebugInfo();

@@ -56,6 +56,12 @@ void House::Render()
 	MV1DrawModel(_modelHandle);
 }
 
+void House::SetHit(VECTOR vDir)
+{
+	// ”j‰óˆ—‚ÌŠJŽn
+	ActivateBreakObject(true, vDir);
+}
+
 void House::ActivateBreakObject(bool activate, VECTOR vDir)
 {
 	_breakObj->Activate(activate, vDir);

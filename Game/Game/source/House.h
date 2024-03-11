@@ -1,33 +1,29 @@
 #pragma once
 #include "appframe.h"
+#include "BuildingBase.h"
 #include "BreakObject.h"
 
 
-class House
+class House : public BuildingBase
 {
 public:
 	House();
 	~House();
 
-	void Init(int modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength);
-	void Process();
-	void Render();
+	void Init(int modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength) override;
+	void Process() override;
+	void Render() override;
 
-	VECTOR GetPos() { return _pos; }
-
-	bool GetUseCollision() { return _useCollision; }
-	void SetUseCollision(bool b) { _useCollision = b; }
-	OBB GetOBBCollision() { return obb; }
-
-	void ActivateBreakObject(bool activate, VECTOR vDir = VGet(0.0f, 0.0f, 0.0f));
-
-
+	void SetHit(VECTOR vDir = VGet(0.0f, 0.0f, -1.0f)) override;
 
 
 	// デバッグ情報の表示
 	void DrawDebugInfo();
 
 protected:
+	// 破壊処理の有効化
+	void ActivateBreakObject(bool activate, VECTOR vDir = VGet(0.0f, 0.0f, 0.0f));
+
 	// モデルハンドル
 	int _modelHandle;
 	// モデルの座標
