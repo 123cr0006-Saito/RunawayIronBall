@@ -5,6 +5,8 @@ Player* Player::_instance = NULL;
 std::map<int, ANIMATION_INFO> Player::_animMap;
 
 namespace {
+	// 最大レベル
+	constexpr int LEVEL_MAX = 10;
 	// 最大HP
 	constexpr int HP_MAX = 4;
 	// 最大無敵時間
@@ -75,15 +77,13 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	_capsuleCollision.up = 65.0f;
 	UpdateCollision();
 
-
-
 	_isAttackState = false;
 
 	_canMotionCancel = true;
 	_playNextComboAnim = true;
 
 	// 鉄球の初期化
-	_chain = new Chain();
+	_chain = NEW Chain();
 	_chain->Init();
 	_chain->SetPlayerModelHandle(_modelHandle);
 	// 鉄球の移動状態を「追従」に設定
@@ -109,7 +109,7 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 
 	_idleFightingRemainingCnt = 0;
 
-
+	_nowExp = 0;
 	_nowLevel = 0;
 	SetNextExp("res/JsonFile/ExpList.json");
 	SetPowerScale("res/JsonFile/IronState.json");
@@ -120,21 +120,30 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	auto motionList = MotionList::GetMotionList("Player");
 
 	// アニメーションマネージャーの初期設定
-	_animManager = new AnimationManager();
+	_animManager = NEW AnimationManager();
 	_animManager->InitMap("Player", _modelHandle, *motionList);
 
 	// フレームデータの初期設定
-	_frameData = new FrameData();
+	_frameData = NEW FrameData();
 	_frameData->LoadData("Player", *motionList);
 
-	_modelColor = new ModelColor();
+	_modelColor = NEW ModelColor();
 	_modelColor->Init(_modelHandle);
 }
 
 Player::~Player()
 {
 	_instance = nullptr;
+	_input = nullptr;
 	delete _animManager;
+	delete _frameData;
+	delete _modelColor;
+	delete _chain;
+
+	for (int i = 0; i < 2; i++) {
+		delete _bone[i];
+	}
+
 }
 
 // 無敵状態の更新
@@ -173,7 +182,7 @@ void Player::SetBone() {
 	bone_left_list[3] = MV1SearchFrame(_modelHandle,"Left_mitsuami4");
 	bone_left_list[4] = MV1SearchFrame(_modelHandle,"Left_mitsuami5");
 	bone_left_list[5] = MV1SearchFrame(_modelHandle,"Left_mitsuami6");
-	_bone[0] = new bone(&_modelHandle, bone_left_list, bone_left_list.size() - 2, "res/JsonFile/hair_parameters.json");
+	_bone[0] = NEW bone(&_modelHandle, bone_left_list, bone_left_list.size() - 2, "res/JsonFile/hair_parameters.json");
 	//右髪
 	std::vector<int> bone_right_list(6);
 	bone_right_list[0] = MV1SearchFrame(_modelHandle,"Right_mitsuami1");
@@ -182,7 +191,7 @@ void Player::SetBone() {
 	bone_right_list[3] = MV1SearchFrame(_modelHandle,"Right_mitsuami4");
 	bone_right_list[4] = MV1SearchFrame(_modelHandle,"Right_mitsuami5");
 	bone_right_list[5] = MV1SearchFrame(_modelHandle,"Right_mitsuami6");
-	_bone[1] = new bone(&_modelHandle, bone_right_list, bone_right_list.size() - 2, "res/JsonFile/hair_parameters.json");
+	_bone[1] = NEW bone(&_modelHandle, bone_right_list, bone_right_list.size() - 2, "res/JsonFile/hair_parameters.json");
 };
 
 void Player::SetNextExp(std::string FileName) {
@@ -205,19 +214,6 @@ bool Player::UpdateExp() {
 			UpdateLevel();
 		}
 	}
-
-	//if (_input->GetTrg(XINPUT_BUTTON_A)) {
-	//	if (_nowLevel <= _maxLevel) {
-	//		_nowLevel--;
-	//		UpdateLevel();
-	//	}
-	//}
-	//if (_input->GetTrg(XINPUT_BUTTON_B)) {
-	//	if (_nowLevel < _maxLevel) {
-	//		_nowLevel++;
-	//		UpdateLevel();
-	//	}
-	//}
 	return true;
 };
 
@@ -480,6 +476,13 @@ bool Player::UpdateLevel()
 {
 	_power = _powerAndScale[_nowLevel].first;
 	_chain->UpdateLevel(_powerAndScale[_nowLevel].second);
+	if (_nowLevel > 0) {
+		float size = 5.0f * _powerAndScale[_nowLevel].second;
+		VECTOR* pos = GetIBPosPtr();
+		int effectHandle = ResourceServer::Load("FX_3D_Level_Up", "res/Effekseer/FX_3D_Level_Up/FX_3D_Level_Up.efkefc");
+		EffekseerPosSynchro* effect = new EffekseerPosSynchro(effectHandle, pos, size);
+		EffectManeger::GetInstance()->LoadEffect(effect);
+	}
 	return true;
 }
 

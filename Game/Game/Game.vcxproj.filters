@@ -6,6 +6,7 @@
     <ClCompile Include="source\BreakObject.cpp" />
     <ClCompile Include="source\BuildingBase.cpp" />
     <ClCompile Include="source\CharacterBase.cpp" />
+    <ClCompile Include="source\Crystarl.cpp" />
     <ClCompile Include="source\CrystarPattern3.cpp" />
     <ClCompile Include="source\EnemyBase.cpp" />
     <ClCompile Include="source\ModeGameOver.cpp" />
@@ -23,6 +24,14 @@
     <ClCompile Include="source\UIHeart.cpp" />
     <ClCompile Include="source\House.cpp" />
     <ClCompile Include="source\EnemyPool.cpp" />
+    <ClCompile Include="source\CrystarlPattern2.cpp" />
+    <ClCompile Include="source\SlaBlockPattern2.cpp" />
+    <ClCompile Include="source\ScreenVibration.cpp" />
+    <ClCompile Include="source\PlaneEffectManeger.cpp" />
+    <ClCompile Include="source\BoardPolygon.cpp" />
+    <ClCompile Include="source\ModePause.cpp" />
+    <ClCompile Include="source\ModeInstructions.cpp" />
+    <ClCompile Include="source\BoardArrow.cpp" />
     <ClCompile Include="source\CrystarPattern4.cpp" />
     <ClCompile Include="source\SlaBlockPattern2.cpp" />
     <ClCompile Include="source\ScreenVibration.cpp" />
@@ -48,6 +57,9 @@
     <ClCompile Include="source\BoardPolygonDust.cpp" />
     <ClCompile Include="source\PlaneEffectBase.cpp" />
     <ClCompile Include="source\EffectBase.cpp" />
+    <ClCompile Include="source\EffekseerRotation.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
     <ClCompile Include="source\EffectManeger.cpp" />
     <ClCompile Include="source\Suppression.cpp" />
     <ClCompile Include="source\Gate.cpp" />
@@ -59,6 +71,15 @@
     <ClCompile Include="source\Heart.cpp">
       <Filter>Character</Filter>
     </ClCompile>
+    <ClCompile Include="source\Chainguard.cpp">
+      <Filter>Character\Enemy\Chainguard</Filter>
+    </ClCompile>
+    <ClCompile Include="source\CollisionManager.cpp">
+      <Filter>Mode\Game\CollisionManager</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ObjectBase.cpp" />
+    <ClCompile Include="source\LoadingPlayer.cpp" />
+    <ClCompile Include="source\LoadingChain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -66,6 +87,7 @@
     <ClInclude Include="source\BreakObject.h" />
     <ClInclude Include="source\BuildingBase.h" />
     <ClInclude Include="source\CharacterBase.h" />
+    <ClInclude Include="source\Crystarl.h" />
     <ClInclude Include="source\CrystarPattern3.h" />
     <ClInclude Include="source\EnemyBase.h" />
     <ClInclude Include="source\ModeGameOver.h" />
@@ -84,6 +106,14 @@
     <ClInclude Include="source\House.h" />
     <ClInclude Include="source\EnemyStract.h" />
     <ClInclude Include="source\EnemyPool.h" />
+    <ClInclude Include="source\CrystarlPattern2.h" />
+    <ClInclude Include="source\SlaBlockPattern2.h" />
+    <ClInclude Include="source\ScreenVibration.h" />
+    <ClInclude Include="source\PlaneEffectManeger.h" />
+    <ClInclude Include="source\BoardPolygon.h" />
+    <ClInclude Include="source\ModePause.h" />
+    <ClInclude Include="source\ModeInstructions.h" />
+    <ClInclude Include="source\BoardArrow.h" />
     <ClInclude Include="source\CrystarPattern4.h" />
     <ClInclude Include="source\SlaBlockPattern2.h" />
     <ClInclude Include="source\ScreenVibration.h" />
@@ -269,6 +299,8 @@
     <ClCompile Include="source\ModeGame.cpp">
       <Filter>Mode\Game</Filter>
     </ClCompile>
+    <ClInclude Include="source\EffekseerRotation.h">
+      <Filter>Effect</Filter>
     <ClCompile Include="source\UnbreakableObject.cpp" />
     <ClInclude Include="source\ModeLoading.h" />
     <ClInclude Include="source\Floor.h">
@@ -277,6 +309,17 @@
     <ClInclude Include="source\Heart.h">
       <Filter>Character</Filter>
     </ClInclude>
+    <ClInclude Include="source\Chainguard.h">
+      <Filter>Character\Enemy\Chainguard</Filter>
+    <ClInclude Include="source\ObjectBase.h" />
+    <ClInclude Include="source\CollisionManager.h">
+      <Filter>Mode\Game\CollisionManager</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Cell.h">
+      <Filter>Mode\Game\CollisionManager</Filter>
+    </ClInclude>
+    <ClInclude Include="source\LoadingPlayer.h" />
+    <ClInclude Include="source\LoadingChain.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CharacterBase.h">
@@ -484,6 +527,11 @@
     </Filter>
     <Filter Include="Mode\Game">
       <UniqueIdentifier>{83bca989-3fef-431d-bc70-e6602cf6729d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Character\Enemy\Chainguard">
+      <UniqueIdentifier>{c97449d4-a05f-4a15-b844-b9a0900d6037}</UniqueIdentifier>
+    <Filter Include="Mode\Game\CollisionManager">
+      <UniqueIdentifier>{9085406b-b4fa-43a0-89f1-31d0c0cc0085}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -1,7 +1,6 @@
 #pragma once
 #include "appframe.h"
 #include "ModePause.h"
-#include "ModeFade.h"
 #include "ModeGameOver.h"
 
 #include "Camera.h"
@@ -21,10 +20,11 @@
 #include "House.h"
 #include "Tower.h"
 
-#include "Gate.h"
 #include "ClassificationEffect.h"
 #include "EnemyPool.h"
 #include "EffectManeger.h"
+
+#include "CollisionManager.h"
 
 class ModeTest : public ModeBase
 {
@@ -58,7 +58,7 @@ protected:
 	Player* _player;
 
 	Chain* _chain;
-	UIBase* ui[3];
+	UIBase* ui[4];
 	DrawGauge* _gaugeUI[2];
 	int _gaugeHandle[4];// 0フレーム 3ゲージ
 	float nowParcent = 100;
@@ -77,7 +77,6 @@ protected:
 	int _tile;
 	
 	int _effectSheet[30];
-	Gate* _gate;
 	ClassificationEffect* _classificationEffect;
 	EffectManeger* _effectManeger;
 	OBB obb;
@@ -89,4 +88,10 @@ protected:
 	bool _drawDebug = false;
 
 	std::vector<std::tuple<std::string, VECTOR, int>>_objectParam;
+
+
+
+
+
+	CollisionManager* _collisionManager;
 };

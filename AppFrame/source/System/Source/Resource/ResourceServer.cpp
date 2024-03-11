@@ -220,6 +220,9 @@ int ResourceServer::MV1LoadModel(std::string key_name, std::string model_name) {
 		//記録された名前がなかったので読み込み
 		value = ::MV1LoadModel(model_name.c_str());
 		_modelMap[key_name + "_Origin"].push_back(value);
+		// オリジナルから複製
+		value = ::MV1DuplicateModel(value);
+		_modelMap[key_name].push_back(value);
 	}
 
 	return value;

@@ -1,3 +1,5 @@
 Dust,0,200
 Stanp,1,250
-Rotation,2,1
+Rotation,2,50
+SlashR,3,100
+SlashL,4,100

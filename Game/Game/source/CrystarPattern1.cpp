@@ -1,6 +1,8 @@
 #include "CrystarPattern1.h"
 #include "CrystarPattern2.h"
 
+int CrystarPattern1::_collisionFrame = -1;
+
 CrystarPattern1::CrystarPattern1() :EnemyBase::EnemyBase() {
 
 };
@@ -18,18 +20,21 @@ void CrystarPattern1::InheritanceInit() {
 
 void CrystarPattern1::AnimInit() {
 
-	_roof = new CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof","res/Enemy/Crystar/cg_crystar_roof.mv1"), _model);
+	_roof = NEW CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof","res/Enemy/Crystar/cg_crystar_roof.mv1"), _model);
 
 	//// モーションリストのロード
 	MotionList::Load("Crystarl", "MotionList_Crystarl.csv");
 	auto motionList = MotionList::GetMotionList("Crystarl");
 	// アニメーションマネージャーの初期化
-	_animManager = new AnimationManager();
+	_animManager = NEW AnimationManager();
 	_animManager->InitMap("Crystarl", _model, *motionList);
 	// フレームデータの初期化
-	_frameData = new FrameData();
+	_frameData = NEW FrameData();
 	_frameData->LoadData("Crystarl", *motionList);
 
+	if (_collisionFrame == -1) {
+		_collisionFrame = MV1SearchFrame(_model, "Hip");
+	}
 }
 
 void CrystarPattern1::CommandProcess() {
@@ -71,7 +76,7 @@ void CrystarPattern1::Init(VECTOR pos) {
 	InheritanceInit();
 };
 
-bool CrystarPattern1::ModeSearch() {
+bool CrystarPattern1::ModeSearch(bool plAttack) {
 	switch (_searchState) {
 	case SEARCHTYPE::MOVE:
 		ModeSearchToMove();
@@ -88,22 +93,31 @@ bool CrystarPattern1::ModeSearch() {
 	}
 
 	//索敵処理
-	VECTOR v_length = VSub(_player->GetCollision().down_pos, _pos);
-	float len = VSize(v_length);
-	if (VSize(v_length) <= _sartchRange) {
-
-		MATRIX matrix = Math::MMultXYZ(0.0f, _rotation.y, 0.0f);
-		VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
-		VECTOR pla_dir = VNorm(v_length);
-		float range_dir = Math::CalcVectorAngle(ene_dir, pla_dir);
-
-		if (range_dir <= _flontAngle) {
+	VECTOR dirVec = VSub(_player->GetCollision().down_pos, _pos);
+	float length = VSquareSize(dirVec);
+	if (plAttack) {
+		// プレイヤーが攻撃時は聴覚範囲で探索
+		if (length <= _hearingRangeSize * _hearingRangeSize) {
 			_modeState = ENEMYTYPE::DISCOVER;//状態を発見にする
-			_animState = ANIMSTATE::WALK;
 			_currentTime = GetNowCount();
-			_stopTime = 0;
 		}
 	}
+	else {
+		// プレイヤーが攻撃していないときは視界での検索
+		if (length <= _searchRange * _searchRange) {
+
+			MATRIX matrix = Math::MMultXYZ(0.0f, _rotation.y, 0.0f);
+			VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
+			VECTOR pla_dir = VNorm(dirVec);
+			float range_dir = Math::CalcVectorAngle(ene_dir, pla_dir);
+
+			if (range_dir <= _flontAngle) {
+				_modeState = ENEMYTYPE::DISCOVER;//状態を発見にする
+				_currentTime = GetNowCount();
+			}
+		}
+	}
+
 
 	return true;
 }
@@ -121,12 +135,12 @@ bool CrystarPattern1::ModeDisCover() {
 
 	//敵とプレイヤーの距離を算出
 	move = VSub(_player->GetCollision().down_pos, _pos);
-	float p_distance = VSize(move);//敵とプレイヤーの距離
+	float pl_distance = VSquareSize(move);//敵とプレイヤーの距離
 
 	//索敵処理
-	if (p_distance >= _sartchRange) {
+	if (pl_distance >= _searchRange * _searchRange) {
 		_modeState = ENEMYTYPE::SEARCH;//状態を索敵にする
-		_sartchRange = _hearingRangeSize;//索敵範囲を発見時の半径に変更
+		_animState = ANIMSTATE::IDLE;
 		_orignPos = _nextMovePoint = _pos;
 	}
 
@@ -179,6 +193,6 @@ bool CrystarPattern1::IndividualRendering() {
 };
 
 bool CrystarPattern1::DebugRender() {
-	DrawSphere3D(VAdd(_pos, _diffeToCenter), _r, 8, GetColor(0, 255, 0), GetColor(0, 0, 255), false);
+	DrawSphere3D(MV1GetFramePosition(_model, _collisionFrame), _r, 8, GetColor(0, 255, 0), GetColor(0, 0, 255), false);
 	return true;
 };

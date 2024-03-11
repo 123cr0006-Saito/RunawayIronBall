@@ -8,7 +8,7 @@ TimeLimit::TimeLimit() {
 };
 
 TimeLimit::~TimeLimit() {
-	// “Á‚É‚È‚µ
+	_instance = nullptr;
 };
 
 void TimeLimit::SetTimeLimit(int minutes, int second) {

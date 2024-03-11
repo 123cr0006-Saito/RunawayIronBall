@@ -6,6 +6,7 @@
 #include "ModePause.h"
 #include "ModeGameOver.h"
 #include "ModeLoading.h"
+#include "CollisionManager.h"
 
 #include "Camera.h"
 #include "Player.h"
@@ -23,6 +24,7 @@
 #include "BuildingBase.h"
 #include "House.h"
 #include "Tower.h"
+#include "Floor.h"
 #include "UnbreakableObject.h"
 
 #include "Light.h"
@@ -49,6 +51,7 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
+	void DeleteObject();
 	std::vector<std::string> LoadObjectName(std::string fileName); // オブジェクトの名前を読み込む
 	bool LoadObjectParam(std::string fileName); // オブジェクトのパラメータを読み込む
 	bool LoadStage(std::string fileName);// ステージの読み込み 敵も含む
@@ -61,16 +64,17 @@ public:
 
 protected:
 
+	CollisionManager* _collisionManager;
+
 	Camera* _camera;
 	Player* _player;
 
-	UIBase* ui[3];
+	UIBase* ui[4];
 	DrawGauge* _gaugeUI[2];
 	int _gaugeHandle[4];// 0フレーム 3ゲージ
 	float nowParcent = 100;
 
 	TimeLimit* _timeLimit;
-
 
 	ScreenVibration* _sVib;
 	EnemyPool* _enemyPool;
@@ -79,6 +83,7 @@ protected:
 	std::vector<House*> _house;
 	std::vector<Tower*> _tower;
 	std::vector<UnbreakableObject*> _uObj;
+	Floor* _floor;
 
 	int _skySphere;
 	int _tile;

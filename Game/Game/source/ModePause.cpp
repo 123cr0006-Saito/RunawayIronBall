@@ -59,7 +59,7 @@ void ModePause::SelectOperationInstructions() {
 		//操作説明用のサーバーを作成
 		//操作説明が終了した時ようにこのサーバーは削除しない
 		//削除しても良いが、操作説明でこのサーバーを作成してから削除する　※ガウスの背景はおかしくなると思われる
-		ModeServer::GetInstance()->Add(new ModeInstructions(), 100, "Instructions");
+		ModeServer::GetInstance()->Add(NEW ModeInstructions(), 100, "Instructions");
 		global._soundServer->DirectPlay("SE_Press");
 	}
 };
@@ -69,7 +69,7 @@ void ModePause::SelectGameEnd() {
 		ModeServer::GetInstance()->Del("Game");
 		ModeServer::GetInstance()->Del(this);
 		if (!ModeServer::GetInstance()->Search("Title")) {
-			ModeServer::GetInstance()->Add(new ModeTitle(), 1, "Title");
+			ModeServer::GetInstance()->Add(NEW ModeTitle(), 1, "Title");
 		}
 		global._soundServer->DirectPlay("SE_Press");
 	}

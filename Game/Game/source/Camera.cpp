@@ -123,6 +123,7 @@ bool Camera::UpdateCameraToMatrix(VECTOR pos, int map) {
 		//カプセルの半径である５０分y軸方向に移動
 		VecAdd.y += cameraR;
 	}
+	MV1CollResultPolyDimTerminate(HitPolyDim);
 
 	//カメラのセット
 	SetCameraPositionAndTarget_UpVecY(VecAdd, target);
