@@ -588,7 +588,7 @@ bool ModeGame::Process() {
 
 
 bool ModeGame::GateProcess() {
-	_suppression->SubSuppression(2);
+	//_suppression->SubSuppression(2);
 	if (_suppression->GetIsRatio() && _stageNum < 3 ) {
 		if (_gate == nullptr) {
 			int handle[43];

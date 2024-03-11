@@ -16,7 +16,6 @@ void Floor::Delete() {
 		_nameList.clear();
 		_modelList.clear();
 	}
-
 };
 
 void Floor::Create(myJson jsonFile, int stageNum) {
@@ -47,7 +46,7 @@ void Floor::Create(myJson jsonFile, int stageNum) {
 
 			//À•WC³
 			pos.x *= -1;
-			// pos.y += 1;
+			pos.y += 1;
 			//degree->radian
 			rotate.x = rotate.x * DX_PI_F / 180;
 			rotate.y = (rotate.y + 180) * DX_PI_F / 180;
