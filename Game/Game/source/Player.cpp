@@ -54,81 +54,67 @@ namespace {
 	constexpr unsigned int 	C_P_ENABLE_IB_INTERPOLATION			= 102;
 }
 
-Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
+Player::Player()
 {
-	_input = XInput::GetInstance();
-	_stickDir = VGet(0, 0, -1);
+	_input = nullptr;
+	_stickDir = VGet(0.0f, 0.0f, -1.0f);
 
-	_hp = HP_MAX;
+	_hp = 0;
 	_isInvincible = false;
 	_invincibleRemainingCnt = 0;
+	_idleFightingRemainingCnt = 0;
 
-	_stamina = STAMINA_MAX;
-	_staminaMax = STAMINA_MAX;
+	_stamina = 0;
+	_staminaMax = 0;
 	_isConsumingStamina = false;
 	_isTired = false;
-	_staminaRecoverySpeed = _staminaMax / STANIMA_RECOVERY_TIME;
+	_staminaRecoverySpeed = 0;
 
-	_canMove = true;
-	_moveSpeed = 8.0f;
+	_canMove = false;
+	_moveSpeed = 0.0f;
 	_moveSpeedFWD = 0.0f;
 
-	_capsuleCollision.r = 30.0f;
-	_capsuleCollision.up = 65.0f;
-	UpdateCollision();
-
 	_isAttackState = false;
+	_isSwinging = false;
+	_isRotationSwinging = false;
+	_rotationCnt = 0;
 
-	_canMotionCancel = true;
-	_playNextComboAnim = true;
+	_canMotionCancel = false;
+	_playNextComboAnim = false;
 
-	// 鉄球の初期化
-	_chain = NEW Chain();
-	_chain->Init();
-	_chain->SetPlayerModelHandle(_modelHandle);
-	// 鉄球の移動状態を「追従」に設定
-	_chain->SetMoveState(IB_MOVE_STATE::FOLLOWING);
-
-	// ステートを「待機」に設定
+	_animManager = nullptr;
 	_animStatus = ANIM_STATE::IDLE;
+	_frameData = nullptr;
+
+	_chain = nullptr;
+
+	_capsuleCollision.r = 0.0f;
+	_capsuleCollision.up = 0.0f;
 
 
 	_blastOffDir = VGet(0, 0, 0);
 	_blastOffPower = 0.0f;
 
-	_rightHandFrameIndex = MV1SearchFrame(_modelHandle, "Character1_RightHand");
-
-	SetBone();
-
-	_isSwinging = false;
-	_isRotationSwinging = false;
-	_rotationCnt = 0;
+	_rightHandFrameIndex = -1;
 
 
-	_instance = this;
 
-	_idleFightingRemainingCnt = 0;
 
 	_nowExp = 0;
 	_nowLevel = 0;
-	SetNextExp("res/JsonFile/ExpList.json");
-	SetPowerScale("res/JsonFile/IronState.json");
-	UpdateLevel();
+	_maxLevel = 0;
+	_power = 0;
+	_powerAndScale.clear();
+	_nextLevel.clear();
+	_animManager = nullptr;
+	_frameData = nullptr;
+	_modelColor = nullptr;
+	for (int i = 0; i < 2; i++) {
+		_bone[i] = nullptr;
+	}
 
-	// モーションリストの読み込み
-	MotionList::Load("Player", "MotionList_Player.csv");
-	auto motionList = MotionList::GetMotionList("Player");
 
-	// アニメーションマネージャーの初期設定
-	_animManager = NEW AnimationManager();
-	_animManager->InitMap("Player", _modelHandle, *motionList);
-
-	// フレームデータの初期設定
-	_frameData = NEW FrameData();
-	_frameData->LoadData("Player", *motionList);
-
-	_modelColor = NEW ModelColor();
-	_modelColor->Init(_modelHandle);
+	_instance = nullptr;
 }
 
 Player::~Player()
@@ -216,6 +202,98 @@ bool Player::UpdateExp() {
 	}
 	return true;
 };
+
+bool Player::Init(int modelHandle, VECTOR pos)
+{
+	CharacterBase::Init(modelHandle, pos);
+
+	_input = XInput::GetInstance();
+	_stickDir = VGet(0.0f, 0.0f, -1.0f);
+
+	_hp = HP_MAX;
+	_isInvincible = false;
+	_invincibleRemainingCnt = 0;
+
+	_stamina = STAMINA_MAX;
+	_staminaMax = STAMINA_MAX;
+	_isConsumingStamina = false;
+	_isTired = false;
+	_staminaRecoverySpeed = _staminaMax / STANIMA_RECOVERY_TIME;
+
+	_canMove = true;
+	_moveSpeed = 8.0f;
+	_moveSpeedFWD = 0.0f;
+
+	_isAttackState = false;
+	_isSwinging = false;
+	_isRotationSwinging = false;
+	_rotationCnt = 0;
+
+	_canMotionCancel = true;
+	_playNextComboAnim = true;
+
+	// モーションリストの読み込み
+	MotionList::Load("Player", "MotionList_Player.csv");
+	auto motionList = MotionList::GetMotionList("Player");
+	// アニメーションマネージャーの初期設定
+	_animManager = NEW AnimationManager();
+	_animManager->InitMap("Player", _modelHandle, *motionList);
+	// フレームデータの初期設定
+	_frameData = NEW FrameData();
+	_frameData->LoadData("Player", *motionList);
+	// ステートを「待機」に設定
+	_animStatus = ANIM_STATE::IDLE;
+
+
+	// 鉄球の初期化
+	_chain = NEW Chain();
+	_chain->Init();
+	_chain->SetPlayerModelHandle(_modelHandle);
+	// 鉄球の移動状態を「追従」に設定
+	_chain->SetMoveState(IB_MOVE_STATE::FOLLOWING);
+
+	// 当たり判定の初期設定
+	_capsuleCollision.r = 30.0f;
+	_capsuleCollision.up = 65.0f;
+	UpdateCollision();
+
+
+	_blastOffDir = VGet(0, 0, 0);
+	_blastOffPower = 0.0f;
+
+	_rightHandFrameIndex = MV1SearchFrame(_modelHandle, "Character1_RightHand");
+
+	_modelColor = NEW ModelColor();
+	_modelColor->Init(_modelHandle);
+
+	SetBone();
+
+
+
+
+	_instance = this;
+
+	_idleFightingRemainingCnt = 0;
+
+	_nowExp = 0;
+	_nowLevel = 0;
+	SetNextExp("res/JsonFile/ExpList.json");
+	SetPowerScale("res/JsonFile/IronState.json");
+	UpdateLevel();
+
+
+
+
+
+
+
+
+
+
+
+
+	return true;
+}
 
 bool Player::Process(float camAngleY)
 {

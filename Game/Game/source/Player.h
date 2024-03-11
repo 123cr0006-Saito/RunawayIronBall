@@ -49,9 +49,10 @@ private:
 	};
 
 public:
-	Player(int modelHandle, VECTOR pos);
+	Player();
 	~Player() override;
 
+	bool Init(int modelHandle, VECTOR pos) override;
 	bool Process(float camAngleY);
 	bool AnimationProcess();
 	bool BlastOffProcess();
@@ -138,6 +139,8 @@ private:
 	bool _isInvincible;
 	// 残りの無敵時間
 	int _invincibleRemainingCnt;
+	// 戦闘待機状態の残りフレーム数
+	int _idleFightingRemainingCnt;
 
 	// スタミナ
 	float _stamina;
@@ -159,11 +162,12 @@ private:
 
 	// 攻撃状態かどうか
 	bool _isAttackState;
-
-	// 鉄球
-	Chain* _chain;
-
-	Capsule _capsuleCollision;
+	// 通常攻撃中かどうか
+	bool _isSwinging;
+	// 回転攻撃中かどうか
+	bool _isRotationSwinging;
+	// 回転攻撃のボタンが長押しされているフレーム数
+	int _rotationCnt;
 
 	/* アニメーション関連 */
 	// モーション変更可能かどうか
@@ -175,14 +179,18 @@ private:
 	AnimationManager* _animManager;
 	// アニメーション情報のマップコンテナ
 	static std::map<int, ANIMATION_INFO> _animMap;
-	// 戦闘待機状態の残りフレーム数
-	int _idleFightingRemainingCnt;
 
+	// アニメーションのステート
 	ANIM_STATE _animStatus;
 
 	// フレームデータ
 	FrameData* _frameData;
 
+	// 鉄球
+	Chain* _chain;
+
+	// 当たり判定
+	Capsule _capsuleCollision;
 
 	VECTOR _blastOffDir;
 	float _blastOffPower;
@@ -191,15 +199,12 @@ private:
 	int _rightHandFrameIndex;
 
 
-	bool _isSwinging;
-	bool _isRotationSwinging;
-	int _rotationCnt;
 
 
+	// 被ダメージ時のモデル点滅処理を行うクラス
 	ModelColor* _modelColor;
 
 
-	static Player* _instance;
 
 	//------------
 	//齋藤が書きました。
@@ -212,4 +217,7 @@ private:
 	int _power;//吹っ飛ばす力です。
 	std::map<int, std::pair<int, float>> _powerAndScale;//攻撃力と拡大率を格納したコンテナです。
 	//------------
+
+
+	static Player* _instance;
 };
