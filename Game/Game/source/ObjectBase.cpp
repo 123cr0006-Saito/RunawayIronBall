@@ -5,6 +5,7 @@ ObjectBase::ObjectBase()
 {
 	_cell = new Cell();
 	_cell->_obj = this;
+	_collisionManager = CollisionManager::GetInstance();
 }
 
 ObjectBase::~ObjectBase()

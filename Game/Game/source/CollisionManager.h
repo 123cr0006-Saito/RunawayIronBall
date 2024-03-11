@@ -1,7 +1,10 @@
 #pragma once
 #include "appframe.h"
 #include "Cell.h"
-#include "EnemyBase.h"
+#include "ObjectBase.h"
+class CharacterBase;
+class Player;
+class EnemyBase;
 
 // XZ平面上で4分木空間分割を行い、当たり判定を行うクラス
 class CollisionManager

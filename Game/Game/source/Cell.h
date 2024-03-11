@@ -1,6 +1,5 @@
 #pragma once
 #include "ObjectBase.h"
-//#include "EnemyBase.h"
 
 
 enum OBJ_TYPE {

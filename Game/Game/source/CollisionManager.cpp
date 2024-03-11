@@ -68,12 +68,20 @@ void CollisionManager::UpdateCell(Cell* cell)
 	if(cell == nullptr || cell->_obj == nullptr) return;
 
 	unsigned int treeIndex = 0;
+	VECTOR pos1 = VGet(0.0f, 0.0f, 0.0f);
+	VECTOR pos2 = VGet(0.0f, 0.0f, 0.0f);
 	switch (cell->_objType)
 	{
 	case OBJ_TYPE::NONE:
 		return;
 		break;
 	case OBJ_TYPE::PL:
+	{
+		Player* player = static_cast<Player*>(cell->_obj);
+		Capsule capsule = player->GetCollision();
+		pos1 = VGet(capsule.up_pos.x - capsule.r, 0.0f, capsule.up_pos.z - capsule.r);
+		pos2 = VGet(capsule.up_pos.x + capsule.r, 0.0f, capsule.up_pos.z + capsule.r);
+	}
 		break;
 	case OBJ_TYPE::PL_IB:
 		break;
@@ -82,15 +90,15 @@ void CollisionManager::UpdateCell(Cell* cell)
 		EnemyBase* enemy = static_cast<EnemyBase*>(cell->_obj);
 		VECTOR centerPos = enemy->GetCollisionPos();
 		float r = enemy->GetR();
-		VECTOR pos1 = VGet(centerPos.x - r, 0.0f, centerPos.z - r);
-		VECTOR pos2 = VGet(centerPos.x + r, 0.0f, centerPos.z + r);
-		treeIndex = CalcTreeIndex(pos1, pos2);
+		pos1 = VGet(centerPos.x - r, 0.0f, centerPos.z - r);
+		pos2 = VGet(centerPos.x + r, 0.0f, centerPos.z + r);
 	}
 		break;
 	case OBJ_TYPE::EN_IB:
 		break;
 	}
 
+	treeIndex = CalcTreeIndex(pos1, pos2);
 	if (cell->_segment != _tree[treeIndex]) {
 		RemoveCellFromTree(cell);
 		InsertCellIntoTree(treeIndex, cell);
@@ -107,7 +115,6 @@ unsigned int CollisionManager::CalcTreeIndex(VECTOR pos1, VECTOR pos2)
 	int shift = 0;
 	if (xorIndex != 0) {
 		int tmpShift = 0;
-
 		for (int i = 0; i < STAGE_DIVISION; i++) {
 			tmpShift += 2;
 			// 下位2ビットを取り出す

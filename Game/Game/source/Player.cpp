@@ -257,6 +257,7 @@ bool Player::Init(int modelHandle, VECTOR pos)
 	_capsuleCollision.up = 65.0f;
 	UpdateCollision();
 
+	_cell->_objType = OBJ_TYPE::PL;
 
 	_blastOffDir = VGet(0, 0, 0);
 	_blastOffPower = 0.0f;
@@ -496,7 +497,7 @@ bool Player::Process(float camAngleY)
 
 	_chain->Process();
 
-
+	_collisionManager->UpdateCell(_cell);
 
 	return true;
 }
