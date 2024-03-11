@@ -436,9 +436,9 @@ bool Collision3D::OBBSphereCol(OBB obb, VECTOR point, float r, VECTOR* hitPos) {
 	return false;
 }
 
-bool Collision3D::OBBSphereCol(const OBB& obb, const Sphere& sphere)
+bool Collision3D::OBBSphereCol(const OBB& obb, const Sphere& sphere, VECTOR* hitPos)
 {
-	return Collision3D::OBBSphereCol(obb, sphere.centerPos, sphere.r);
+	return Collision3D::OBBSphereCol(obb, sphere.centerPos, sphere.r, hitPos);
 }
 
 bool Collision3D::OBBCapselCol(VECTOR line_start, VECTOR line_end, OBB obb, float r) {
