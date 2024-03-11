@@ -1,6 +1,8 @@
 #include "CrystarPattern1.h"
 #include "CrystarPattern2.h"
 
+int CrystarPattern1::_collisionFrame = -1;
+
 CrystarPattern1::CrystarPattern1() :EnemyBase::EnemyBase() {
 
 };
@@ -30,6 +32,9 @@ void CrystarPattern1::AnimInit() {
 	_frameData = NEW FrameData();
 	_frameData->LoadData("Crystarl", *motionList);
 
+	if (_collisionFrame == -1) {
+		_collisionFrame = MV1SearchFrame(_model, "Hip");
+	}
 }
 
 void CrystarPattern1::CommandProcess() {
@@ -71,7 +76,7 @@ void CrystarPattern1::Init(VECTOR pos) {
 	InheritanceInit();
 };
 
-bool CrystarPattern1::ModeSearch() {
+bool CrystarPattern1::ModeSearch(bool plAttack) {
 	switch (_searchState) {
 	case SEARCHTYPE::MOVE:
 		ModeSearchToMove();
@@ -89,20 +94,30 @@ bool CrystarPattern1::ModeSearch() {
 
 	//õ“Gˆ—
 	VECTOR dirVec = VSub(_player->GetCollision().down_pos, _pos);
-	float length = VSize(dirVec);
-	if (length <= _searchRange) {
-
-		MATRIX matrix = Math::MMultXYZ(0.0f, _rotation.y, 0.0f);
-		VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
-		VECTOR pla_dir = VNorm(dirVec);
-		float range_dir = Math::CalcVectorAngle(ene_dir, pla_dir);
-
-		if (range_dir <= _flontAngle) {
+	float length = VSquareSize(dirVec);
+	if (plAttack) {
+		// ƒvƒŒƒCƒ„[‚ªUŒ‚‚Í’®Šo”ÍˆÍ‚Å’Tõ
+		if (length <= _hearingRangeSize * _hearingRangeSize) {
 			_modeState = ENEMYTYPE::DISCOVER;//ó‘Ô‚ğ”­Œ©‚É‚·‚é
-			_searchRange = _discoverRangeSize;//õ“G”ÍˆÍ‚ğ”­Œ©‚Ì”¼Œa‚É•ÏX
-			_currentTime = 0;
+			_currentTime = GetNowCount();
 		}
 	}
+	else {
+		// ƒvƒŒƒCƒ„[‚ªUŒ‚‚µ‚Ä‚¢‚È‚¢‚Æ‚«‚Í‹ŠE‚Å‚ÌŒŸõ
+		if (length <= _searchRange * _searchRange) {
+
+			MATRIX matrix = Math::MMultXYZ(0.0f, _rotation.y, 0.0f);
+			VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
+			VECTOR pla_dir = VNorm(dirVec);
+			float range_dir = Math::CalcVectorAngle(ene_dir, pla_dir);
+
+			if (range_dir <= _flontAngle) {
+				_modeState = ENEMYTYPE::DISCOVER;//ó‘Ô‚ğ”­Œ©‚É‚·‚é
+				_currentTime = GetNowCount();
+			}
+		}
+	}
+
 
 	return true;
 }
@@ -125,7 +140,7 @@ bool CrystarPattern1::ModeDisCover() {
 	//õ“Gˆ—
 	if (pl_distance >= _searchRange * _searchRange) {
 		_modeState = ENEMYTYPE::SEARCH;//ó‘Ô‚ğõ“G‚É‚·‚é
-		_searchRange = _hearingRangeSize;//õ“G”ÍˆÍ‚ğ”­Œ©‚Ì”¼Œa‚É•ÏX
+		_animState = ANIMSTATE::IDLE;
 		_orignPos = _nextMovePoint = _pos;
 	}
 
@@ -178,6 +193,6 @@ bool CrystarPattern1::IndividualRendering() {
 };
 
 bool CrystarPattern1::DebugRender() {
-	DrawSphere3D(VAdd(_pos, _diffeToCenter), _r, 8, GetColor(0, 255, 0), GetColor(0, 0, 255), false);
+	DrawSphere3D(MV1GetFramePosition(_model, _collisionFrame), _r, 8, GetColor(0, 255, 0), GetColor(0, 0, 255), false);
 	return true;
 };

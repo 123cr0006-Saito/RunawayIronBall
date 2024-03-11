@@ -13,7 +13,7 @@ UITimeLimit::UITimeLimit(VECTOR pos) :UIBase(pos){
 	_handle = new int[10];
 	ResourceServer::LoadMultGraph("TimeNum","res/UI/UITime/Ui_Time",".png",10,_handle);
 	_colonHandle = ResourceServer::Load("Colon", "res/UI/UITime/Time_UI_colon.png");
-	_frameHandle = ResourceServer::Load("TimeFrame", "res/UI/UITime/UI_TIME_Gauge.png");;
+	_frameHandle = ResourceServer::Load("TimeFrame", "res/UI/UITime/UI_TIME_Gauge.png");
 };
 
 UITimeLimit::~UITimeLimit(){

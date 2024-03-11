@@ -8,6 +8,8 @@
 
 #include "AnimationManager.h"
 #include "AnimationItem.h"
+#include "EffectManeger.h"
+#include "EffekseerPosSynchro.h"
 
 #include "FrameData.h"
 
@@ -120,6 +122,8 @@ public:
 	static Player* GetInstance() { return _instance; }
 
 	void DrawDebugInfo();
+
+	VECTOR GetStickDir() { return _stickDir; }
 private:
 	// “ü—Íî•ñ
 	XInput* _input;

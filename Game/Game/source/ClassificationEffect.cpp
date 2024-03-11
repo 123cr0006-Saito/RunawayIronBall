@@ -64,8 +64,10 @@ void ClassificationEffect::SetClassification(CommandParam param) {
 	}
 	else if (param.first == Play_Effekseer_PC) {
 		// エフェクシア プレイヤー中心
-		VECTOR vec = VGet(0,0,0);
-		CreateEffeckseer(param.second, &vec);
+		VECTOR* vec = Player::GetInstance()->GetPositionPtr();
+		VECTOR* dir = Player::GetInstance()->GetForwardDir();
+		float height = Player::GetInstance()->GetCollision().up_pos.y / 2.0f; // 高さの半分を割り出す
+		CreateEffeckseer(param.second, vec,height,*dir);
 	}
 	else if (param.first == Play_Effekseer_IC) {
 		// エフェクシア 鉄球中心
@@ -75,7 +77,19 @@ void ClassificationEffect::SetClassification(CommandParam param) {
 	else if (param.first == Play_Effekseer_IU) {
 		// エフェクシア 鉄球足元
 		VECTOR* pos = Player::GetInstance()->GetIBPosPtr();
-		CreateEffeckseer(param.second, pos);
+		float height = Player::GetInstance()->GetIBCollision().r * -1.0f; // 高さの半分を割り出す 今回は高さぶん下げるので -1を掛ける
+		CreateEffeckseer(param.second, pos,height);
+	}
+	else if (param.first == Play_Effekseer_Rotation) {
+		int effectName = static_cast<int>(param.second);
+		int handle = ResourceServer::SearchSingle(_commandList[effectName].first.c_str(), ResourceServer::TYPE::Efk);
+		if (handle != -1) {
+			VECTOR* pos = Player::GetInstance()->GetPositionPtr();
+			VECTOR* dir = Player::GetInstance()->GetForwardDir();
+			float height = Player::GetInstance()->GetCollision().up_pos.y / 2.0f; // 高さの半分を割り出す
+			EffekseerRotation* effect = NEW EffekseerRotation(handle, pos, _commandList[effectName].second, dir, height);
+			EffectManeger::GetInstance()->LoadEffect(effect);
+		}
 	}
 	else {
 #ifdef _DEBUG
@@ -84,9 +98,9 @@ void ClassificationEffect::SetClassification(CommandParam param) {
 	}
 };
 
-void ClassificationEffect::CreateEffeckseer(float param, VECTOR* pos) {
+void ClassificationEffect::CreateEffeckseer(float param, VECTOR* pos, float height , VECTOR rotation ) {
 	int effectName = static_cast<int>(param);
 	int handle = ResourceServer::SearchSingle(_commandList[effectName].first.c_str(), ResourceServer::TYPE::Efk);
-	EffekseerBase* effekseer = NEW EffekseerPosSynchro(handle, pos, _commandList[effectName].second);
+	EffekseerBase* effekseer = NEW EffekseerPosSynchro(handle, pos, _commandList[effectName].second, rotation,height);
 	EffectManeger::GetInstance()->LoadEffect(effekseer);
 };

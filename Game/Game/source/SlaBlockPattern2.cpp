@@ -1,4 +1,7 @@
 #include "SlaBlockPattern2.h"
+
+int SlaBlockPattern2::_collisionFrame = -1;
+
 SlaBlockPattern2::SlaBlockPattern2() :EnemyBase::EnemyBase()
 {
 	//デバック時登録
@@ -24,6 +27,10 @@ void SlaBlockPattern2::AnimInit() {
 	// フレームデータの初期化
 	_frameData = NEW FrameData();
 	_frameData->LoadData("Slablock", *motionList);
+
+	if (_collisionFrame == -1) {
+		_collisionFrame = MV1SearchFrame(_model, "face1");
+	}
 }
 
 void SlaBlockPattern2::CommandProcess() {
@@ -43,7 +50,7 @@ void SlaBlockPattern2::CommandProcess() {
 	}
 };
 
-bool SlaBlockPattern2::ModeSearch(){
+bool SlaBlockPattern2::ModeSearch(bool plAttack){
 	switch (_searchState) {
 	case SEARCHTYPE::MOVE:
 		ModeSearchToMove();
@@ -59,22 +66,32 @@ bool SlaBlockPattern2::ModeSearch(){
 		break;
 	}
 
-	//索敵処理
+		//索敵処理
 	VECTOR dirVec = VSub(_player->GetCollision().down_pos, _pos);
-	float length = VSize(dirVec);
-	if (length <= _searchRange) {
-
-		MATRIX matrix = Math::MMultXYZ(0.0f, _rotation.y, 0.0f);
-		VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
-		VECTOR pla_dir = VNorm(dirVec);
-		float range_dir = Math::CalcVectorAngle(ene_dir, pla_dir);
-
-		if (range_dir <= _flontAngle) {
+	float length = VSquareSize(dirVec);
+	if (plAttack) {
+		// プレイヤーが攻撃時は聴覚範囲で探索
+		if (length <= _hearingRangeSize * _hearingRangeSize) {
 			_modeState = ENEMYTYPE::DISCOVER;//状態を発見にする
-			_searchRange = _discoverRangeSize;//索敵範囲を発見時の半径に変更
-			_currentTime = 0;
+			_currentTime = GetNowCount();
 		}
 	}
+	else {
+		// プレイヤーが攻撃していないときは視界での検索
+		if (length <= _searchRange * _searchRange) {
+
+			MATRIX matrix = Math::MMultXYZ(0.0f, _rotation.y, 0.0f);
+			VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
+			VECTOR pla_dir = VNorm(dirVec);
+			float range_dir = Math::CalcVectorAngle(ene_dir, pla_dir);
+
+			if (range_dir <= _flontAngle) {
+				_modeState = ENEMYTYPE::DISCOVER;//状態を発見にする
+				_currentTime = GetNowCount();
+			}
+		}
+	}
+
 
 	return true;
 };
@@ -97,13 +114,14 @@ bool SlaBlockPattern2::ModeDisCover() {
 	//索敵処理
 	if (pl_distance >= _searchRange * _searchRange) {
 		_modeState = ENEMYTYPE::SEARCH;//状態を索敵にする
-		_searchRange = _hearingRangeSize;//索敵範囲を発見時の半径に変更
+		_animState = ANIMSTATE::IDLE;
 		_orignPos = _nextMovePoint = _pos;
 	}
 
 	//攻撃処理
 	if (pl_distance <= _attackRangeSize * _attackRangeSize) {
 		_modeState = ENEMYTYPE::ATTACK;//状態を索敵にする
+		_animState = ANIMSTATE::DROP;
 		_currentTime = GetNowCount();
 		_saveNextPoint = VAdd(_player->GetCollision().down_pos, VGet(0, 500, 0));
 		_savePos = _pos;
@@ -118,6 +136,7 @@ bool SlaBlockPattern2::ModeAttack() {
 	int enemyRigidityTime = 1.0f * 1000; //攻撃モーションに入っての硬直時間
 	int enemyToPlayerPosFrame = 20.0f / 60.0f * 1000;//敵がプレイヤーの位置につくまでの時間
 	int fallTime = 1.0f * 1000;//落下するまでの時間
+	float fallSpeed = 30.0f;
 
 	// 1秒待ってから20フレームでプレイヤーの頭上に到着
 	if (_fallCount == 0) {
@@ -139,7 +158,7 @@ bool SlaBlockPattern2::ModeAttack() {
 
 	//１秒待ってから落下
 	if (nowTime >= enemyRigidityTime + enemyToPlayerPosFrame + fallTime) {
-		_pos.y -= _speed * 10;
+		_pos.y -= fallSpeed;
 		//とりあえずyが0になるまで落下
 		if (_pos.y <= 0.0f) {
 			_fallCount++;
@@ -213,6 +232,6 @@ bool SlaBlockPattern2::IndividualRendering() {
 };
 
 bool SlaBlockPattern2::DebugRender() {
-	DrawSphere3D(VAdd(_pos, _diffeToCenter), _r, 8, GetColor(0, 0, 255), GetColor(0, 0, 255), false);
+	DrawSphere3D(MV1GetFramePosition(_model, _collisionFrame), _r, 8, GetColor(0, 0, 255), GetColor(0, 0, 255), false);
 	return true;
 }

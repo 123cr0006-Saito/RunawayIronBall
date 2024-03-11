@@ -57,6 +57,9 @@
     <ClCompile Include="source\BoardPolygonDust.cpp" />
     <ClCompile Include="source\PlaneEffectBase.cpp" />
     <ClCompile Include="source\EffectBase.cpp" />
+    <ClCompile Include="source\EffekseerRotation.cpp">
+      <Filter>Effect</Filter>
+    </ClCompile>
     <ClCompile Include="source\EffectManeger.cpp" />
     <ClCompile Include="source\Suppression.cpp" />
     <ClCompile Include="source\Gate.cpp" />
@@ -72,6 +75,8 @@
       <Filter>Mode\Game\CollisionManager</Filter>
     </ClCompile>
     <ClCompile Include="source\ObjectBase.cpp" />
+    <ClCompile Include="source\LoadingPlayer.cpp" />
+    <ClCompile Include="source\LoadingChain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\myJson.h" />
@@ -291,6 +296,8 @@
     <ClCompile Include="source\ModeGame.cpp">
       <Filter>Mode\Game</Filter>
     </ClCompile>
+    <ClInclude Include="source\EffekseerRotation.h">
+      <Filter>Effect</Filter>
     <ClCompile Include="source\UnbreakableObject.cpp" />
     <ClInclude Include="source\ModeLoading.h" />
     <ClInclude Include="source\Floor.h">
@@ -305,6 +312,8 @@
     <ClInclude Include="source\Cell.h">
       <Filter>Mode\Game\CollisionManager</Filter>
     </ClInclude>
+    <ClInclude Include="source\LoadingPlayer.h" />
+    <ClInclude Include="source\LoadingChain.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CharacterBase.h">

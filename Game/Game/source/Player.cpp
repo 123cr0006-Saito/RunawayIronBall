@@ -77,8 +77,6 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 	_capsuleCollision.up = 65.0f;
 	UpdateCollision();
 
-
-
 	_isAttackState = false;
 
 	_canMotionCancel = true;
@@ -111,7 +109,7 @@ Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
 
 	_idleFightingRemainingCnt = 0;
 
-
+	_nowExp = 0;
 	_nowLevel = 0;
 	SetNextExp("res/JsonFile/ExpList.json");
 	SetPowerScale("res/JsonFile/IronState.json");
@@ -216,19 +214,6 @@ bool Player::UpdateExp() {
 			UpdateLevel();
 		}
 	}
-
-	//if (_input->GetTrg(XINPUT_BUTTON_A)) {
-	//	if (_nowLevel <= _maxLevel) {
-	//		_nowLevel--;
-	//		UpdateLevel();
-	//	}
-	//}
-	//if (_input->GetTrg(XINPUT_BUTTON_B)) {
-	//	if (_nowLevel < _maxLevel) {
-	//		_nowLevel++;
-	//		UpdateLevel();
-	//	}
-	//}
 	return true;
 };
 
@@ -491,6 +476,13 @@ bool Player::UpdateLevel()
 {
 	_power = _powerAndScale[_nowLevel].first;
 	_chain->UpdateLevel(_powerAndScale[_nowLevel].second);
+	if (_nowLevel > 0) {
+		float size = 5.0f * _powerAndScale[_nowLevel].second;
+		VECTOR* pos = GetIBPosPtr();
+		int effectHandle = ResourceServer::Load("FX_3D_Level_Up", "res/Effekseer/FX_3D_Level_Up/FX_3D_Level_Up.efkefc");
+		EffekseerPosSynchro* effect = new EffekseerPosSynchro(effectHandle, pos, size);
+		EffectManeger::GetInstance()->LoadEffect(effect);
+	}
 	return true;
 }
 

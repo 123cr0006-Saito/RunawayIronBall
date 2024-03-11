@@ -9,7 +9,7 @@ public:
 	void AnimInit()override; // アニメーションの初期化
 	void CommandProcess()override;// コマンドがあった場合処理
 
-	bool ModeSearch()override; // サーチ状態
+	bool ModeSearch(bool plAttack)override; // サーチ状態
 	bool ModeAttack()override; // 攻撃状態
 	bool ModeCoolTime()override; // クールタイム状態
 	bool ModeKnockBack()override; // ノックバック状態

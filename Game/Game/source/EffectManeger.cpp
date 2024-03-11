@@ -32,6 +32,7 @@ bool EffectManeger::Update(){
 
 bool EffectManeger::Render() {
 	//ビルボード描画中はライトの計算を一時停止  ライトと反対方向を向くと黒くなる
+	
 	SetUseLighting(FALSE);
 	for (auto itr = _effect.begin(); itr != _effect.end(); ++itr) {
 		(*itr)->Render();

@@ -155,16 +155,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\EffekseerRotation.cpp" />
+    <ClCompile Include="source\EffectBase.cpp" />
     <ClCompile Include="source\BoardArrow.cpp" />
     <ClCompile Include="source\Chainguard.cpp" />
     <ClCompile Include="source\CollisionManager.cpp" />
+    <ClCompile Include="source\LoadingChain.cpp" />
+    <ClCompile Include="source\LoadingPlayer.cpp" />
     <ClCompile Include="source\Floor.cpp" />
     <ClCompile Include="source\ModeLoading.cpp" />
     <ClCompile Include="source\ModeFade.cpp" />
     <ClCompile Include="source\Gate.cpp" />
     <ClCompile Include="source\Light.cpp" />
     <ClCompile Include="source\ModeScenario.cpp" />
-    <ClCompile Include="source\EffectBase.cpp" />
     <ClCompile Include="source\EffectManeger.cpp" />
     <ClCompile Include="source\Boss.cpp" />
     <ClCompile Include="source\ObjectBase.cpp" />
@@ -218,17 +221,20 @@
     <ClCompile Include="source\UnbreakableObject.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\EffekseerRotation.h" />
+    <ClInclude Include="source\EffectBase.h" />
     <ClInclude Include="source\BoardArrow.h" />
     <ClInclude Include="source\Chainguard.h" />
     <ClInclude Include="source\Cell.h" />
     <ClInclude Include="source\CollisionManager.h" />
+    <ClInclude Include="source\LoadingChain.h" />
+    <ClInclude Include="source\LoadingPlayer.h" />
     <ClInclude Include="source\Floor.h" />
     <ClInclude Include="source\ModeLoading.h" />
     <ClInclude Include="source\ModeFade.h" />
     <ClInclude Include="source\Gate.h" />
     <ClInclude Include="source\Light.h" />
     <ClInclude Include="source\ModeScenario.h" />
-    <ClInclude Include="source\EffectBase.h" />
     <ClInclude Include="source\EffectManeger.h" />
     <ClInclude Include="source\Boss.h" />
     <ClInclude Include="source\ObjectBase.h" />

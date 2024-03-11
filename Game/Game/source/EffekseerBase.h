@@ -6,8 +6,8 @@
 class EffekseerBase : public EffectBase
 {
 public:
-	EffekseerBase(std::string name, VECTOR* pos, float size,float speed =1.0f , bool loopFlag = false);
-	EffekseerBase(int handle, VECTOR* pos, float size, float speed = 1.0f, bool loopFlag = false);
+	EffekseerBase(std::string name, VECTOR* pos, float size,float speed =1.0f , bool loopFlag = false,bool loadFlag = true);
+	EffekseerBase(int handle, VECTOR* pos, float size, float speed = 1.0f, bool loopFlag = false, bool loadFlag = true);
 	virtual ~EffekseerBase()override;
 	virtual bool Process()override;
 	virtual bool Render()override;

@@ -6,7 +6,6 @@
 #include "ModePause.h"
 #include "ModeGameOver.h"
 #include "ModeLoading.h"
-
 #include "CollisionManager.h"
 
 #include "Camera.h"
@@ -25,6 +24,7 @@
 #include "BuildingBase.h"
 #include "House.h"
 #include "Tower.h"
+#include "Floor.h"
 #include "UnbreakableObject.h"
 
 #include "Light.h"
@@ -51,6 +51,7 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
+	void DeleteObject();
 	std::vector<std::string> LoadObjectName(std::string fileName); // オブジェクトの名前を読み込む
 	bool LoadObjectParam(std::string fileName); // オブジェクトのパラメータを読み込む
 	bool LoadStage(std::string fileName);// ステージの読み込み 敵も含む
@@ -62,7 +63,9 @@ public:
 	std::vector<OBJECTDATA> LoadJsonObject(nlohmann::json json, std::string loadName);//引数 読み込みたいオブジェクトの名前
 
 protected:
+
 	CollisionManager* _collisionManager;
+
 	Camera* _camera;
 	Player* _player;
 
@@ -73,7 +76,6 @@ protected:
 
 	TimeLimit* _timeLimit;
 
-
 	ScreenVibration* _sVib;
 	EnemyPool* _enemyPool;
 	Suppression* _suppression;
@@ -81,6 +83,7 @@ protected:
 	std::vector<House*> _house;
 	std::vector<Tower*> _tower;
 	std::vector<UnbreakableObject*> _uObj;
+	Floor* _floor;
 
 	int _skySphere;
 	int _tile;

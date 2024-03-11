@@ -1,5 +1,7 @@
 #include "CrystarPattern2.h"
 
+int CrystarPattern2::_collisionFrame = -1;
+
 CrystarPattern2::CrystarPattern2() :EnemyBase::EnemyBase() {
 
 };
@@ -29,6 +31,9 @@ void CrystarPattern2::AnimInit() {
 	_frameData = NEW FrameData();
 	_frameData->LoadData("Crystarl", *motionList);
 
+	if (_collisionFrame == -1) {
+		_collisionFrame = MV1SearchFrame(_model, "Hip");
+	}
 }
 
 void CrystarPattern2::CommandProcess() {
@@ -70,7 +75,7 @@ void CrystarPattern2::Init(VECTOR pos) {
 	InheritanceInit();
 };
 
-bool CrystarPattern2::ModeSearch() {
+bool CrystarPattern2::ModeSearch(bool plAttack) {
 	switch (_searchState) {
 	case SEARCHTYPE::MOVE:
 		ModeSearchToMove();
@@ -88,20 +93,30 @@ bool CrystarPattern2::ModeSearch() {
 
 	//õ“Gˆ—
 	VECTOR dirVec = VSub(_player->GetCollision().down_pos, _pos);
-	float length = VSize(dirVec);
-	if (length <= _searchRange) {
-
-		MATRIX matrix = Math::MMultXYZ(0.0f, _rotation.y, 0.0f);
-		VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
-		VECTOR pla_dir = VNorm(dirVec);
-		float range_dir = Math::CalcVectorAngle(ene_dir, pla_dir);
-
-		if (range_dir <= _flontAngle) {
+	float length = VSquareSize(dirVec);
+	if (plAttack) {
+		// ƒvƒŒƒCƒ„[‚ªUŒ‚‚Í’®Šo”ÍˆÍ‚Å’Tõ
+		if (length <= _hearingRangeSize * _hearingRangeSize) {
 			_modeState = ENEMYTYPE::DISCOVER;//ó‘Ô‚ğ”­Œ©‚É‚·‚é
-			_searchRange = _discoverRangeSize;//õ“G”ÍˆÍ‚ğ”­Œ©‚Ì”¼Œa‚É•ÏX
-			_currentTime = 0;
+			_currentTime = GetNowCount();
 		}
 	}
+	else {
+		// ƒvƒŒƒCƒ„[‚ªUŒ‚‚µ‚Ä‚¢‚È‚¢‚Æ‚«‚Í‹ŠE‚Å‚ÌŒŸõ
+		if (length <= _searchRange * _searchRange) {
+
+			MATRIX matrix = Math::MMultXYZ(0.0f, _rotation.y, 0.0f);
+			VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
+			VECTOR pla_dir = VNorm(dirVec);
+			float range_dir = Math::CalcVectorAngle(ene_dir, pla_dir);
+
+			if (range_dir <= _flontAngle) {
+				_modeState = ENEMYTYPE::DISCOVER;//ó‘Ô‚ğ”­Œ©‚É‚·‚é
+				_currentTime = GetNowCount();
+			}
+		}
+	}
+
 
 	return true;
 }
@@ -124,13 +139,14 @@ bool CrystarPattern2::ModeDisCover() {
 	//õ“Gˆ—
 	if (pl_distance >= _searchRange * _searchRange) {
 		_modeState = ENEMYTYPE::SEARCH;//ó‘Ô‚ğõ“G‚É‚·‚é
-		_searchRange = _hearingRangeSize;//õ“G”ÍˆÍ‚ğ”­Œ©‚Ì”¼Œa‚É•ÏX
+		_animState = ANIMSTATE::IDLE;
 		_orignPos = _nextMovePoint = _pos;
 	}
 
 	//UŒ‚ˆ—
 	if (pl_distance <= _attackRangeSize * _attackRangeSize) {
 		_modeState = ENEMYTYPE::ATTACK;//ó‘Ô‚ğõ“G‚É‚·‚é
+		_animState = ANIMSTATE::HANDSTAND;
 		_currentTime = GetNowCount();
 		_saveNextPoint = VAdd(_player->GetCollision().down_pos, VGet(0, 500, 0));
 		_savePos = _pos;
@@ -202,6 +218,6 @@ bool CrystarPattern2::IndividualRendering() {
 };
 
 bool CrystarPattern2::DebugRender() {
-	DrawSphere3D(VAdd(_pos, _diffeToCenter), _r, 8, GetColor(0, 255, 0), GetColor(0, 0, 255), false);
+	DrawSphere3D(MV1GetFramePosition(_model, _collisionFrame), _r, 8, GetColor(0, 255, 0), GetColor(0, 0, 255), false);
 	return true;
 };
