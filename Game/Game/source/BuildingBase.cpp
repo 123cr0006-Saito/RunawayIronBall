@@ -41,6 +41,7 @@ void BuildingBase::Init(int modelHandle, VECTOR startPos, VECTOR rotation, VECTO
 	obb.pos = VAdd(startPos, VGet(0.0f, obb.length[1] / 2.0f, 0.0f));
 
 	_cell->_objType = OBJ_TYPE::BLDG;
+	_collisionManager->UpdateCell(_cell);
 }
 
 void BuildingBase::Process()

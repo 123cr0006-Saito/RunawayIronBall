@@ -5,6 +5,7 @@
 class CharacterBase;
 class Player;
 class EnemyBase;
+class BuildingBase;
 
 // XZ平面上で4分木空間分割を行い、当たり判定を行うクラス
 class CollisionManager
@@ -12,7 +13,7 @@ class CollisionManager
 public:
 	CollisionManager();
 	~CollisionManager();
-	static CollisionManager* GetInstance(){ return _instance; }
+	static CollisionManager* GetInstance() { return _instance; }
 
 	void Init();
 	void Process();
