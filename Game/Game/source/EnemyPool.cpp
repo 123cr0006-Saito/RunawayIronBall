@@ -114,6 +114,7 @@ void EnemyPool::DeleteEnemy() {
 	}
 
 	_enemy.clear();
+	_enemyInitPos.clear();	
 
 	ResourceServer::MV1DeleteModelAll("CryStar_Glass");
 	ResourceServer::MV1DeleteModelAll("CryStar_Rock");

@@ -2,11 +2,12 @@
 ModeLoading::ModeLoading(bool* flag) {
 	_chara = nullptr;
 	IsClear = flag;
+	_chara = new LoadingPlayer();
 };
 
 bool ModeLoading::Initialize(){
 
-	_chara = new LoadingPlayer();
+	
 
 	// 3‚c‹óŠÔ‚Ì‰æ–Ê‚Ì’†S“_‚ğˆÚ“®
 	int sizeX, sizeY, colorBit;

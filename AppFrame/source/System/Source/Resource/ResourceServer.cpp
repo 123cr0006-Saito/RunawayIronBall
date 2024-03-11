@@ -218,7 +218,7 @@ int ResourceServer::MV1LoadModel(std::string key_name, std::string model_name) {
 	}
 	else {
 		//記録された名前がなかったので読み込み
-		value = ::MV1LoadModel(model_name.c_str());
+		value = ::MV1LoadModel(_T(model_name.c_str()));
 		_modelMap[key_name + "_Origin"].push_back(value);
 		// オリジナルから複製
 		value = ::MV1DuplicateModel(value);
@@ -345,7 +345,7 @@ bool ResourceServer::MV1DeleteModelAll(std::string key) {
 		for (int i = 0; i < itr->second.size(); i++) {
 			::MV1DeleteModel(itr->second.at(i));
 		}
-		_modelMap.at(key).clear();
+		_modelMap.erase(itr);
 		return true;
 	}
 	return false;

@@ -22,7 +22,9 @@ BreakObject::BreakObject()
 
 BreakObject::~BreakObject()
 {
-
+	for (auto&& frame : _frameInfo) {
+		delete frame; 
+	}
 }
 
 void BreakObject::Init(int modelHandle)

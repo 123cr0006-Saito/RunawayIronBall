@@ -40,6 +40,7 @@ bool ModeGame::Initialize() {
 		ResourceServer::Load("Rotation", "res/Effekseer/FX_3D_Rotate_2/FX_3D_Rotate.efkefc");
 		ResourceServer::Load("SlashR", "res/Effekseer/Slash/SlashRight.efkefc");
 		ResourceServer::Load("SlashL", "res/Effekseer/Slash/SlashLeft.efkefc");
+		ResourceServer::LoadDivGraph("Gate", "res/TemporaryMaterials/FX_Hole_2D00_sheet.png", 43, 16, 3, 1200, 1200);
 		ResourceServer::LoadMultGraph("split", "res/TemporaryMaterials/split/test", ".png", 30, _effectSheet);
 		ResourceServer::LoadDivGraph("Dust", "res/TemporaryMaterials/FX_Dust_2D.png", 44, 20, 3, 1000, 1000);
 		ResourceServer::LoadEffekseerEffect("Stanp", "res/Effekseer/Attack/HorizontalThird.efkefc");
@@ -136,15 +137,19 @@ void ModeGame::DeleteObject() {
 	_floor->Delete();
 
 	for (auto&& house : _house) {
-		delete house;
+		delete house; house = nullptr;
 	}
 	 
 	for (auto&& tower : _tower) {
-		delete tower;
+		delete tower; tower = nullptr;
 	}
 	 
 	for (auto&& uObj : _uObj) {
-		delete uObj;
+		delete uObj; uObj = nullptr;
+	}
+
+	for (auto&& objectName : _objectNameList) {
+		ResourceServer::MV1DeleteModelAll(objectName);
 	}
 
 	_house.clear();
@@ -230,7 +235,6 @@ std::vector<std::string> ModeGame::LoadObjectName(std::string fileName) {
 
 bool ModeGame::LoadStage(std::string fileName) {
 	myJson json(fileName);
-	int j = 0;
 
 	_enemyPool->Create(json);
 
@@ -240,29 +244,34 @@ bool ModeGame::LoadStage(std::string fileName) {
 
 		auto itr = std::find_if(_objectParam.begin(), _objectParam.end(), [=](std::tuple<std::string, VECTOR, int> temp)
 		{
-				return std::get<0>(temp) == nameList;
+			return std::get<0>(temp) == nameList;
 		});
 
+		std::string name = std::get<std::string>((*itr));
+		VECTOR param = std::get<VECTOR>((*itr));
+		int IsBreak = std::get<int>((*itr));
+
 		std::vector<ModeGame::OBJECTDATA> objectData = LoadJsonObject(json._json, nameList);
-		std::string modelName = "res/Building/" + std::get<0>(*itr) + "/" + std::get<0>(*itr) + ".mv1";
+		std::string modelName = "res/Building/" + name + "/" + name + ".mv1";
+		_objectNameList.push_back(name);
 		for (auto&& object : objectData) {
-			int objHandle = ResourceServer::MV1LoadModel(std::get<0>(*itr), modelName.c_str());
-			if (std::get<2>((*itr)) == 1) {
+			int objHandle = ResourceServer::MV1LoadModel(name.c_str(), modelName.c_str());
+			if (IsBreak == 1) {
 				// 壊れるオブジェクト
 				House* building = NEW House();
-				building->Init(objHandle, object._pos, object._rotate, object._scale, std::get<1>(*itr));
+				building->Init(objHandle, object._pos, object._rotate, object._scale, param);
 				_house.push_back(building);
 			}
 			else {
 				// 壊れないオブジェクト
 				UnbreakableObject* uObj = NEW UnbreakableObject();
-				uObj->Init(objHandle, object._pos, object._rotate, object._scale, std::get<1>(*itr));
+				uObj->Init(objHandle, object._pos, object._rotate, object._scale, param);
 				_uObj.push_back(uObj);
 			}
 		}
 	}
 
-	_floor->Create(json,_stageNum);
+	_floor->Create(json, _stageNum);
 
 	// タワー
 	for (int i = 0; i < 5; i++) {
@@ -294,8 +303,10 @@ bool ModeGame::StageMutation() {
 	LoadStage(fileName);
 
 	IsLoading = true;
-	LoadFunctionThread->detach();
-	delete LoadFunctionThread; LoadFunctionThread = nullptr;
+	if (LoadFunctionThread != nullptr) {
+		LoadFunctionThread->detach();
+		delete LoadFunctionThread; LoadFunctionThread = nullptr;
+	}
 	// ロード終了
 	return true;
 }
@@ -600,8 +611,7 @@ bool ModeGame::GateProcess() {
 			// それが終わったらフェードアウト　→　ローディング・評価（引数　時間）　→　ローディングが終わったら次のステージ
 			// 今はここにステージ繊維関数を追加
 			int time = 4 * 1000; // 4秒
-			_stageNum++;
-			//StageMutation();
+			_stageNum++;			
 			LoadFunctionThread = NEW std::thread(&ModeGame::StageMutation, this);
 			ModeServer::GetInstance()->Add(NEW ModeLoading(&IsLoading), 100, "Loading");
 		}
