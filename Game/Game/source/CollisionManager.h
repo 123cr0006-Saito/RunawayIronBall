@@ -33,7 +33,11 @@ private:
 	void InsertCellIntoTree(unsigned int treeIndex, Cell* cell);
 	void CreateColList(unsigned int treeIndex, std::list<Cell*>& colStack);
 	void CheckColList();
+
+	// “–‚½‚è”»’èˆ—
 	void CheckHit(Player* player, EnemyBase* enemy);
+	void CheckHit(Player* player, BuildingBase* building);
+
 	void CheckHit(EnemyBase* enemy1, EnemyBase* enemy2);
 
 	static CollisionManager* _instance;

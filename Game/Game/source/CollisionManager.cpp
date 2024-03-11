@@ -110,11 +110,11 @@ void CollisionManager::UpdateCell(Cell* cell)
 		pos2 = vertexPos[0];
 		for (int i = 1; i < 8; i++) {
 			// 最小座標
-			if(pos1.x > vertexPos[i].x) pos1.x = vertexPos[i].x;
-			if(pos1.z > vertexPos[i].z) pos1.z = vertexPos[i].z;
+			if (pos1.x > vertexPos[i].x) pos1.x = vertexPos[i].x;
+			if (pos1.z > vertexPos[i].z) pos1.z = vertexPos[i].z;
 			// 最大座標
-			if(pos2.x < vertexPos[i].x) pos2.x = vertexPos[i].x;
-			if(pos2.z < vertexPos[i].z) pos2.z = vertexPos[i].z;
+			if (pos2.x < vertexPos[i].x) pos2.x = vertexPos[i].x;
+			if (pos2.z < vertexPos[i].z) pos2.z = vertexPos[i].z;
 		}
 
 		pos1.y = 0.0f;
@@ -238,9 +238,17 @@ void CollisionManager::CheckColList()
 				CheckHit(player, enemy);
 			}
 			break;
+			case OBJ_TYPE::BLDG:
+			{
+				BuildingBase* building = static_cast<BuildingBase*>(cell2->_obj);
+				CheckHit(player, building);
+			}
+			break;
 			}
 		}
 		break;
+
+		// オブジェクト1が敵の場合
 		case OBJ_TYPE::EN:
 		{
 			EnemyBase* enemy1 = static_cast<EnemyBase*>(cell1->_obj);
@@ -260,8 +268,21 @@ void CollisionManager::CheckColList()
 			}
 		}
 		break;
-		}
 
+
+		case OBJ_TYPE::BLDG:
+		{
+			BuildingBase* building = static_cast<BuildingBase*>(cell1->_obj);
+			switch (cell2->_objType) {
+			case OBJ_TYPE::PL:
+			{
+				Player* player = static_cast<Player*>(cell2->_obj);
+				CheckHit(player, building);
+			}
+			break;
+			}
+		}
+		}
 	}
 
 
@@ -303,6 +324,22 @@ void CollisionManager::CheckHit(Player* player, EnemyBase* enemy)
 			tmpPos = VAdd(tmpPos, VScale(vDir, eCol.r + pCol.r));
 			player->SetPos(tmpPos);
 		}
+	}
+}
+
+void CollisionManager::CheckHit(Player* player, BuildingBase* building)
+{
+	Capsule pCol = player->GetCollision();
+	OBB bCol = building->GetOBBCollision();
+	VECTOR hitPos = VGet(0.0f, 0.0f, 0.0f);
+
+	if (Collision3D::OBBCapsuleCol(bCol, pCol, &hitPos)) {
+		VECTOR vDir = VSub(pCol.down_pos, hitPos);
+		vDir.y = 0.0f;
+		vDir = VNorm(vDir);
+		hitPos.y = 0.0f;
+		VECTOR tmpPos = VAdd(hitPos, VScale(vDir, pCol.r));
+		player->SetPos(tmpPos);
 	}
 }
 
@@ -392,12 +429,27 @@ void CollisionManager::DrawAreaIndex()
 		Cell* cell = _tree[i]->_next;
 		while (cell != nullptr)
 		{
-			EnemyBase* e = dynamic_cast<EnemyBase*>(cell->_obj);
-			if (e == nullptr || e->GetUse() == false) {
-				cell = cell->_next;
-				continue;
+
+			VECTOR worldPos = VGet(0.0f, 0.0f, 0.0f);
+			ObjectBase* obj = nullptr;
+			switch (cell->_objType)
+			{
+			case OBJ_TYPE::NONE:
+				break;
+			case OBJ_TYPE::PL:
+				obj = cell->_obj;
+				worldPos = static_cast<Player*>(obj)->GetPosition();
+				break;
+			case OBJ_TYPE::EN:
+				obj = cell->_obj;
+				worldPos = static_cast<EnemyBase*>(obj)->GetCollisionPos();
+				break;
+			case OBJ_TYPE::BLDG:
+				obj = cell->_obj;
+				worldPos = static_cast<BuildingBase*>(obj)->GetPos();
+				break;
 			}
-			VECTOR screenPos = ConvWorldPosToScreenPos(e->GetCollisionPos());
+			VECTOR screenPos = ConvWorldPosToScreenPos(worldPos);
 			if (0.0f < screenPos.z && screenPos.z < 1.0f) {
 				DrawFormatString(screenPos.x, screenPos.y, COLOR_RED, "%d", i);
 			}
