@@ -11,6 +11,7 @@
 #include "Camera.h"
 #include "Player.h"
 #include "Chain.h"
+#include "Heart.h"
 
 #include "UIBase.h"
 #include "UIExpPoint.h"
@@ -69,6 +70,8 @@ protected:
 	Camera* _camera;
 	Player* _player;
 
+	Heart* _heart;
+
 	UIBase* ui[4];
 	DrawGauge* _gaugeUI[2];
 	int _gaugeHandle[4];// 0フレーム 3ゲージ
@@ -84,6 +87,8 @@ protected:
 	std::vector<Tower*> _tower;
 	std::vector<UnbreakableObject*> _uObj;
 	Floor* _floor;
+
+	int iii = 0;
 
 	int _skySphere;
 	int _tile;

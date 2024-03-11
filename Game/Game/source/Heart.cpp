@@ -1,7 +1,7 @@
 #include "Heart.h"
 
 Heart::Heart(VECTOR pos){
-	_model = ResourceServer::MV1LoadModel("Heart","");
+	_model = ResourceServer::MV1LoadModel("Heart","res/Item/Cg_Object_Heart/Cg_Object_Heart.mv1");
 
 	_sphere.r = 50;
 	//pos‚Í‘«Œ³Šî€‚Ål‚¦‚Ä‚¢‚Ü‚·

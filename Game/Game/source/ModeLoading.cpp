@@ -2,16 +2,15 @@
 ModeLoading::ModeLoading(bool* flag) {
 	_chara = nullptr;
 	IsClear = flag;
-};
-
-bool ModeLoading::Initialize(){
-
 	_chara = new LoadingPlayer();
 
 	// 3‚c‹óŠÔ‚Ì‰æ–Ê‚Ì’†S“_‚ðˆÚ“®
 	int sizeX, sizeY, colorBit;
 	GetScreenState(&sizeX, &sizeY, &colorBit);
-	SetCameraScreenCenter(sizeX-500, sizeY-150);
+	SetCameraScreenCenter(sizeX - 500, sizeY - 150);
+};
+
+bool ModeLoading::Initialize(){
 	return true;
 };
 
@@ -39,7 +38,7 @@ bool ModeLoading::Process(){
 	_chara->Process();
 
 	VECTOR target = _chara->GetPos();
-	VECTOR cameraPos = VAdd(target, VGet(0,0, -1000));
+	VECTOR cameraPos = VAdd(target, VGet(0, 0, -1000));
 	SetCameraPositionAndTarget_UpVecY(cameraPos, target);
 
 	return true;

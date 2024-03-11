@@ -34,6 +34,9 @@ bool ModeGame::Initialize() {
 	_classificationEffect = NEW ClassificationEffect();
 	_effectManeger = NEW EffectManeger();
 
+
+	_heart = NEW Heart(VGet(0, 0, 1000));
+
 	{
 		ResourceServer::Load("FX_3D_Level_Up", "res/Effekseer/FX_3D_Level_Up/FX_3D_Level_Up.efkefc");
 		ResourceServer::Load("Stanp", "res/Effekseer/Attack/HorizontalThird.efkefc");
@@ -95,7 +98,8 @@ bool ModeGame::Terminate() {
 	delete _light;
 
 	if (LoadFunctionThread != nullptr) {
-		delete LoadFunctionThread;
+		LoadFunctionThread->detach();
+		delete LoadFunctionThread; LoadFunctionThread = nullptr;
 	}
 
 	if (_gate != nullptr) {
@@ -234,35 +238,7 @@ bool ModeGame::LoadStage(std::string fileName) {
 
 	_enemyPool->Create(json);
 
-	std::string buildingName = "Building";
-	std::vector<std::string> objectName = LoadObjectName(buildingName);
-	for (auto&& nameList : objectName) {
-
-		auto itr = std::find_if(_objectParam.begin(), _objectParam.end(), [=](std::tuple<std::string, VECTOR, int> temp)
-		{
-				return std::get<0>(temp) == nameList;
-		});
-
-		std::vector<ModeGame::OBJECTDATA> objectData = LoadJsonObject(json._json, nameList);
-		std::string modelName = "res/Building/" + std::get<0>(*itr) + "/" + std::get<0>(*itr) + ".mv1";
-		for (auto&& object : objectData) {
-			int objHandle = ResourceServer::MV1LoadModel(std::get<0>(*itr), modelName.c_str());
-			if (std::get<2>((*itr)) == 1) {
-				// 壊れるオブジェクト
-				House* building = NEW House();
-				building->Init(objHandle, object._pos, object._rotate, object._scale, std::get<1>(*itr));
-				_house.push_back(building);
-			}
-			else {
-				// 壊れないオブジェクト
-				UnbreakableObject* uObj = NEW UnbreakableObject();
-				uObj->Init(objHandle, object._pos, object._rotate, object._scale, std::get<1>(*itr));
-				_uObj.push_back(uObj);
-			}
-		}
-	}
-
-	_floor->Create(json,_stageNum);
+	_floor->Create(json, _stageNum);
 
 	// タワー
 	for (int i = 0; i < 5; i++) {
@@ -281,6 +257,34 @@ bool ModeGame::LoadStage(std::string fileName) {
 		_tower.push_back(tower);
 	}
 
+	std::string buildingName = "Building";
+	std::vector<std::string> objectName = LoadObjectName(buildingName);
+	for (auto&& nameList : objectName) {
+
+		auto itr = std::find_if(_objectParam.begin(), _objectParam.end(), [&](std::tuple<std::string, VECTOR, int> temp)
+		{
+				return std::get<0>(temp) == nameList;
+		});
+
+		std::vector<ModeGame::OBJECTDATA> objectData = LoadJsonObject(json._json, nameList);
+		std::string modelName = "res/Building/" + std::get<0>((*itr)) + "/" + std::get<0>((*itr)) + ".mv1";
+		for (auto&& object : objectData) {
+			int objHandle = ResourceServer::MV1LoadModel(std::get<0>((*itr)).c_str(), modelName.c_str());
+			if (std::get<2>((*itr)) == 1) {
+				// 壊れるオブジェクト
+				House* building = NEW House();
+				building->Init(objHandle, object._pos, object._rotate, object._scale, std::get<1>((*itr)));
+				_house.push_back(building);
+			}
+			else {
+				// 壊れないオブジェクト
+				UnbreakableObject* uObj = NEW UnbreakableObject();
+				uObj->Init(objHandle, object._pos, object._rotate, object._scale, std::get<1>((*itr)));
+				_uObj.push_back(uObj);
+			}
+		}
+	}
+
 	return true;
 };
 
@@ -291,8 +295,8 @@ bool ModeGame::StageMutation() {
 	DeleteObject();
     // オブジェクトのデータの読み込み ファイル名は 1 から始まるので +1 する
 	std::string fileName = "Data/ObjectList/Stage_0" + std::to_string(_stageNum) + ".json";
+	iii++;
 	LoadStage(fileName);
-
 	IsLoading = true;
 	LoadFunctionThread->detach();
 	delete LoadFunctionThread; LoadFunctionThread = nullptr;
@@ -322,6 +326,8 @@ bool ModeGame::Process() {
 	_player->Process(_camera->GetCamY());
 	_enemyPool->Process(isAttackState);
 	_timeLimit->Process();
+
+	_heart->Process();
 
 	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
 		ui[i]->Process();
@@ -601,7 +607,6 @@ bool ModeGame::GateProcess() {
 			// 今はここにステージ繊維関数を追加
 			int time = 4 * 1000; // 4秒
 			_stageNum++;
-			//StageMutation();
 			LoadFunctionThread = NEW std::thread(&ModeGame::StageMutation, this);
 			ModeServer::GetInstance()->Add(NEW ModeLoading(&IsLoading), 100, "Loading");
 		}
@@ -702,6 +707,8 @@ bool ModeGame::Render() {
 	if (_gate != nullptr) {
 		_gate->Draw();
 	}
+
+	_heart->Render();
 	
 	SetUseZBuffer3D(FALSE);
 
