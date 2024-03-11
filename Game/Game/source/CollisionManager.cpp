@@ -1,7 +1,8 @@
 #include "CollisionManager.h"
 
+#include "Player.h"
 #include "EnemyBase.h"
-
+#include "BuildingBase.h"
 
 #include <math.h>
 
@@ -17,7 +18,7 @@ CollisionManager::CollisionManager()
 #ifdef _DEBUG
 	if (_instance != nullptr) {
 		MessageBox(0, "CollisionManagerクラスは既に生成されています", "エラー", MB_OK);
-}
+	}
 #endif // _DEBUG
 
 	_instance = this;
@@ -49,7 +50,7 @@ void CollisionManager::Init()
 	_treeSize = (pow(4, STAGE_DIVISION + 1) - 1) / 3;
 	_tree.resize(_treeSize);
 
-	for(int i = 0; i < _treeSize; i++) {
+	for (int i = 0; i < _treeSize; i++) {
 		_tree[i] = new Cell();
 	}
 }
@@ -65,11 +66,11 @@ void CollisionManager::Process()
 
 void CollisionManager::UpdateCell(Cell* cell)
 {
-	if(cell == nullptr || cell->_obj == nullptr) return;
+	if (cell == nullptr || cell->_obj == nullptr) return;
 
 	unsigned int treeIndex = 0;
-	VECTOR pos1 = VGet(0.0f, 0.0f, 0.0f);
-	VECTOR pos2 = VGet(0.0f, 0.0f, 0.0f);
+	VECTOR pos1 = VGet(0.0f, 0.0f, 0.0f); // 最小座標
+	VECTOR pos2 = VGet(0.0f, 0.0f, 0.0f); // 最大座標
 	switch (cell->_objType)
 	{
 	case OBJ_TYPE::NONE:
@@ -82,7 +83,7 @@ void CollisionManager::UpdateCell(Cell* cell)
 		pos1 = VGet(capsule.up_pos.x - capsule.r, 0.0f, capsule.up_pos.z - capsule.r);
 		pos2 = VGet(capsule.up_pos.x + capsule.r, 0.0f, capsule.up_pos.z + capsule.r);
 	}
-		break;
+	break;
 	case OBJ_TYPE::PL_IB:
 		break;
 	case OBJ_TYPE::EN:
@@ -93,9 +94,33 @@ void CollisionManager::UpdateCell(Cell* cell)
 		pos1 = VGet(centerPos.x - r, 0.0f, centerPos.z - r);
 		pos2 = VGet(centerPos.x + r, 0.0f, centerPos.z + r);
 	}
-		break;
+	break;
 	case OBJ_TYPE::EN_IB:
 		break;
+
+	case OBJ_TYPE::BLDG:
+	{
+		BuildingBase* building = static_cast<BuildingBase*>(cell->_obj);
+		OBB obb = building->GetOBBCollision();
+
+		std::vector<VECTOR> vertexPos;
+		obb.GetVertexPos(vertexPos);
+
+		pos1 = vertexPos[0];
+		pos2 = vertexPos[0];
+		for (int i = 1; i < 8; i++) {
+			// 最小座標
+			if(pos1.x > vertexPos[i].x) pos1.x = vertexPos[i].x;
+			if(pos1.z > vertexPos[i].z) pos1.z = vertexPos[i].z;
+			// 最大座標
+			if(pos2.x < vertexPos[i].x) pos2.x = vertexPos[i].x;
+			if(pos2.z < vertexPos[i].z) pos2.z = vertexPos[i].z;
+		}
+
+		pos1.y = 0.0f;
+		pos2.y = 0.0f;
+	}
+	break;
 	}
 
 	treeIndex = CalcTreeIndex(pos1, pos2);
@@ -347,7 +372,7 @@ void CollisionManager::CreateColList(unsigned int treeIndex, std::list<Cell*>& c
 
 void CollisionManager::DrawSegmentLine()
 {
-	for(int i = 0; i < _segmentNumPerSide + 1; i++)	{
+	for (int i = 0; i < _segmentNumPerSide + 1; i++) {
 		VECTOR startPos = VGet(_offsetX + _segmentLength * i, 0.0f, _offsetZ);
 		VECTOR endPos = VAdd(startPos, VGet(0.0f, 0.0f, STAGE_LENGTH));
 
@@ -374,7 +399,7 @@ void CollisionManager::DrawAreaIndex()
 			}
 			VECTOR screenPos = ConvWorldPosToScreenPos(e->GetCollisionPos());
 			if (0.0f < screenPos.z && screenPos.z < 1.0f) {
-				DrawFormatString(screenPos.x, screenPos.y, COLOR_RED, "%d", i);				
+				DrawFormatString(screenPos.x, screenPos.y, COLOR_RED, "%d", i);
 			}
 			cell = cell->_next;
 		}
