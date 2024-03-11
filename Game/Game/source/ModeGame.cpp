@@ -184,7 +184,7 @@ std::vector<ModeGame::OBJECTDATA> ModeGame::LoadJsonObject(nlohmann::json json, 
 };
 
 bool ModeGame::LoadObjectParam(std::string fileName) {
-	std::vector<std::tuple<std::string, VECTOR, bool> > paramList;
+	std::vector<ObjectParam> paramList;
 	std::string filePath = "Data/BuildingData/" + fileName;
 	// csvファイルを読み込む
 	CFile file(filePath);
@@ -197,13 +197,16 @@ bool ModeGame::LoadObjectParam(std::string fileName) {
 			std::string modelName;
 			int x, y, z;
 			int IsBreaking;
-			c += GetString(&p[c], &modelName); // モデルの名前を取得
+			ObjectParam objectParam;
+			c += GetString(&p[c], &objectParam._name); // モデルの名前を取得
 			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &x); // obbのXサイズを取得
 			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &y); // obbのYサイズを取得
 			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &z); // obbのZサイズを取得
-			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &IsBreaking); // 破壊可能化
+			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &objectParam.isBreak); // 破壊可能化
 			c += SkipSpace(&p[c], &p[size]); // 空白やコントロールコードをスキップする
-			_objectParam.push_back(std::make_tuple(modelName, VGet(x, y, z), IsBreaking));
+			objectParam._size = VGet(x, y, z);
+
+			_objectParam.push_back(objectParam);
 		}
 	}
 	else {
@@ -261,25 +264,25 @@ bool ModeGame::LoadStage(std::string fileName) {
 	std::vector<std::string> objectName = LoadObjectName(buildingName);
 	for (auto&& nameList : objectName) {
 
-		auto itr = std::find_if(_objectParam.begin(), _objectParam.end(), [&](std::tuple<std::string, VECTOR, int> temp)
+		auto itr = std::find_if(_objectParam.begin(), _objectParam.end(), [&](ObjectParam temp)
 		{
-				return std::get<0>(temp) == nameList;
+				return temp._name == nameList;
 		});
 
 		std::vector<ModeGame::OBJECTDATA> objectData = LoadJsonObject(json._json, nameList);
-		std::string modelName = "res/Building/" + std::get<0>((*itr)) + "/" + std::get<0>((*itr)) + ".mv1";
+		std::string modelName = "res/Building/" + (*itr)._name + "/" + (*itr)._name + ".mv1";
 		for (auto&& object : objectData) {
-			int objHandle = ResourceServer::MV1LoadModel(std::get<0>((*itr)).c_str(), modelName.c_str());
-			if (std::get<2>((*itr)) == 1) {
+			int objHandle = ResourceServer::MV1LoadModel((*itr)._name.c_str(), modelName.c_str());
+			if ((*itr).isBreak == 1) {
 				// 壊れるオブジェクト
 				House* building = NEW House();
-				building->Init(objHandle, object._pos, object._rotate, object._scale, std::get<1>((*itr)));
+				building->Init(objHandle, object._pos, object._rotate, object._scale, (*itr)._size);
 				_house.push_back(building);
 			}
 			else {
 				// 壊れないオブジェクト
 				UnbreakableObject* uObj = NEW UnbreakableObject();
-				uObj->Init(objHandle, object._pos, object._rotate, object._scale, std::get<1>((*itr)));
+				uObj->Init(objHandle, object._pos, object._rotate, object._scale, (*itr)._size);
 				_uObj.push_back(uObj);
 			}
 		}

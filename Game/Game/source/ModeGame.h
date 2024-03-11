@@ -45,6 +45,12 @@ class ModeGame : public ModeBase
 		VECTOR _scale;
 	};
 
+	struct ObjectParam {
+		std::string _name;
+		VECTOR _size;
+		int isBreak;
+	};
+
 public:
 
 	virtual bool Initialize();
@@ -105,7 +111,9 @@ protected:
 	// デバッグ表示をするかどうか
 	bool _drawDebug = false;
 
-	std::vector<std::tuple<std::string, VECTOR, int>>_objectParam;
+
+
+	std::vector<ObjectParam>_objectParam;
 
 	Light* _light;
 
