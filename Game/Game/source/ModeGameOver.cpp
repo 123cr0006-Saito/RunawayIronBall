@@ -26,6 +26,8 @@ bool ModeGameOver::Initialize() {
 	_cameraPos= VGet(0, 500, -500);
 
 	ModeServer::GetInstance()->Add(new ModeFade(3000, true), 10, "Fade");
+
+	global._soundServer->DirectPlay("PL_GameOver");
 	return true;
 };
 
