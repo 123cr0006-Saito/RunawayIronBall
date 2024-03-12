@@ -8,6 +8,7 @@ Camera::Camera(VECTOR InitPos) : CameraBase() {
 	_cameraDistanceCount = 0;
 	_startDistance = 0.0f;
 	_endDistance = 0.0f;
+	_zoomCount = 0;
 	_IsZoom = false;
 
 	float cameraChangeDistance[CAMERA_ZOOM_MAX] = { -400.0f, -600.0f, -800.0f };
@@ -126,22 +127,21 @@ bool Camera::Process(VECTOR pos, int map) {
 void Camera::SetCameraDistance() {
 	_cameraDistanceCount++;
 	_cameraDistanceCount = (_cameraDistanceCount + CAMERA_ZOOM_MAX) % CAMERA_ZOOM_MAX;
-
 	_startDistance = _pointDistance.z;
 	_endDistance = _cameraChangeDistance[_cameraDistanceCount];
-
+	_zoomCount = 0;
 	_IsZoom = true;
 	_currentTime = GetNowCount();
 };
 
 bool Camera::ZoomProcess() {
 	if (_IsZoom) {
-		float moveTime = 5.0f / 60.0f * 1000;// 5フレームで移動
-		int nowTime = GetNowCount() - _currentTime;
+		float moveTime = 5.0f ;// 5フレームで移動
+		_zoomCount++;
 		// 移動
-		_pointDistance.z = Easing::InQuad(nowTime,_startDistance,_endDistance,moveTime);
+		_pointDistance.z = Easing::InQuad(_zoomCount,_startDistance,_endDistance, moveTime);
 		// 終了
-		if (nowTime >= moveTime) {
+		if (_zoomCount >= 5) {
 			_IsZoom = false;
 		}
 	}
