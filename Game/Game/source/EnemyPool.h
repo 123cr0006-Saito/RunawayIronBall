@@ -26,7 +26,8 @@ public:
 	EnemyPool(std::string paramJsonFile);
 	~EnemyPool();
 
-	void Create(myJson json);//“G‚Ìì¬
+	std::vector<std::string> LoadEnemyName(int stageNum);
+	void Create(myJson json,int stageNum);//“G‚Ìì¬
 	void Init();//“G‚Ì”z’u‚È‚Ç‚Ì‰Šú‰»
 	std::vector<std::pair<std::string, VECTOR>> LoadJsonData(myJson jsonFile,std::string  loadName);//jsonƒtƒ@ƒCƒ‹‚©‚ç“G‚Ì‰ŠúˆÊ’u‚ğ“Ç‚İ‚Ş
 	void DeleteEnemy();//“G‚Ìíœ ‚·‚×‚ÄÁ‚·‚© ‚¢‚ç‚È‚¢‚Ì‚ğÁ‚·‚©‚Í–¢’è
