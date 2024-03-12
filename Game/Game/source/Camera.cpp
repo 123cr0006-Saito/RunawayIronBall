@@ -139,7 +139,7 @@ bool Camera::ZoomProcess() {
 		float moveTime = 5.0f / 60.0f * 1000;// 5ƒtƒŒ[ƒ€‚ÅˆÚ“®
 		int nowTime = GetNowCount() - _currentTime;
 		// ˆÚ“®
-		_pointDistance.z = Easing::Linear(nowTime,_startDistance,_endDistance,moveTime);
+		_pointDistance.z = Easing::InQuad(nowTime,_startDistance,_endDistance,moveTime);
 		// I—¹
 		if (nowTime >= moveTime) {
 			_IsZoom = false;
