@@ -6,6 +6,7 @@ CrystarRoof::CrystarRoof(int model, int parent) {
 };
 
 CrystarRoof:: ~CrystarRoof() {
+
 };
 
 bool CrystarRoof::Updata(){

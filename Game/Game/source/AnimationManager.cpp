@@ -119,7 +119,7 @@ void AnimationManager::AddAnimationItem(int statusNo)
 	// アニメーション情報が存在する場合
 	if (itr != (*_targetAnimMap).end())
 	{
-		AnimationItem* anim = new AnimationItem();
+		AnimationItem* anim = NEW AnimationItem();
 
 		ANIMATION_INFO info = itr->second;
 		int attachIndex = MV1AttachAnim(_modelHandle, info.animIndex, -1, FALSE);

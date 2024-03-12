@@ -1,7 +1,13 @@
 #include "ModeLoading.h"
-ModeLoading::ModeLoading(bool* flag,std::thread* thread) {
+ModeLoading::ModeLoading(bool* flag) {
+	_chara = nullptr;
 	IsClear = flag;
-	_thread = thread;
+	_chara = new LoadingPlayer();
+
+	// 3Ｄ空間の画面の中心点を移動
+	int sizeX, sizeY, colorBit;
+	GetScreenState(&sizeX, &sizeY, &colorBit);
+	SetCameraScreenCenter(sizeX - 500, sizeY - 150);
 };
 
 bool ModeLoading::Initialize(){
@@ -9,6 +15,8 @@ bool ModeLoading::Initialize(){
 };
 
 bool ModeLoading::Terminate(){
+	IsClear = nullptr;
+	delete _chara;
 	return true;
 };
 
@@ -19,12 +27,24 @@ bool ModeLoading::Process(){
 		int time = 4 * 1000;
 		ModeServer::GetInstance()->Add(new ModeFade(time,true),1000,"FadeIn");
 		ModeServer::GetInstance()->Del(this);
+
+		// 3Ｄ空間の画面の中心点を移動
+		int sizeX, sizeY, colorBit;
+		GetScreenState(&sizeX, &sizeY, &colorBit);
+		SetCameraScreenCenter(sizeX / 2, sizeY / 2);
+
 	}
+
+	_chara->Process();
+
+	VECTOR target = _chara->GetPos();
+	VECTOR cameraPos = VAdd(target, VGet(0, 0, -1000));
+	SetCameraPositionAndTarget_UpVecY(cameraPos, target);
+
 	return true;
 };
 
 bool ModeLoading::Render() {
-	clsDx();
-	printfDx("ロード中");
+	_chara->Render();
 	return true;
 };

@@ -2,129 +2,104 @@
 
 const unsigned short UIExpPoint::vertex[6]{ 0,1,2,2,1,3 };
 
-UIExpPoint::UIExpPoint(VECTOR pos, std::string handleName) :
-	UIBase(pos, handleName)
+UIExpPoint::UIExpPoint(VECTOR pos) :
+	UIBase(pos) 
 {
 	_player = Player::GetInstance();
-	//     x,      y,    u,    v
-	float posTbl[][4] = {
-		{-_cx,-_cy,0.0f,0.0f},
-		{_cx,-_cy,1.0f,0.0f},
-		{-_cx,_cy,0.0f,1.0f},
-		{_cx,_cy,1.0f,1.0f}
-	};
-
-	VECTOR center = VAdd(pos, VGet(_cx, _cy, 0));
-
-	for (int i = 0; i < 4; i++) {
-		_back[i].pos = VAdd(center, VGet(posTbl[i][0], posTbl[i][1], 0));
-		_back[i].u = posTbl[i][2];
-		_back[i].v = posTbl[i][3];
-		_back[i].dif = GetColorU8(125, 125, 125, 255);
-		_back[i].rhw = 1.0f;
-
-		_front[i].pos = VAdd(center, VGet(posTbl[i][0], posTbl[i][1], 0));
-		_front[i].u = posTbl[i][2];
-		_front[i].v = posTbl[i][3];
-		_front[i].dif = GetColorU8(255, 255, 255, 255);
-		_front[i].rhw = 1.0f;
+	_handle = new int[2];
+	std::string path = "res/UI/UIGauge/";
+	std::string name[2] = {"UI_EXP_Gauge_Black","UI_EXP_Gauge_Red"};
+	for (int i = 0; i < 2; i++) {
+		_handle[i] = ResourceServer::Load(name[i], path + name[i] + ".png");
 	}
-};
+	ResourceServer::LoadMultGraph("UILevel", "res/UI/UILevel/UI_Level",".png",_levelMax, _levelHandle);
 
-UIExpPoint::UIExpPoint(VECTOR pos, std::string handleName, int AllNum, int XNum, int YNum, int XSize, int YSize, int* HandleBuf) :
-	UIBase(pos, handleName, AllNum, XNum, YNum, XSize, YSize, HandleBuf)
-{
-	_player = Player::GetInstance();
-	//     x,      y,    u,    v
+	_ratio = 0.0f;
+	_nowRatio = 0.0f;
+	_nextRatio = 0.0f;
+
+	// 下にあるフレームからゲージずれる差分
+	int flontHandleSizeX = 136;
+	int flontHandleSizeY = 37;
+
+	GetGraphSize(_handle[1], &flontHandleX, &flontHandleY);
+
 	float posTbl[][4] = {
-		{-_cx,-_cy,0.0f,0.0f},
-		{_cx,-_cy,1.0f,0.0f},
-		{-_cx,_cy,0.0f,1.0f},
-		{_cx,_cy,1.0f,1.0f}
+		{flontHandleSizeX,flontHandleSizeY,0.0f,0.0f},
+		{flontHandleSizeX + flontHandleX,flontHandleSizeY,1.0f,0.0f},
+		{flontHandleSizeX,flontHandleSizeY + flontHandleY,0.0f,1.0f},
+		{flontHandleSizeX + flontHandleX,flontHandleSizeY + flontHandleY,1.0f,1.0f}
 	};
 
-	VECTOR center = VAdd(pos, VGet(_cx, _cy, 0));
-
 	for (int i = 0; i < 4; i++) {
-		_back[i].pos = VAdd(center, VGet(posTbl[i][0], posTbl[i][1], 0));
-		_back[i].u = posTbl[i][2];
-		_back[i].v = posTbl[i][3];
-		_back[i].dif = GetColorU8(125, 125, 125, 255);
-		_back[i].rhw = 1.0f;
-
-		_front[i].pos = VAdd(center, VGet(posTbl[i][0], posTbl[i][1], 0));
+		_front[i].pos = VAdd(_pos,VGet(posTbl[i][0], posTbl[i][1], 0));
 		_front[i].u = posTbl[i][2];
 		_front[i].v = posTbl[i][3];
 		_front[i].dif = GetColorU8(255, 255, 255, 255);
 		_front[i].rhw = 1.0f;
 	}
 
-}
-
-UIExpPoint::UIExpPoint(VECTOR pos, int size, int* handle) : UIBase(pos,size,handle){
-	_player = Player::GetInstance();
-	//     x,      y,    u,    v
-	float posTbl[][4] = {
-		{-_cx,-_cy,0.0f,0.0f},
-		{_cx,-_cy,1.0f,0.0f},
-		{-_cx,_cy,0.0f,1.0f},
-		{_cx,_cy,1.0f,1.0f}
-	};
-
-	VECTOR center = VAdd(pos, VGet(_cx, _cy, 0));
-
-	for (int i = 0; i < 4; i++) {
-		_back[i].pos = VAdd(center, VGet(posTbl[i][0], posTbl[i][1], 0));
-		_back[i].u = posTbl[i][2];
-		_back[i].v = posTbl[i][3];
-		_back[i].dif = GetColorU8(125, 125, 125, 255);
-		_back[i].rhw = 1.0f;
-
-		_front[i].pos = VAdd(center, VGet(posTbl[i][0], posTbl[i][1], 0));
-		_front[i].u = posTbl[i][2];
-		_front[i].v = posTbl[i][3];
-		_front[i].dif = GetColorU8(255, 255, 255, 255);
-		_front[i].rhw = 1.0f;
-	}
 };
 
 UIExpPoint::~UIExpPoint() {
-	//特になし
+	_player = nullptr;
 };
 
-bool UIExpPoint::Process() {
-	//※ このやり方は使用する画像のｙに隙間がないことが前提で組まれています。
-	//経験値の引き継ぎ方はメインプログラマーと要相談
+void UIExpPoint::SetRatio() {
+	static int oldExp;
+	static int oldLevel;
 
-	//a:今の値 b:次のレベルまでの経験値
-	//経験値をオーバーした時のためのクランプ
-	//今は100次のレベルまでの経験値を１００に設定
+	int easingTime = 30.0f / 60.0f * 1000;
+	int nowTime = GetNowCount() - _currentTime;
 
 	int nowExp = _player->GetNowExp();
 	int nextExp = _player->GetNextExp();
 
-	nowExp = Math::Clamp(0, nextExp, nowExp);
-	float ratio = (float)nowExp / nextExp;
+	if (nowExp != oldExp) {
+		int nowLevel = _player->GetNowLevel();
+		_nextRatio = (float)nowExp / nextExp;
+		if (nowLevel != oldLevel) {
+			_nextRatio = 1 + _nextRatio;
+		}
+		_nowRatio = _ratio;
+		_currentTime = GetNowCount();
+		oldLevel = nowLevel;
+	}
+
+	if (nowTime <= easingTime) {
+		if (_ratio >= 1.0f) {
+			_nowRatio = 0.0f;
+			_nextRatio -= 1.0f;
+		}
+		_ratio = Easing::OutSine(nowTime, _nowRatio, _nextRatio, easingTime);
+	}
+
+	oldExp = nowExp;
+};
+
+bool UIExpPoint::Process() {
+
+	SetRatio();
 
 	for (int i = 0; i < 2; i++) {
-		//上にある座標を一度下におろしてから計算する
-		_front[i*2 + 1].pos.x = _pos.x  + _cx * ratio * 2 ;
-		_front[i*2 + 1].u =  ratio;
+		_front[i*2 + 1].pos.x = _front[0].pos.x  + flontHandleX* _ratio;
+		_front[i*2 + 1].u =  _ratio;
 	}
 
 	return true;
 };
 
 bool UIExpPoint::Draw() {
-	//背景の表示
-	//背景は色を暗くするため頂点指定の方で描画
-	//drawgraphで暗くできるならそっちのほうが良い
-	DrawPrimitiveIndexed2D(_back, 4, vertex, 6, DX_PRIMTYPE_TRIANGLELIST, _handle[_handleNum], true);
-	//経験値の表示V
-	DrawPrimitiveIndexed2D(_front, 4, vertex, 6, DX_PRIMTYPE_TRIANGLELIST, _handle[_handleNum], true);
-	//デバッグ用 uv座標のvがどこにあるかの確認用
-	for (int i = 0; i < 4; i++) {
-		DrawPixel(_front[i].pos.x, _front[i].pos.y, GetColor(rand() % 255, rand() % 255, rand() % 255));
-	}
+
+	// 経験値フレーム
+	DrawGraph(_pos.x, _pos.y, _handle[0], true);
+
+	// 経験値バー
+	DrawPrimitiveIndexed2D(_front, 4, vertex, 6, DX_PRIMTYPE_TRIANGLELIST, _handle[1], true);
+
+	// 現在のレベル表示
+	int nowLevel = _player->GetNowLevel();
+	int numX = 55; int numY = 72;
+	DrawGraph(_pos.x + numX,_pos.y + numY, _levelHandle[nowLevel],true);
 	return true;
 };

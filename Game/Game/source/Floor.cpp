@@ -1,6 +1,6 @@
 #include "Floor.h"
 Floor::Floor(){
-	Delete();
+
 };
 
 Floor::~Floor() {
@@ -16,7 +16,6 @@ void Floor::Delete() {
 		_nameList.clear();
 		_modelList.clear();
 	}
-
 };
 
 void Floor::Create(myJson jsonFile, int stageNum) {
@@ -45,18 +44,26 @@ void Floor::Create(myJson jsonFile, int stageNum) {
 			object.at("scale").at("y").get_to(scale.z);
 			object.at("scale").at("z").get_to(scale.y);
 
+			//座標修正
+			pos.x *= -1;
+			pos.y += 1;
+			//degree->radian
+			rotate.x = rotate.x * DX_PI_F / 180;
+			rotate.y = (rotate.y + 180) * DX_PI_F / 180;
+			rotate.z = rotate.z * DX_PI_F / 180;
+
 			int model = ResourceServer::MV1LoadModel(name, modelName);
 			MV1SetPosition(model, pos);
 			MV1SetRotationXYZ(model, rotate);
 			MV1SetScale(model, scale);
-			_modelList.push_back(object);
+			_modelList.push_back(model);
 		}
 	}
 };
 
 std::vector<std::string> Floor::LoadName(int stageNum) {
 	std::vector<std::string> nameList;
-	std::string filePath = "Data/LoadStageName/Tile/Tile"  + std::to_string(stageNum) + ".csv";
+	std::string filePath = "Data/LoadStageName/Tile/Tile0"  + std::to_string(stageNum) + ".csv";
 	// csvファイルを読み込む
 	CFile file(filePath);
 	// ファイルが開けた場合

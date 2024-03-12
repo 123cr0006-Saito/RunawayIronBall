@@ -42,7 +42,7 @@ void House::Init(int modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale
 	obb.pos = VAdd(startPos, VGet(0.0f, obb.length[1] / 2.0f, 0.0f));
 
 	// ”j‰óˆ—ƒNƒ‰ƒX‚Ì‰Šú‰»
-	_breakObj = new BreakObject();
+	_breakObj = NEW BreakObject();
 	_breakObj->Init(_modelHandle);
 }
 

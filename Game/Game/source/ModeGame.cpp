@@ -5,12 +5,17 @@
 bool ModeGame::Initialize() {
 	if (!base::Initialize()) { return false; }
 
+	_collisionManager = NEW CollisionManager();
+	_collisionManager->Init();
+
 	_gate = nullptr;
-	_stageNum = 1;
+	_stageNum = 2;
 	IsLoading = true;
 	LoadFunctionThread = nullptr;
 
-	_light = new Light("LightData");
+	_light = NEW Light("LightData");
+	_timeLimit = NEW TimeLimit();
+	_timeLimit->SetTimeLimit(12, 0);
 	
 	int resolution = 8192;
 	_shadowHandle = MakeShadowMap(resolution, resolution);
@@ -22,43 +27,53 @@ bool ModeGame::Initialize() {
 	MV1SetPosition(_tile, VGet(0, 0, 0));
 
 	int playerModelHandle = ResourceServer::MV1LoadModel("Player", "res/Character/cg_player_girl/cg_player_girl_TEST_Ver.2.mv1");
-	_player = new Player(playerModelHandle, VGet(0, 0, 0));
-	_camera = new Camera(_player->GetPosition());
+	_player = NEW Player(playerModelHandle, VGet(0, 0, 0));
+	_camera = NEW Camera(_player->GetPosition());
 
 
-	_classificationEffect = new ClassificationEffect();
-	_effectManeger = new EffectManeger();
+	_classificationEffect = NEW ClassificationEffect();
+	_effectManeger = NEW EffectManeger();
+
+
+	_heart = NEW Heart(VGet(0, 0, 1000));
 
 	{
+		ResourceServer::Load("FX_3D_Level_Up", "res/Effekseer/FX_3D_Level_Up/FX_3D_Level_Up.efkefc");
 		ResourceServer::Load("Stanp", "res/Effekseer/Attack/HorizontalThird.efkefc");
+		ResourceServer::Load("Rotation", "res/Effekseer/FX_3D_Rotate_2/FX_3D_Rotate.efkefc");
+		ResourceServer::Load("SlashR", "res/Effekseer/Slash/SlashRight.efkefc");
+		ResourceServer::Load("SlashL", "res/Effekseer/Slash/SlashLeft.efkefc");
 		ResourceServer::LoadMultGraph("split", "res/TemporaryMaterials/split/test", ".png", 30, _effectSheet);
 		ResourceServer::LoadDivGraph("Dust", "res/TemporaryMaterials/FX_Dust_2D.png", 44, 20, 3, 1000, 1000);
 		ResourceServer::LoadEffekseerEffect("Stanp", "res/Effekseer/Attack/HorizontalThird.efkefc");
 	}
 
-	_suppression = new Suppression();
+	_suppression = NEW Suppression();
 
-	_enemyPool = new EnemyPool("res/JsonFile/EnemyData.json");
+	_enemyPool = NEW EnemyPool("res/JsonFile/EnemyData.json");
+	_floor = NEW Floor();
 
 	// オブジェクトのデータの読み込み
 	LoadObjectParam("BuildingtList.csv");
 	// ステージのデータの読み込み
-	LoadStage("Data/ObjectList/Stage_03.json");
+	std::string fileName = "Data/ObjectList/Stage_0" + std::to_string(_stageNum) + ".json";
+	LoadStage(fileName);
 
 	int size = 100;
 	int heartHandle[3];
 	ResourceServer::LoadMultGraph("Heart", "res/UI/UI_Heart", ".png", 3, heartHandle);
-	ui[0] = new UIHeart(VGet(20, 20, 0), 3, heartHandle, 2);
-	ui[1] = new UIExpPoint(VGet(0, 150, 0), "res/TemporaryMaterials/UI_EXP_01.png");
+	ui[0] = NEW UIHeart(VGet(120, 20, 0), 3, heartHandle, 2);
+	ui[1] = NEW UIExpPoint(VGet(100, 150, 0));
 	ResourceServer::LoadMultGraph("Suppressiongauge", "res/TemporaryMaterials/SuppressionGauge/suppressiongauge", ".png", 3, heartHandle);
-	ui[2] = new UISuppressionGauge(VGet(700, 100, 0), 3, heartHandle);
-	_gaugeUI[0] = new DrawGauge(0, 3, size, true);
-	_gaugeUI[1] = new DrawGauge(0, 3, size, true);
+	ui[2] = NEW UISuppressionGauge(VGet(700, 100, 0), 3, heartHandle);
+	ui[3] = NEW UITimeLimit(VGet(1600, 100, 0));
+	_gaugeUI[0] = NEW DrawGauge(0, 3, size, true);
+	_gaugeUI[1] = NEW DrawGauge(0, 3, size, true);
 	_gaugeHandle[0] = ResourceServer::LoadGraph("Stamina03", _T("res/UI/UI_Stamina_03.png"));
 	_gaugeHandle[1] = ResourceServer::LoadGraph("Stamina02", _T("res/UI/UI_Stamina_02.png"));
 	_gaugeHandle[2] = ResourceServer::LoadGraph("Stamina01", _T("res/UI/UI_Stamina_01.png"));
 	_gaugeHandle[3] = ResourceServer::LoadGraph("Stamina04", _T("res/UI/UI_Stamina_04.png"));
-	_sVib = new ScreenVibration();
+	_sVib = NEW ScreenVibration();
 
 	
 
@@ -73,10 +88,74 @@ bool ModeGame::Initialize() {
 
 bool ModeGame::Terminate() {
 	base::Terminate();
-
+	delete _camera;
+	delete _player;
+	delete _sVib;
+	delete _enemyPool;
+	delete _suppression;
+	delete _effectManeger;
+	delete _classificationEffect;
 	delete _light;
+
+	if (LoadFunctionThread != nullptr) {
+		LoadFunctionThread->detach();
+		delete LoadFunctionThread; LoadFunctionThread = nullptr;
+	}
+
+	if (_gate != nullptr) {
+		delete _gate;
+	}
+
+	for (int i = 0; i < 3; i++) {
+		delete ui[i];
+	}
+
+	for (int i = 0; i < 2; i++) {
+		delete _gaugeUI[i];
+	}
+
+	for (auto&& house : _house) {
+		delete house;
+	}
+
+	for (auto&& tower : _tower) {
+		delete tower;
+	}
+
+	for (auto&& uObj : _uObj) {
+		delete uObj;
+	}
+
 	return true;
 }
+
+void ModeGame::DeleteObject() {
+
+	if (_gate != nullptr) {
+		delete _gate; _gate = nullptr;
+	}
+
+	_enemyPool->DeleteEnemy();
+
+	_floor->Delete();
+
+	for (auto&& house : _house) {
+		delete house;
+	}
+	 
+	for (auto&& tower : _tower) {
+		delete tower;
+	}
+	 
+	for (auto&& uObj : _uObj) {
+		delete uObj;
+	}
+
+	_house.clear();
+	_tower.clear();
+	_uObj.clear();
+
+};
 
 std::vector<ModeGame::OBJECTDATA> ModeGame::LoadJsonObject(nlohmann::json json, std::string loadName) {
 	nlohmann::json loadObject = json.at(loadName);
@@ -105,7 +184,7 @@ std::vector<ModeGame::OBJECTDATA> ModeGame::LoadJsonObject(nlohmann::json json, 
 };
 
 bool ModeGame::LoadObjectParam(std::string fileName) {
-	std::vector<std::tuple<std::string, VECTOR, bool> > paramList;
+	std::vector<ObjectParam> paramList;
 	std::string filePath = "Data/BuildingData/" + fileName;
 	// csvファイルを読み込む
 	CFile file(filePath);
@@ -118,13 +197,16 @@ bool ModeGame::LoadObjectParam(std::string fileName) {
 			std::string modelName;
 			int x, y, z;
 			int IsBreaking;
-			c += GetString(&p[c], &modelName); // モデルの名前を取得
+			ObjectParam objectParam;
+			c += GetString(&p[c], &objectParam._name); // モデルの名前を取得
 			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &x); // obbのXサイズを取得
 			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &y); // obbのYサイズを取得
 			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &z); // obbのZサイズを取得
-			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &IsBreaking); // 破壊可能化
+			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &objectParam.isBreak); // 破壊可能化
 			c += SkipSpace(&p[c], &p[size]); // 空白やコントロールコードをスキップする
-			_objectParam.push_back(std::make_tuple(modelName, VGet(x, y, z), IsBreaking));
+			objectParam._size = VGet(x, y, z);
+
+			_objectParam.push_back(objectParam);
 		}
 	}
 	else {
@@ -135,7 +217,7 @@ bool ModeGame::LoadObjectParam(std::string fileName) {
 
 std::vector<std::string> ModeGame::LoadObjectName(std::string fileName) {
 	std::vector<std::string> nameList;
-	std::string filePath = "Data/LoadStageName/" + fileName + "/" + fileName + std::to_string(_stageNum) + ".csv";
+	std::string filePath = "Data/LoadStageName/" + fileName + "/"  + fileName + "0" + std::to_string(_stageNum) + ".csv";
 	// csvファイルを読み込む
 	CFile file(filePath);
 	// ファイルが開けた場合
@@ -155,36 +237,11 @@ std::vector<std::string> ModeGame::LoadObjectName(std::string fileName) {
 
 bool ModeGame::LoadStage(std::string fileName) {
 	myJson json(fileName);
+	int j = 0;
 
 	_enemyPool->Create(json);
 
-	std::string buildingName = "Building";
-	std::vector<std::string> objectName = LoadObjectName(buildingName);
-	for (auto&& nameList : objectName) {
-
-		auto itr = std::find_if(_objectParam.begin(), _objectParam.end(), [=](std::tuple<std::string, VECTOR, int> temp)
-		{
-				return std::get<0>(temp) == nameList;
-		});
-
-		std::vector<ModeGame::OBJECTDATA> objectData = LoadJsonObject(json._json, nameList);
-		std::string modelName = "res/Building/" + std::get<0>((*itr)) + "/" + std::get<0>((*itr)) + ".mv1";
-		int objHandle = MV1LoadModel(modelName.c_str());
-		for (auto&& object : objectData) {
-			if (std::get<2>((*itr)) == 1) {
-				// 壊れるオブジェクト
-				House* building = new House();
-				building->Init(MV1DuplicateModel(objHandle), object._pos, object._rotate, object._scale, std::get<1>((*itr)));
-				_house.push_back(building);
-			}
-			else {
-				// 壊れないオブジェクト
-				UnbreakableObject* uObj = new UnbreakableObject();
-				uObj->Init(MV1DuplicateModel(objHandle), object._pos, object._rotate, object._scale, std::get<1>((*itr)));
-				_uObj.push_back(uObj);
-			}
-		}
-	}
+	_floor->Create(json, _stageNum);
 
 	// タワー
 	for (int i = 0; i < 5; i++) {
@@ -197,10 +254,38 @@ bool ModeGame::LoadStage(std::string fileName) {
 		towerModelHandle[1] = ResourceServer::MV1LoadModel("Tower02", "res/Building/CG_OBJ_Tower/CG_OBJ_Tower_Under.mv1");
 		towerModelHandle[2] = ResourceServer::MV1LoadModel("Tower03", "res/Building/CG_OBJ_Tower/CG_OBJ_Tower_Top.mv1");
 
-		Tower* tower = new Tower();
+		Tower* tower = NEW Tower();
 		tower->Init(towerModelHandle, v, VGet(0, 0, 0), VGet(1, 1, 1));
 
 		_tower.push_back(tower);
+	}
+
+	std::string buildingName = "Building";
+	std::vector<std::string> objectName = LoadObjectName(buildingName);
+	for (auto&& nameList : objectName) {
+
+		auto itr = std::find_if(_objectParam.begin(), _objectParam.end(), [&](ObjectParam temp)
+		{
+				return temp._name == nameList;
+		});
+
+		std::vector<ModeGame::OBJECTDATA> objectData = LoadJsonObject(json._json, nameList);
+		std::string modelName = "res/Building/" + (*itr)._name + "/" + (*itr)._name + ".mv1";
+		for (auto&& object : objectData) {
+			int objHandle = ResourceServer::MV1LoadModel((*itr)._name.c_str(), modelName.c_str());
+			if ((*itr).isBreak == 1) {
+				// 壊れるオブジェクト
+				House* building = NEW House();
+				building->Init(objHandle, object._pos, object._rotate, object._scale, (*itr)._size);
+				_house.push_back(building);
+			}
+			else {
+				// 壊れないオブジェクト
+				UnbreakableObject* uObj = NEW UnbreakableObject();
+				uObj->Init(objHandle, object._pos, object._rotate, object._scale, (*itr)._size);
+				_uObj.push_back(uObj);
+			}
+		}
 	}
 
 	return true;
@@ -209,16 +294,12 @@ bool ModeGame::LoadStage(std::string fileName) {
 bool ModeGame::StageMutation() {
 	// ロード開始
 	IsLoading = false;
-
 	// 中身がいらないものはdeleteする
-	delete _gate; _gate = nullptr;
-	_enemyPool->DeleteEnemy();
-
-
+	DeleteObject();
     // オブジェクトのデータの読み込み ファイル名は 1 から始まるので +1 する
-	std::string fileName = "Data/ObjectList/Stage_0" + std::to_string(_stageNum + 1) + ".json";
+	std::string fileName = "Data/ObjectList/Stage_0" + std::to_string(_stageNum) + ".json";
+	iii++;
 	LoadStage(fileName);
-
 	IsLoading = true;
 	LoadFunctionThread->detach();
 	delete LoadFunctionThread; LoadFunctionThread = nullptr;
@@ -228,16 +309,6 @@ bool ModeGame::StageMutation() {
 
 bool ModeGame::Process() {
 	base::Process();
-
-	global._timer->TimeElapsed();
-	_sVib->UpdateScreenVibration();
-
-	_player->Process(_camera->GetCamY());
-	_enemyPool->Process();
-
-	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
-		ui[i]->Process();
-	}
 
 	bool isAttackState = _player->GetEnabledIBAttackCollision();
 	bool isInvincible = _player->GetIsInvincible();
@@ -251,6 +322,21 @@ bool ModeGame::Process() {
 
 	Capsule plCol = _player->GetCollision();
 	Sphere ibCol = _player->GetIBCollision();
+
+	global._timer->TimeElapsed();
+	_sVib->UpdateScreenVibration();
+
+	_player->Process(_camera->GetCamY());
+	_enemyPool->Process(isAttackState);
+	_timeLimit->Process();
+
+	_heart->Process();
+
+	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
+		ui[i]->Process();
+	}
+
+
 
 	for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
 		(*itr)->Process();
@@ -270,7 +356,8 @@ bool ModeGame::Process() {
 
 			//エネミーがノックバック状態の時、建物にぶつかったら破壊する
 			houseObb.pos.y = 0; houseObb.length[1] = 0; //平面での当たり判定のため建物のy軸の長さを0にする]
-			for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
+			int enemySize = _enemyPool->GetSize();
+			for (int i = 0; i < enemySize; i++) {
 				EnemyBase* en = _enemyPool->GetEnemy(i);
 				if (!en) { continue; }
 				if (!en->GetUse()) { continue; }
@@ -339,7 +426,8 @@ bool ModeGame::Process() {
 			}
 
 			// エネミーの押出処理
-			for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
+			int enemySize = _enemyPool->GetSize();
+			for (int i = 0; i < enemySize; i++) {
 				EnemyBase* en = _enemyPool->GetEnemy(i);
 				if (!en) { continue; }
 				if (!en->GetUse()) { continue; }
@@ -375,8 +463,8 @@ bool ModeGame::Process() {
 		}
 	}
 
-
-	for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
+	int enemySize = _enemyPool->GetSize();
+	for (int i = 0; i < enemySize; i++) {
 		EnemyBase* enemy = _enemyPool->GetEnemy(i);
 		if (!enemy) { continue; }
 		if (!enemy->GetUse()) { continue; }
@@ -388,7 +476,7 @@ bool ModeGame::Process() {
 			if (Collision3D::SphereCol(ibSphere.centerPos, ibSphere.r, enPos, enR)) {
 				VECTOR vDir = VSub(enPos, pPos);
 				vDir = VNorm(vDir);
-				enemy->SetKnockBack(vDir, ibPower);
+				enemy->SetKnockBackAndDamage(vDir, ibPower);
 			}
 		}
 		// 敵とプレイヤーの当たり判定
@@ -417,14 +505,14 @@ bool ModeGame::Process() {
 	}
 
 	//空間分割を考えていないので無駄が多いです。
-	for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
+	for (int i = 0; i < enemySize; i++) {
 		EnemyBase* en = _enemyPool->GetEnemy(i);
 		if (!en) { continue; }
 		if (!en->GetUse()) { continue; }
 
 		VECTOR en1Pos = en->GetCollisionPos();
 		float en1R = en->GetR();
-		for (int j = 0; j < _enemyPool->ENEMY_MAX_SIZE; j++) {
+		for (int j = 0; j < enemySize; j++) {
 			if (i == j) { continue; }
 
 			EnemyBase* en = _enemyPool->GetEnemy(j);
@@ -448,7 +536,7 @@ bool ModeGame::Process() {
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_START)) {
 		//_enemyPool->Init();
 		//_player->SetDamage();
-		ModeServer::GetInstance()->Add(new ModePause(), 10, "Pause");
+		ModeServer::GetInstance()->Add(NEW ModePause(), 10, "Pause");
 	}
 
 	if (XInput::GetInstance()->GetKey(XINPUT_BUTTON_Y)) {
@@ -477,7 +565,7 @@ bool ModeGame::Process() {
 	if (_player->GetHP() <= 0) {
 		global._soundServer->BgmFadeOut(2000);
 		ModeServer::GetInstance()->Del(this);
-		ModeServer::GetInstance()->Add(new ModeGameOver(), 1, "gameover");
+		ModeServer::GetInstance()->Add(NEW ModeGameOver(), 1, "gameover");
 	}
 
 	VECTOR box_vec = ConvWorldPosToScreenPos(VAdd(_player->GetPosition(), VGet(0, 170, 0)));
@@ -500,13 +588,13 @@ bool ModeGame::Process() {
 
 
 bool ModeGame::GateProcess() {
-	_suppression->SubSuppression(1);
-	if (_suppression->GetIsRatio()) {
+	//_suppression->SubSuppression(2);
+	if (_suppression->GetIsRatio() && _stageNum < 3 ) {
 		if (_gate == nullptr) {
 			int handle[43];
 			ResourceServer::LoadDivGraph("Gate", "res/TemporaryMaterials/FX_Hole_2D00_sheet.png", 43, 16, 3, 1200, 1200, handle);
 			float time = 1.0f / 60.0f * 1000.0f;
-			_gate = new Gate(VGet(0, 300, 0), 300, handle, 43, time, 1000);
+			_gate = NEW Gate(VGet(0, 300, 0), 300, handle, 43, time, 1000);
 		}
 		_gate->Process();
 
@@ -522,8 +610,8 @@ bool ModeGame::GateProcess() {
 			// 今はここにステージ繊維関数を追加
 			int time = 4 * 1000; // 4秒
 			_stageNum++;
-			LoadFunctionThread = new std::thread(&ModeGame::StageMutation, this);
-			ModeServer::GetInstance()->Add(new ModeLoading(&IsLoading, LoadFunctionThread), 100, "Loading");
+			LoadFunctionThread = NEW std::thread(&ModeGame::StageMutation, this);
+			ModeServer::GetInstance()->Add(NEW ModeLoading(&IsLoading), 100, "Loading");
 		}
 	}
 	return true;
@@ -543,6 +631,7 @@ bool ModeGame::Render() {
 	// 描画に使用するシャドウマップを設定
 	SetUseShadowMap(0, _shadowHandle);
 	MV1DrawModel(_tile);
+	_floor->Render();
 	// 描画に使用するシャドウマップの設定を解除
 	SetUseShadowMap(0, -1);
 
@@ -621,6 +710,8 @@ bool ModeGame::Render() {
 	if (_gate != nullptr) {
 		_gate->Draw();
 	}
+
+	_heart->Render();
 	
 	SetUseZBuffer3D(FALSE);
 
@@ -639,10 +730,6 @@ bool ModeGame::Render() {
 	}
 
 	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-
-	SetFontSize(62);
-	DrawFormatString(45, 200, GetColor(0, 0, 0), "%d", _player->GetInstance()->GetNowLevel() + 1);
-	SetFontSize(16);
 	//for (auto itr = _buildingBase.begin(); itr != _buildingBase.end(); ++itr) {
 	//	(*itr)->DrawDebugInfo();
 	//}

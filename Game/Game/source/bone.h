@@ -32,14 +32,15 @@ private:
 
 	// ↓ ここから下は物理演算で使う変数や関数
 public:
-	Vector3D* _massPosList; // 質点の座標リスト
-	Vector3D* _massAccelList; // 質点の速度リスト
-
+	
 	void UpdatePosAndAccel(double _elapsedTime);
 	Vector3D ForceWorksToMassPoint(int i, Vector3D* posList, Vector3D* accelList); //質点に働く力を計算 F=ma
 	bool Process();
 
 	void PositionReset();
+
+	Vector3D* _massPosList; // 質点の座標リスト
+	Vector3D* _massAccelList; // 質点の速度リスト
 
 private:
 
