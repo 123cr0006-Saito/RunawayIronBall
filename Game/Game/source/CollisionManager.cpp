@@ -289,6 +289,12 @@ void CollisionManager::CheckColList()
 				CheckHitIbAndEn(ironBall, enemy);
 			}
 			break;
+			case OBJ_TYPE::BLDG:
+			{
+				BuildingBase* building = static_cast<BuildingBase*>(cell2->_obj);
+				CheckHitIbAndBldg(ironBall, building);
+			}
+			break;
 			}
 		}
 		break; // end obj1 case OBJ_TYPE::PL_IB
@@ -364,6 +370,12 @@ void CollisionManager::CheckColList()
 			{
 				Player* player = static_cast<Player*>(cell2->_obj);
 				CheckHit(player, building);
+			}
+			break;
+			case OBJ_TYPE::PL_IB:
+			{
+				IronBall* ironBall = static_cast<IronBall*>(cell2->_obj);
+				CheckHitIbAndBldg(ironBall, building);
 			}
 			break;
 			case OBJ_TYPE::EN:
@@ -454,6 +466,23 @@ void CollisionManager::CheckHitIbAndEn(IronBall* ironBall, EnemyBase* enemy)
 			VECTOR vDir = VSub(eCol.centerPos, pPos);
 			vDir = VNorm(vDir);
 			enemy->SetKnockBackAndDamage(vDir, player->GetPower());
+		}
+	}
+}
+
+void CollisionManager::CheckHitIbAndBldg(IronBall* ironBall, BuildingBase* building)
+{
+	bool isAttackState = ironBall->GetEnabledAttackCollision();
+	if (building->GetCanBreak() && isAttackState) {
+		Sphere ibCol = ironBall->GetIBCollision();
+		OBB bCol = building->GetOBBCollision();
+
+		if (Collision3D::OBBSphereCol(bCol, ibCol)) {
+			Player* player = static_cast<Player*>(ironBall->GetParentInstance());
+			VECTOR vDir = VSub(bCol.pos, player->GetPosition());
+			building->SetHit(vDir);
+			player->SetExp(50);
+			global._soundServer->DirectPlay("OBJ_RockBreak");
 		}
 	}
 }
