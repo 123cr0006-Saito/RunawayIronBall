@@ -20,7 +20,8 @@ bool ModeTest::Initialize() {
 	MV1SetPosition(_tile, VGet(0, 0, 0));
 
 	int playerModelHandle = MV1LoadModel("res/Character/cg_player_girl/cg_player_girl_TEST.mv1");
-	_player = NEW Player(playerModelHandle, VGet(0, 0, 0));
+	_player = NEW Player();
+	_player->Init(playerModelHandle, VGet(0, 0, 0));
 	_player->SetNextExp("res/JsonFile/ExpList.json");
 	_camera = NEW Camera(_player->GetPosition());
 
@@ -156,7 +157,7 @@ bool ModeTest::LoadObjectParam(std::string fileName) {
 bool ModeTest::LoadStage(std::string fileName) {
 	myJson json(fileName);
 
-	_enemyPool->Create(json);
+	_enemyPool->Create(json,3);
 
 	//int objHandle = MV1LoadModel("res/Building/House/House_test_03.mv1");
 	//int objHandle = MV1LoadModel("res/Building/TrafficLight/cg_object_shingou.mv1");

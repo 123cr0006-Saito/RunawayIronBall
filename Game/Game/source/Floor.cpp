@@ -73,7 +73,7 @@ std::vector<std::string> Floor::LoadName(int stageNum) {
 		int size = file.Size();
 		while (c < size) {
 			std::string objectName;
-			c += GetString(&p[c], '\r\n', &objectName); // モデルの名前を取得
+			c += GetString(&p[c], '\r\n', &objectName, size - c); // モデルの名前を取得
 			c += SkipSpace(&p[c], &p[size]); // 空白やコントロールコードをスキップする
 			nameList.push_back(objectName);
 		}

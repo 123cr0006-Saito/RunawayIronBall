@@ -16,7 +16,7 @@ ClassificationEffect::ClassificationEffect() {
 			std::pair<std::string, int> param;
 			c += GetString(&p[c], &param.first); // エフェクト名を取得
 			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &key); // keyを取得
-			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &param.second); // keyを取得
+			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &param.second); // パラメーターを取得
 			c += SkipSpace(&p[c], &p[size]); // 空白やコントロールコードをスキップする
 			// データを追加
 			_commandList[key] = param;
@@ -40,8 +40,14 @@ void ClassificationEffect::SetClassification(CommandParam param) {
 	}
 	else if (param.first == Play_SE) {
 		// SE
-		int seName = static_cast<int>(param.second);
-		global._soundServer->DirectPlay(_commandList[seName].first);
+		int voiceNum = static_cast<int>(param.second);
+		std::string voiceName = _commandList[voiceNum].first;
+		int randomMax = _commandList[voiceNum].second;
+		if (randomMax != 0) {
+			int randomNum = rand() % randomMax + 1;
+			voiceName += std::to_string(randomNum);
+		}
+		global._soundServer->DirectPlay(voiceName);
 	}
 	else if (param.first == Play_CameraVibration_X) {
 		// カメラバイブレーション X

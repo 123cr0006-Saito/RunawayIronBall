@@ -21,7 +21,7 @@ class Player : public CharacterBase
 {
 private:
 	enum class ANIM_STATE {
-		IDLE,	
+		IDLE,
 		IDLE_TIRED,
 		WALK,
 		WALK_TIRED,
@@ -31,21 +31,16 @@ private:
 		HORISONTAL_SWING_02,
 		HORISONTAL_SWING_03,
 
-		MANYTIME_SWING,
-
 		TO_ROTATION_SWING,
 		ROTATION_SWING,
 
 		IDLE_FIGHTING,
 
-		LONG_JUMP_AIR,
-		LONG_JUMP_NOSEDIVE,
-		LONG_JUMP_LANDING,
-
 		GAMEOVER,
 
 		AVOIDANCE,
 		HIT,
+		WIN,
 	};
 
 public:
@@ -83,6 +78,7 @@ public:
 	void SetBone();//齋藤が作った関数です。 boneのフレームを探すために使用する関数です。後でjsonでの読み込みにするかもしれません。
 	//↓齋藤が作った関数です。どこにjson読み込みをどこに書けばよいのかわからなかったので、コンストラクタの次に呼び出す関数として実装しました。
 	void SetNextExp(std::string FileName);//経験値データの読み込み
+	bool HealHp();
 	bool  UpdateExp();//経験値が越えていた時、レベルを上げる。
 	int GetNowLevel() { return _nowLevel; };
 	void SetExp(int getExp) { _nowExp += getExp; };
