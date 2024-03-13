@@ -9,7 +9,7 @@ bool ModeGame::Initialize() {
 	_collisionManager->Init();
 
 	_gate = nullptr;
-	_stageNum = 2;
+	_stageNum = 1;
 	IsLoading = true;
 	LoadFunctionThread = nullptr;
 
@@ -227,7 +227,7 @@ std::vector<std::string> ModeGame::LoadObjectName(std::string fileName) {
 		int size = file.Size();
 		while (c < size) {
 			std::string objectName;
-			c += GetString(&p[c], '\r\n', &objectName); // モデルの名前を取得
+			c += GetString(&p[c], '\r\n', &objectName, size - c); // モデルの名前を取得
 			c += SkipSpace(&p[c], &p[size]); // 空白やコントロールコードをスキップする
 			nameList.push_back(objectName);
 		}
@@ -239,7 +239,7 @@ bool ModeGame::LoadStage(std::string fileName) {
 	myJson json(fileName);
 	int j = 0;
 
-	_enemyPool->Create(json);
+	_enemyPool->Create(json,_stageNum);
 
 	_floor->Create(json, _stageNum);
 
@@ -270,9 +270,10 @@ bool ModeGame::LoadStage(std::string fileName) {
 		});
 
 		std::vector<ModeGame::OBJECTDATA> objectData = LoadJsonObject(json._json, nameList);
-		std::string modelName = "res/Building/" + (*itr)._name + "/" + (*itr)._name + ".mv1";
+		std::string modelName = nameList;
+		std::string modelPath = "res/Building/" + modelName + "/" + modelName + ".mv1";
 		for (auto&& object : objectData) {
-			int objHandle = ResourceServer::MV1LoadModel((*itr)._name.c_str(), modelName.c_str());
+			int objHandle = ResourceServer::MV1LoadModel(modelName, modelPath);
 			if ((*itr).isBreak == 1) {
 				// 壊れるオブジェクト
 				House* building = NEW House();

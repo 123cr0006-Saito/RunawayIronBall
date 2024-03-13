@@ -284,9 +284,6 @@
     <ClCompile Include="source\ModelColor.cpp">
       <Filter>Character</Filter>
     </ClCompile>
-    <ClCompile Include="source\Camera.cpp">
-      <Filter>Mode\Game</Filter>
-    </ClCompile>
     <ClCompile Include="source\Light.cpp">
       <Filter>Mode\Game</Filter>
     </ClCompile>
@@ -298,6 +295,18 @@
     </ClCompile>
     <ClCompile Include="source\ModeGame.cpp">
       <Filter>Mode\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Camera.cpp">
+      <Filter>Mode\Game\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="source\CameraBase.cpp">
+      <Filter>Mode\Game\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="source\TargetZoomCamera.cpp">
+      <Filter>Mode\Game\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RotationCamera.cpp">
+      <Filter>Mode\Game\Camera</Filter>
     </ClCompile>
     <ClInclude Include="source\EffekseerRotation.h">
       <Filter>Effect</Filter>
@@ -466,9 +475,6 @@
     <ClInclude Include="source\ModelColor.h">
       <Filter>Character</Filter>
     </ClInclude>
-    <ClInclude Include="source\Camera.h">
-      <Filter>Mode\Game</Filter>
-    </ClInclude>
     <ClInclude Include="source\Light.h">
       <Filter>Mode\Game</Filter>
     </ClInclude>
@@ -481,6 +487,17 @@
     <ClInclude Include="source\ModeGame.h">
       <Filter>Mode\Game</Filter>
     </ClInclude>
+    <ClInclude Include="source\Camera.h">
+      <Filter>Mode\Game\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="source\CameraBase.h">
+      <Filter>Mode\Game\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="source\TargetZoomCamera.h">
+      <Filter>Mode\Game\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="source\RotationCamera.h">
+      <Filter>Mode\Game\Camera</Filter>
     <ClInclude Include="source\UnbreakableObject.h">
       <Filter>Building</Filter>
     </ClInclude>
@@ -528,6 +545,8 @@
     <Filter Include="Mode\Game">
       <UniqueIdentifier>{83bca989-3fef-431d-bc70-e6602cf6729d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Mode\Game\Camera">
+      <UniqueIdentifier>{c21e23ff-301b-485c-9e90-a2e1a65088a4}</UniqueIdentifier>
     <Filter Include="Character\Enemy\Chainguard">
       <UniqueIdentifier>{c97449d4-a05f-4a15-b844-b9a0900d6037}</UniqueIdentifier>
     <Filter Include="Mode\Game\CollisionManager">

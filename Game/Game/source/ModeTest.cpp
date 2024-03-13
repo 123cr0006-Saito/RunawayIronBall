@@ -156,7 +156,7 @@ bool ModeTest::LoadObjectParam(std::string fileName) {
 bool ModeTest::LoadStage(std::string fileName) {
 	myJson json(fileName);
 
-	_enemyPool->Create(json);
+	_enemyPool->Create(json,3);
 
 	//int objHandle = MV1LoadModel("res/Building/House/House_test_03.mv1");
 	//int objHandle = MV1LoadModel("res/Building/TrafficLight/cg_object_shingou.mv1");

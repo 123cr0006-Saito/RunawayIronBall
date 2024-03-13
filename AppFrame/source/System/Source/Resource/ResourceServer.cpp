@@ -6,6 +6,7 @@ std::unordered_map<std::string, int> ResourceServer::_soundMap;
 std::unordered_map<std::string, ResourceServer::Mult> ResourceServer::_multMap;
 std::unordered_map<std::string, int >ResourceServer::_effekseerMap;
 std::unordered_map<std::string, std::vector<int> >ResourceServer::_modelMap;
+std::unordered_map<std::string, int >ResourceServer::_modelOriginMap;
 
 int ResourceServer::Load(std::string key, std::string handleName) {
 	int value = 0;
@@ -209,20 +210,22 @@ int ResourceServer::LoadEffekseerEffect(std::string key_name, std::string handle
 int ResourceServer::MV1LoadModel(std::string key_name, std::string model_name) {
 	int value = 0;
 
-	auto itr = _modelMap.find(key_name + "_Origin");
-	if (itr != _modelMap.end()) {
+	auto itr = _modelOriginMap.find(key_name + "_Origin");
+	if (itr != _modelOriginMap.end()) {
 		//記録されたものが見つかったのでオリジナルをコピーして返す
-		value = ::MV1DuplicateModel(itr->second.at(0));
+		value = MV1DuplicateModel(itr->second);
 		//後で削除できるように番号も持っておく
 		_modelMap[key_name].push_back(value);
 	}
 	else {
 		//記録された名前がなかったので読み込み
-		value = ::MV1LoadModel(model_name.c_str());
-		_modelMap[key_name + "_Origin"].push_back(value);
-		// オリジナルから複製
-		value = ::MV1DuplicateModel(value);
-		_modelMap[key_name].push_back(value);
+		int originModel = ::MV1LoadModel(model_name.c_str());
+		if (originModel != -1) {
+			_modelOriginMap[key_name + "_Origin"] = originModel;
+			// オリジナルから複製
+			value = MV1DuplicateModel(originModel);
+			_modelMap[key_name].push_back(value);
+		}
 	}
 
 	return value;
