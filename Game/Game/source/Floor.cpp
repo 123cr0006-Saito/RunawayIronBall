@@ -4,7 +4,7 @@ Floor::Floor(){
 };
 
 Floor::~Floor() {
-
+	Delete();
 };
 
 void Floor::Delete() {

@@ -5,7 +5,7 @@ class UISuppressionGauge : public UIBase
 {
 public : 
 	UISuppressionGauge(VECTOR pos, int size, int* handle);
-	~UISuppressionGauge();
+	~UISuppressionGauge()override;
 	virtual bool Process()override;
 	virtual bool Draw()override;
 protected:

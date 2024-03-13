@@ -33,6 +33,8 @@ bool ModeGameOver::Initialize() {
 
 bool ModeGameOver::Terminate() {
 	base::Terminate();
+	_input = nullptr;
+	_handle.clear();
 	return true;
 };
 

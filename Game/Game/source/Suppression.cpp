@@ -9,7 +9,7 @@ Suppression::Suppression(){
 };
 
 Suppression::~Suppression() {
-
+	_instance = nullptr;
 };
 
 void Suppression::AddSuppression(int suppression) { 

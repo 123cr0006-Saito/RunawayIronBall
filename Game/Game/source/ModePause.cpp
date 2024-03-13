@@ -35,6 +35,7 @@ bool ModePause::Initialize() {
 bool ModePause::Terminate() {
 	base::Terminate();
 	DeleteGraph(gauss_handle);
+	_input = nullptr;
 	return true;
 };
 

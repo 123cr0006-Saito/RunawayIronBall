@@ -76,8 +76,6 @@ protected:
 	Camera* _camera;
 	Player* _player;
 
-	Heart* _heart;
-
 	UIBase* ui[4];
 	DrawGauge* _gaugeUI[2];
 	int _gaugeHandle[4];// 0フレーム 3ゲージ

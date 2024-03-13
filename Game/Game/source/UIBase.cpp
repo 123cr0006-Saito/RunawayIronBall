@@ -43,7 +43,9 @@ UIBase::UIBase(VECTOR pos, int size, int* handle) {
 };
 
 UIBase::~UIBase() {
-	delete _handle; _handle = nullptr;
+	if (_handle != nullptr) {
+		delete[] _handle; _handle = nullptr;
+	}
 };
 
 bool UIBase::Process() {

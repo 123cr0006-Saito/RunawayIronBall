@@ -41,7 +41,7 @@ Chain::Chain()
 
 Chain::~Chain()
 {
-
+	_input = nullptr;
 }
 
 void Chain::Init() {

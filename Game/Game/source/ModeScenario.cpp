@@ -165,8 +165,9 @@ bool ModeScenario::Terminate(){
 	base::Terminate();
 	_scenarioData.clear();
 	_input = nullptr;
-
 	// フォント関連の初期化
+	DeleteFontToHandle(_textFontHandle);
+	DeleteFontToHandle(_nameFontHandle);
 	ChangeFontType(DX_FONTTYPE_NORMAL);
 	ChangeFont("MSゴシック");
 	return true;

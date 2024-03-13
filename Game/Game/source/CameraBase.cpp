@@ -11,7 +11,7 @@ CameraBase::CameraBase(){
 };
 
 CameraBase::~CameraBase() {
-
+	_input = nullptr;
 };
 
 bool CameraBase::Process() {

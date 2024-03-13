@@ -43,6 +43,9 @@ UIExpPoint::UIExpPoint(VECTOR pos) :
 
 UIExpPoint::~UIExpPoint() {
 	_player = nullptr;
+	if (_handle != nullptr) {
+		delete[] _handle; _handle = nullptr;
+	}
 };
 
 void UIExpPoint::SetRatio() {

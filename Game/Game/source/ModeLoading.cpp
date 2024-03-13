@@ -16,7 +16,7 @@ bool ModeLoading::Initialize(){
 
 bool ModeLoading::Terminate(){
 	IsClear = nullptr;
-	delete _chara;
+	delete _chara; _chara = nullptr;
 	return true;
 };
 
