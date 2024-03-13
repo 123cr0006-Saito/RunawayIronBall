@@ -300,7 +300,7 @@ bool ModeGame::StageMutation() {
 	IsLoading = false;
 	// 中身がいらないものはdeleteする
 	DeleteObject();
-    // オブジェクトのデータの読み込み ファイル名は 1 から始まるので +1 する
+	// オブジェクトのデータの読み込み ファイル名は 1 から始まるので +1 する
 	std::string fileName = "Data/ObjectList/Stage_0" + std::to_string(_stageNum) + ".json";
 	iii++;
 	LoadStage(fileName);
@@ -346,15 +346,15 @@ bool ModeGame::Process() {
 		if ((*itr)->GetUseCollision()) {
 			OBB houseObb = (*itr)->GetOBBCollision();
 
-			if (Collision3D::OBBSphereCol(houseObb, ibSphere)) {
-				if (isAttackState) {
-					VECTOR vDir = VSub(houseObb.pos, pPos);
-					(*itr)->SetHit(vDir);
-					_player->SetExp(50);
-					global._soundServer->DirectPlay("OBJ_RockBreak");
-					continue;
-				}
-			}
+			//if (Collision3D::OBBSphereCol(houseObb, ibSphere)) {
+			//	if (isAttackState) {
+			//		VECTOR vDir = VSub(houseObb.pos, pPos);
+			//		(*itr)->SetHit(vDir);
+			//		_player->SetExp(50);
+			//		global._soundServer->DirectPlay("OBJ_RockBreak");
+			//		continue;
+			//	}
+			//}
 
 			////エネミーがノックバック状態の時、建物にぶつかったら破壊する
 			//houseObb.pos.y = 0; houseObb.length[1] = 0; //平面での当たり判定のため建物のy軸の長さを0にする]
@@ -647,6 +647,7 @@ bool ModeGame::Render() {
 		for (auto itr = _uObj.begin(); itr != _uObj.end(); ++itr) {
 			(*itr)->DrawDebugInfo();
 		}
+		_collisionManager->DrawAreaIndex();
 	}
 
 	if (_gate != nullptr) {
@@ -668,6 +669,7 @@ bool ModeGame::Render() {
 		_gaugeUI[1]->Draw(_gaugeHandle[handleNum]);
 		_gaugeUI[0]->Draw(_gaugeHandle[3]);
 	}
+
 
 	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	//for (auto itr = _buildingBase.begin(); itr != _buildingBase.end(); ++itr) {
