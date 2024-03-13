@@ -243,8 +243,8 @@ void CollisionManager::RemoveCellFromReserveList()
 unsigned int CollisionManager::CheckArea(VECTOR pos)
 {
 	VECTOR p = VGet(pos.x - _offsetX, 0.0f, pos.z - _offsetZ);
-	p.x = Math::Clamp(0.0f, STAGE_LENGTH, p.x);
-	p.z = Math::Clamp(0.0f, STAGE_LENGTH, p.z);
+	p.x = Math::Clamp(0.0f, STAGE_LENGTH - 1, p.x);
+	p.z = Math::Clamp(0.0f, STAGE_LENGTH - 1, p.z);
 	unsigned int xIndex = static_cast<unsigned int>(p.x / _segmentLength);
 	unsigned int zIndex = static_cast<unsigned int>(p.z / _segmentLength);
 
