@@ -335,6 +335,12 @@ void CollisionManager::CheckColList()
 				CheckHitChAndEn(ironBall, enemy);
 			}
 			break;
+			case OBJ_TYPE::BLDG:
+			{
+				BuildingBase* building = static_cast<BuildingBase*>(cell2->_obj);
+				CheckHitChAndBldg(ironBall, building);
+			}
+			break;
 			}
 		}
 		break; // end obj1 case OBJ_TYPE::PL_IB_CHAIN
@@ -399,6 +405,12 @@ void CollisionManager::CheckColList()
 			{
 				IronBall* ironBall = static_cast<IronBall*>(cell2->_obj);
 				CheckHitIbAndBldg(ironBall, building);
+			}
+			break;
+			case OBJ_TYPE::PL_IB_CHAIN:
+			{
+				IronBall* ironBall = static_cast<IronBall*>(cell2->_obj);
+				CheckHitChAndBldg(ironBall, building);
 			}
 			break;
 			case OBJ_TYPE::EN:
@@ -496,7 +508,7 @@ void CollisionManager::CheckHitIbAndEn(IronBall* ironBall, EnemyBase* enemy)
 void CollisionManager::CheckHitIbAndBldg(IronBall* ironBall, BuildingBase* building)
 {
 	bool isAttackState = ironBall->GetEnabledAttackCollision();
-	if (building->GetCanBreak() && isAttackState) {
+	if (building->GetUseCollision() && building->GetCanBreak() && isAttackState) {
 		Sphere ibCol = ironBall->GetIBCollision();
 		OBB bCol = building->GetOBBCollision();
 
@@ -514,10 +526,10 @@ void CollisionManager::CheckHitChAndEn(IronBall* ironBall, EnemyBase* enemy)
 {
 	bool isAttackState = ironBall->GetEnabledAttackCollision();
 	if (isAttackState) {
-		Capsule pCol = ironBall->GetChainCollision();
+		Capsule cCol = ironBall->GetChainCollision();
 		Sphere eCol = { enemy->GetCollisionPos(), enemy->GetR() };
 
-		if (Collision3D::SphereCapsuleCol(eCol, pCol)) {
+		if (Collision3D::SphereCapsuleCol(eCol, cCol)) {
 			ObjectBase* obj = ironBall->GetParentInstance();
 			Player* player = static_cast<Player*>(obj);
 
@@ -525,6 +537,23 @@ void CollisionManager::CheckHitChAndEn(IronBall* ironBall, EnemyBase* enemy)
 			VECTOR vDir = VSub(eCol.centerPos, pPos);
 			vDir = VNorm(vDir);
 			enemy->SetKnockBackAndDamage(vDir, player->GetPower());
+		}
+	}
+}
+
+void CollisionManager::CheckHitChAndBldg(IronBall* ironBall, BuildingBase* building)
+{
+	bool isAttackState = ironBall->GetEnabledAttackCollision();
+	if (building->GetUseCollision() && building->GetCanBreak() && isAttackState) {
+		Capsule cCol = ironBall->GetChainCollision();
+		OBB bCol = building->GetOBBCollision();
+
+		if (Collision3D::OBBCapsuleCol(bCol, cCol)) {
+			Player* player = static_cast<Player*>(ironBall->GetParentInstance());
+			VECTOR vDir = VSub(bCol.pos, player->GetPosition());
+			building->SetHit(vDir);
+			player->SetExp(50);
+			global._soundServer->DirectPlay("OBJ_RockBreak");
 		}
 	}
 }
