@@ -155,6 +155,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\ModeZoomCamera.cpp" />
+    <ClCompile Include="source\ModeRotationCamera.cpp" />
     <ClCompile Include="source\RotationCamera.cpp" />
     <ClCompile Include="source\CameraBase.cpp" />
     <ClCompile Include="source\Heart.cpp" />
@@ -224,6 +226,8 @@
     <ClCompile Include="source\TargetZoomCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\ModeZoomCamera.h" />
+    <ClInclude Include="source\ModeRotationCamera.h" />
     <ClInclude Include="source\RotationCamera.h" />
     <ClInclude Include="source\CameraBase.h" />
     <ClCompile Include="source\UnbreakableObject.cpp" />

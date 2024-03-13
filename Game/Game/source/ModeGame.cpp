@@ -1,6 +1,8 @@
 #include "AppFrame.h"
 #include "ApplicationMain.h"
 #include "ModeTest.h"
+#include "ModeZoomCamera.h"
+#include "ModeRotationCamera.h"
 
 bool ModeGame::Initialize() {
 	if (!base::Initialize()) { return false; }
@@ -38,6 +40,7 @@ bool ModeGame::Initialize() {
 	_heart = NEW Heart(VGet(0, 0, 1000));
 
 	{
+		ResourceServer::LoadDivGraph("Gate", "res/TemporaryMaterials/FX_Hole_2D00_sheet.png", 43, 16, 3, 1200, 1200);
 		ResourceServer::Load("FX_3D_Level_Up", "res/Effekseer/FX_3D_Level_Up/FX_3D_Level_Up.efkefc");
 		ResourceServer::Load("Stanp", "res/Effekseer/Attack/HorizontalThird.efkefc");
 		ResourceServer::Load("Rotation", "res/Effekseer/FX_3D_Rotate_2/FX_3D_Rotate.efkefc");
@@ -75,7 +78,7 @@ bool ModeGame::Initialize() {
 	_gaugeHandle[3] = ResourceServer::LoadGraph("Stamina04", _T("res/UI/UI_Stamina_04.png"));
 	_sVib = NEW ScreenVibration();
 
-	
+	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(), 10, "camera");
 
 	//global._soundServer->DirectPlay("Stage03");
 	global._soundServer->BgmFadeIn("Stage03", 2000);
@@ -589,13 +592,16 @@ bool ModeGame::Process() {
 
 
 bool ModeGame::GateProcess() {
-	//_suppression->SubSuppression(2);
+	if (CheckHitKey(KEY_INPUT_A)) {
+		_suppression->SubSuppression(1);
+	}
 	if (_suppression->GetIsRatio() && _stageNum < 3 ) {
 		if (_gate == nullptr) {
 			int handle[43];
 			ResourceServer::LoadDivGraph("Gate", "res/TemporaryMaterials/FX_Hole_2D00_sheet.png", 43, 16, 3, 1200, 1200, handle);
 			float time = 1.0f / 60.0f * 1000.0f;
 			_gate = NEW Gate(VGet(0, 300, 0), 300, handle, 43, time, 1000);
+			ModeServer::GetInstance()->Add(NEW ModeZoomCamera(), 10, "Camera");
 		}
 		_gate->Process();
 

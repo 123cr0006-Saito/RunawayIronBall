@@ -9,6 +9,8 @@
 #include "CollisionManager.h"
 
 #include "Camera.h"
+#include "ModeZoomCamera.h"
+#include "ModeRotationCamera.h"
 #include "Player.h"
 #include "Chain.h"
 #include "Heart.h"

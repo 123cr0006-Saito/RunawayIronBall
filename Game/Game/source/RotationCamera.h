@@ -3,10 +3,10 @@
 class RotationCamera : 	public CameraBase
 {
 public:
-	RotationCamera(int time);
+	RotationCamera(float distance,VECTOR targetPos);
 	~RotationCamera();
 	bool Process()override;
 protected:
-	int _endTime;
+	VECTOR _targetPos;
 };
 
