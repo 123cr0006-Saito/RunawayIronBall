@@ -349,7 +349,7 @@ bool ModeGame::Process() {
 			if (Collision3D::OBBSphereCol(houseObb, ibSphere)) {
 				if (isAttackState) {
 					VECTOR vDir = VSub(houseObb.pos, pPos);
-					(*itr)->ActivateBreakObject(true, vDir);
+					(*itr)->SetHit(vDir);
 					_player->SetExp(50);
 					global._soundServer->DirectPlay("OBJ_RockBreak");
 					continue;
@@ -373,7 +373,7 @@ bool ModeGame::Process() {
 				if (Collision3D::OBBSphereCol(houseObb, enPos, enR, &hitPos)) {
 					if (enState == ENEMYTYPE::DEAD) {
 						VECTOR vDir = VSub(houseObb.pos, pPos);
-						(*itr)->ActivateBreakObject(true, vDir);
+						(*itr)->SetHit(vDir);
 						global._soundServer->DirectPlay("OBJ_RockBreak");
 						continue;
 					}
@@ -390,7 +390,7 @@ bool ModeGame::Process() {
 				Sphere tpSphere = (*tpItr)->GetSphereCollision();
 				if (Collision3D::OBBSphereCol(houseObb, tpSphere)) {
 					VECTOR vDir = VSub(houseObb.pos, tpSphere.centerPos);
-					(*itr)->ActivateBreakObject(true, vDir);
+					(*itr)->SetHit(vDir);
 					continue;
 				}
 			}
