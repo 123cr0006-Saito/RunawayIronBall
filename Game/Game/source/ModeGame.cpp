@@ -27,7 +27,8 @@ bool ModeGame::Initialize() {
 	MV1SetPosition(_tile, VGet(0, 0, 0));
 
 	int playerModelHandle = ResourceServer::MV1LoadModel("Player", "res/Character/cg_player_girl/cg_player_girl_TEST_Ver.2.mv1");
-	_player = NEW Player(playerModelHandle, VGet(0, 0, 0));
+	_player = NEW Player();
+	_player->Init(playerModelHandle, VGet(0, 0, 0));
 	_camera = NEW Camera(_player->GetPosition());
 
 
@@ -88,6 +89,7 @@ bool ModeGame::Initialize() {
 
 bool ModeGame::Terminate() {
 	base::Terminate();
+	delete _collisionManager;
 	delete _camera;
 	delete _player;
 	delete _sVib;
