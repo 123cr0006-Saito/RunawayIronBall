@@ -94,6 +94,24 @@ void CollisionManager::UpdateCell(Cell* cell)
 		pos2 = VGet(sphere.centerPos.x + sphere.r, 0.0f, sphere.centerPos.z + sphere.r);
 	}
 	break;
+	case OBJ_TYPE::PL_IB_CHAIN:
+	{
+		IronBall* ironBall = static_cast<IronBall*>(cell->_obj);
+		Capsule capsule = ironBall->GetChainCollision();
+
+		pos1 = capsule.up_pos;
+		pos2 = capsule.up_pos;
+		// ç≈è¨ç¿ïW
+		if(pos1.x > capsule.down_pos.x) pos1.x = capsule.down_pos.x;
+		if(pos1.z > capsule.down_pos.z) pos1.z = capsule.down_pos.z;
+		// ç≈ëÂç¿ïW
+		if (pos2.x < capsule.down_pos.x) pos2.x = capsule.down_pos.x;
+		if (pos2.z < capsule.down_pos.z) pos2.z = capsule.down_pos.z;
+
+		pos1 = VGet(pos1.x - capsule.r, 0.0f, pos1.z - capsule.r);
+		pos2 = VGet(pos2.x + capsule.r, 0.0f, pos2.z + capsule.r);
+	}
+	break;
 	case OBJ_TYPE::EN:
 	{
 		EnemyBase* enemy = static_cast<EnemyBase*>(cell->_obj);
@@ -547,6 +565,10 @@ void CollisionManager::DrawAreaIndex()
 			case OBJ_TYPE::PL_IB:
 				obj = cell->_obj;
 				worldPos = static_cast<IronBall*>(obj)->GetBallPosition();
+				break;
+			case OBJ_TYPE::PL_IB_CHAIN:
+				obj = cell->_obj;
+				worldPos = static_cast<IronBall*>(obj)->GetChainCollision().up_pos;
 				break;
 			case OBJ_TYPE::EN:
 				obj = cell->_obj;

@@ -74,6 +74,8 @@ private:
 	Sphere _ibSphereCollision;
 	// ½•”•ª‚Ì“–‚½‚è”»’è
 	Capsule _chainCapsuleCollision;
+	// ½•”•ª‚Ì“–‚½‚è”»’è‚ğCollisionManager‚É“o˜^‚·‚é‚½‚ß‚ÌCell
+	Cell* _chainCell;
 
 	VECTOR _ibDefaultScale;
 

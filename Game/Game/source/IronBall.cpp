@@ -2,6 +2,7 @@
 
 namespace {
 	constexpr float IB_COLLISION_RADIUS = 50.0f;
+	constexpr float CHAIN_COLLISION_RADIUS = 25.0f;
 }
 
 IronBall::IronBall()
@@ -21,8 +22,16 @@ IronBall::IronBall()
 
 	_iPos = VGet(0, 0, 0);
 	_ibDefaultScale = VGet(0, 0, 0);
+
 	_ibSphereCollision.centerPos = VGet(0, 0, 0);
 	_ibSphereCollision.r = 0;
+
+	_chainCapsuleCollision.up_pos = VGet(0, 0, 0);
+	_chainCapsuleCollision.down_pos = VGet(0, 0, 0);
+	_chainCapsuleCollision.r = 0;
+
+	_chainCell = nullptr;
+
 	_animIndex = 0;
 	_animTotalTime = 0;
 	_playTime = 0;
@@ -69,6 +78,10 @@ void IronBall::Init() {
 	_ibSphereCollision.centerPos = _iPos;
 	_ibSphereCollision.r = IB_COLLISION_RADIUS;
 
+	_chainCapsuleCollision.up_pos = _cPos[0];
+	_chainCapsuleCollision.down_pos = _cPos[CHAIN_MAX - 1];
+	_chainCapsuleCollision.r = CHAIN_COLLISION_RADIUS;
+
 
 	_animIndex = MV1AttachAnim(_iModelHandle, 0);
 	_animTotalTime = MV1GetAnimTotalTime(_iModelHandle, _animIndex);
@@ -95,6 +108,10 @@ void IronBall::Init() {
 	_enabledAttackCollision = false;
 
 	_cell->_objType = OBJ_TYPE::PL_IB;
+	
+	_chainCell = NEW Cell();
+	_chainCell->_obj = this;
+	_chainCell->_objType = OBJ_TYPE::PL_IB_CHAIN;
 }
 
 
@@ -129,6 +146,15 @@ void IronBall::Process() {
 
 	UpdateIBCollision();
 	_collisionManager->UpdateCell(_cell);
+	if (_enabledAttackCollision) {
+		UpdateChainCollision();
+		_collisionManager->UpdateCell(_chainCell);
+	}
+	else {
+		if (_chainCell->_segment != nullptr) {
+			_collisionManager->RemoveCellFromTree(_chainCell);
+		}
+	}
 
 	AnimProcess();
 }
@@ -327,7 +353,6 @@ void IronBall::UpdateChainCollision()
 {
 	_chainCapsuleCollision.up_pos = _cPos[0];
 	_chainCapsuleCollision.down_pos = _cPos[CHAIN_MAX - 1];
-	_chainCapsuleCollision.r = 25.0f;
 }
 
 void IronBall::SetPlayerModelHandle(int handle)
@@ -343,7 +368,7 @@ void IronBall::DrawDebugInfo() {
 	unsigned int color = _enabledAttackCollision ? COLOR_RED : COLOR_WHITE;
 	DrawSphere3D(_ibSphereCollision.centerPos, _ibSphereCollision.r, 16, color, color, false);
 
-	UpdateChainCollision();
+	//UpdateChainCollision();
 	_chainCapsuleCollision.Render(COLOR_WHITE);
 
 	//int x = 0;
