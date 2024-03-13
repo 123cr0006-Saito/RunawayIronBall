@@ -8,10 +8,10 @@ enum IB_MOVE_STATE {
 	PUTTING_ON_SOCKET,
 	INTERPOLATION,
 };
-class Chain {
+class IronBall {
 public:
-	Chain();
-	~Chain();
+	IronBall();
+	~IronBall();
 
 	void Init();
 	void Process();

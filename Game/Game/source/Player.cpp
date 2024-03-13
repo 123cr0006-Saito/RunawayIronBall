@@ -261,7 +261,7 @@ bool Player::Init(int modelHandle, VECTOR pos)
 
 
 	// “S‹…‚Ì‰Šú‰»
-	_chain = NEW Chain();
+	_chain = NEW IronBall();
 	_chain->Init();
 	_chain->SetPlayerModelHandle(_modelHandle);
 	// “S‹…‚ÌˆÚ“®ó‘Ô‚ğu’Ç]v‚Éİ’è

@@ -4,7 +4,7 @@
 #include "bone.h"
 #include "myJson.h"
 
-#include "Chain.h"
+#include "IronBall.h"
 
 #include "AnimationManager.h"
 #include "AnimationItem.h"
@@ -183,7 +183,7 @@ private:
 	FrameData* _frameData;
 
 	// “S‹…
-	Chain* _chain;
+	IronBall* _chain;
 
 	// “–‚½‚è”»’è
 	Capsule _capsuleCollision;

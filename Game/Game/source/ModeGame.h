@@ -10,7 +10,6 @@
 
 #include "Camera.h"
 #include "Player.h"
-#include "Chain.h"
 #include "Heart.h"
 
 #include "UIBase.h"
