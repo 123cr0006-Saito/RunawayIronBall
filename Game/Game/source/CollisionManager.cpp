@@ -286,7 +286,7 @@ void CollisionManager::CheckColList()
 			case OBJ_TYPE::EN:
 			{
 				EnemyBase* enemy = static_cast<EnemyBase*>(cell2->_obj);
-				CheckHit(ironBall, enemy);
+				CheckHitIbAndEn(ironBall, enemy);
 			}
 			break;
 			}
@@ -326,7 +326,7 @@ void CollisionManager::CheckColList()
 			case OBJ_TYPE::PL_IB:
 			{
 				IronBall* ironBall = static_cast<IronBall*>(cell2->_obj);
-				CheckHit(ironBall, enemy1);
+				CheckHitIbAndEn(ironBall, enemy1);
 			}
 			break;
 			case OBJ_TYPE::PL_IB_CHAIN:
@@ -439,21 +439,19 @@ void CollisionManager::CheckHit(Player* player, BuildingBase* building)
 	}
 }
 
-void CollisionManager::CheckHit(IronBall* ironBall, EnemyBase* enemy)
+void CollisionManager::CheckHitIbAndEn(IronBall* ironBall, EnemyBase* enemy)
 {
 	bool isAttackState = ironBall->GetEnabledAttackCollision();
 	if (isAttackState) {
 		Sphere ibCol = ironBall->GetIBCollision();
+		Sphere eCol = { enemy->GetCollisionPos(), enemy->GetR() };
 
-		VECTOR enPos = enemy->GetCollisionPos();
-		float enR = enemy->GetR();
-
-		if (Collision3D::SphereCol(ibCol.centerPos, ibCol.r, enPos, enR)) {
+		if (Collision3D::SphereCol(ibCol.centerPos, ibCol.r, eCol.centerPos, eCol.r)) {
 			ObjectBase* obj = ironBall->GetParentInstance();
 			Player* player = static_cast<Player*>(obj);
 
 			VECTOR pPos = player->GetPosition();
-			VECTOR vDir = VSub(enPos, pPos);
+			VECTOR vDir = VSub(eCol.centerPos, pPos);
 			vDir = VNorm(vDir);
 			enemy->SetKnockBackAndDamage(vDir, player->GetPower());
 		}
