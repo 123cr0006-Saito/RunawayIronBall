@@ -55,6 +55,17 @@ void BuildingBase::Render()
 	MV1DrawModel(_modelHandle);
 }
 
+void BuildingBase::SetUseCollision(bool b)
+{
+	_useCollision = b;
+	if (_useCollision) {
+		_collisionManager->UpdateCell(_cell);
+	}
+	else {
+		_collisionManager->ReserveRemovementCell(_cell);
+	}
+}
+
 void BuildingBase::DrawDebugInfo()
 {
 	if (_useCollision) {

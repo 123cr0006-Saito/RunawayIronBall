@@ -16,7 +16,7 @@ public:
 	VECTOR GetPos() { return _pos; }
 
 	bool GetUseCollision() { return _useCollision; }
-	void SetUseCollision(bool b) { _useCollision = b; }
+	void SetUseCollision(bool b);
 	bool GetCanBreak() { return _canBreak; }
 	OBB GetOBBCollision() { return _obbCollision; }
 
