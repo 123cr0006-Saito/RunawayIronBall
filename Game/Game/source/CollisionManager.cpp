@@ -237,7 +237,6 @@ void CollisionManager::CheckColList()
 			case OBJ_TYPE::EN:
 			{
 				EnemyBase* enemy = static_cast<EnemyBase*>(cell2->_obj);
-				if(enemy->GetEnemyState() != ENEMYTYPE::DEAD) break;
 				CheckHit(player, enemy);
 			}
 			break;
@@ -261,7 +260,6 @@ void CollisionManager::CheckColList()
 			case OBJ_TYPE::PL:
 			{
 				Player* player = static_cast<Player*>(cell2->_obj);
-				if (enemy1->GetEnemyState() != ENEMYTYPE::DEAD) break;
 				CheckHit(player, enemy1);
 			}
 			break;
