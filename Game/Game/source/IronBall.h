@@ -40,10 +40,13 @@ public:
 
 
 
-	// プレイヤー関連
+	// このオブジェクトを保有している親オブジェクト関連の関数
 	// プレイヤーのモデルハンドルをセット
 	void SetPlayerModelHandle(int handle);
 	void SetMoveState(IB_MOVE_STATE state) { _moveState = state; }
+
+	void SetParentInstance(ObjectBase* parent) { _parent = parent; }
+	ObjectBase* GetParentInstance() { return _parent; }
 	void SetParentPosPtr(VECTOR* pos) { _parentPos = pos; }
 	VECTOR* GetParentPosPtr() { return _parentPos; }
 
@@ -73,7 +76,10 @@ private:
 	// 配置ソケット
 	int _socketNo[3];
 
-	// このオブジェクトを保持している親の座標へのポインタ
+
+	// このオブジェクトを保有している親のオブジェクトへのポインタ
+	ObjectBase* _parent;
+	// このオブジェクトを保有している親の座標へのポインタ
 	VECTOR* _parentPos;
 
 
