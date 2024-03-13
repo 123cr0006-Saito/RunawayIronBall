@@ -10,7 +10,7 @@ namespace {
 	// 最大HP
 	constexpr int HP_MAX = 4;
 	// 最大無敵時間
-	constexpr int INVINCIBLE_CNT_MAX = 90;
+	constexpr int INVINCIBLE_CNT_MAX = 240;
 
 	// 移動速度（通常状態）
 	// 最大値
