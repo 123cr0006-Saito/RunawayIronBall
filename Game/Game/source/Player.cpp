@@ -68,7 +68,8 @@ Player::Player()
 
 	_stamina = 0;
 	_staminaMax = 0;
-	_isConsumingStamina = false;
+	_isRecoveringStamina = true;
+	_cntToStartRecoveryStamina = 0;
 	_isTired = false;
 	_staminaRecoverySpeed = 0;
 
@@ -233,7 +234,7 @@ bool Player::Init(int modelHandle, VECTOR pos)
 
 	_stamina = STAMINA_MAX;
 	_staminaMax = STAMINA_MAX;
-	_isConsumingStamina = false;
+	_isRecoveringStamina = true;
 	_isTired = false;
 	_staminaRecoverySpeed = _staminaMax / STANIMA_RECOVERY_TIME;
 
@@ -423,7 +424,7 @@ bool Player::Process(float camAngleY)
 	}
 
 	// スタミナの更新
-	if (!_isConsumingStamina) {
+	if (_isRecoveringStamina) {
 		_staminaRecoverySpeed = STAMINA_MAX / STANIMA_RECOVERY_TIME;
 		_stamina += _staminaRecoverySpeed;
 		if (_stamina > STAMINA_MAX) {
@@ -434,8 +435,9 @@ bool Player::Process(float camAngleY)
 	}
 
 	if (_animStatus == ANIM_STATE::ROTATION_SWING) {
+		_isRecoveringStamina = false;
 		_stamina -= ROTAION_SWING_STAMINA_DECREASE;
-		_isConsumingStamina = true;
+		_cntToStartRecoveryStamina = 90;
 		if (_stamina < 0.0f) {
 			_stamina = 0.0f;
 			_isTired = true;
@@ -446,9 +448,15 @@ bool Player::Process(float camAngleY)
 		}
 	}
 
-	if(!_isAttackState ){
-		_isConsumingStamina = false;
+	if (_cntToStartRecoveryStamina > 0) {
+		_cntToStartRecoveryStamina -= 1;
+		if (_cntToStartRecoveryStamina <= 0) {
+			_isRecoveringStamina = true;
+		}
 	}
+	//if(!_isAttackState ){
+	//	_isRecoveringStamina = false;
+	//}
 
 	// 攻撃状態の更新
 	if (_isTired == false && _animStatus != ANIM_STATE::AVOIDANCE && _animStatus != ANIM_STATE::HIT) {
@@ -489,6 +497,9 @@ bool Player::Process(float camAngleY)
 				_forwardDir = _stickDir;
 				_rotationCnt = 0;
 				_idleFightingRemainingCnt = 240;
+
+				_isRecoveringStamina = false;
+				_cntToStartRecoveryStamina = 90;
 				_stamina -= AVOIDANCE_STAMINA_DECREASE;
 				if (_stamina < 0.0f) {
 					_stamina = 0.0f;

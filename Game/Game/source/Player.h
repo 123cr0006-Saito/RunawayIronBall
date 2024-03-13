@@ -142,8 +142,10 @@ private:
 	float _stamina;
 	// スタミナの最大値
 	float _staminaMax;
-	// スタミナを消費中かどうか
-	bool _isConsumingStamina;
+	// スタミナを回復中かどうか（最大まで回復しているときもtrue）
+	bool _isRecoveringStamina;
+	// スタミナが減少してから回復が始まるまでのフレーム数
+	int _cntToStartRecoveryStamina;
 	// スタミナが尽きたかどうか
 	bool _isTired;
 	// スタミナの1フレームあたりの回復速度
