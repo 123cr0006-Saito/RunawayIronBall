@@ -110,6 +110,16 @@ int GetString(const char* p, const char find, std::string* out)
 	return c;
 }
 
+int GetString(const char* p, const char find, std::string* out, int maxSize)
+{
+	int c = 0;
+	int len = FindString(&p[c], find, &p[maxSize]);	// ","‚Ü‚Å‚Ì’·‚³‚ğ“¾‚é
+	std::string s(&p[c], &p[c + len]);	// •¶š—ñ‚ğstring‰»
+	*out = s;
+	c += len;	// ","‚Ü‚Åi‚ß‚é
+	return c;
+}
+
 // 10i”‚Ì®”’l‚ğæ“¾‚·‚é
 int GetDecNum(const char* p, int* answer, int* digits) {
 	int c = 0;

@@ -77,6 +77,7 @@ public:
 	void SetBone();//齋藤が作った関数です。 boneのフレームを探すために使用する関数です。後でjsonでの読み込みにするかもしれません。
 	//↓齋藤が作った関数です。どこにjson読み込みをどこに書けばよいのかわからなかったので、コンストラクタの次に呼び出す関数として実装しました。
 	void SetNextExp(std::string FileName);//経験値データの読み込み
+	bool HealHp();
 	bool  UpdateExp();//経験値が越えていた時、レベルを上げる。
 	int GetNowLevel() { return _nowLevel; };
 	void SetExp(int getExp) { _nowExp += getExp; };

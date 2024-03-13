@@ -20,7 +20,7 @@ ModeScenario::ModeScenario(std::string scenarioFile) {
 			// textを取得
 			c += GetString(&data[c], &scenario.text);
 			// voiceを取得する
-			c += FindString(&data[c], ',', &data[size]); c++; c += GetDecNum(&data[c], &scenario.voiceData);
+			c += FindString(&data[c], ',', &data[size]); c++; c += GetString(&data[c], &scenario.voiceData);
 			// 表示するキャラの番号を取得する
 			c += FindString(&data[c], ',', &data[size]); c++; c += GetDecNum(&data[c], &scenario.charaHandle);
 			// 表示するキャラの番号を取得する
@@ -195,6 +195,10 @@ bool ModeScenario::Process(){
 			_nowTextLine++;
 			_nowTextByte = 0;
 			_currentTime = GetNowCount();
+			std::string voiceName = _scenarioData.at(_nowTextLine).voiceData;
+			if (voiceName != "") {
+				global._soundServer->DirectPlay(voiceName);
+			}
 		}
 	}
 

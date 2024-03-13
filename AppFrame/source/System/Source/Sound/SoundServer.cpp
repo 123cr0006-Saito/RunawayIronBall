@@ -4,7 +4,8 @@
 SoundServer::SoundServer() {
 	_isUpdate = false;
 	_cntOneShot = 0;
-	_SeVolume = _BgmVolume = _VoiceVolume = 255;
+	_SeVolume = _VoiceVolume = 255;
+	_BgmVolume = 150;
 }
 SoundServer::~SoundServer() {
 	Clear();
