@@ -232,6 +232,8 @@ void CollisionManager::CheckColList()
 
 			// オブジェクト2のタイプを判別
 			switch (cell2->_objType) {
+			case OBJ_TYPE::NONE:
+				break;
 			case OBJ_TYPE::EN:
 			{
 				EnemyBase* enemy = static_cast<EnemyBase*>(cell2->_obj);
@@ -246,13 +248,15 @@ void CollisionManager::CheckColList()
 			break;
 			}
 		}
-		break;
+		break; // end obj1 case OBJ_TYPE::PL
 
 		// オブジェクト1が敵の場合
 		case OBJ_TYPE::EN:
 		{
 			EnemyBase* enemy1 = static_cast<EnemyBase*>(cell1->_obj);
 			switch (cell2->_objType) {
+			case OBJ_TYPE::NONE:
+				break;
 			case OBJ_TYPE::PL:
 			{
 				Player* player = static_cast<Player*>(cell2->_obj);
@@ -265,42 +269,60 @@ void CollisionManager::CheckColList()
 				CheckHit(enemy1, enemy2);
 			}
 			break;
+			case OBJ_TYPE::BLDG:
+			{
+				BuildingBase* building = static_cast<BuildingBase*>(cell2->_obj);
+				CheckHit(enemy1, building);
+			}
+			break;
+
+
 			}
 		}
-		break;
+		break; // end obj1 case OBJ_TYPE::EN
 
-
+		// オブジェクト1が建物の場合
 		case OBJ_TYPE::BLDG:
 		{
 			BuildingBase* building = static_cast<BuildingBase*>(cell1->_obj);
 			switch (cell2->_objType) {
+			case OBJ_TYPE::NONE:
+				break;
 			case OBJ_TYPE::PL:
 			{
 				Player* player = static_cast<Player*>(cell2->_obj);
 				CheckHit(player, building);
 			}
 			break;
+			case OBJ_TYPE::EN:
+			{
+				EnemyBase* enemy = static_cast<EnemyBase*>(cell2->_obj);
+				CheckHit(enemy, building);
 			}
+			break;
+			}
+		} 
+		break; // end obj1 case OBJ_TYPE::BLDG
+
 		}
-		}
+
+
+
+
+
+
+		//int n = 0;
+		//for (int i = 0; i < treeSize; i++) {
+		//	Cell* cell = _tree[i]->_next;
+		//	while (cell != nullptr)
+		//	{
+		//		n++;
+		//		cell = cell->_next;
+		//	}
+		//}
+
+		//int m = 0;
 	}
-
-
-
-
-
-
-	//int n = 0;
-	//for (int i = 0; i < treeSize; i++) {
-	//	Cell* cell = _tree[i]->_next;
-	//	while (cell != nullptr)
-	//	{
-	//		n++;
-	//		cell = cell->_next;
-	//	}
-	//}
-
-	//int m = 0;
 }
 
 void CollisionManager::CheckHit(Player* player, EnemyBase* enemy)
@@ -356,6 +378,32 @@ void CollisionManager::CheckHit(EnemyBase* enemy1, EnemyBase* enemy2)
 		float length = sqrt(sqLength);
 		vDir = VScale(vDir, 1.0f / length);
 		enemy2->SetExtrusionPos(VScale(vDir, (en1R + en2R) - length));
+	}
+}
+
+void CollisionManager::CheckHit(EnemyBase* enemy, BuildingBase* building)
+{
+	Sphere eCol = { enemy->GetCollisionPos(), enemy->GetR() };
+	OBB bCol = building->GetOBBCollision();
+	VECTOR hitPos = VGet(0.0f, 0.0f, 0.0f);
+
+	if (Collision3D::OBBSphereCol(bCol, eCol, &hitPos)) {
+		// エネミーがノックバック状態の時、建物にぶつかったら破壊する
+		if (enemy->GetEnemyState() == ENEMYTYPE::DEAD) {
+			VECTOR vDir = VSub(bCol.pos, eCol.centerPos);
+			building->SetHit(vDir);
+			global._soundServer->DirectPlay("OBJ_RockBreak");
+		}
+		else {
+			// 敵の押し出し処理
+			VECTOR vDir = VSub(eCol.centerPos, hitPos);
+			vDir.y = 0.0f;
+			vDir = VNorm(vDir);
+
+			hitPos.y = 0.0f;
+			VECTOR tmpPos = VAdd(hitPos, VScale(vDir, eCol.r));
+			enemy->SetPos(tmpPos);
+		}
 	}
 }
 

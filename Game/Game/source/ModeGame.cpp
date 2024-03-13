@@ -356,35 +356,35 @@ bool ModeGame::Process() {
 				}
 			}
 
-			//エネミーがノックバック状態の時、建物にぶつかったら破壊する
-			houseObb.pos.y = 0; houseObb.length[1] = 0; //平面での当たり判定のため建物のy軸の長さを0にする]
-			int enemySize = _enemyPool->GetSize();
-			for (int i = 0; i < enemySize; i++) {
-				EnemyBase* en = _enemyPool->GetEnemy(i);
-				if (!en) { continue; }
-				if (!en->GetUse()) { continue; }
+			////エネミーがノックバック状態の時、建物にぶつかったら破壊する
+			//houseObb.pos.y = 0; houseObb.length[1] = 0; //平面での当たり判定のため建物のy軸の長さを0にする]
+			//int enemySize = _enemyPool->GetSize();
+			//for (int i = 0; i < enemySize; i++) {
+			//	EnemyBase* en = _enemyPool->GetEnemy(i);
+			//	if (!en) { continue; }
+			//	if (!en->GetUse()) { continue; }
 
-				ENEMYTYPE enState = en->GetEnemyState();
+			//	ENEMYTYPE enState = en->GetEnemyState();
 
-				VECTOR enPos = en->GetCollisionPos(); enPos.y = 0;
-				VECTOR hitPos = VGet(0, 0, 0);
-				float enR = en->GetR();
+			//	VECTOR enPos = en->GetCollisionPos(); enPos.y = 0;
+			//	VECTOR hitPos = VGet(0, 0, 0);
+			//	float enR = en->GetR();
 
-				if (Collision3D::OBBSphereCol(houseObb, enPos, enR, &hitPos)) {
-					if (enState == ENEMYTYPE::DEAD) {
-						VECTOR vDir = VSub(houseObb.pos, pPos);
-						(*itr)->SetHit(vDir);
-						global._soundServer->DirectPlay("OBJ_RockBreak");
-						continue;
-					}
-					else {
-						VECTOR dirVec = VSub(enPos, hitPos);
-						dirVec = VNorm(dirVec);
-						VECTOR movePos = VAdd(hitPos, VScale(dirVec, enR));
-						en->SetPos(movePos);
-					}
-				}
-			}
+			//	if (Collision3D::OBBSphereCol(houseObb, enPos, enR, &hitPos)) {
+			//		if (enState == ENEMYTYPE::DEAD) {
+			//			VECTOR vDir = VSub(houseObb.pos, pPos);
+			//			(*itr)->SetHit(vDir);
+			//			global._soundServer->DirectPlay("OBJ_RockBreak");
+			//			continue;
+			//		}
+			//		else {
+			//			VECTOR dirVec = VSub(enPos, hitPos);
+			//			dirVec = VNorm(dirVec);
+			//			VECTOR movePos = VAdd(hitPos, VScale(dirVec, enR));
+			//			en->SetPos(movePos);
+			//		}
+			//	}
+			//}
 
 			for (auto tpItr = TowerParts::_blastTowerParts.begin(); tpItr != TowerParts::_blastTowerParts.end(); ++tpItr) {
 				Sphere tpSphere = (*tpItr)->GetSphereCollision();

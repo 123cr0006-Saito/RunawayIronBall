@@ -39,6 +39,7 @@ private:
 	void CheckHit(Player* player, BuildingBase* building);
 
 	void CheckHit(EnemyBase* enemy1, EnemyBase* enemy2);
+	void CheckHit(EnemyBase* enemy, BuildingBase* building);
 
 	static CollisionManager* _instance;
 
