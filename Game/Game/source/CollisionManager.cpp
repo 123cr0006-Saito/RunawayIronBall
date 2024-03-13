@@ -385,12 +385,14 @@ void CollisionManager::CheckHit(EnemyBase* enemy1, EnemyBase* enemy2)
 
 void CollisionManager::CheckHit(EnemyBase* enemy, BuildingBase* building)
 {
+	// エネミーが撃破ノックバック状態、かつ、建物が破壊不可である場合は処理を行わない
+	if (enemy->GetEnemyState() == ENEMYTYPE::DEAD && building->GetCanBreak() == false) return;
 	Sphere eCol = { enemy->GetCollisionPos(), enemy->GetR() };
 	OBB bCol = building->GetOBBCollision();
 	VECTOR hitPos = VGet(0.0f, 0.0f, 0.0f);
 
 	if (Collision3D::OBBSphereCol(bCol, eCol, &hitPos)) {
-		// エネミーがノックバック状態の時、建物にぶつかったら破壊する
+		// エネミーが撃破ノックバック状態の時、建物にぶつかったら破壊する
 		if (enemy->GetEnemyState() == ENEMYTYPE::DEAD) {
 			VECTOR vDir = VSub(bCol.pos, eCol.centerPos);
 			building->SetHit(vDir);
