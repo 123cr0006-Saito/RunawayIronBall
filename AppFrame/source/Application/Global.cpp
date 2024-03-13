@@ -34,6 +34,11 @@ bool Global::SoundLoad() {
 	_soundServer->Add("OBJ_IronHit", new SoundItemSE("Sound/SE/Object/SE_HO_Iron_Hit.wav"));
 	_soundServer->Add("OBJ_RockBreak", new SoundItemSE("Sound/SE/Object/SE_HO_Rock_Break.wav"));
 	_soundServer->Add("OBJ_RockHit", new SoundItemSE("Sound/SE/Object/SE_HO_Rock_Hit.wav"));
+	//Hit
+	_soundServer->Add("SE_Hit1", new SoundItemSE("Sound/SE/Hit/SE_Hit_combo_01.mp3"));
+	_soundServer->Add("SE_Hit2", new SoundItemSE("Sound/SE/Hit/SE_Hit_combo_02.mp3"));
+	_soundServer->Add("SE_Hit3", new SoundItemSE("Sound/SE/Hit/SE_Hit_combo_03.mp3"));
+	_soundServer->Add("SE_Hit_Rotate", new SoundItemSE("Sound/SE/Hit/SE_Hit_Rotate.mp3"));
 	//Player
 	_soundServer->Add("PL_Avoidance", new SoundItemSE("Sound/SE/Player/SE_PL_Avoidance.wav"));
 	_soundServer->Add("PL_Damage", new SoundItemSE("Sound/SE/Player/SE_PL_Damage.wav"));
