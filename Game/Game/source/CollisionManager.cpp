@@ -63,7 +63,7 @@ void CollisionManager::Init()
 void CollisionManager::Process()
 {
 	// 削除予約リストにあるセルを削除
-	// 各オブジェクトのProcess関数で当たり判定が無効化されたものを削除する
+	// 各オブジェクトのProcess関数で当たり判定が無効化されたCellを削除する
 	RemoveCellFromReserveList();
 
 	_colList.clear();
@@ -72,7 +72,7 @@ void CollisionManager::Process()
 	CheckColList();
 
 	// 削除予約リストにあるセルを削除
-	// 当たり判定処理の終了後に当たり判定が無効化されたものを削除する
+	// 当たり判定処理の終了後に当たり判定が無効化されたCellを削除する
 	RemoveCellFromReserveList();
 }
 
