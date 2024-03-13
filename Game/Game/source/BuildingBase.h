@@ -18,7 +18,7 @@ public:
 	bool GetUseCollision() { return _useCollision; }
 	void SetUseCollision(bool b) { _useCollision = b; }
 	bool GetCanBreak() { return _canBreak; }
-	OBB GetOBBCollision() { return obb; }
+	OBB GetOBBCollision() { return _obbCollision; }
 
 
 	virtual void SetHit(VECTOR vDir = VGet(0.0f, 0.0f, -1.0f)) {};
@@ -37,5 +37,5 @@ protected:
 	// 壊せるオブジェクトかどうか
 	bool _canBreak;
 	// 当たり判定
-	OBB obb;
+	OBB _obbCollision;
 };
