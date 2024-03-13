@@ -478,7 +478,7 @@ bool Player::Process(float camAngleY)
 		}
 	}
 
-	if (_canMotionCancel) {
+	if (!_isTired && _canMotionCancel) {
 		// ‰ñ”ð
 		if (_input->GetTrg(XINPUT_BUTTON_A)) {
 			if (!_isSwinging || _isRotationSwinging) {
