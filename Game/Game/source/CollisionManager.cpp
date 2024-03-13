@@ -293,6 +293,23 @@ void CollisionManager::CheckColList()
 		}
 		break; // end obj1 case OBJ_TYPE::PL_IB
 
+		// オブジェクト1がプレイヤーの鉄球の鎖の場合
+		case OBJ_TYPE::PL_IB_CHAIN:
+		{
+			IronBall* ironBall = static_cast<IronBall*>(cell1->_obj);
+			switch (cell2->_objType) {
+			case OBJ_TYPE::NONE:
+				break;
+			case OBJ_TYPE::EN:
+			{
+				EnemyBase* enemy = static_cast<EnemyBase*>(cell2->_obj);
+				CheckHitChAndEn(ironBall, enemy);
+			}
+			break;
+			}
+		}
+		break; // end obj1 case OBJ_TYPE::PL_IB_CHAIN
+
 		// オブジェクト1が敵の場合
 		case OBJ_TYPE::EN:
 		{
@@ -310,6 +327,12 @@ void CollisionManager::CheckColList()
 			{
 				IronBall* ironBall = static_cast<IronBall*>(cell2->_obj);
 				CheckHit(ironBall, enemy1);
+			}
+			break;
+			case OBJ_TYPE::PL_IB_CHAIN:
+			{
+				IronBall* ironBall = static_cast<IronBall*>(cell2->_obj);
+				CheckHitChAndEn(ironBall, enemy1);
 			}
 			break;
 			case OBJ_TYPE::EN:
@@ -431,6 +454,25 @@ void CollisionManager::CheckHit(IronBall* ironBall, EnemyBase* enemy)
 
 			VECTOR pPos = player->GetPosition();
 			VECTOR vDir = VSub(enPos, pPos);
+			vDir = VNorm(vDir);
+			enemy->SetKnockBackAndDamage(vDir, player->GetPower());
+		}
+	}
+}
+
+void CollisionManager::CheckHitChAndEn(IronBall* ironBall, EnemyBase* enemy)
+{
+	bool isAttackState = ironBall->GetEnabledAttackCollision();
+	if (isAttackState) {
+		Capsule pCol = ironBall->GetChainCollision();
+		Sphere eCol = { enemy->GetCollisionPos(), enemy->GetR() };
+
+		if (Collision3D::SphereCapsuleCol(eCol, pCol)) {
+			ObjectBase* obj = ironBall->GetParentInstance();
+			Player* player = static_cast<Player*>(obj);
+
+			VECTOR pPos = player->GetPosition();
+			VECTOR vDir = VSub(eCol.centerPos, pPos);
 			vDir = VNorm(vDir);
 			enemy->SetKnockBackAndDamage(vDir, player->GetPower());
 		}
