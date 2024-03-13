@@ -85,7 +85,13 @@ void CollisionManager::UpdateCell(Cell* cell)
 	}
 	break;
 	case OBJ_TYPE::PL_IB:
-		break;
+	{
+		IronBall* ironBall = static_cast<IronBall*>(cell->_obj);
+		Sphere sphere = ironBall->GetCollision();
+		pos1 = VGet(sphere.centerPos.x - sphere.r, 0.0f, sphere.centerPos.z - sphere.r);
+		pos2 = VGet(sphere.centerPos.x + sphere.r, 0.0f, sphere.centerPos.z + sphere.r);
+	}
+	break;
 	case OBJ_TYPE::EN:
 	{
 		EnemyBase* enemy = static_cast<EnemyBase*>(cell->_obj);
@@ -491,6 +497,10 @@ void CollisionManager::DrawAreaIndex()
 			case OBJ_TYPE::PL:
 				obj = cell->_obj;
 				worldPos = static_cast<Player*>(obj)->GetPosition();
+				break;
+			case OBJ_TYPE::PL_IB:
+				obj = cell->_obj;
+				worldPos = static_cast<IronBall*>(obj)->GetBallPosition();
 				break;
 			case OBJ_TYPE::EN:
 				obj = cell->_obj;

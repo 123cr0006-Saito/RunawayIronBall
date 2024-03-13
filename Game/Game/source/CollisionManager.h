@@ -6,6 +6,7 @@ class CharacterBase;
 class Player;
 class EnemyBase;
 class BuildingBase;
+class IronBall;
 
 // XZ平面上で4分木空間分割を行い、当たり判定を行うクラス
 class CollisionManager

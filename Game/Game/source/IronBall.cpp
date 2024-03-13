@@ -89,6 +89,8 @@ void IronBall::Init() {
 	_moveState = IB_MOVE_STATE::FOLLOWING;
 
 	_enabledAttackCollision = false;
+
+	_cell->_objType = OBJ_TYPE::PL_IB;
 }
 
 
@@ -122,6 +124,7 @@ void IronBall::Process() {
 	}
 
 	UpdateCollision();
+	_collisionManager->UpdateCell(_cell);
 
 	AnimProcess();
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "appframe.h"
+#include "ObjectBase.h"
 
 #define CHAIN_MAX 12
 
@@ -8,7 +9,8 @@ enum IB_MOVE_STATE {
 	PUTTING_ON_SOCKET,
 	INTERPOLATION,
 };
-class IronBall {
+class IronBall : public ObjectBase
+{
 public:
 	IronBall();
 	~IronBall();
