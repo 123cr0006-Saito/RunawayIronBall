@@ -2,9 +2,6 @@
 
 House::House()
 {
-	_modelHandle = -1;
-	_pos = VGet(0.0f, 0.0f, 0.0f);
-	_useCollision = true;
 	_breakObj = nullptr;
 }
 
@@ -21,6 +18,7 @@ void House::Init(int modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale
 {
 	BuildingBase::Init(modelHandle, startPos, rotation, scale, obbLength);
 
+	_canBreak = true;
 	// ”j‰óˆ—ƒNƒ‰ƒX‚Ì‰Šú‰»
 	_breakObj = NEW BreakObject();
 	_breakObj->Init(_modelHandle);
@@ -45,8 +43,6 @@ void House::ActivateBreakObject(bool activate, VECTOR vDir)
 
 void House::DrawDebugInfo()
 {
-	if (_useCollision) {
-		obb.Render(GetColor(255, 255, 255));
-	}
+	BuildingBase::DrawDebugInfo();
 	_breakObj->DrawDebugInfo();
 }
