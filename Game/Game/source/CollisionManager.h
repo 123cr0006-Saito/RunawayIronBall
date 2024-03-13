@@ -39,6 +39,8 @@ private:
 	void CheckHit(Player* player, EnemyBase* enemy);
 	void CheckHit(Player* player, BuildingBase* building);
 
+	void CheckHit(IronBall* ironBall, EnemyBase* enemy);
+
 	void CheckHit(EnemyBase* enemy1, EnemyBase* enemy2);
 	void CheckHit(EnemyBase* enemy, BuildingBase* building);
 

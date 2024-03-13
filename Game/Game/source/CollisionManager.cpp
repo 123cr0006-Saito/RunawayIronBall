@@ -11,8 +11,10 @@ namespace {
 	constexpr int STAGE_DIVISION = 5;
 }
 
-CollisionManager* CollisionManager::_instance = nullptr;
+// CellのOBJ_TYPEに関しては、ObjectBaseクラスの派生クラスのInit関数で設定する
+// CellのOBJ_TYPEによりObjectBaseクラスのどの派生クラスかの判別がつくので、ObjectBaseクラスから各派生クラスへのダウンキャストはstatic_castで行う
 
+CollisionManager* CollisionManager::_instance = nullptr;
 CollisionManager::CollisionManager()
 {
 #ifdef _DEBUG
@@ -256,6 +258,23 @@ void CollisionManager::CheckColList()
 		}
 		break; // end obj1 case OBJ_TYPE::PL
 
+		// オブジェクト1がプレイヤーの鉄球の場合
+		case OBJ_TYPE::PL_IB:
+		{
+			IronBall* ironBall = static_cast<IronBall*>(cell1->_obj);
+			switch (cell2->_objType) {
+			case OBJ_TYPE::NONE:
+				break;
+			case OBJ_TYPE::EN:
+			{
+				EnemyBase* enemy = static_cast<EnemyBase*>(cell2->_obj);
+				CheckHit(ironBall, enemy);
+			}
+			break;
+			}
+		}
+		break; // end obj1 case OBJ_TYPE::PL_IB
+
 		// オブジェクト1が敵の場合
 		case OBJ_TYPE::EN:
 		{
@@ -267,6 +286,12 @@ void CollisionManager::CheckColList()
 			{
 				Player* player = static_cast<Player*>(cell2->_obj);
 				CheckHit(player, enemy1);
+			}
+			break;
+			case OBJ_TYPE::PL_IB:
+			{
+				IronBall* ironBall = static_cast<IronBall*>(cell2->_obj);
+				CheckHit(ironBall, enemy1);
 			}
 			break;
 			case OBJ_TYPE::EN:
@@ -370,6 +395,27 @@ void CollisionManager::CheckHit(Player* player, BuildingBase* building)
 		hitPos.y = 0.0f;
 		VECTOR tmpPos = VAdd(hitPos, VScale(vDir, pCol.r));
 		player->SetPos(tmpPos);
+	}
+}
+
+void CollisionManager::CheckHit(IronBall* ironBall, EnemyBase* enemy)
+{
+	bool isAttackState = ironBall->GetEnabledAttackCollision();
+	if (isAttackState) {
+		Sphere ibCol = ironBall->GetCollision();
+
+		VECTOR enPos = enemy->GetCollisionPos();
+		float enR = enemy->GetR();
+
+		if (Collision3D::SphereCol(ibCol.centerPos, ibCol.r, enPos, enR)) {
+			ObjectBase* obj = ironBall->GetParentInstance();
+			Player* player = static_cast<Player*>(obj);
+
+			VECTOR pPos = player->GetPosition();
+			VECTOR vDir = VSub(enPos, pPos);
+			vDir = VNorm(vDir);
+			enemy->SetKnockBackAndDamage(vDir, player->GetPower());
+		}
 	}
 }
 

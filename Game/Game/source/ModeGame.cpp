@@ -451,23 +451,23 @@ bool ModeGame::Process() {
 		}
 	}
 
-	int enemySize = _enemyPool->GetSize();
-	for (int i = 0; i < enemySize; i++) {
-		EnemyBase* enemy = _enemyPool->GetEnemy(i);
-		if (!enemy) { continue; }
-		if (!enemy->GetUse()) { continue; }
-		if (isAttackState) {
+	//int enemySize = _enemyPool->GetSize();
+	//for (int i = 0; i < enemySize; i++) {
+	//	EnemyBase* enemy = _enemyPool->GetEnemy(i);
+	//	if (!enemy) { continue; }
+	//	if (!enemy->GetUse()) { continue; }
+	//	if (isAttackState) {
 
-			VECTOR enPos = enemy->GetCollisionPos();
-			float enR = enemy->GetR();
+	//		VECTOR enPos = enemy->GetCollisionPos();
+	//		float enR = enemy->GetR();
 
-			if (Collision3D::SphereCol(ibSphere.centerPos, ibSphere.r, enPos, enR)) {
-				VECTOR vDir = VSub(enPos, pPos);
-				vDir = VNorm(vDir);
-				enemy->SetKnockBackAndDamage(vDir, ibPower);
-			}
-		}
-	}
+	//		if (Collision3D::SphereCol(ibSphere.centerPos, ibSphere.r, enPos, enR)) {
+	//			VECTOR vDir = VSub(enPos, pPos);
+	//			vDir = VNorm(vDir);
+	//			enemy->SetKnockBackAndDamage(vDir, ibPower);
+	//		}
+	//	}
+	//}
 
 
 

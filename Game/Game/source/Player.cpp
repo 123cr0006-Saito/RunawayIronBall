@@ -263,6 +263,7 @@ bool Player::Init(int modelHandle, VECTOR pos)
 	// “S‹…‚Ì‰Šú‰»
 	_ironBall = NEW IronBall();
 	_ironBall->Init();
+	_ironBall->SetParentInstance(this);
 	_ironBall->SetParentPosPtr(&_pos);
 	_ironBall->SetPlayerModelHandle(_modelHandle);
 	// “S‹…‚ÌˆÚ“®ó‘Ô‚ğu’Ç]v‚Éİ’è
