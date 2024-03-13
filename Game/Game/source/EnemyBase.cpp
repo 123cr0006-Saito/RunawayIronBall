@@ -237,12 +237,16 @@ bool EnemyBase::ModeCoolTime() {
 };
 
 bool EnemyBase::ModeKnockBack() {
+	int nowTime = GetNowCount() - _currentTime;
+	float CoolTime = 3.0f * 1000; //攻撃してからのクールタイム   
 	VECTOR knockBackVecter = VScale(_knockBackDir, _knockBackSpeedFrame);
 	_pos = VAdd(_pos, knockBackVecter);
 	_knockBackSpeedFrame--;
-	if (_knockBackSpeedFrame <= 0) {
+
+	if (_knockBackSpeedFrame <= 0 && nowTime > CoolTime) {
 		_modeState = ENEMYTYPE::DISCOVER;
 	}
+
 	return true;
 };
 
@@ -287,7 +291,7 @@ void EnemyBase::SetKnockBackAndDamage(VECTOR vDir, float damage) {
 		_hp -= damage;
 		_knockBackDir = vDir;
 		_knockBackSpeedFrame = damage - _weightExp;
-
+		_currentTime = GetNowCount();
 		VECTOR effectPos = VAdd(VAdd(_pos, _diffeToCenter), VScale(vDir, -50));
 
 		int effectHandle[30];
