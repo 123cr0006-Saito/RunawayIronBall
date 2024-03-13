@@ -21,13 +21,9 @@ public:
 
 	// ツリーへセルを追加、更新
 	void UpdateCell(Cell* cell);
-	// ツリーからセルを削除
-	void RemoveCell(Cell* cell);
-
 	// セルの削除予約
 	void ReserveRemovementCell(Cell* cell);
-	// 削除予約リストにあるセルを削除
-	void RemoveCellFromReserveList();
+
 
 
 	// デバッグ情報の表示
@@ -41,6 +37,11 @@ private:
 	void InsertCellIntoTree(unsigned int treeIndex, Cell* cell);
 	void CreateColList(unsigned int treeIndex, std::list<Cell*>& colStack);
 	void CheckColList();
+
+	// ツリーからセルを削除
+	void RemoveCell(Cell* cell);
+	// 削除予約リストにあるセルを削除
+	void RemoveCellFromReserveList();
 
 	// 当たり判定処理
 	void CheckHit(Player* player, EnemyBase* enemy);

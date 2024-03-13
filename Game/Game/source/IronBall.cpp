@@ -152,7 +152,7 @@ void IronBall::Process() {
 	}
 	else {
 		if (_chainCell->_segment != nullptr) {
-			_collisionManager->RemoveCell(_chainCell);
+			_collisionManager->ReserveRemovementCell(_chainCell);
 		}
 	}
 

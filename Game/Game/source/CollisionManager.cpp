@@ -62,12 +62,17 @@ void CollisionManager::Init()
 
 void CollisionManager::Process()
 {
+	// 削除予約リストにあるセルを削除
+	// 各オブジェクトのProcess関数で当たり判定が無効化されたものを削除する
+	RemoveCellFromReserveList();
+
 	_colList.clear();
 	std::list<Cell*> colStack;
 	CreateColList(0, colStack);
 	CheckColList();
 
 	// 削除予約リストにあるセルを削除
+	// 当たり判定処理の終了後に当たり判定が無効化されたものを削除する
 	RemoveCellFromReserveList();
 }
 
@@ -131,7 +136,6 @@ void CollisionManager::UpdateCell(Cell* cell)
 
 	case OBJ_TYPE::BLDG:
 	{
-			ReserveRemovementCell(cell);
 		BuildingBase* building = static_cast<BuildingBase*>(cell->_obj);
 		OBB obb = building->GetOBBCollision();
 
