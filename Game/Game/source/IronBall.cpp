@@ -36,11 +36,13 @@ IronBall::IronBall()
 	_socketNo[0] = -1;
 	_socketNo[1] = -1;
 	_socketNo[2] = -1;
+	_parentPos = nullptr;
 }
 
 IronBall::~IronBall()
 {
 	_input = nullptr;
+	_parentPos = nullptr;
 }
 
 void IronBall::Init() {

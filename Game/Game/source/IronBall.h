@@ -44,7 +44,8 @@ public:
 	// プレイヤーのモデルハンドルをセット
 	void SetPlayerModelHandle(int handle);
 	void SetMoveState(IB_MOVE_STATE state) { _moveState = state; }
-
+	void SetParentPosPtr(VECTOR* pos) { _parentPos = pos; }
+	VECTOR* GetParentPosPtr() { return _parentPos; }
 
 	// デバッグ情報の表示
 	void DrawDebugInfo();
@@ -71,6 +72,9 @@ private:
 
 	// 配置ソケット
 	int _socketNo[3];
+
+	// このオブジェクトを保持している親の座標へのポインタ
+	VECTOR* _parentPos;
 
 
 	int _attackAnimCnt;

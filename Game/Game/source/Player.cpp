@@ -86,7 +86,7 @@ Player::Player()
 	_animStatus = ANIM_STATE::IDLE;
 	_frameData = nullptr;
 
-	_chain = nullptr;
+	_ironBall = nullptr;
 
 	_capsuleCollision.r = 0.0f;
 	_capsuleCollision.up = 0.0f;
@@ -124,7 +124,7 @@ Player::~Player()
 	delete _animManager;
 	delete _frameData;
 	delete _modelColor;
-	delete _chain;
+	delete _ironBall;
 
 	for (int i = 0; i < 2; i++) {
 		delete _bone[i];
@@ -261,11 +261,12 @@ bool Player::Init(int modelHandle, VECTOR pos)
 
 
 	// 鉄球の初期化
-	_chain = NEW IronBall();
-	_chain->Init();
-	_chain->SetPlayerModelHandle(_modelHandle);
+	_ironBall = NEW IronBall();
+	_ironBall->Init();
+	_ironBall->SetParentPosPtr(&_pos);
+	_ironBall->SetPlayerModelHandle(_modelHandle);
 	// 鉄球の移動状態を「追従」に設定
-	_chain->SetMoveState(IB_MOVE_STATE::FOLLOWING);
+	_ironBall->SetMoveState(IB_MOVE_STATE::FOLLOWING);
 
 	// 当たり判定の初期設定
 	_capsuleCollision.r = 30.0f;
@@ -510,7 +511,7 @@ bool Player::Process(float camAngleY)
 	
 
 
-	_chain->Process();
+	_ironBall->Process();
 
 	_collisionManager->UpdateCell(_cell);
 
@@ -540,7 +541,7 @@ bool Player::BlastOffProcess()
 bool Player::Render()
 {
 	CharacterBase::Render();
-	_chain->Render();
+	_ironBall->Render();
 	return true;
 }
 
@@ -569,7 +570,7 @@ void Player::SetPowerScale(std::string FileName)
 bool Player::UpdateLevel()
 {
 	_power = _powerAndScale[_nowLevel].first;
-	_chain->UpdateLevel(_powerAndScale[_nowLevel].second);
+	_ironBall->UpdateLevel(_powerAndScale[_nowLevel].second);
 	if (_nowLevel > 0) {
 		// レベルアップエフェクト
 		float size = 5.0f * _powerAndScale[_nowLevel].second;
@@ -685,16 +686,16 @@ void Player::CheckFrameDataCommand()
 			break;
 
 		case C_P_ENABLE_IB_ATTACK_COLLISION:
-			_chain->SetEnabledAttackCollision(static_cast<bool>(param));
+			_ironBall->SetEnabledAttackCollision(static_cast<bool>(param));
 			break;
 		case C_P_ENABLE_IB_FOLLOWING_MODE:
 		{
 			IB_MOVE_STATE nextState = static_cast<int>(param) == 0 ? IB_MOVE_STATE::PUTTING_ON_SOCKET : IB_MOVE_STATE::FOLLOWING;
-			_chain->SetMoveState(nextState);
+			_ironBall->SetMoveState(nextState);
 			break;
 		}
 		case C_P_ENABLE_IB_INTERPOLATION:
-			_chain->SetMoveState(IB_MOVE_STATE::INTERPOLATION);
+			_ironBall->SetMoveState(IB_MOVE_STATE::INTERPOLATION);
 			break;
 		}
 	}
@@ -720,5 +721,5 @@ void Player::DrawDebugInfo()
 
 
 	_animManager->DrawDebugInfo();
-	_chain->DrawDebugInfo();
+	_ironBall->DrawDebugInfo();
 }
