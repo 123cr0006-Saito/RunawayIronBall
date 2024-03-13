@@ -9,7 +9,7 @@ bool ModeGame::Initialize() {
 	_collisionManager->Init();
 
 	_gate = nullptr;
-	_stageNum = 1;
+	_stageNum = 2;
 	IsLoading = true;
 	LoadFunctionThread = nullptr;
 
@@ -27,7 +27,8 @@ bool ModeGame::Initialize() {
 	MV1SetPosition(_tile, VGet(0, 0, 0));
 
 	int playerModelHandle = ResourceServer::MV1LoadModel("Player", "res/Character/cg_player_girl/cg_player_girl_TEST_Ver.2.mv1");
-	_player = NEW Player(playerModelHandle, VGet(0, 0, 0));
+	_player = NEW Player();
+	_player->Init(playerModelHandle, VGet(0, 0, 0));
 	_camera = NEW Camera(_player->GetPosition());
 
 
@@ -88,6 +89,7 @@ bool ModeGame::Initialize() {
 
 bool ModeGame::Terminate() {
 	base::Terminate();
+	delete _collisionManager;
 	delete _camera;
 	delete _player;
 	delete _sVib;
@@ -227,7 +229,7 @@ std::vector<std::string> ModeGame::LoadObjectName(std::string fileName) {
 		int size = file.Size();
 		while (c < size) {
 			std::string objectName;
-			c += GetString(&p[c], '\r\n', &objectName, size - c); // モデルの名前を取得
+			c += GetString(&p[c], '\r\n', &objectName); // モデルの名前を取得
 			c += SkipSpace(&p[c], &p[size]); // 空白やコントロールコードをスキップする
 			nameList.push_back(objectName);
 		}
@@ -239,7 +241,7 @@ bool ModeGame::LoadStage(std::string fileName) {
 	myJson json(fileName);
 	int j = 0;
 
-	_enemyPool->Create(json,_stageNum);
+	_enemyPool->Create(json);
 
 	_floor->Create(json, _stageNum);
 
@@ -270,10 +272,9 @@ bool ModeGame::LoadStage(std::string fileName) {
 		});
 
 		std::vector<ModeGame::OBJECTDATA> objectData = LoadJsonObject(json._json, nameList);
-		std::string modelName = nameList;
-		std::string modelPath = "res/Building/" + modelName + "/" + modelName + ".mv1";
+		std::string modelName = "res/Building/" + (*itr)._name + "/" + (*itr)._name + ".mv1";
 		for (auto&& object : objectData) {
-			int objHandle = ResourceServer::MV1LoadModel(modelName, modelPath);
+			int objHandle = ResourceServer::MV1LoadModel((*itr)._name.c_str(), modelName.c_str());
 			if ((*itr).isBreak == 1) {
 				// 壊れるオブジェクト
 				House* building = NEW House();

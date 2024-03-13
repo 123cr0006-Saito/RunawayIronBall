@@ -20,7 +20,7 @@ protected:
 	static std::unordered_map<int, int>_backGroundHandleMap;
 	static std::unordered_map<int, int> _textBoxHandle;
 	struct ScenarioData {
-		int voiceData;
+		std::string voiceData;
 		int charaHandle;
 		int nameHandle;
 		int backGroundHandle;

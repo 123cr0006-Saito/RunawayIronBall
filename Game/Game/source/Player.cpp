@@ -157,6 +157,21 @@ void Player::SetDamage()
 	_rotationCnt = 0;
 	_animStatus = ANIM_STATE::HIT;
 	ChangeIsInvincible(true, INVINCIBLE_CNT_MAX);
+	// ダメージサウンドの再生
+	switch (_hp) {
+	case 0:
+		global._soundServer->DirectPlay("PL_GameOver");
+		break;
+	case 1:
+		global._soundServer->DirectPlay("PL_HealthAlert");
+		break;
+	case 2:
+	case 3:
+		int voiceNum = rand() % 2 + 1;
+		std::string voiceName = "PL_Damage0" + std::to_string(voiceNum);
+		global._soundServer->DirectPlay(voiceName);
+		break;
+	}
 }
 
 void Player::SetBone() {
@@ -556,11 +571,16 @@ bool Player::UpdateLevel()
 	_power = _powerAndScale[_nowLevel].first;
 	_chain->UpdateLevel(_powerAndScale[_nowLevel].second);
 	if (_nowLevel > 0) {
+		// レベルアップエフェクト
 		float size = 5.0f * _powerAndScale[_nowLevel].second;
 		VECTOR* pos = GetIBPosPtr();
 		int effectHandle = ResourceServer::Load("FX_3D_Level_Up", "res/Effekseer/FX_3D_Level_Up/FX_3D_Level_Up.efkefc");
 		EffekseerPosSynchro* effect = new EffekseerPosSynchro(effectHandle, pos, size);
 		EffectManeger::GetInstance()->LoadEffect(effect);
+		// レベルアップボイス
+		int randomNum = rand() % 2 + 1; // ランダムで音声を再生　1~2
+		std::string voiceName = "PL_LevelUp0" + std::to_string(randomNum);
+		global._soundServer->DirectPlay(voiceName);
 	}
 	return true;
 }

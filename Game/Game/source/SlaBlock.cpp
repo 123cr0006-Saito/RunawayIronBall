@@ -164,10 +164,7 @@ bool SlaBlock::ModeAttack() {
 
 bool SlaBlock::ModeCoolTime() {
 
-	//プランナーさん側で変更できる場所　※秒数単位 
-	float moveCoolTime = 3.0f * 1000; //攻撃してからのクールタイム   
-
-	if (GetNowCount() - _currentTime >= moveCoolTime) {
+	if (GetNowCount() - _currentTime >= _coolTime) {
 		_currentTime = 0;
 		_animState = ANIMSTATE::WALK;
 		_modeState = ENEMYTYPE::DISCOVER;
@@ -176,10 +173,12 @@ bool SlaBlock::ModeCoolTime() {
 };
 
 bool SlaBlock::ModeKnockBack() {
+	int nowTime = GetNowCount() - _currentTime;
+	float CoolTime = 3.0f * 1000; //硬直時間
 	VECTOR knockBackVecter = VScale(_knockBackDir, _knockBackSpeedFrame);
 	_pos = VAdd(_pos, knockBackVecter);
 	_knockBackSpeedFrame--;
-	if (_knockBackSpeedFrame <= 0) {
+	if (_knockBackSpeedFrame <= 0 && nowTime > CoolTime) {
 		_animState = ANIMSTATE::WALK;
 		_modeState = ENEMYTYPE::DISCOVER;
 	}
