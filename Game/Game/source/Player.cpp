@@ -37,6 +37,8 @@ namespace {
 	constexpr float STAMINA_MAX = 480.0f;
 	// 回転攻撃の1フレームあたりのスタミナ消費量
 	constexpr float ROTAION_SWING_STAMINA_DECREASE = 1.0f;
+	// 回避行動のスタミナ消費量
+	constexpr float AVOIDANCE_STAMINA_DECREASE = STAMINA_MAX / 6.0f;
 	// スタミナが0になってから最大値まで回復するのにかかる時間
 	constexpr float STANIMA_RECOVERY_TIME = 120.0f;
 
@@ -487,6 +489,11 @@ bool Player::Process(float camAngleY)
 				_forwardDir = _stickDir;
 				_rotationCnt = 0;
 				_idleFightingRemainingCnt = 240;
+				_stamina -= AVOIDANCE_STAMINA_DECREASE;
+				if (_stamina < 0.0f) {
+					_stamina = 0.0f;
+					_isTired = true;
+				}
 			}
 		}
 	}
