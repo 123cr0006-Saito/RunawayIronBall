@@ -97,7 +97,7 @@ public:
 	void UpdateCollision();
 
 	Capsule GetCollision() { return _capsuleCollision; };
-	Sphere GetIBCollision() { return _ironBall->GetCollision(); };
+	Sphere GetIBCollision() { return _ironBall->GetIBCollision(); };
 	VECTOR GetIBPos() { return _ironBall->GetBallPosition(); };
 	void SetIBPos(VECTOR pos) { _ironBall->SetBallPosition(pos); };
 

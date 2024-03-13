@@ -89,7 +89,7 @@ void CollisionManager::UpdateCell(Cell* cell)
 	case OBJ_TYPE::PL_IB:
 	{
 		IronBall* ironBall = static_cast<IronBall*>(cell->_obj);
-		Sphere sphere = ironBall->GetCollision();
+		Sphere sphere = ironBall->GetIBCollision();
 		pos1 = VGet(sphere.centerPos.x - sphere.r, 0.0f, sphere.centerPos.z - sphere.r);
 		pos2 = VGet(sphere.centerPos.x + sphere.r, 0.0f, sphere.centerPos.z + sphere.r);
 	}
@@ -402,7 +402,7 @@ void CollisionManager::CheckHit(IronBall* ironBall, EnemyBase* enemy)
 {
 	bool isAttackState = ironBall->GetEnabledAttackCollision();
 	if (isAttackState) {
-		Sphere ibCol = ironBall->GetCollision();
+		Sphere ibCol = ironBall->GetIBCollision();
 
 		VECTOR enPos = enemy->GetCollisionPos();
 		float enR = enemy->GetR();

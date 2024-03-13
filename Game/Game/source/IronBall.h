@@ -35,9 +35,10 @@ public:
 	bool GetEnabledAttackCollision() { return _enabledAttackCollision; }
 	void SetEnabledAttackCollision(bool state) { _enabledAttackCollision = state; }
 
-	Sphere GetCollision() { return _sphereCollision; }
-	void UpdateCollision();
-
+	Sphere GetIBCollision() { return _ibSphereCollision; }
+	Capsule GetChainCollision() { return _chainCapsuleCollision; }
+	void UpdateIBCollision();
+	void UpdateChainCollision();
 
 
 	// このオブジェクトを保有している親オブジェクト関連の関数
@@ -69,7 +70,10 @@ private:
 	VECTOR _iPos;
 	VECTOR _iForwardDir;
 
-	Sphere _sphereCollision;
+	// 鉄球部分の当たり判定
+	Sphere _ibSphereCollision;
+	// 鎖部分の当たり判定
+	Capsule _chainCapsuleCollision;
 
 	VECTOR _ibDefaultScale;
 

@@ -21,8 +21,8 @@ IronBall::IronBall()
 
 	_iPos = VGet(0, 0, 0);
 	_ibDefaultScale = VGet(0, 0, 0);
-	_sphereCollision.centerPos = VGet(0, 0, 0);
-	_sphereCollision.r = 0;
+	_ibSphereCollision.centerPos = VGet(0, 0, 0);
+	_ibSphereCollision.r = 0;
 	_animIndex = 0;
 	_animTotalTime = 0;
 	_playTime = 0;
@@ -64,8 +64,8 @@ void IronBall::Init() {
 	MV1SetPosition(_iModelHandle, _iPos);
 
 
-	_sphereCollision.centerPos = _iPos;
-	_sphereCollision.r = IB_COLLISION_RADIUS;
+	_ibSphereCollision.centerPos = _iPos;
+	_ibSphereCollision.r = IB_COLLISION_RADIUS;
 
 
 	_animIndex = MV1AttachAnim(_iModelHandle, 0);
@@ -116,8 +116,8 @@ void IronBall::Process() {
 		_attackAnimCnt = 0;
 	}
 
-	if (_iPos.y - _sphereCollision.r < 0.0f) {
-		_iPos.y = 0.0f + _sphereCollision.r;
+	if (_iPos.y - _ibSphereCollision.r < 0.0f) {
+		_iPos.y = 0.0f + _ibSphereCollision.r;
 	}
 	for (int i = 1; i < CHAIN_MAX; i++) {
 		if (_cPos[i].y - 10.0f < 0.0f) {
@@ -125,7 +125,7 @@ void IronBall::Process() {
 		}
 	}
 
-	UpdateCollision();
+	UpdateIBCollision();
 	_collisionManager->UpdateCell(_cell);
 
 	AnimProcess();
@@ -316,9 +316,16 @@ void IronBall::Render()
 	MV1DrawModel(_iModelHandle);
 }
 
-void IronBall::UpdateCollision()
+void IronBall::UpdateIBCollision()
 {
-	_sphereCollision.centerPos = _iPos;
+	_ibSphereCollision.centerPos = _iPos;
+}
+
+void IronBall::UpdateChainCollision()
+{
+	_chainCapsuleCollision.up_pos = _cPos[0];
+	_chainCapsuleCollision.down_pos = _cPos[CHAIN_MAX - 1];
+	_chainCapsuleCollision.r = 25.0f;
 }
 
 void IronBall::SetPlayerModelHandle(int handle)
@@ -332,7 +339,10 @@ void IronBall::SetPlayerModelHandle(int handle)
 
 void IronBall::DrawDebugInfo() {
 	unsigned int color = _enabledAttackCollision ? COLOR_RED : COLOR_WHITE;
-	DrawSphere3D(_sphereCollision.centerPos, _sphereCollision.r, 16, color, color, false);
+	DrawSphere3D(_ibSphereCollision.centerPos, _ibSphereCollision.r, 16, color, color, false);
+
+	UpdateChainCollision();
+	_chainCapsuleCollision.Render(COLOR_WHITE);
 
 	//int x = 0;
 	//int y = 0;
@@ -345,6 +355,6 @@ void IronBall::DrawDebugInfo() {
 bool IronBall::UpdateLevel(float scale)
 {
 	MV1SetScale(_iModelHandle, VScale(_ibDefaultScale, scale));
-	_sphereCollision.r = IB_COLLISION_RADIUS * scale;
+	_ibSphereCollision.r = IB_COLLISION_RADIUS * scale;
 	return true;
 }
