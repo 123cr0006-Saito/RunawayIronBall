@@ -174,7 +174,7 @@ void Player::SetDamage()
 	// ダメージサウンドの再生
 	switch (_hp) {
 	case 0:
-		global._soundServer->DirectPlay("PL_Dead");
+		global._soundServer->DirectPlay("PL_GameOver");
 		break;
 	case 1:
 		global._soundServer->DirectPlay("PL_HealthAlert");
@@ -370,7 +370,6 @@ bool Player::Process(float camAngleY)
 			_rotationCnt = 0;
 			_forwardDir = _stickDir;
 			_animStatus = ANIM_STATE::HORISONTAL_SWING_03;
-			global._soundServer->DirectPlay("PL_LostStamina");
 		}
 	}
 
