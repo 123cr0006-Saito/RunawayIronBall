@@ -327,6 +327,8 @@ void CollisionManager::CheckColList()
 
 void CollisionManager::CheckHit(Player* player, EnemyBase* enemy)
 {
+	// “G‚ªŒ‚”jƒmƒbƒNƒoƒbƒNó‘Ô‚ÌŽž‚Í“–‚½‚è”»’è‚ðs‚í‚È‚¢
+	if (enemy->GetEnemyState() != ENEMYTYPE::DEAD) return;
 	Capsule pCol = player->GetCollision();
 	Sphere eCol = { enemy->GetCollisionPos(), enemy->GetR() };
 
