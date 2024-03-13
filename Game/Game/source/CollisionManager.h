@@ -19,8 +19,15 @@ public:
 	void Init();
 	void Process();
 
+	// ツリーへセルを追加、更新
 	void UpdateCell(Cell* cell);
-	void RemoveCellFromTree(Cell* cell);
+	// ツリーからセルを削除
+	void RemoveCell(Cell* cell);
+
+	// セルの削除予約
+	void ReserveRemovementCell(Cell* cell);
+	// 削除予約リストにあるセルを削除
+	void RemoveCellFromReserveList();
 
 
 	// デバッグ情報の表示
@@ -61,4 +68,7 @@ private:
 
 	// 当たり判定を行うセルのリスト
 	std::list<std::pair<Cell*, Cell*>> _colList;
+
+	// 削除予約リスト
+	std::list<Cell*> _reserveRemovementList;
 };

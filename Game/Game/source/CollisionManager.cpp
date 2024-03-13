@@ -30,6 +30,8 @@ CollisionManager::CollisionManager()
 	_segmentLength = 0.0f;
 	_treeSize = 0;
 	_tree.clear();
+	_colList.clear();
+	_reserveRemovementList.clear();
 }
 
 CollisionManager::~CollisionManager()
@@ -39,6 +41,7 @@ CollisionManager::~CollisionManager()
 	}
 	_tree.clear();
 	_colList.clear();
+	_reserveRemovementList.clear();
 }
 
 void CollisionManager::Init()
@@ -62,8 +65,10 @@ void CollisionManager::Process()
 	_colList.clear();
 	std::list<Cell*> colStack;
 	CreateColList(0, colStack);
-
 	CheckColList();
+
+	// íœ—\–ñƒŠƒXƒg‚É‚ ‚éƒZƒ‹‚ğíœ
+	RemoveCellFromReserveList();
 }
 
 void CollisionManager::UpdateCell(Cell* cell)
@@ -126,6 +131,7 @@ void CollisionManager::UpdateCell(Cell* cell)
 
 	case OBJ_TYPE::BLDG:
 	{
+			ReserveRemovementCell(cell);
 		BuildingBase* building = static_cast<BuildingBase*>(cell->_obj);
 		OBB obb = building->GetOBBCollision();
 
@@ -151,7 +157,7 @@ void CollisionManager::UpdateCell(Cell* cell)
 
 	treeIndex = CalcTreeIndex(pos1, pos2);
 	if (cell->_segment != _tree[treeIndex]) {
-		RemoveCellFromTree(cell);
+		RemoveCell(cell);
 		InsertCellIntoTree(treeIndex, cell);
 	}
 }
@@ -201,7 +207,7 @@ void CollisionManager::InsertCellIntoTree(unsigned int treeIndex, Cell* cell)
 	}
 }
 
-void CollisionManager::RemoveCellFromTree(Cell* cell)
+void CollisionManager::RemoveCell(Cell* cell)
 {
 	Cell* prevCell = cell->_prev;
 	Cell* nextCell = cell->_next;
@@ -215,6 +221,19 @@ void CollisionManager::RemoveCellFromTree(Cell* cell)
 	cell->_segment = nullptr;
 	cell->_prev = nullptr;
 	cell->_next = nullptr;
+}
+
+void CollisionManager::ReserveRemovementCell(Cell* cell)
+{
+	_reserveRemovementList.push_back(cell);
+}
+
+void CollisionManager::RemoveCellFromReserveList()
+{
+	for (auto& cell : _reserveRemovementList) {
+		RemoveCell(cell);
+	}
+	_reserveRemovementList.clear();
 }
 
 unsigned int CollisionManager::CheckArea(VECTOR pos)
