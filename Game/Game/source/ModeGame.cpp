@@ -394,20 +394,6 @@ bool ModeGame::Process() {
 					continue;
 				}
 			}
-
-			// プレイヤーの押出
-			VECTOR hitPos = VGet(0, 0, 0);
-			VECTOR pPos = _player->GetPosition();
-			float pPosY = pPos.y;
-			pPos.y = 0;
-			float pR = _player->GetCollision().r;
-			if (Collision3D::OBBSphereCol(houseObb, pPos, pR, &hitPos)) {
-				VECTOR dirVec = VSub(pPos, hitPos);
-				dirVec = VNorm(dirVec);
-				VECTOR movePos = VAdd(hitPos, VScale(dirVec, pR));
-				_player->SetPos(movePos);
-
-			}
 		}
 	}
 
@@ -481,57 +467,9 @@ bool ModeGame::Process() {
 				enemy->SetKnockBackAndDamage(vDir, ibPower);
 			}
 		}
-		// 敵とプレイヤーの当たり判定
-
-		Sphere eCol = { enemy->GetCollisionPos(), enemy->GetR() };
-		Capsule pCol = _player->GetCollision();
-		if (Collision3D::SphereCapsuleCol(eCol, pCol)) {
-			if (!isInvincible) {
-				_player->SetDamage();
-			}
-			VECTOR tmpPos = enemy->GetCollisionPos();
-			tmpPos.y = 0.0f;
-
-			VECTOR vDir = VSub(pCol.down_pos, tmpPos);
-			vDir.y = 0.0f;
-			float squareLength = VSquareSize(vDir);
-			if (squareLength >= 0.0001f) {
-				vDir = VNorm(vDir);
-				tmpPos = VAdd(tmpPos, VScale(vDir, eCol.r + pCol.r));
-				_player->SetPos(tmpPos);
-			}
-			enemy = nullptr;
-
-
-		}
 	}
 
-	//空間分割を考えていないので無駄が多いです。
-	for (int i = 0; i < enemySize; i++) {
-		EnemyBase* en = _enemyPool->GetEnemy(i);
-		if (!en) { continue; }
-		if (!en->GetUse()) { continue; }
 
-		VECTOR en1Pos = en->GetCollisionPos();
-		float en1R = en->GetR();
-		for (int j = 0; j < enemySize; j++) {
-			if (i == j) { continue; }
-
-			EnemyBase* en = _enemyPool->GetEnemy(j);
-			if (!en) { continue; }
-			if (!en->GetUse()) { continue; }
-
-			VECTOR en2Pos = en->GetCollisionPos();
-			float en2R = en->GetR();
-			VECTOR dirVec = VSub(en2Pos, en1Pos);
-			float length = VSize(dirVec);
-			if (length <= en1R + en2R) {
-				float pushLength = (en1R + en2R) - length;
-				dirVec = VNorm(dirVec);
-				en->SetExtrusionPos(VScale(dirVec, pushLength));
-			}
-		}
-	}
 
 
 
@@ -575,6 +513,8 @@ bool ModeGame::Process() {
 	float ratio = 1.0f - _camera->GetTargetDistance() / _camera->GetMaxLength();
 	_gaugeUI[0]->Process(box_vec, _player->GetStamina(), _player->GetStaminaMax(),ratio);
 	_gaugeUI[1]->Process(box_vec, 100, 100,ratio);
+
+	_collisionManager->Process();
 
 	_player->AnimationProcess();
 
