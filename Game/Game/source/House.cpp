@@ -31,11 +31,6 @@ void House::Process()
 	_breakObj->Process();
 }
 
-void House::Render()
-{
-	MV1DrawModel(_modelHandle);
-}
-
 void House::SetHit(VECTOR vDir)
 {
 	// ”j‰óˆ—‚ÌŠJn
