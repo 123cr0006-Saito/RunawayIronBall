@@ -10,11 +10,13 @@ _handleSize(handlesize)
 	for (int i = 0; i < _size; i++) {
 		_handle[i] = handle[i];
 	}
+	_animCount = 0;
 	_currentTime = GetNowCount();
+	_animCount = 0;
 };
 
 Gate::~Gate() {
-	delete _handle; _handle = nullptr;
+	delete[] _handle; _handle = nullptr;
 };
 
 void Gate::Process(){

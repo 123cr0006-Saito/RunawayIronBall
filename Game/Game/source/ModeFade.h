@@ -1,5 +1,7 @@
 #pragma once
 #include "appframe.h"
+#include "ModeGame.h"
+#include "ModeTest.h"
 
 class ModeFade : public ModeBase
 {

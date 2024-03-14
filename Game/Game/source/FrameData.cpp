@@ -8,7 +8,8 @@ FrameData::FrameData(){
 };
 
 FrameData::~FrameData() {
-
+	_frameData.clear();
+	_kindFrameData.clear();
 };
 
 bool FrameData::LoadData(std::string kindName, std::vector<std::pair<int, std::string>> frameData) {

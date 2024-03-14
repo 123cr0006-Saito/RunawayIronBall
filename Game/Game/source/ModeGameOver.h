@@ -12,5 +12,10 @@ protected:
 	XInput* _input;
 	std::unordered_map<std::string,int> _handle;
 	int _selectItem;
+
+	int _model;
+	int _modelFrame;
+	VECTOR _targetPos;
+	VECTOR _cameraPos;
 };
 

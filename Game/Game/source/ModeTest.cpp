@@ -20,15 +20,16 @@ bool ModeTest::Initialize() {
 	MV1SetPosition(_tile, VGet(0, 0, 0));
 
 	int playerModelHandle = MV1LoadModel("res/Character/cg_player_girl/cg_player_girl_TEST.mv1");
-	_player = new Player(playerModelHandle, VGet(0, 0, 0));
+	_player = NEW Player();
+	_player->Init(playerModelHandle, VGet(0, 0, 0));
 	_player->SetNextExp("res/JsonFile/ExpList.json");
-	_camera = new Camera(_player->GetPosition());
+	_camera = NEW Camera(_player->GetPosition());
 
-	_chain = new Chain();
+	_chain = NEW IronBall();
 	_chain->Init();
 
-	_classificationEffect = new ClassificationEffect();
-	_effectManeger = new EffectManeger();
+	_classificationEffect = NEW ClassificationEffect();
+	_effectManeger = NEW EffectManeger();
 
 	{
 		ResourceServer::LoadMultGraph("split", "res/TemporaryMaterials/split/test", ".png", 30, _effectSheet);
@@ -37,9 +38,9 @@ bool ModeTest::Initialize() {
 		ResourceServer::LoadEffekseerEffect("Stanp", "res/Effekseer/Attack/HorizontalThird.efkefc");
 	}
 
-	_suppression = new Suppression();
+	_suppression = NEW Suppression();
 
-	_enemyPool = new EnemyPool("res/JsonFile/EnemyData.json");
+	_enemyPool = NEW EnemyPool("res/JsonFile/EnemyData.json");
 
 	// オブジェクトのデータの読み込み
 	LoadObjectParam("BuildingtList.csv");
@@ -49,18 +50,19 @@ bool ModeTest::Initialize() {
 	int size = 100;
 	int heartHandle[3];
 	ResourceServer::LoadMultGraph("Heart","res/UI/UI_Heart", ".png", 3, heartHandle);
-	ui[0] = new UIHeart(VGet(20, 20, 0), 3,heartHandle,2);
-	ui[1] = new UIExpPoint(VGet(0, 150, 0), "res/TemporaryMaterials/UI_EXP_01.png");
+	ui[0] = NEW UIHeart(VGet(20, 20, 0), 3,heartHandle,2);
+	ui[1] = NEW UIExpPoint(VGet(0, 150, 0));
 	ResourceServer::LoadMultGraph("Suppressiongauge","res/TemporaryMaterials/SuppressionGauge/suppressiongauge", ".png", 3, heartHandle);
-	ui[2] = new UISuppressionGauge(VGet(500,100,0),3, heartHandle);
-	_gaugeUI[0] = new DrawGauge(0, 3, size, true);
-	_gaugeUI[1] = new DrawGauge(0, 3, size, true);
+	ui[2] = NEW UISuppressionGauge(VGet(500,100,0),3, heartHandle);
+	ui[3] = NEW UITimeLimit(VGet(1700, 100, 0));
+	_gaugeUI[0] = NEW DrawGauge(0, 3, size, true);
+	_gaugeUI[1] = NEW DrawGauge(0, 3, size, true);
 	_gaugeHandle[0] = ResourceServer::LoadGraph("Stamina03",_T("res/UI/UI_Stamina_03.png"));
 	_gaugeHandle[1] = ResourceServer::LoadGraph("Stamina02",_T("res/UI/UI_Stamina_02.png"));
 	_gaugeHandle[2] = ResourceServer::LoadGraph("Stamina01",_T("res/UI/UI_Stamina_01.png"));
 	_gaugeHandle[3] = ResourceServer::LoadGraph("Stamina04",_T("res/UI/UI_Stamina_04.png"));
-	_sVib = new ScreenVibration();
-	_gate = nullptr;
+	_sVib = NEW ScreenVibration();
+
 	
 
 	//global._soundServer->DirectPlay("Stage03");
@@ -70,9 +72,32 @@ bool ModeTest::Initialize() {
 
 bool ModeTest::Terminate() {
 	base::Terminate();
-	for (int i = 0; i < 2; i++) {
-	DeleteLightHandle(_lightHandle[i]);
+	delete _camera; _camera = nullptr;
+	delete _player; _player = nullptr;
+	delete _sVib; _sVib = nullptr;
+	delete _enemyPool; _enemyPool = nullptr;
+	delete _suppression; _suppression = nullptr;
+	delete _effectManeger; _effectManeger = nullptr;
+	delete _classificationEffect; _classificationEffect = nullptr;
+	delete _chain; _chain = nullptr;
+	_collisionManager = nullptr;
+
+	for (int i = 0; i < 4; i++) {
+		delete ui[i];
 	}
+
+	for (int i = 0; i < 2; i++) {
+		delete _gaugeUI[i];
+	}
+
+	for (auto&& house : _house) {
+		delete house;
+	}
+
+	for (auto&& tower : _tower) {
+		delete tower;
+	}
+
 	return true;
 }
 
@@ -134,7 +159,7 @@ bool ModeTest::LoadObjectParam(std::string fileName) {
 bool ModeTest::LoadStage(std::string fileName) {
 	myJson json(fileName);
 
-	_enemyPool->Create(json);
+	_enemyPool->Create(json,3);
 
 	//int objHandle = MV1LoadModel("res/Building/House/House_test_03.mv1");
 	//int objHandle = MV1LoadModel("res/Building/TrafficLight/cg_object_shingou.mv1");
@@ -148,7 +173,7 @@ bool ModeTest::LoadStage(std::string fileName) {
 		for (auto&& object : objectData) {
 			if (std::get<2>(nameList) == 1) {
 				// 壊れるオブジェクト
-				House* building = new House();
+				House* building = NEW House();
 				//building->Init(MV1DuplicateModel(objHandle), object._pos, object._rotate, object._scale);
 				_house.push_back(building);
 			}
@@ -169,7 +194,7 @@ bool ModeTest::LoadStage(std::string fileName) {
 		towerModelHandle[1] = ResourceServer::MV1LoadModel("Tower02", "res/Building/Tower/test_Tower_02.mv1");
 		towerModelHandle[2] = ResourceServer::MV1LoadModel("Tower03", "res/Building/Tower/test_Tower_03.mv1");
 
-		Tower* tower = new Tower();
+		Tower* tower = NEW Tower();
 		tower->Init(towerModelHandle, v, VGet(0, 0, 0), VGet(1, 1, 1));
 
 		_tower.push_back(tower);
@@ -313,7 +338,6 @@ bool ModeTest::Process() {
 
 	//}
 
-	_suppression->SubSuppression(1);
 
 	//for (int i = 0; i < _enemyPool->ENEMY_MAX_SIZE; i++) {
 	//	EnemyBase* enemy = _enemyPool->GetEnemy(i);
@@ -328,7 +352,7 @@ bool ModeTest::Process() {
 	//			VECTOR vDir = VSub(enPos, pPos);
 	//			vDir = VNorm(vDir);
 	//			enemy->SetKnockBack(vDir, ibPower);
-	//			BoardPolygon* effect = new BoardPolygon(VAdd(ibPos, VGet(0, 100, 0)), GetCameraBillboardMatrix(), 200, _effectSheet, 30, 1.0f / 60.0f * 1000.0f);
+	//			BoardPolygon* effect = NEW BoardPolygon(VAdd(ibPos, VGet(0, 100, 0)), GetCameraBillboardMatrix(), 200, _effectSheet, 30, 1.0f / 60.0f * 1000.0f);
 	//			_effectManeger->LoadEffect(effect);
 	//		}
 	//	}
@@ -389,7 +413,7 @@ bool ModeTest::Process() {
 	//if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_START)) {
 	//	_enemyPool->Init();
 	//	//_player->SetDamage();
-	//	ModeServer::GetInstance()->Add(new ModePause(), 10, "Pause");
+	//	ModeServer::GetInstance()->Add(NEW ModePause(), 10, "Pause");
 	//}
 
 	//if (XInput::GetInstance()->GetKey(XINPUT_BUTTON_Y)) {
@@ -417,53 +441,22 @@ bool ModeTest::Process() {
 	//if (_player->GetHP() <= 0) {
 	//	global._soundServer->BgmFadeOut(2000);
 	//	ModeServer::GetInstance()->Del(this);
-	//	ModeServer::GetInstance()->Add(new ModeGameOver(), 1, "gameover");
+	//	ModeServer::GetInstance()->Add(NEW ModeGameOver(), 1, "gameover");
 	//}
 
 	//VECTOR box_vec = ConvWorldPosToScreenPos(VAdd(_player->GetPosition(), VGet(0, 170, 0)));
 	//_gaugeUI[0]->Process(box_vec, _player->GetStamina(), _player->GetStaminaMax());
 	//_gaugeUI[1]->Process(box_vec, 100, 100);
 
-<<<<<<< HEAD
-	_player->AnimationProcess();
-	
-	_effectManeger->Update();
-	_camera->Process(_player->GetPosition(), _tile);
-
-	GateProcess();
-
-=======
 	//_player->AnimationProcess();
 	//
 	//_effectManeger->Update();
 	//_camera->Process(_player->GetPosition(), _tile);
->>>>>>> develop
 	return true;
 }
 
 
-bool ModeTest::GateProcess() {
-	if (_suppression->GetIsRatio()) {
-		if (_gate == nullptr) {
-			int handle[43];
-			ResourceServer::LoadDivGraph("Gate", "res/TemporaryMaterials/FX_Hole_2D00_sheet.png", 43, 16, 3, 1200, 1200, handle);
-			float time = 1.0f / 60.0f * 1000.0f;
-			_gate = new Gate(VGet(0, 300, 0), 300, handle, 43, time, 1000);
-		}
-		_gate->Process();
-
-		VECTOR gatePos = _gate->GetPos();
-		float gateR = _gate->GetR();
-        VECTOR pPos = _player->GetPosition();
-		float pR = _player->GetCollision().r;
-		VECTOR vDir = VSub(pPos, gatePos);
-		if (VSize(vDir) <= pR + gateR) {
-		
-		}
-	}
-	
-	return true;
-};
+bool GateProcess();// ゴールゲートの処理
 
 
 bool ModeTest::Render() {
@@ -479,7 +472,6 @@ bool ModeTest::Render() {
 	// 描画に使用するシャドウマップの設定を解除
 	SetUseShadowMap(0, -1);
 
-	
 
 	// ライト設定
 	SetUseLighting(TRUE);
@@ -547,17 +539,12 @@ bool ModeTest::Render() {
 	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
 		(*itr)->DrawDebugInfo();
 	}
-
-	if (_gate != nullptr) {
-		_gate->Draw();
-	}
-
 	SetUseZBuffer3D(FALSE);
 
 	//SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
-	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
-		ui[i]->Draw();
-	}
+	//for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
+	//	ui[i]->Draw();
+	//}
 
 	if (_player->GetStaminaRate() < 1.0f) {
 		int handleNum = floorf(_player->GetStaminaRate() * 100.0f / 33.4f);
@@ -565,13 +552,9 @@ bool ModeTest::Render() {
 		_gaugeUI[0]->Draw(_gaugeHandle[3]);
 	}
 
-
-
 	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
-	SetFontSize(62);
-	DrawFormatString(45, 200, GetColor(0, 0, 0), "%d", _player->GetInstance()->GetNowLevel() + 1);
-	SetFontSize(16);
+
 	//for (auto itr = _buildingBase.begin(); itr != _buildingBase.end(); ++itr) {
 	//	(*itr)->DrawDebugInfo();
 	//}

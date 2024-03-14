@@ -2,6 +2,7 @@
 #include "appframe.h"
 #include "EffekseerBase.h"
 #include "EffekseerPosSynchro.h"
+#include "EffekseerRotation.h"
 #include "EffectManeger.h"
 #include "BoardPolygon.h"
 #include "BoardPolygonDust.h"
@@ -19,6 +20,7 @@ namespace {
 	constexpr int Play_Effekseer_PC = 1005;
 	constexpr int Play_Effekseer_IC = 1006;
 	constexpr int Play_Effekseer_IU = 1007;
+	constexpr int Play_Effekseer_Rotation = 1008;
 }
 
 class ClassificationEffect
@@ -27,7 +29,7 @@ public:
 	ClassificationEffect();
 	~ClassificationEffect();
 	void SetClassification(CommandParam param);
-	void CreateEffeckseer(float handle, VECTOR* pos);
+	void CreateEffeckseer(float handle, VECTOR* pos,  float height = 0.0f, VECTOR rotation = VGet(0, 0, 0));
 	static ClassificationEffect* _instance;
 	static ClassificationEffect* GetInstance () { return _instance; }
 protected:

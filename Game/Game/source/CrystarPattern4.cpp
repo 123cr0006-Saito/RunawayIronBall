@@ -4,7 +4,7 @@ CrystarPattern4::CrystarPattern4() :EnemyBase::EnemyBase() {
 };
 
 CrystarPattern4::~CrystarPattern4() {
-	EnemyBase::~EnemyBase();
+
 };
 
 void CrystarPattern4::InheritanceInit() {
@@ -44,10 +44,8 @@ bool CrystarPattern4::ModeAttack() {
 };
 
 bool CrystarPattern4::ModeCoolTime() {
-	//プランナーさん側で変更できる場所　※秒数単位 
-	float moveCoolTime = 2.0f * 1000; //攻撃してからのクールタイム   
 	_attackDir += Math::DegToRad(15.0f);//毎フレーム30度増やす
-	if (GetNowCount() - _currentTime >= moveCoolTime) {
+	if (GetNowCount() - _currentTime >= _coolTime) {
 		_attackDir = 0.0f;
 		_currentTime = GetNowCount();
 		_modeState = ENEMYTYPE::DISCOVER;

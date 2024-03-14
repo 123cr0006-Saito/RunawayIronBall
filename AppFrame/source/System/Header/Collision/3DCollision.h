@@ -55,11 +55,11 @@ public:
 	
 	//OBBと球の当たり判定
 	static bool OBBSphereCol(OBB obb, VECTOR point, float r, VECTOR * hitPos = nullptr);
-	static bool OBBSphereCol(const OBB& obb, const Sphere& sphere);
+	static bool OBBSphereCol(const OBB& obb, const Sphere& sphere, VECTOR* hitPos = nullptr);
 
 	//OBBとカプセルの当たり判定
-	static bool OBBCapselCol(VECTOR line_start, VECTOR line_end, OBB obb, float r);
+	static bool OBBCapsuleCol(OBB obb, VECTOR line_start, VECTOR line_end, float r, VECTOR* hitPos = nullptr);
 	//オーバーロード
-	static bool OBBCapselCol(Capsule capsule, OBB obb);
+	static bool OBBCapsuleCol(OBB obb, Capsule capsule, VECTOR* hitPos = nullptr);
 
 };

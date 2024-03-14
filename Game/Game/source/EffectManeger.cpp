@@ -8,7 +8,11 @@ EffectManeger::EffectManeger(){
 };
 
 EffectManeger::~EffectManeger() {
-
+	_instance = nullptr;
+	for (auto&& effect : _effect) {
+		delete effect;
+	}
+	_effect.clear();
 };
 
 void EffectManeger::LoadEffect(EffectBase* effect) {
@@ -32,6 +36,7 @@ bool EffectManeger::Update(){
 
 bool EffectManeger::Render() {
 	//ビルボード描画中はライトの計算を一時停止  ライトと反対方向を向くと黒くなる
+	
 	SetUseLighting(FALSE);
 	for (auto itr = _effect.begin(); itr != _effect.end(); ++itr) {
 		(*itr)->Render();

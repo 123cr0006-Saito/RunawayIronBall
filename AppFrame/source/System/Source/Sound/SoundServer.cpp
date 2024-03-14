@@ -4,7 +4,8 @@
 SoundServer::SoundServer() {
 	_isUpdate = false;
 	_cntOneShot = 0;
-	_SeVolume = _BgmVolume = _VoiceVolume = 255;
+	_SeVolume = _VoiceVolume = 255;
+	_BgmVolume = 150;
 }
 SoundServer::~SoundServer() {
 	Clear();
@@ -14,7 +15,15 @@ void SoundServer::Clear() {
 	for (auto&& e : _v) {
 		delete e.second;
 	}
+	for (auto&& e : _vAdd) {
+		delete e.second;
+	}
+	for (auto&& e : _vDel) {
+		delete e.second;
+	}
 	_v.clear();
+	_vAdd.clear();
+	_vDel.clear();
 }
 
 void SoundServer::Add(SoundItemOneShot* snd) {

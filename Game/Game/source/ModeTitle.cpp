@@ -25,15 +25,15 @@ bool ModeTitle::Initialize() {
 	 _currentTime = 0;
 	 _IsBreak = false;
 	 _frameSize = MV1GetFrameNum(_modelHandle);
-	 _MoveVec = new VECTOR[_frameSize];
-	 _rotVec = new VECTOR[_frameSize];
+	 _MoveVec = NEW VECTOR[_frameSize];
+	 _rotVec = NEW VECTOR[_frameSize];
 
-	 VECTOR breakPos = VGet(1020, -1080, 0);//割れる一の中心点
+	 VECTOR breakPos = VGet(0,0, 0);//割れる一の中心点
 	 for (int i = 0; i < _frameSize; i++) {
 	
 		 VECTOR fPos = MV1GetFramePosition(_modelHandle, i);
 		 _MoveVec[i] = VSub(fPos, breakPos);
-		 _MoveVec[i] = VScale(_MoveVec[i], 0.03f);
+		 _MoveVec[i] = VScale(_MoveVec[i], 0.05f);
 		 _rotVec[i].x = rand() % 100 - 50;
 		 _rotVec[i].y = rand() % 100 - 50;
 		 _rotVec[i].z = rand() % 100 - 50;
@@ -41,27 +41,36 @@ bool ModeTitle::Initialize() {
 	 }
 
 	 MV1SetPosition(_modelHandle, VGet(0, 0, 0)); 
-	 MV1SetScale(_modelHandle, VScale(VGet(1, 1, 1), 0.1));
-	 SetCameraPositionAndTarget_UpVecY(VGet(0, 0, -1870), VGet(0, 0, 0));
+	// MV1SetScale(_modelHandle, VScale(VGet(1, 1, 1), 0.1));
+	 SetCameraPositionAndTarget_UpVecY(VGet(0, 0, -1850), VGet(0, 0, 0));
+
+	 // bgmの設定
 	 global._soundServer->DirectPlay("Title");
+
+	 // タイトルコール
+	 std::string voiceNum[1] = {"IB_Title"};
+	 global._soundServer->DirectPlay(voiceNum[0]);
+
 	return true;
 }
 
 bool ModeTitle::Terminate() {
 	base::Terminate();
-	delete _MoveVec;
-	delete _rotVec;
+	delete[] _MoveVec;
+	delete[] _rotVec;
+	_input = nullptr;
+	_handleMap.clear();
 	return true;
 }
 
 void ModeTitle::SelectGameStart() {
 	ModeServer::GetInstance()->Del(this);
-	ModeServer::GetInstance()->Add(new ModeScenario("Data/ScenarioData/Scenario01.csv"), 2, "Scenario");
-	ModeServer::GetInstance()->Add(new ModeGame(), 1, "Game");
+	ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario01.csv"), 2, "Scenario");
+	ModeServer::GetInstance()->Add(NEW ModeGame(), 1, "Game");
 };
 
 void ModeTitle::SelectOption() {
-	ModeServer::GetInstance()->Add(new ModePause(), 10, "Pause");
+	ModeServer::GetInstance()->Add(NEW ModePause(), 10, "Pause");
 };
 
 void ModeTitle::SelectGameEnd() {

@@ -32,7 +32,7 @@ void Tower::Init(std::array<int, 3> modelHandle, VECTOR startPos, VECTOR rotatio
 {
 	_pos = startPos;
 	for (int i = 0; i < 3; i++) {
-		TowerParts* tp = new TowerParts();
+		TowerParts* tp = NEW TowerParts();
 		VECTOR tmpPos = VGet(0.0f, 0.0f, 0.0f);
 		if (i == 0) {
 			tmpPos = startPos;

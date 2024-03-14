@@ -13,7 +13,7 @@ ScreenVibration::ScreenVibration() {
 };
 
 ScreenVibration::~ScreenVibration() {
-
+	_instance = nullptr;
 };
 
 void ScreenVibration::SetVibration(float x, float y, float time) {

@@ -34,7 +34,10 @@ UISuppressionGauge::UISuppressionGauge(VECTOR pos, int size, int* handle) : UIBa
 };
 
 UISuppressionGauge::~UISuppressionGauge() {
-		//“Á‚É‚È‚µ
+	_suppressionValue = nullptr;
+	if (_handle != nullptr) {
+		delete[] _handle; _handle = nullptr;
+	}
 };
 
 bool UISuppressionGauge::Process(){
