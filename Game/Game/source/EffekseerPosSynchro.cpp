@@ -35,7 +35,7 @@ _height(height)
 };
 
 EffekseerPosSynchro::~EffekseerPosSynchro() {
-	delete _pos;  _pos = nullptr;
+	//delete _pos;  _pos = nullptr;
 };
 
 bool EffekseerPosSynchro::Process() {
