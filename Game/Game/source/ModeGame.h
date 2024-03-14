@@ -93,8 +93,6 @@ protected:
 	std::vector<UnbreakableObject*> _uObj;
 	Floor* _floor;
 
-	int iii = 0;
-
 	int _skySphere;
 	int _tile;
 

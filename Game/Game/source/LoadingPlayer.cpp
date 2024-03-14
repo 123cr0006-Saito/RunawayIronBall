@@ -1,8 +1,8 @@
 #include "LoadingPlayer.h"
 LoadingPlayer::LoadingPlayer(){
 
-	//_modelHandle = ResourceServer::Load("Player", "res/Character/cg_player_girl/cg_player_girl_TEST_Ver.2.mv1");
-	_modelHandle = MV1LoadModel("res/Character/cg_player_girl/cg_player_girl_TEST_Ver.2.mv1");
+	_modelHandle = ResourceServer::Load("Player", "res/Character/cg_player_girl/cg_player_girl_TEST_Ver.2.mv1");
+	//_modelHandle = MV1LoadModel("res/Character/cg_player_girl/cg_player_girl_TEST_Ver.2.mv1");
 	float rotation = Math::DegToRad(90);// -x •ûŒü‚ÉŒü‚¯‚é
 	MV1SetRotationXYZ(_modelHandle, VGet(0,rotation,0));
 

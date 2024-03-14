@@ -70,7 +70,7 @@ void UIExpPoint::SetRatio() {
 	}
 
 	if (nowTime <= easingTime) {
-		if (_ratio >= 1.0f) {
+		if (_ratio > 1.0f) {
 			_nowRatio = 0.0f;
 			_nextRatio -= 1.0f;
 		}

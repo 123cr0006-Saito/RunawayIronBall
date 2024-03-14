@@ -35,7 +35,9 @@ _height(height)
 };
 
 EffekseerPosSynchro::~EffekseerPosSynchro() {
-	//delete _pos;  _pos = nullptr;
+	if (IsEffekseer3DEffectPlaying(_playingEffectHandle) != -1) {
+		StopEffekseer3DEffect(_playingEffectHandle);
+	}
 };
 
 bool EffekseerPosSynchro::Process() {

@@ -11,7 +11,7 @@ bool ModeGame::Initialize() {
 	_collisionManager->Init();
 
 	_gate = nullptr;
-	_stageNum = 2;
+	_stageNum = 1;
 	IsLoading = true;
 	LoadFunctionThread = nullptr;
 
@@ -39,7 +39,13 @@ bool ModeGame::Initialize() {
 
 
 	{
+
 		ResourceServer::LoadDivGraph("Gate", "res/TemporaryMaterials/FX_Hole_2D00_sheet.png", 43, 16, 3, 1200, 1200);
+		ResourceServer::Load("Player", "res/Character/cg_player_girl/cg_player_girl_TEST_Ver.2.mv1");
+		ResourceServer::Load("IronBall", "res/Character/Tetsuo/cg_tetsuo.mv1");
+		ResourceServer::Load("Chain", "res/Chain/chain02.mv1");
+		ResourceServer::Load("GirlTexWhite", "res/Character/cg_player_girl/FlickerTexture.png");
+
 		ResourceServer::Load("FX_3D_Level_Up", "res/Effekseer/FX_3D_Level_Up/FX_3D_Level_Up.efkefc");
 		ResourceServer::Load("Stanp", "res/Effekseer/Attack/HorizontalThird.efkefc");
 		ResourceServer::Load("Rotation", "res/Effekseer/FX_3D_Rotate_2/FX_3D_Rotate.efkefc");
@@ -305,12 +311,18 @@ bool ModeGame::StageMutation() {
 	DeleteObject();
 	// オブジェクトのデータの読み込み ファイル名は 1 から始まるので +1 する
 	std::string fileName = "Data/ObjectList/Stage_0" + std::to_string(_stageNum) + ".json";
-	iii++;
+
+	 // 非同期読み込み設定
+	SetUseASyncLoadFlag(true);
 	LoadStage(fileName);
+	SetUseASyncLoadFlag(false);
+	// ロード終了
+
 	IsLoading = true;
+
+	// ロードスレッドを終了
 	LoadFunctionThread->detach();
 	delete LoadFunctionThread; LoadFunctionThread = nullptr;
-	// ロード終了
 	return true;
 }
 
@@ -533,9 +545,8 @@ bool ModeGame::Process() {
 
 
 bool ModeGame::GateProcess() {
-	if (CheckHitKey(KEY_INPUT_A)) {
-		_suppression->SubSuppression(1);
-	}
+
+	//_suppression->SubSuppression(1);
 	if (_suppression->GetIsRatio() && _stageNum < 3 ) {
 		if (_gate == nullptr) {
 			int handle[43];
@@ -558,8 +569,9 @@ bool ModeGame::GateProcess() {
 			// 今はここにステージ繊維関数を追加
 			int time = 4 * 1000; // 4秒
 			_stageNum++;
-			LoadFunctionThread = NEW std::thread(&ModeGame::StageMutation, this);
 			ModeServer::GetInstance()->Add(NEW ModeLoading(&IsLoading), 100, "Loading");
+			LoadFunctionThread = NEW std::thread(&ModeGame::StageMutation, this);
+			
 		}
 	}
 	return true;

@@ -20,8 +20,11 @@ EffekseerRotation::EffekseerRotation(int handle, VECTOR* pos, float size, VECTOR
 };
 
 EffekseerRotation::~EffekseerRotation() {
-	//delete _pos;  _pos = nullptr;
-	//delete _rotation;  _rotation = nullptr;
+	for (int i = 0; i < _maxEffect; i++) {
+		if (IsEffekseer3DEffectPlaying(_playingEffectHandle[i]) != -1) {
+			StopEffekseer3DEffect(_playingEffectHandle[i]);
+		}
+	}
 };
 
 bool EffekseerRotation::Process() {
