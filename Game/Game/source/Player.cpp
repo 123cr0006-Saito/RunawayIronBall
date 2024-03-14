@@ -175,6 +175,7 @@ void Player::SetDamage()
 		global._soundServer->DirectPlay(voiceName);
 		break;
 	}
+	global._soundServer->DirectPlay("SE_Damage");
 }
 
 void Player::SetBone() {
@@ -601,6 +602,7 @@ bool Player::UpdateLevel()
 		int randomNum = rand() % 2 + 1; // ƒ‰ƒ“ƒ_ƒ€‚Å‰¹º‚ðÄ¶@1~2
 		std::string voiceName = "PL_LevelUp0" + std::to_string(randomNum);
 		global._soundServer->DirectPlay(voiceName);
+		global._soundServer->DirectPlay("SE_LevelUP");
 	}
 	return true;
 }

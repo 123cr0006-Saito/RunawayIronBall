@@ -518,6 +518,9 @@ void CollisionManager::CheckHitIbAndBldg(IronBall* ironBall, BuildingBase* build
 			VECTOR vDir = VSub(bCol.pos, player->GetPosition());
 			building->SetHit(vDir);
 			player->SetExp(50);
+
+			std::string soundName = building->GetObjectName();
+			global._soundServer->DirectPlay(soundName + "_Break");
 		}
 	}
 }
@@ -537,6 +540,7 @@ void CollisionManager::CheckHitChAndEn(IronBall* ironBall, EnemyBase* enemy)
 			VECTOR vDir = VSub(eCol.centerPos, pPos);
 			vDir = VNorm(vDir);
 			enemy->SetKnockBackAndDamage(vDir, player->GetPower());
+			global._soundServer->DirectPlay("SE_Hit01");
 		}
 	}
 }
