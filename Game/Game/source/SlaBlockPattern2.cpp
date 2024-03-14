@@ -197,7 +197,9 @@ bool SlaBlockPattern2::ModeKnockBack() {
 	float CoolTime = 3.0f * 1000; //d’¼ŽžŠÔ
 	VECTOR knockBackVecter = VScale(_knockBackDir, _knockBackSpeedFrame);
 	_pos = VAdd(_pos, knockBackVecter);
-	_knockBackSpeedFrame--;
+	if (_knockBackSpeedFrame > 0) {
+		_knockBackSpeedFrame--;
+	}
 	if (_knockBackSpeedFrame <= 0 && nowTime > CoolTime) {
 		_animState = ANIMSTATE::WALK;
 		_modeState = ENEMYTYPE::DISCOVER;
