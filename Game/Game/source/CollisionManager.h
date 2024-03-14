@@ -6,6 +6,7 @@ class CharacterBase;
 class Player;
 class EnemyBase;
 class BuildingBase;
+class IronBall;
 
 // XZ平面上で4分木空間分割を行い、当たり判定を行うクラス
 class CollisionManager
@@ -18,8 +19,11 @@ public:
 	void Init();
 	void Process();
 
+	// ツリーへセルを追加、更新
 	void UpdateCell(Cell* cell);
-	void RemoveCellFromTree(Cell* cell);
+	// セルの削除予約
+	void ReserveRemovementCell(Cell* cell);
+
 
 
 	// デバッグ情報の表示
@@ -34,11 +38,23 @@ private:
 	void CreateColList(unsigned int treeIndex, std::list<Cell*>& colStack);
 	void CheckColList();
 
+	// ツリーからセルを削除
+	void RemoveCell(Cell* cell);
+	// 削除予約リストにあるセルを削除
+	void RemoveCellFromReserveList();
+
 	// 当たり判定処理
 	void CheckHit(Player* player, EnemyBase* enemy);
 	void CheckHit(Player* player, BuildingBase* building);
 
+	void CheckHitIbAndEn(IronBall* ironBall, EnemyBase* enemy);
+	void CheckHitIbAndBldg(IronBall* ironBall, BuildingBase* building);
+
+	void CheckHitChAndEn(IronBall* ironBall, EnemyBase* enemy);
+	void CheckHitChAndBldg(IronBall* ironBall, BuildingBase* building);
+
 	void CheckHit(EnemyBase* enemy1, EnemyBase* enemy2);
+	void CheckHit(EnemyBase* enemy, BuildingBase* building);
 
 	static CollisionManager* _instance;
 
@@ -54,4 +70,7 @@ private:
 
 	// 当たり判定を行うセルのリスト
 	std::list<std::pair<Cell*, Cell*>> _colList;
+
+	// 削除予約リスト
+	std::list<Cell*> _reserveRemovementList;
 };

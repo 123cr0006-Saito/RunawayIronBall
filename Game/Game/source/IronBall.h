@@ -1,5 +1,6 @@
 #pragma once
 #include "appframe.h"
+#include "ObjectBase.h"
 
 #define CHAIN_MAX 12
 
@@ -8,10 +9,11 @@ enum IB_MOVE_STATE {
 	PUTTING_ON_SOCKET,
 	INTERPOLATION,
 };
-class Chain {
+class IronBall : public ObjectBase
+{
 public:
-	Chain();
-	~Chain();
+	IronBall();
+	~IronBall();
 
 	void Init();
 	void Process();
@@ -33,16 +35,21 @@ public:
 	bool GetEnabledAttackCollision() { return _enabledAttackCollision; }
 	void SetEnabledAttackCollision(bool state) { _enabledAttackCollision = state; }
 
-	Sphere GetCollision() { return _sphereCollision; }
-	void UpdateCollision();
+	Sphere GetIBCollision() { return _ibSphereCollision; }
+	Capsule GetChainCollision() { return _chainCapsuleCollision; }
+	void UpdateIBCollision();
+	void UpdateChainCollision();
 
 
-
-	// プレイヤー関連
+	// このオブジェクトを保有している親オブジェクト関連の関数
 	// プレイヤーのモデルハンドルをセット
 	void SetPlayerModelHandle(int handle);
 	void SetMoveState(IB_MOVE_STATE state) { _moveState = state; }
 
+	void SetParentInstance(ObjectBase* parent) { _parent = parent; }
+	ObjectBase* GetParentInstance() { return _parent; }
+	void SetParentPosPtr(VECTOR* pos) { _parentPos = pos; }
+	VECTOR* GetParentPosPtr() { return _parentPos; }
 
 	// デバッグ情報の表示
 	void DrawDebugInfo();
@@ -63,12 +70,23 @@ private:
 	VECTOR _iPos;
 	VECTOR _iForwardDir;
 
-	Sphere _sphereCollision;
+	// 鉄球部分の当たり判定
+	Sphere _ibSphereCollision;
+	// 鎖部分の当たり判定
+	Capsule _chainCapsuleCollision;
+	// 鎖部分の当たり判定をCollisionManagerに登録するためのCell
+	Cell* _chainCell;
 
 	VECTOR _ibDefaultScale;
 
 	// 配置ソケット
 	int _socketNo[3];
+
+
+	// このオブジェクトを保有している親のオブジェクトへのポインタ
+	ObjectBase* _parent;
+	// このオブジェクトを保有している親の座標へのポインタ
+	VECTOR* _parentPos;
 
 
 	int _attackAnimCnt;

@@ -11,8 +11,10 @@ namespace {
 	constexpr int STAGE_DIVISION = 5;
 }
 
-CollisionManager* CollisionManager::_instance = nullptr;
+// CellのOBJ_TYPEに関しては、ObjectBaseクラスの派生クラスのInit関数で設定する
+// CellのOBJ_TYPEによりObjectBaseクラスのどの派生クラスかの判別がつくので、ObjectBaseクラスから各派生クラスへのダウンキャストはstatic_castで行う
 
+CollisionManager* CollisionManager::_instance = nullptr;
 CollisionManager::CollisionManager()
 {
 #ifdef _DEBUG
@@ -28,6 +30,8 @@ CollisionManager::CollisionManager()
 	_segmentLength = 0.0f;
 	_treeSize = 0;
 	_tree.clear();
+	_colList.clear();
+	_reserveRemovementList.clear();
 }
 
 CollisionManager::~CollisionManager()
@@ -37,6 +41,7 @@ CollisionManager::~CollisionManager()
 	}
 	_tree.clear();
 	_colList.clear();
+	_reserveRemovementList.clear();
 }
 
 void CollisionManager::Init()
@@ -57,11 +62,18 @@ void CollisionManager::Init()
 
 void CollisionManager::Process()
 {
+	// 削除予約リストにあるセルを削除
+	// 各オブジェクトのProcess関数で当たり判定が無効化されたCellを削除する
+	RemoveCellFromReserveList();
+
 	_colList.clear();
 	std::list<Cell*> colStack;
 	CreateColList(0, colStack);
-
 	CheckColList();
+
+	// 削除予約リストにあるセルを削除
+	// 当たり判定処理の終了後に当たり判定が無効化されたCellを削除する
+	RemoveCellFromReserveList();
 }
 
 void CollisionManager::UpdateCell(Cell* cell)
@@ -85,7 +97,31 @@ void CollisionManager::UpdateCell(Cell* cell)
 	}
 	break;
 	case OBJ_TYPE::PL_IB:
-		break;
+	{
+		IronBall* ironBall = static_cast<IronBall*>(cell->_obj);
+		Sphere sphere = ironBall->GetIBCollision();
+		pos1 = VGet(sphere.centerPos.x - sphere.r, 0.0f, sphere.centerPos.z - sphere.r);
+		pos2 = VGet(sphere.centerPos.x + sphere.r, 0.0f, sphere.centerPos.z + sphere.r);
+	}
+	break;
+	case OBJ_TYPE::PL_IB_CHAIN:
+	{
+		IronBall* ironBall = static_cast<IronBall*>(cell->_obj);
+		Capsule capsule = ironBall->GetChainCollision();
+
+		pos1 = capsule.up_pos;
+		pos2 = capsule.up_pos;
+		// 最小座標
+		if(pos1.x > capsule.down_pos.x) pos1.x = capsule.down_pos.x;
+		if(pos1.z > capsule.down_pos.z) pos1.z = capsule.down_pos.z;
+		// 最大座標
+		if (pos2.x < capsule.down_pos.x) pos2.x = capsule.down_pos.x;
+		if (pos2.z < capsule.down_pos.z) pos2.z = capsule.down_pos.z;
+
+		pos1 = VGet(pos1.x - capsule.r, 0.0f, pos1.z - capsule.r);
+		pos2 = VGet(pos2.x + capsule.r, 0.0f, pos2.z + capsule.r);
+	}
+	break;
 	case OBJ_TYPE::EN:
 	{
 		EnemyBase* enemy = static_cast<EnemyBase*>(cell->_obj);
@@ -125,7 +161,7 @@ void CollisionManager::UpdateCell(Cell* cell)
 
 	treeIndex = CalcTreeIndex(pos1, pos2);
 	if (cell->_segment != _tree[treeIndex]) {
-		RemoveCellFromTree(cell);
+		RemoveCell(cell);
 		InsertCellIntoTree(treeIndex, cell);
 	}
 }
@@ -175,7 +211,7 @@ void CollisionManager::InsertCellIntoTree(unsigned int treeIndex, Cell* cell)
 	}
 }
 
-void CollisionManager::RemoveCellFromTree(Cell* cell)
+void CollisionManager::RemoveCell(Cell* cell)
 {
 	Cell* prevCell = cell->_prev;
 	Cell* nextCell = cell->_next;
@@ -191,11 +227,24 @@ void CollisionManager::RemoveCellFromTree(Cell* cell)
 	cell->_next = nullptr;
 }
 
+void CollisionManager::ReserveRemovementCell(Cell* cell)
+{
+	_reserveRemovementList.push_back(cell);
+}
+
+void CollisionManager::RemoveCellFromReserveList()
+{
+	for (auto& cell : _reserveRemovementList) {
+		RemoveCell(cell);
+	}
+	_reserveRemovementList.clear();
+}
+
 unsigned int CollisionManager::CheckArea(VECTOR pos)
 {
 	VECTOR p = VGet(pos.x - _offsetX, 0.0f, pos.z - _offsetZ);
-	p.x = Math::Clamp(0.0f, STAGE_LENGTH, p.x);
-	p.z = Math::Clamp(0.0f, STAGE_LENGTH, p.z);
+	p.x = Math::Clamp(0.0f, STAGE_LENGTH - 1, p.x);
+	p.z = Math::Clamp(0.0f, STAGE_LENGTH - 1, p.z);
 	unsigned int xIndex = static_cast<unsigned int>(p.x / _segmentLength);
 	unsigned int zIndex = static_cast<unsigned int>(p.z / _segmentLength);
 
@@ -232,6 +281,8 @@ void CollisionManager::CheckColList()
 
 			// オブジェクト2のタイプを判別
 			switch (cell2->_objType) {
+			case OBJ_TYPE::NONE:
+				break;
 			case OBJ_TYPE::EN:
 			{
 				EnemyBase* enemy = static_cast<EnemyBase*>(cell2->_obj);
@@ -246,17 +297,77 @@ void CollisionManager::CheckColList()
 			break;
 			}
 		}
-		break;
+		break; // end obj1 case OBJ_TYPE::PL
+
+		// オブジェクト1がプレイヤーの鉄球の場合
+		case OBJ_TYPE::PL_IB:
+		{
+			IronBall* ironBall = static_cast<IronBall*>(cell1->_obj);
+			switch (cell2->_objType) {
+			case OBJ_TYPE::NONE:
+				break;
+			case OBJ_TYPE::EN:
+			{
+				EnemyBase* enemy = static_cast<EnemyBase*>(cell2->_obj);
+				CheckHitIbAndEn(ironBall, enemy);
+			}
+			break;
+			case OBJ_TYPE::BLDG:
+			{
+				BuildingBase* building = static_cast<BuildingBase*>(cell2->_obj);
+				CheckHitIbAndBldg(ironBall, building);
+			}
+			break;
+			}
+		}
+		break; // end obj1 case OBJ_TYPE::PL_IB
+
+		// オブジェクト1がプレイヤーの鉄球の鎖の場合
+		case OBJ_TYPE::PL_IB_CHAIN:
+		{
+			IronBall* ironBall = static_cast<IronBall*>(cell1->_obj);
+			switch (cell2->_objType) {
+			case OBJ_TYPE::NONE:
+				break;
+			case OBJ_TYPE::EN:
+			{
+				EnemyBase* enemy = static_cast<EnemyBase*>(cell2->_obj);
+				CheckHitChAndEn(ironBall, enemy);
+			}
+			break;
+			case OBJ_TYPE::BLDG:
+			{
+				BuildingBase* building = static_cast<BuildingBase*>(cell2->_obj);
+				CheckHitChAndBldg(ironBall, building);
+			}
+			break;
+			}
+		}
+		break; // end obj1 case OBJ_TYPE::PL_IB_CHAIN
 
 		// オブジェクト1が敵の場合
 		case OBJ_TYPE::EN:
 		{
 			EnemyBase* enemy1 = static_cast<EnemyBase*>(cell1->_obj);
 			switch (cell2->_objType) {
+			case OBJ_TYPE::NONE:
+				break;
 			case OBJ_TYPE::PL:
 			{
 				Player* player = static_cast<Player*>(cell2->_obj);
 				CheckHit(player, enemy1);
+			}
+			break;
+			case OBJ_TYPE::PL_IB:
+			{
+				IronBall* ironBall = static_cast<IronBall*>(cell2->_obj);
+				CheckHitIbAndEn(ironBall, enemy1);
+			}
+			break;
+			case OBJ_TYPE::PL_IB_CHAIN:
+			{
+				IronBall* ironBall = static_cast<IronBall*>(cell2->_obj);
+				CheckHitChAndEn(ironBall, enemy1);
 			}
 			break;
 			case OBJ_TYPE::EN:
@@ -265,46 +376,78 @@ void CollisionManager::CheckColList()
 				CheckHit(enemy1, enemy2);
 			}
 			break;
+			case OBJ_TYPE::BLDG:
+			{
+				BuildingBase* building = static_cast<BuildingBase*>(cell2->_obj);
+				CheckHit(enemy1, building);
+			}
+			break;
+
+
 			}
 		}
-		break;
+		break; // end obj1 case OBJ_TYPE::EN
 
-
+		// オブジェクト1が建物の場合
 		case OBJ_TYPE::BLDG:
 		{
 			BuildingBase* building = static_cast<BuildingBase*>(cell1->_obj);
 			switch (cell2->_objType) {
+			case OBJ_TYPE::NONE:
+				break;
 			case OBJ_TYPE::PL:
 			{
 				Player* player = static_cast<Player*>(cell2->_obj);
 				CheckHit(player, building);
 			}
 			break;
+			case OBJ_TYPE::PL_IB:
+			{
+				IronBall* ironBall = static_cast<IronBall*>(cell2->_obj);
+				CheckHitIbAndBldg(ironBall, building);
 			}
+			break;
+			case OBJ_TYPE::PL_IB_CHAIN:
+			{
+				IronBall* ironBall = static_cast<IronBall*>(cell2->_obj);
+				CheckHitChAndBldg(ironBall, building);
+			}
+			break;
+			case OBJ_TYPE::EN:
+			{
+				EnemyBase* enemy = static_cast<EnemyBase*>(cell2->_obj);
+				CheckHit(enemy, building);
+			}
+			break;
+			}
+		} 
+		break; // end obj1 case OBJ_TYPE::BLDG
+
 		}
-		}
+
+
+
+
+
+
+		//int n = 0;
+		//for (int i = 0; i < treeSize; i++) {
+		//	Cell* cell = _tree[i]->_next;
+		//	while (cell != nullptr)
+		//	{
+		//		n++;
+		//		cell = cell->_next;
+		//	}
+		//}
+
+		//int m = 0;
 	}
-
-
-
-
-
-
-	//int n = 0;
-	//for (int i = 0; i < treeSize; i++) {
-	//	Cell* cell = _tree[i]->_next;
-	//	while (cell != nullptr)
-	//	{
-	//		n++;
-	//		cell = cell->_next;
-	//	}
-	//}
-
-	//int m = 0;
 }
 
 void CollisionManager::CheckHit(Player* player, EnemyBase* enemy)
 {
+	// 敵が撃破ノックバック状態の時は当たり判定を行わない
+	if (enemy->GetEnemyState() == ENEMYTYPE::DEAD) return;
 	Capsule pCol = player->GetCollision();
 	Sphere eCol = { enemy->GetCollisionPos(), enemy->GetR() };
 
@@ -343,6 +486,78 @@ void CollisionManager::CheckHit(Player* player, BuildingBase* building)
 	}
 }
 
+void CollisionManager::CheckHitIbAndEn(IronBall* ironBall, EnemyBase* enemy)
+{
+	bool isAttackState = ironBall->GetEnabledAttackCollision();
+	if (isAttackState) {
+		Sphere ibCol = ironBall->GetIBCollision();
+		Sphere eCol = { enemy->GetCollisionPos(), enemy->GetR() };
+
+		if (Collision3D::SphereCol(ibCol.centerPos, ibCol.r, eCol.centerPos, eCol.r)) {
+			ObjectBase* obj = ironBall->GetParentInstance();
+			Player* player = static_cast<Player*>(obj);
+
+			VECTOR pPos = player->GetPosition();
+			VECTOR vDir = VSub(eCol.centerPos, pPos);
+			vDir = VNorm(vDir);
+			enemy->SetKnockBackAndDamage(vDir, player->GetPower());
+		}
+	}
+}
+
+void CollisionManager::CheckHitIbAndBldg(IronBall* ironBall, BuildingBase* building)
+{
+	bool isAttackState = ironBall->GetEnabledAttackCollision();
+	if (building->GetUseCollision() && building->GetCanBreak() && isAttackState) {
+		Sphere ibCol = ironBall->GetIBCollision();
+		OBB bCol = building->GetOBBCollision();
+
+		if (Collision3D::OBBSphereCol(bCol, ibCol)) {
+			Player* player = static_cast<Player*>(ironBall->GetParentInstance());
+			VECTOR vDir = VSub(bCol.pos, player->GetPosition());
+			building->SetHit(vDir);
+			player->SetExp(50);
+			global._soundServer->DirectPlay("OBJ_RockBreak");
+		}
+	}
+}
+
+void CollisionManager::CheckHitChAndEn(IronBall* ironBall, EnemyBase* enemy)
+{
+	bool isAttackState = ironBall->GetEnabledAttackCollision();
+	if (isAttackState) {
+		Capsule cCol = ironBall->GetChainCollision();
+		Sphere eCol = { enemy->GetCollisionPos(), enemy->GetR() };
+
+		if (Collision3D::SphereCapsuleCol(eCol, cCol)) {
+			ObjectBase* obj = ironBall->GetParentInstance();
+			Player* player = static_cast<Player*>(obj);
+
+			VECTOR pPos = player->GetPosition();
+			VECTOR vDir = VSub(eCol.centerPos, pPos);
+			vDir = VNorm(vDir);
+			enemy->SetKnockBackAndDamage(vDir, player->GetPower());
+		}
+	}
+}
+
+void CollisionManager::CheckHitChAndBldg(IronBall* ironBall, BuildingBase* building)
+{
+	bool isAttackState = ironBall->GetEnabledAttackCollision();
+	if (building->GetUseCollision() && building->GetCanBreak() && isAttackState) {
+		Capsule cCol = ironBall->GetChainCollision();
+		OBB bCol = building->GetOBBCollision();
+
+		if (Collision3D::OBBCapsuleCol(bCol, cCol)) {
+			Player* player = static_cast<Player*>(ironBall->GetParentInstance());
+			VECTOR vDir = VSub(bCol.pos, player->GetPosition());
+			building->SetHit(vDir);
+			player->SetExp(50);
+			global._soundServer->DirectPlay("OBJ_RockBreak");
+		}
+	}
+}
+
 void CollisionManager::CheckHit(EnemyBase* enemy1, EnemyBase* enemy2)
 {
 	VECTOR en1Pos = enemy1->GetCollisionPos();
@@ -356,6 +571,34 @@ void CollisionManager::CheckHit(EnemyBase* enemy1, EnemyBase* enemy2)
 		float length = sqrt(sqLength);
 		vDir = VScale(vDir, 1.0f / length);
 		enemy2->SetExtrusionPos(VScale(vDir, (en1R + en2R) - length));
+	}
+}
+
+void CollisionManager::CheckHit(EnemyBase* enemy, BuildingBase* building)
+{
+	// エネミーが撃破ノックバック状態、かつ、建物が破壊不可である場合は処理を行わない
+	if (enemy->GetEnemyState() == ENEMYTYPE::DEAD && building->GetCanBreak() == false) return;
+	Sphere eCol = { enemy->GetCollisionPos(), enemy->GetR() };
+	OBB bCol = building->GetOBBCollision();
+	VECTOR hitPos = VGet(0.0f, 0.0f, 0.0f);
+
+	if (Collision3D::OBBSphereCol(bCol, eCol, &hitPos)) {
+		// エネミーが撃破ノックバック状態の時、建物にぶつかったら破壊する
+		if (enemy->GetEnemyState() == ENEMYTYPE::DEAD) {
+			VECTOR vDir = VSub(bCol.pos, eCol.centerPos);
+			building->SetHit(vDir);
+			global._soundServer->DirectPlay("OBJ_RockBreak");
+		}
+		else {
+			// 敵の押し出し処理
+			VECTOR vDir = VSub(eCol.centerPos, hitPos);
+			vDir.y = 0.0f;
+			vDir = VNorm(vDir);
+
+			hitPos.y = 0.0f;
+			VECTOR tmpPos = VAdd(hitPos, VScale(vDir, eCol.r));
+			enemy->SetPos(tmpPos);
+		}
 	}
 }
 
@@ -439,6 +682,14 @@ void CollisionManager::DrawAreaIndex()
 			case OBJ_TYPE::PL:
 				obj = cell->_obj;
 				worldPos = static_cast<Player*>(obj)->GetPosition();
+				break;
+			case OBJ_TYPE::PL_IB:
+				obj = cell->_obj;
+				worldPos = static_cast<IronBall*>(obj)->GetBallPosition();
+				break;
+			case OBJ_TYPE::PL_IB_CHAIN:
+				obj = cell->_obj;
+				worldPos = static_cast<IronBall*>(obj)->GetChainCollision().up_pos;
 				break;
 			case OBJ_TYPE::EN:
 				obj = cell->_obj;

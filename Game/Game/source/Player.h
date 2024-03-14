@@ -4,7 +4,7 @@
 #include "bone.h"
 #include "myJson.h"
 
-#include "Chain.h"
+#include "IronBall.h"
 
 #include "AnimationManager.h"
 #include "AnimationItem.h"
@@ -97,9 +97,9 @@ public:
 	void UpdateCollision();
 
 	Capsule GetCollision() { return _capsuleCollision; };
-	Sphere GetIBCollision() { return _chain->GetCollision(); };
-	VECTOR GetIBPos() { return _chain->GetBallPosition(); };
-	void SetIBPos(VECTOR pos) { _chain->SetBallPosition(pos); };
+	Sphere GetIBCollision() { return _ironBall->GetIBCollision(); };
+	VECTOR GetIBPos() { return _ironBall->GetBallPosition(); };
+	void SetIBPos(VECTOR pos) { _ironBall->SetBallPosition(pos); };
 
 	void SetBlastOffPower(VECTOR dir, float power) { _blastOffDir = dir; _blastOffPower = power; };
 
@@ -107,11 +107,11 @@ public:
 
 	VECTOR GetRightHandPos();
 
-	VECTOR* GetIBPosPtr() { return _chain->GetBallPosPtr(); }
+	VECTOR* GetIBPosPtr() { return _ironBall->GetBallPosPtr(); }
 
 
 	bool GetAttackState() { return _isAttackState; }
-	bool GetEnabledIBAttackCollision() { return _chain->GetEnabledAttackCollision(); }
+	bool GetEnabledIBAttackCollision() { return _ironBall->GetEnabledAttackCollision(); }
 
 	// フレームデータのコマンドをチェックする
 	void CheckFrameDataCommand();
@@ -142,8 +142,10 @@ private:
 	float _stamina;
 	// スタミナの最大値
 	float _staminaMax;
-	// スタミナを消費中かどうか
-	bool _isConsumingStamina;
+	// スタミナを回復中かどうか（最大まで回復しているときもtrue）
+	bool _isRecoveringStamina;
+	// スタミナが減少してから回復が始まるまでのフレーム数
+	int _cntToStartRecoveryStamina;
 	// スタミナが尽きたかどうか
 	bool _isTired;
 	// スタミナの1フレームあたりの回復速度
@@ -183,7 +185,7 @@ private:
 	FrameData* _frameData;
 
 	// 鉄球
-	Chain* _chain;
+	IronBall* _ironBall;
 
 	// 当たり判定
 	Capsule _capsuleCollision;

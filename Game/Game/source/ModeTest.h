@@ -5,7 +5,7 @@
 
 #include "Camera.h"
 #include "Player.h"
-#include "Chain.h"
+#include "IronBall.h"
 
 #include "UIBase.h"
 #include "UIExpPoint.h"
@@ -57,7 +57,7 @@ protected:
 	Camera* _camera;
 	Player* _player;
 
-	Chain* _chain;
+	IronBall* _chain;
 	UIBase* ui[4];
 	DrawGauge* _gaugeUI[2];
 	int _gaugeHandle[4];// 0フレーム 3ゲージ

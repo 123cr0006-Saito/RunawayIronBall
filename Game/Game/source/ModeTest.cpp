@@ -25,7 +25,7 @@ bool ModeTest::Initialize() {
 	_player->SetNextExp("res/JsonFile/ExpList.json");
 	_camera = NEW Camera(_player->GetPosition());
 
-	_chain = NEW Chain();
+	_chain = NEW IronBall();
 	_chain->Init();
 
 	_classificationEffect = NEW ClassificationEffect();

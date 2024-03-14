@@ -37,6 +37,8 @@ namespace {
 	constexpr float STAMINA_MAX = 480.0f;
 	// 回転攻撃の1フレームあたりのスタミナ消費量
 	constexpr float ROTAION_SWING_STAMINA_DECREASE = 1.0f;
+	// 回避行動のスタミナ消費量
+	constexpr float AVOIDANCE_STAMINA_DECREASE = STAMINA_MAX / 6.0f;
 	// スタミナが0になってから最大値まで回復するのにかかる時間
 	constexpr float STANIMA_RECOVERY_TIME = 120.0f;
 
@@ -66,7 +68,8 @@ Player::Player()
 
 	_stamina = 0;
 	_staminaMax = 0;
-	_isConsumingStamina = false;
+	_isRecoveringStamina = true;
+	_cntToStartRecoveryStamina = 0;
 	_isTired = false;
 	_staminaRecoverySpeed = 0;
 
@@ -86,7 +89,7 @@ Player::Player()
 	_animStatus = ANIM_STATE::IDLE;
 	_frameData = nullptr;
 
-	_chain = nullptr;
+	_ironBall = nullptr;
 
 	_capsuleCollision.r = 0.0f;
 	_capsuleCollision.up = 0.0f;
@@ -124,7 +127,7 @@ Player::~Player()
 	delete _animManager;
 	delete _frameData;
 	delete _modelColor;
-	delete _chain;
+	delete _ironBall;
 
 	for (int i = 0; i < 2; i++) {
 		delete _bone[i];
@@ -231,7 +234,7 @@ bool Player::Init(int modelHandle, VECTOR pos)
 
 	_stamina = STAMINA_MAX;
 	_staminaMax = STAMINA_MAX;
-	_isConsumingStamina = false;
+	_isRecoveringStamina = true;
 	_isTired = false;
 	_staminaRecoverySpeed = _staminaMax / STANIMA_RECOVERY_TIME;
 
@@ -261,11 +264,13 @@ bool Player::Init(int modelHandle, VECTOR pos)
 
 
 	// 鉄球の初期化
-	_chain = NEW Chain();
-	_chain->Init();
-	_chain->SetPlayerModelHandle(_modelHandle);
+	_ironBall = NEW IronBall();
+	_ironBall->Init();
+	_ironBall->SetParentInstance(this);
+	_ironBall->SetParentPosPtr(&_pos);
+	_ironBall->SetPlayerModelHandle(_modelHandle);
 	// 鉄球の移動状態を「追従」に設定
-	_chain->SetMoveState(IB_MOVE_STATE::FOLLOWING);
+	_ironBall->SetMoveState(IB_MOVE_STATE::FOLLOWING);
 
 	// 当たり判定の初期設定
 	_capsuleCollision.r = 30.0f;
@@ -419,7 +424,7 @@ bool Player::Process(float camAngleY)
 	}
 
 	// スタミナの更新
-	if (!_isConsumingStamina) {
+	if (_isRecoveringStamina) {
 		_staminaRecoverySpeed = STAMINA_MAX / STANIMA_RECOVERY_TIME;
 		_stamina += _staminaRecoverySpeed;
 		if (_stamina > STAMINA_MAX) {
@@ -430,8 +435,9 @@ bool Player::Process(float camAngleY)
 	}
 
 	if (_animStatus == ANIM_STATE::ROTATION_SWING) {
+		_isRecoveringStamina = false;
 		_stamina -= ROTAION_SWING_STAMINA_DECREASE;
-		_isConsumingStamina = true;
+		_cntToStartRecoveryStamina = 90;
 		if (_stamina < 0.0f) {
 			_stamina = 0.0f;
 			_isTired = true;
@@ -442,9 +448,15 @@ bool Player::Process(float camAngleY)
 		}
 	}
 
-	if(!_isAttackState ){
-		_isConsumingStamina = false;
+	if (_cntToStartRecoveryStamina > 0) {
+		_cntToStartRecoveryStamina -= 1;
+		if (_cntToStartRecoveryStamina <= 0) {
+			_isRecoveringStamina = true;
+		}
 	}
+	//if(!_isAttackState ){
+	//	_isRecoveringStamina = false;
+	//}
 
 	// 攻撃状態の更新
 	if (_isTired == false && _animStatus != ANIM_STATE::AVOIDANCE && _animStatus != ANIM_STATE::HIT) {
@@ -476,7 +488,7 @@ bool Player::Process(float camAngleY)
 		}
 	}
 
-	if (_canMotionCancel) {
+	if (!_isTired && _canMotionCancel) {
 		// 回避
 		if (_input->GetTrg(XINPUT_BUTTON_A)) {
 			if (!_isSwinging || _isRotationSwinging) {
@@ -485,6 +497,14 @@ bool Player::Process(float camAngleY)
 				_forwardDir = _stickDir;
 				_rotationCnt = 0;
 				_idleFightingRemainingCnt = 240;
+
+				_isRecoveringStamina = false;
+				_cntToStartRecoveryStamina = 90;
+				_stamina -= AVOIDANCE_STAMINA_DECREASE;
+				if (_stamina < 0.0f) {
+					_stamina = 0.0f;
+					_isTired = true;
+				}
 			}
 		}
 	}
@@ -510,7 +530,7 @@ bool Player::Process(float camAngleY)
 	
 
 
-	_chain->Process();
+	_ironBall->Process();
 
 	_collisionManager->UpdateCell(_cell);
 
@@ -540,7 +560,7 @@ bool Player::BlastOffProcess()
 bool Player::Render()
 {
 	CharacterBase::Render();
-	_chain->Render();
+	_ironBall->Render();
 	return true;
 }
 
@@ -569,7 +589,7 @@ void Player::SetPowerScale(std::string FileName)
 bool Player::UpdateLevel()
 {
 	_power = _powerAndScale[_nowLevel].first;
-	_chain->UpdateLevel(_powerAndScale[_nowLevel].second);
+	_ironBall->UpdateLevel(_powerAndScale[_nowLevel].second);
 	if (_nowLevel > 0) {
 		// レベルアップエフェクト
 		float size = 5.0f * _powerAndScale[_nowLevel].second;
@@ -685,16 +705,16 @@ void Player::CheckFrameDataCommand()
 			break;
 
 		case C_P_ENABLE_IB_ATTACK_COLLISION:
-			_chain->SetEnabledAttackCollision(static_cast<bool>(param));
+			_ironBall->SetEnabledAttackCollision(static_cast<bool>(param));
 			break;
 		case C_P_ENABLE_IB_FOLLOWING_MODE:
 		{
 			IB_MOVE_STATE nextState = static_cast<int>(param) == 0 ? IB_MOVE_STATE::PUTTING_ON_SOCKET : IB_MOVE_STATE::FOLLOWING;
-			_chain->SetMoveState(nextState);
+			_ironBall->SetMoveState(nextState);
 			break;
 		}
 		case C_P_ENABLE_IB_INTERPOLATION:
-			_chain->SetMoveState(IB_MOVE_STATE::INTERPOLATION);
+			_ironBall->SetMoveState(IB_MOVE_STATE::INTERPOLATION);
 			break;
 		}
 	}
@@ -720,5 +740,5 @@ void Player::DrawDebugInfo()
 
 
 	_animManager->DrawDebugInfo();
-	_chain->DrawDebugInfo();
+	_ironBall->DrawDebugInfo();
 }
