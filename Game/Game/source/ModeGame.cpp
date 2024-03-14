@@ -391,6 +391,9 @@ bool ModeGame::Process() {
 				if (Collision3D::OBBSphereCol(houseObb, tpSphere)) {
 					VECTOR vDir = VSub(houseObb.pos, tpSphere.centerPos);
 					(*itr)->SetHit(vDir);
+
+					std::string soundName = (*itr)->GetObjectName();
+					global._soundServer->DirectPlay(soundName + "_Break");
 					continue;
 				}
 			}

@@ -34,8 +34,8 @@ bool Global::SoundLoad() {
 	_soundServer->Add("House_Iron_Hit", new SoundItemSE("Sound/SE/Object/SE_HO_Iron_Hit.wav"));
 	_soundServer->Add("House_Rock_Break", new SoundItemSE("Sound/SE/Object/SE_HO_Rock_Break.wav"));
 	_soundServer->Add("House_Rock_Hit", new SoundItemSE("Sound/SE/Object/SE_HO_Rock_Hit.wav"));
-	_soundServer->Add("CG_OBJ_Pole_Break", new SoundItemSE("Sound/SE/Object/SE_HO_Glass_Break.wav"));
-	_soundServer->Add("CG_OBJ_Pole_Hit", new SoundItemSE("Sound/SE/Object/SE_HO_Glass_Hit.wav"));
+	_soundServer->Add("CG_OBJ_Pole_Break", new SoundItemSE("Sound/SE/Object/SE_HO_Iron_Break.wav"));
+	_soundServer->Add("CG_OBJ_Pole_Hit", new SoundItemSE("Sound/SE/Object/SE_HO_Iron_Hit.wav"));
 	_soundServer->Add("CG_OBJ_Traffic_Light_Break", new SoundItemSE("Sound/SE/Object/SE_HO_Iron_Break.wav"));
 	_soundServer->Add("CG_OBJ_Traffic_Light_Hit", new SoundItemSE("Sound/SE/Object/SE_HO_Iron_Hit.wav"));
 	_soundServer->Add("CG_OBJ_Long_House_Break", new SoundItemSE("Sound/SE/Object/SE_HO_Rock_Break.wav"));
