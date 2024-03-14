@@ -1,7 +1,7 @@
 #pragma once
 #include "appframe.h"
 #include "RotationCamera.h"
-#include "ModeFade.h"
+#include "ModeFadeComeBack.h"
 class ModeRotationCamera : public ModeBase
 {
 	typedef ModeBase base;

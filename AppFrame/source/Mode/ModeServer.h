@@ -24,7 +24,7 @@ public:
 	const char *GetName(ModeBase* mode);
 	const char *GetName(int uid);
 	void Clear();
-	bool Search(const char *name);
+	bool Search(std::string name);
 	int	LayerTop() { return INT32_MAX; }
 
 	static bool modeSort(const ModeBase *x, const ModeBase *y) {

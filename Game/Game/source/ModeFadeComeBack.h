@@ -1,13 +1,16 @@
 #pragma once
 #include "ModeFade.h"
+
 class ModeFadeComeBack : public ModeFade
 {
-	ModeFadeComeBack(int Time);
+public:
+	ModeFadeComeBack(int Time, ModeBase* mode);
 	virtual bool Initialize();
 	virtual bool Terminate();
-	virtual bool Process();
-	virtual bool Render();
+	virtual bool Process()override;
+	virtual bool Render()override;
 protected:
 	int _fadeEnd, _fadeStart;
+	ModeBase* _deleteMode;
 };
 

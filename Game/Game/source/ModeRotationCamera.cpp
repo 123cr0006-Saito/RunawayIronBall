@@ -21,8 +21,10 @@ bool ModeRotationCamera::Process() {
 	int endTime = 10 * 1000;
 	int nowTime = GetNowCount() - _currentTime;
 	if (nowTime > endTime) {
-		ModeServer::GetInstance()->Add(NEW ModeFade(4000, true),100,"Fade");
-		ModeServer::GetInstance()->Del(this);
+		bool a = ModeServer::GetInstance()->Search("Fade");
+		if (!a) {
+			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(4000, this), 100, "Fade");
+		}
 	}
 	return true;
 };

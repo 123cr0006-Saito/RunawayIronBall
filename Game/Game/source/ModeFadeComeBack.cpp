@@ -1,7 +1,8 @@
 #include "ModeFadeComeBack.h"
-ModeFadeComeBack::ModeFadeComeBack(int Time) :ModeFade(Time,false){
+ModeFadeComeBack::ModeFadeComeBack(int Time, ModeBase* mode) :ModeFade(Time,false){
 	_fadeEnd = 255;
     _fadeStart = 0;
+	_deleteMode = mode;
 };
 
 bool ModeFadeComeBack::Initialize(){
@@ -11,24 +12,29 @@ bool ModeFadeComeBack::Initialize(){
 
 bool ModeFadeComeBack::Terminate(){
 	base::Terminate();
+	_deleteMode = nullptr;
 	return true;
 };
 
 bool ModeFadeComeBack::Process(){
 	base::Process();
-	ModeServer::GetInstance()->SkipProcessUnderLayer();
+	//ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->PauseProcessUnderLayer();
+	int nowTime = GetNowCount() - _currentTime;
 
-	_alphaFade = Easing::Linear(GetNowCount() - _currentTime, _fadeStart, _fadeEnd, _fadeTime);
+	_alphaFade = Easing::Linear(nowTime, _fadeStart, _fadeEnd, _fadeTime);
 
-	if (_alphaFade >= _fadeEnd) {
+	if (_alphaFade >= 255) {
 		// 値の入れ替え
+		_alphaFade = _fadeEnd;
+
 		int temp = _fadeStart;
         _fadeStart = _fadeEnd;
         _fadeEnd = temp;
 		_currentTime = GetNowCount();
+		ModeServer::GetInstance()->Del(_deleteMode);
 	}
-	else if (_alphaFade <= _fadeEnd) {
+	else if (_alphaFade < 0) {
 		// フェード終了 削除
 		ModeServer::GetInstance()->Del(this);
 	}
