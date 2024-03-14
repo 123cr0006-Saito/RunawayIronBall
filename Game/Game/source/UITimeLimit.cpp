@@ -8,7 +8,7 @@ UITimeLimit::UITimeLimit(VECTOR pos,VECTOR numPos, int size, int* numhandle, int
 
 UITimeLimit::UITimeLimit(VECTOR pos) :UIBase(pos){
 	_timeLimit = TimeLimit::GetInstance();
-	_numPos = VAdd(pos,VGet(160,90,0));
+	_numPos = VAdd(pos,VGet(190,110,0));
 
 	_handle = new int[10];
 	ResourceServer::LoadMultGraph("TimeNum","res/UI/UITime/Ui_Time",".png",10,_handle);
@@ -17,7 +17,10 @@ UITimeLimit::UITimeLimit(VECTOR pos) :UIBase(pos){
 };
 
 UITimeLimit::~UITimeLimit(){
-	// “Á‚É‚È‚µ
+	_timeLimit = nullptr;
+	if (_handle != nullptr) {
+		delete[] _handle; _handle = nullptr;
+	}
 };
 
 bool UITimeLimit::Process(){

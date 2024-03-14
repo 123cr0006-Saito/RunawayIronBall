@@ -21,13 +21,13 @@ LoadingChain::LoadingChain() {
 };
 
 LoadingChain::~LoadingChain() {
-	delete _modelColor;
+	delete _modelColor; _modelColor = nullptr;
 	MV1DeleteModel(_cModelHandle);
 	MV1DeleteModel(_iModelHandle);
 };
 
 void LoadingChain::Init(){
-	_cModelHandle = MV1LoadModel("res/Chain/chain02.mv1");
+	_cModelHandle = ResourceServer::Load("Chain","res/Chain/chain02.mv1");
 	_cPos[0] = VGet(0.0f, 0.0f, 0.0f);
 	MV1SetPosition(_cModelHandle, _cPos[0]);
 	MV1SetScale(_cModelHandle, VGet(0.5f, 0.5f, 0.5f));
@@ -36,7 +36,7 @@ void LoadingChain::Init(){
 		_cPos[i] = VAdd(_cPos[i - 1], VGet(100.0f, 0.0f, 0.0f));
 	}
 
-	_iModelHandle = MV1LoadModel("res/Character/Tetsuo/cg_tetsuo.mv1");
+	_iModelHandle = ResourceServer::Load("IronBall", "res/Character/Tetsuo/cg_tetsuo.mv1");
 	_iPos = VAdd(_cPos[Chain_Num - 1], VGet(0.0f, 10.0f, 0.0f));
 	_ibDefaultScale = VGet(2.5f, 2.5f, 2.5f);
 	MV1SetScale(_iModelHandle, _ibDefaultScale);

@@ -22,7 +22,7 @@ int WINAPI WinMain(
 ) {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);		// プログラム終了時メモリリークを検出する
 
-	SetBackgroundColor(16, 64, 88);
+	SetBackgroundColor(0,0,0);
 
 	ApplicationBase *appBase = ApplicationBase::GetInstance();
 	if (!appBase) { return 0; }

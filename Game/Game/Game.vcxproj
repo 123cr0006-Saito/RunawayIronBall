@@ -155,6 +155,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\RotationCamera.cpp" />
+    <ClCompile Include="source\CameraBase.cpp" />
+    <ClCompile Include="source\Heart.cpp" />
     <ClCompile Include="source\EffekseerRotation.cpp" />
     <ClCompile Include="source\EffectBase.cpp" />
     <ClCompile Include="source\BoardArrow.cpp" />
@@ -206,7 +209,7 @@
     <ClCompile Include="source\ModeTest.cpp" />
     <ClCompile Include="source\ModeTitle.cpp" />
     <ClCompile Include="source\Player.cpp" />
-    <ClCompile Include="source\Chain.cpp" />
+    <ClCompile Include="source\IronBall.cpp" />
     <ClCompile Include="source\ScreenVibration.cpp" />
     <ClCompile Include="source\SlaBlock.cpp" />
     <ClCompile Include="source\Tower.cpp" />
@@ -218,9 +221,15 @@
     <ClCompile Include="source\TimeLimit.cpp" />
     <ClCompile Include="source\UITimeLimit.cpp" />
     <ClCompile Include="source\Suppression.cpp" />
+    <ClCompile Include="source\TargetZoomCamera.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="source\RotationCamera.h" />
+    <ClInclude Include="source\CameraBase.h" />
     <ClCompile Include="source\UnbreakableObject.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\Heart.h" />
     <ClInclude Include="source\EffekseerRotation.h" />
     <ClInclude Include="source\EffectBase.h" />
     <ClInclude Include="source\BoardArrow.h" />
@@ -274,7 +283,7 @@
     <ClInclude Include="source\ModeTest.h" />
     <ClInclude Include="source\ModeTitle.h" />
     <ClInclude Include="source\Player.h" />
-    <ClInclude Include="source\Chain.h" />
+    <ClInclude Include="source\IronBall.h" />
     <ClInclude Include="source\ScreenVibration.h" />
     <ClInclude Include="source\SlaBlock.h" />
     <ClInclude Include="source\Tower.h" />
@@ -286,6 +295,7 @@
     <ClInclude Include="source\TimeLimit.h" />
     <ClInclude Include="source\UITimeLimit.h" />
     <ClInclude Include="source\Suppression.h" />
+    <ClInclude Include="source\TargetZoomCamera.h" />
     <ClInclude Include="source\UnbreakableObject.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

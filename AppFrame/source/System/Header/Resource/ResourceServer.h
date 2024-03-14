@@ -59,6 +59,7 @@ public:
 	static std::unordered_map<std::string, int> _soundMap;//se・bgmを保存する変数
 	static std::unordered_map<std::string, Mult> _multMap;//複数の画像を保存する変数
 	static std::unordered_map<std::string, int >_effekseerMap;//エフェクシアのエフェクトを保存する変数
+	static std::unordered_map<std::string, int >_modelOriginMap;//dxlibのモデルハンドルを保存する変数
 	static std::unordered_map<std::string, std::vector<int> >_modelMap;//dxlibのモデルハンドルを保存する変数
 
 };

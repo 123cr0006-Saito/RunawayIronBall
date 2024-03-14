@@ -4,7 +4,7 @@ Floor::Floor(){
 };
 
 Floor::~Floor() {
-
+	Delete();
 };
 
 void Floor::Delete() {
@@ -16,7 +16,6 @@ void Floor::Delete() {
 		_nameList.clear();
 		_modelList.clear();
 	}
-
 };
 
 void Floor::Create(myJson jsonFile, int stageNum) {
@@ -47,7 +46,7 @@ void Floor::Create(myJson jsonFile, int stageNum) {
 
 			//座標修正
 			pos.x *= -1;
-			// pos.y += 1;
+			pos.y += 1;
 			//degree->radian
 			rotate.x = rotate.x * DX_PI_F / 180;
 			rotate.y = (rotate.y + 180) * DX_PI_F / 180;
@@ -74,7 +73,7 @@ std::vector<std::string> Floor::LoadName(int stageNum) {
 		int size = file.Size();
 		while (c < size) {
 			std::string objectName;
-			c += GetString(&p[c], '\r\n', &objectName); // モデルの名前を取得
+			c += GetString(&p[c], '\r\n', &objectName, size - c); // モデルの名前を取得
 			c += SkipSpace(&p[c], &p[size]); // 空白やコントロールコードをスキップする
 			nameList.push_back(objectName);
 		}

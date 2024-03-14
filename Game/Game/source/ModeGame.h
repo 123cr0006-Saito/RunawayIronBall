@@ -10,7 +10,7 @@
 
 #include "Camera.h"
 #include "Player.h"
-#include "Chain.h"
+#include "Heart.h"
 
 #include "UIBase.h"
 #include "UIExpPoint.h"
@@ -42,6 +42,12 @@ class ModeGame : public ModeBase
 		VECTOR _pos;
 		VECTOR _rotate;
 		VECTOR _scale;
+	};
+
+	struct ObjectParam {
+		std::string _name;
+		VECTOR _size;
+		int isBreak;
 	};
 
 public:
@@ -100,8 +106,9 @@ protected:
 	// デバッグ表示をするかどうか
 	bool _drawDebug = false;
 
-	std::vector<std::tuple<std::string, VECTOR, int>>_objectParam;
-	std::vector<std::string> _objectNameList;
+
+
+	std::vector<ObjectParam>_objectParam;
 
 	Light* _light;
 

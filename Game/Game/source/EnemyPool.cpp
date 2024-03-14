@@ -30,14 +30,36 @@ EnemyPool::~EnemyPool() {
 	DeleteEnemy();
 	_enemyParametersMap.clear();
 	_enemyInitPos.clear();
+	_instance = nullptr;
+	_collisionManager = nullptr;
 };
 
-void EnemyPool::Create(myJson json){
+std::vector<std::string> EnemyPool::LoadEnemyName(int stageNum) {
+	std::vector<std::string> nameList;
+	std::string filePath = "Data/LoadStageName/Enemy/Enemy0" + std::to_string(stageNum) + ".csv";
+	// csvファイルを読み込む
+	CFile file(filePath);
+	// ファイルが開けた場合
+	if (file.Success()) {
+		int c = 0;
+		const char* p = (const char*)file.Data();
+		int size = file.Size();
+		while (c < size) {
+			std::string objectName;
+			c += GetString(&p[c], '\r\n', &objectName, size - c); // 敵の名前を取得
+			c += SkipSpace(&p[c], &p[size]); // 空白やコントロールコードをスキップする
+			nameList.push_back(objectName);
+		}
+	}
+	return nameList;
+};
+
+void EnemyPool::Create(myJson json, int stageNum){
 	DeleteEnemy();
 	//読み込む敵の名前のリスト
 	int handle = 0;
 	int suppression = 0;
-	std::vector<std::string> enemyName = { "CryStar_Glass","CryStar_Rock", "CryStar_Iron", "Slablock_Glass","Slablock_Rock","Slablock_Iron","ChainGuard" };
+	std::vector<std::string> enemyName = LoadEnemyName(stageNum);
 	// データの読み込み
 	for (auto&& name : enemyName) {
 		std::vector<std::pair<std::string, VECTOR>> enemyData = LoadJsonData(json, name);

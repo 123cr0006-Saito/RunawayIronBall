@@ -20,7 +20,7 @@ UIExpPoint::UIExpPoint(VECTOR pos) :
 
 	// 下にあるフレームからゲージずれる差分
 	int flontHandleSizeX = 136;
-	int flontHandleSizeY = 35;
+	int flontHandleSizeY = 37;
 
 	GetGraphSize(_handle[1], &flontHandleX, &flontHandleY);
 
@@ -43,6 +43,9 @@ UIExpPoint::UIExpPoint(VECTOR pos) :
 
 UIExpPoint::~UIExpPoint() {
 	_player = nullptr;
+	if (_handle != nullptr) {
+		delete[] _handle; _handle = nullptr;
+	}
 };
 
 void UIExpPoint::SetRatio() {
@@ -99,7 +102,7 @@ bool UIExpPoint::Draw() {
 
 	// 現在のレベル表示
 	int nowLevel = _player->GetNowLevel();
-	int numX = 60; int numY = 80;
+	int numX = 55; int numY = 72;
 	DrawGraph(_pos.x + numX,_pos.y + numY, _levelHandle[nowLevel],true);
 	return true;
 };

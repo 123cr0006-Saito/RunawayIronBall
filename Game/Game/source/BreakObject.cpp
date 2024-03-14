@@ -23,7 +23,7 @@ BreakObject::BreakObject()
 BreakObject::~BreakObject()
 {
 	for (auto&& frame : _frameInfo) {
-		delete frame; 
+		delete frame; frame = nullptr;
 	}
 }
 
