@@ -23,7 +23,9 @@ bool ModeLoading::Terminate(){
 bool ModeLoading::Process(){
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->PauseProcessUnderLayer();
-	if ((*IsClear)) {
+	ModeServer::GetInstance()->SkipRenderUnderLayer();
+
+	if ((*IsClear) && GetASyncLoadNum() <= 0) {
 		int time = 4 * 1000;
 		ModeServer::GetInstance()->Add(new ModeFade(time,true),1000,"FadeIn");
 		ModeServer::GetInstance()->Del(this);

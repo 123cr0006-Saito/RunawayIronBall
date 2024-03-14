@@ -308,12 +308,17 @@ bool ModeGame::StageMutation() {
 	// オブジェクトのデータの読み込み ファイル名は 1 から始まるので +1 する
 	std::string fileName = "Data/ObjectList/Stage_0" + std::to_string(_stageNum) + ".json";
 
+	 // 非同期読み込み設定
+	SetUseASyncLoadFlag(true);
 	LoadStage(fileName);
+	SetUseASyncLoadFlag(false);
+	// ロード終了
+
 	IsLoading = true;
 
+	// ロードスレッドを終了
 	LoadFunctionThread->detach();
 	delete LoadFunctionThread; LoadFunctionThread = nullptr;
-	// ロード終了
 	return true;
 }
 
@@ -536,7 +541,7 @@ bool ModeGame::Process() {
 
 
 bool ModeGame::GateProcess() {
-	//_suppression->SubSuppression(2);
+	_suppression->SubSuppression(5);
 	if (_suppression->GetIsRatio() && _stageNum < 3 ) {
 		if (_gate == nullptr) {
 			int handle[43];
