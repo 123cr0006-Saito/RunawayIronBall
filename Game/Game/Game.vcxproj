@@ -157,6 +157,7 @@
   <ItemGroup>
     <ClCompile Include="source\ModeZoomCamera.cpp" />
     <ClCompile Include="source\ModeRotationCamera.cpp" />
+    <ClCompile Include="source\ModeFadeComeBack.cpp" />
     <ClCompile Include="source\RotationCamera.cpp" />
     <ClCompile Include="source\CameraBase.cpp" />
     <ClCompile Include="source\Heart.cpp" />
@@ -228,6 +229,8 @@
   <ItemGroup>
     <ClInclude Include="source\ModeZoomCamera.h" />
     <ClInclude Include="source\ModeRotationCamera.h" />
+    <ClInclude Include="source\ModeFadeComeBack.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="source\RotationCamera.h" />
     <ClInclude Include="source\CameraBase.h" />
     <ClCompile Include="source\UnbreakableObject.cpp" />
@@ -301,6 +304,9 @@
     <ClInclude Include="source\Suppression.h" />
     <ClInclude Include="source\TargetZoomCamera.h" />
     <ClInclude Include="source\UnbreakableObject.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Game.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
