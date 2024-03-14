@@ -16,7 +16,7 @@ _handleSize(handlesize)
 };
 
 Gate::~Gate() {
-	delete _handle; _handle = nullptr;
+	delete[] _handle; _handle = nullptr;
 };
 
 void Gate::Process(){

@@ -10,6 +10,7 @@ bool ModeClear::Initialize(){
 
 bool ModeClear::Terminate(){
 	base::Terminate();
+	input = nullptr;
 	return true;
 };
 

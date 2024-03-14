@@ -1,11 +1,11 @@
-#include "Chain.h"
-#include "Player.h"
+#include "IronBall.h"
 
 namespace {
 	constexpr float IB_COLLISION_RADIUS = 50.0f;
+	constexpr float CHAIN_COLLISION_RADIUS = 25.0f;
 }
 
-Chain::Chain()
+IronBall::IronBall()
 {
 	_cModelHandle = -1;
 	_iModelHandle = -1;
@@ -22,8 +22,16 @@ Chain::Chain()
 
 	_iPos = VGet(0, 0, 0);
 	_ibDefaultScale = VGet(0, 0, 0);
-	_sphereCollision.centerPos = VGet(0, 0, 0);
-	_sphereCollision.r = 0;
+
+	_ibSphereCollision.centerPos = VGet(0, 0, 0);
+	_ibSphereCollision.r = 0;
+
+	_chainCapsuleCollision.up_pos = VGet(0, 0, 0);
+	_chainCapsuleCollision.down_pos = VGet(0, 0, 0);
+	_chainCapsuleCollision.r = 0;
+
+	_chainCell = nullptr;
+
 	_animIndex = 0;
 	_animTotalTime = 0;
 	_playTime = 0;
@@ -37,14 +45,18 @@ Chain::Chain()
 	_socketNo[0] = -1;
 	_socketNo[1] = -1;
 	_socketNo[2] = -1;
+	_parent = nullptr;
+	_parentPos = nullptr;
 }
 
-Chain::~Chain()
+IronBall::~IronBall()
 {
-
+	_input = nullptr;
+	_parent = nullptr;
+	_parentPos = nullptr;
 }
 
-void Chain::Init() {
+void IronBall::Init() {
 	_input = XInput::GetInstance();
 
 	_cModelHandle = MV1LoadModel("res/Chain/chain02.mv1");
@@ -63,8 +75,12 @@ void Chain::Init() {
 	MV1SetPosition(_iModelHandle, _iPos);
 
 
-	_sphereCollision.centerPos = _iPos;
-	_sphereCollision.r = IB_COLLISION_RADIUS;
+	_ibSphereCollision.centerPos = _iPos;
+	_ibSphereCollision.r = IB_COLLISION_RADIUS;
+
+	_chainCapsuleCollision.up_pos = _cPos[0];
+	_chainCapsuleCollision.down_pos = _cPos[CHAIN_MAX - 1];
+	_chainCapsuleCollision.r = CHAIN_COLLISION_RADIUS;
 
 
 	_animIndex = MV1AttachAnim(_iModelHandle, 0);
@@ -90,10 +106,16 @@ void Chain::Init() {
 	_moveState = IB_MOVE_STATE::FOLLOWING;
 
 	_enabledAttackCollision = false;
+
+	_cell->_objType = OBJ_TYPE::PL_IB;
+	
+	_chainCell = NEW Cell();
+	_chainCell->_obj = this;
+	_chainCell->_objType = OBJ_TYPE::PL_IB_CHAIN;
 }
 
 
-void Chain::Process() {
+void IronBall::Process() {
 	MATRIX m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, _socketNo[0]);
 	VECTOR v = VGet(0.0f, 0.0f, 0.0f);
 	_cPos[0] = VTransform(v, m);
@@ -113,8 +135,8 @@ void Chain::Process() {
 		_attackAnimCnt = 0;
 	}
 
-	if (_iPos.y - _sphereCollision.r < 0.0f) {
-		_iPos.y = 0.0f + _sphereCollision.r;
+	if (_iPos.y - _ibSphereCollision.r < 0.0f) {
+		_iPos.y = 0.0f + _ibSphereCollision.r;
 	}
 	for (int i = 1; i < CHAIN_MAX; i++) {
 		if (_cPos[i].y - 10.0f < 0.0f) {
@@ -122,12 +144,22 @@ void Chain::Process() {
 		}
 	}
 
-	UpdateCollision();
+	UpdateIBCollision();
+	_collisionManager->UpdateCell(_cell);
+	if (_enabledAttackCollision) {
+		UpdateChainCollision();
+		_collisionManager->UpdateCell(_chainCell);
+	}
+	else {
+		if (_chainCell->_segment != nullptr) {
+			_collisionManager->ReserveRemovementCell(_chainCell);
+		}
+	}
 
 	AnimProcess();
 }
 
-void Chain::MoveProcess()
+void IronBall::MoveProcess()
 {
 	switch (_moveState)
 	{
@@ -143,7 +175,7 @@ void Chain::MoveProcess()
 	}
 }
 
-void Chain::FollowingProcess()
+void IronBall::FollowingProcess()
 {
 	// 重力処理
 	for (int i = 1; i < CHAIN_MAX; i++) {
@@ -181,7 +213,7 @@ void Chain::FollowingProcess()
 	}
 }
 
-void Chain::PuttingOnSocketProcess()
+void IronBall::PuttingOnSocketProcess()
 {
 	// 各ソケットへの配置
 	{
@@ -240,7 +272,7 @@ void Chain::PuttingOnSocketProcess()
 	}
 }
 
-void Chain::InterpolationProcess()
+void IronBall::InterpolationProcess()
 {
 	// 各ソケットへの配置
 	{
@@ -285,7 +317,7 @@ void Chain::InterpolationProcess()
 	}
 }
 
-void Chain::AnimProcess()
+void IronBall::AnimProcess()
 {
 	MV1SetAttachAnimTime(_iModelHandle, _animIndex, _playTime);
 
@@ -297,7 +329,7 @@ void Chain::AnimProcess()
 
 
 
-void Chain::Render()
+void IronBall::Render()
 {
 	// 鎖の描画
 	for (int i = 0; i < CHAIN_MAX; i++) {
@@ -312,12 +344,18 @@ void Chain::Render()
 	MV1DrawModel(_iModelHandle);
 }
 
-void Chain::UpdateCollision()
+void IronBall::UpdateIBCollision()
 {
-	_sphereCollision.centerPos = _iPos;
+	_ibSphereCollision.centerPos = _iPos;
 }
 
-void Chain::SetPlayerModelHandle(int handle)
+void IronBall::UpdateChainCollision()
+{
+	_chainCapsuleCollision.up_pos = _cPos[0];
+	_chainCapsuleCollision.down_pos = _cPos[CHAIN_MAX - 1];
+}
+
+void IronBall::SetPlayerModelHandle(int handle)
 {
 	_playerModelHandle = handle;
 
@@ -326,9 +364,12 @@ void Chain::SetPlayerModelHandle(int handle)
 	_socketNo[2] = MV1SearchFrame(_playerModelHandle, "chain3");
 }
 
-void Chain::DrawDebugInfo() {
+void IronBall::DrawDebugInfo() {
 	unsigned int color = _enabledAttackCollision ? COLOR_RED : COLOR_WHITE;
-	DrawSphere3D(_sphereCollision.centerPos, _sphereCollision.r, 16, color, color, false);
+	DrawSphere3D(_ibSphereCollision.centerPos, _ibSphereCollision.r, 16, color, color, false);
+
+	//UpdateChainCollision();
+	_chainCapsuleCollision.Render(COLOR_WHITE);
 
 	//int x = 0;
 	//int y = 0;
@@ -338,9 +379,9 @@ void Chain::DrawDebugInfo() {
 	//DrawFormatString(x, y + line * 16, COLOR_WHITE, "_speed %3.2f", _speed); line++;
 }
 
-bool Chain::UpdateLevel(float scale)
+bool IronBall::UpdateLevel(float scale)
 {
 	MV1SetScale(_iModelHandle, VScale(_ibDefaultScale, scale));
-	_sphereCollision.r = IB_COLLISION_RADIUS * scale;
+	_ibSphereCollision.r = IB_COLLISION_RADIUS * scale;
 	return true;
 }

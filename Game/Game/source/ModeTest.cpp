@@ -20,11 +20,12 @@ bool ModeTest::Initialize() {
 	MV1SetPosition(_tile, VGet(0, 0, 0));
 
 	int playerModelHandle = MV1LoadModel("res/Character/cg_player_girl/cg_player_girl_TEST.mv1");
-	_player = NEW Player(playerModelHandle, VGet(0, 0, 0));
+	_player = NEW Player();
+	_player->Init(playerModelHandle, VGet(0, 0, 0));
 	_player->SetNextExp("res/JsonFile/ExpList.json");
 	_camera = NEW Camera(_player->GetPosition());
 
-	_chain = NEW Chain();
+	_chain = NEW IronBall();
 	_chain->Init();
 
 	_classificationEffect = NEW ClassificationEffect();
@@ -71,15 +72,17 @@ bool ModeTest::Initialize() {
 
 bool ModeTest::Terminate() {
 	base::Terminate();
-	delete _camera;
-	delete _player;
-	delete _sVib;
-	delete _enemyPool;
-	delete _suppression;
-	delete _effectManeger;
-	delete _classificationEffect;
+	delete _camera; _camera = nullptr;
+	delete _player; _player = nullptr;
+	delete _sVib; _sVib = nullptr;
+	delete _enemyPool; _enemyPool = nullptr;
+	delete _suppression; _suppression = nullptr;
+	delete _effectManeger; _effectManeger = nullptr;
+	delete _classificationEffect; _classificationEffect = nullptr;
+	delete _chain; _chain = nullptr;
+	_collisionManager = nullptr;
 
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 4; i++) {
 		delete ui[i];
 	}
 

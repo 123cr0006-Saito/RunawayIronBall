@@ -15,7 +15,15 @@ void SoundServer::Clear() {
 	for (auto&& e : _v) {
 		delete e.second;
 	}
+	for (auto&& e : _vAdd) {
+		delete e.second;
+	}
+	for (auto&& e : _vDel) {
+		delete e.second;
+	}
 	_v.clear();
+	_vAdd.clear();
+	_vDel.clear();
 }
 
 void SoundServer::Add(SoundItemOneShot* snd) {

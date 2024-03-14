@@ -4,7 +4,7 @@ CrystarPattern4::CrystarPattern4() :EnemyBase::EnemyBase() {
 };
 
 CrystarPattern4::~CrystarPattern4() {
-	EnemyBase::~EnemyBase();
+
 };
 
 void CrystarPattern4::InheritanceInit() {

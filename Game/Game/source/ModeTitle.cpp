@@ -56,8 +56,10 @@ bool ModeTitle::Initialize() {
 
 bool ModeTitle::Terminate() {
 	base::Terminate();
-	delete _MoveVec;
-	delete _rotVec;
+	delete[] _MoveVec;
+	delete[] _rotVec;
+	_input = nullptr;
+	_handleMap.clear();
 	return true;
 }
 

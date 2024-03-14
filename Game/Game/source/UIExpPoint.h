@@ -6,7 +6,7 @@ class UIExpPoint : public UIBase
 {
 public:
 	UIExpPoint(VECTOR pos);
-	~UIExpPoint();
+	~UIExpPoint()override;
 	void SetRatio();
 	virtual bool Process()override;
 	virtual bool Draw()override;

@@ -241,7 +241,9 @@ bool EnemyBase::ModeKnockBack() {
 	float CoolTime = 3.0f * 1000; //攻撃してからのクールタイム   
 	VECTOR knockBackVecter = VScale(_knockBackDir, _knockBackSpeedFrame);
 	_pos = VAdd(_pos, knockBackVecter);
-	_knockBackSpeedFrame--;
+	if (_knockBackSpeedFrame > 0) {
+		_knockBackSpeedFrame--;
+	}
 
 	if (_knockBackSpeedFrame <= 0 && nowTime > CoolTime) {
 		_modeState = ENEMYTYPE::DISCOVER;

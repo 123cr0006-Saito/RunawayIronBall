@@ -9,14 +9,14 @@ LoadingPlayer::LoadingPlayer(){
 	_pos = VGet(0, 0, 0);
 	
 	// “S‹…‚Ì‰Šú‰»
-	_chain = new LoadingChain();
+	_chain = NEW LoadingChain();
 	_chain->Init();
 	_chain->SetPlayerModelHandle(_modelHandle);
 	// “S‹…‚ÌˆÚ“®ó‘Ô‚ðu’Ç]v‚ÉÝ’è
 	_chain->SetBallPosition(VAdd(_pos, VGet(500, 0, 0)));
 
 	// F‚Ì’²®
-	_modelColor = new ModelColor();
+	_modelColor = NEW ModelColor();
 	_modelColor->Init(_modelHandle);
 	_modelColor->ChangeFlickerTexture(true);
 
@@ -38,6 +38,8 @@ LoadingPlayer::LoadingPlayer(){
 
 LoadingPlayer::~LoadingPlayer() {
 	MV1DeleteModel(_modelHandle);
+	delete _chain; _chain = nullptr;
+	delete _modelColor; _modelColor = nullptr;
 };
 
 bool LoadingPlayer::Process(){

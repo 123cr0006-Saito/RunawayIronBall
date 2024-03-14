@@ -12,7 +12,6 @@
 #include "ModeZoomCamera.h"
 #include "ModeRotationCamera.h"
 #include "Player.h"
-#include "Chain.h"
 #include "Heart.h"
 
 #include "UIBase.h"
@@ -77,8 +76,6 @@ protected:
 
 	Camera* _camera;
 	Player* _player;
-
-	Heart* _heart;
 
 	UIBase* ui[4];
 	DrawGauge* _gaugeUI[2];

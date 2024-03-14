@@ -17,7 +17,10 @@ UITimeLimit::UITimeLimit(VECTOR pos) :UIBase(pos){
 };
 
 UITimeLimit::~UITimeLimit(){
-	// “Á‚É‚È‚µ
+	_timeLimit = nullptr;
+	if (_handle != nullptr) {
+		delete[] _handle; _handle = nullptr;
+	}
 };
 
 bool UITimeLimit::Process(){

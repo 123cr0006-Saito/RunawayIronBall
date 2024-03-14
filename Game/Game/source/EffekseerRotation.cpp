@@ -20,8 +20,8 @@ EffekseerRotation::EffekseerRotation(int handle, VECTOR* pos, float size, VECTOR
 };
 
 EffekseerRotation::~EffekseerRotation() {
-	base::~EffekseerBase();
-	_pos = nullptr;
+	//delete _pos;  _pos = nullptr;
+	//delete _rotation;  _rotation = nullptr;
 };
 
 bool EffekseerRotation::Process() {

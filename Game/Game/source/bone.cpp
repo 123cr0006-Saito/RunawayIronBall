@@ -92,6 +92,8 @@ bone::bone(
 
 bone::~bone() {
 	_frameList.clear();
+	_springList.clear();
+	_naturalList.clear();
 	_model = nullptr;
 
 	delete[] _vecDirList;         _vecDirList = nullptr;
@@ -106,6 +108,7 @@ bone::~bone() {
 	delete[] _gravity;               _gravity = nullptr;
 	delete[] _spring;               _spring = nullptr;
 	delete[] _naturalCorrectionFactor; _naturalCorrectionFactor = nullptr;
+
 };
 
 void bone::SetMain(Vector3D* pos_list) {

@@ -30,6 +30,8 @@ EnemyPool::~EnemyPool() {
 	DeleteEnemy();
 	_enemyParametersMap.clear();
 	_enemyInitPos.clear();
+	_instance = nullptr;
+	_collisionManager = nullptr;
 };
 
 std::vector<std::string> EnemyPool::LoadEnemyName(int stageNum) {
