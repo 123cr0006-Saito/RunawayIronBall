@@ -10,9 +10,9 @@ UnbreakableObject::~UnbreakableObject()
 {
 }
 
-void UnbreakableObject::Init(int modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength)
+void UnbreakableObject::Init(int modelHandle, std::string name, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength)
 {
-	BuildingBase::Init(modelHandle, startPos, rotation, scale, obbLength);
+	BuildingBase::Init(modelHandle, name,startPos, rotation, scale, obbLength);
 	_canBreak = false;
 }
 

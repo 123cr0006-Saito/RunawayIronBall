@@ -501,6 +501,7 @@ void CollisionManager::CheckHitIbAndEn(IronBall* ironBall, EnemyBase* enemy)
 			VECTOR vDir = VSub(eCol.centerPos, pPos);
 			vDir = VNorm(vDir);
 			enemy->SetKnockBackAndDamage(vDir, player->GetPower());
+			global._soundServer->DirectPlay("SE_Hit1");
 		}
 	}
 }
@@ -517,7 +518,6 @@ void CollisionManager::CheckHitIbAndBldg(IronBall* ironBall, BuildingBase* build
 			VECTOR vDir = VSub(bCol.pos, player->GetPosition());
 			building->SetHit(vDir);
 			player->SetExp(50);
-			global._soundServer->DirectPlay("OBJ_RockBreak");
 		}
 	}
 }

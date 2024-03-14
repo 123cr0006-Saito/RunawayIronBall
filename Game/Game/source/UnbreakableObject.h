@@ -7,7 +7,7 @@ public:
 	UnbreakableObject();
 	virtual ~UnbreakableObject();
 
-	void Init(int modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength);
+	void Init(int modelHandle, std::string name, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength);
 	void Process() override;
 
 	// デバッグ情報の表示

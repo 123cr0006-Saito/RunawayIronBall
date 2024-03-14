@@ -16,10 +16,11 @@ BuildingBase::~BuildingBase()
 	}
 }
 
-void BuildingBase::Init(int modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength)
+void BuildingBase::Init(int modelHandle, std::string name,VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength)
 {
 	// ÉÇÉfÉãÇÃê›íË
 	_modelHandle = modelHandle;
+	_objectName = name;
 	_pos = startPos;
 	MV1SetPosition(_modelHandle, _pos);
 	MV1SetRotationXYZ(_modelHandle, rotation);
