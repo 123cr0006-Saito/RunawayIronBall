@@ -15,7 +15,8 @@ bool CrystarRoof::Updata(){
 
 	// 行列の更新
 	// 座標の取得
-	VECTOR framePos = MV1GetFramePosition(_model,4);
+	int frame = MV1SearchFrame(_model, "joint1");
+	VECTOR framePos = MV1GetFramePosition(_model, frame);
 	// 取得した座標を原点にするための平行移動行列を作成
 	MATRIX transMatrix = MGetTranslate(VScale(framePos,-1.0f));
 	// 親フレームのアタッチする場所の行列を取得
