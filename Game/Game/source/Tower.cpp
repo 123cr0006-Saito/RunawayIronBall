@@ -5,9 +5,10 @@ namespace {
 	constexpr int FALL_CNT_MAX = 30; 
 }
 
-Tower::Tower()
+Tower::Tower() : ObjectBase::ObjectBase()
 {
 	_use = true;
+	_pos = VGet(0.0f, 0.0f, 0.0f);
 	_partsNum = 0;
 	_isFalling = false;
 	_prevFallCnt = -1;

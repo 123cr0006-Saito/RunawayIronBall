@@ -1,7 +1,8 @@
 #pragma once
 #include "TowerParts.h"
+#include "ObjectBase.h"
 
-class Tower
+class Tower : public ObjectBase
 {
 public:
 	Tower();
