@@ -87,8 +87,6 @@ bool ModeGame::Initialize() {
 	global._soundServer->BgmFadeIn("Stage03", 2000);
 
 
-	TowerParts::InitBlastTowerParts();
-
 	return true;
 }
 
@@ -472,7 +470,6 @@ bool ModeGame::Process() {
 
 	_player->AnimationProcess();
 
-	TowerParts::CheckFinishedBlastTowerParts();
 
 	_effectManeger->Update();
 	_camera->Process(_player->GetPosition(), _tile);

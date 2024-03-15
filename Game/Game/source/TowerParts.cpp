@@ -6,7 +6,6 @@ namespace {
 	constexpr float FALL_CNT_MAX = 30;
 }
 
-std::vector<TowerParts*> TowerParts::_blastTowerParts;
 TowerParts::TowerParts() : ObjectBase::ObjectBase()
 {
 	_use = true;
@@ -27,8 +26,6 @@ TowerParts::TowerParts() : ObjectBase::ObjectBase()
 
 	_sphereCollision.centerPos = VGet(0.0f, 0.0f, 0.0f);
 	_sphereCollision.r = 0.0f;
-
-	_localCenterPos = VGet(0.0f, 0.0f, 0.0f);
 }
 
 TowerParts::~TowerParts()

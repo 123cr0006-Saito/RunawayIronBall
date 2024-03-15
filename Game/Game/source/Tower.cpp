@@ -83,20 +83,8 @@ void Tower::Process()
 			if (_prevFallCnt < 0) {
 				_isFalling = true;
 				_fallCnt = FALL_CNT_MAX;
-
-				//for (auto itr = _towerParts.begin(); itr != _towerParts.end(); ++itr) {
-				//	if ((*itr)->_use && (*itr)->_blast == false) {
-				//		_startPos = (*itr)->_pos;
-				//		break;
-				//	}
-				//}
 			}
-
-
-
 		}
-
-		UpdateCollision();
 
 	}
 	for (int i = 0; i < _partsNum; i++) {
@@ -122,7 +110,6 @@ void Tower::SetBlast(VECTOR vDir)
 			// 最下部のパーツのみ吹っ飛び処理
 			if (i == _bottomIndex) {
 				_towerParts[i]->SetBlast(VNorm(vDir));
-				TowerParts::AddBlastTowerParts(_towerParts[i]);
 			}
 			// それ以外のパーツは落下処理
 			else {
@@ -137,13 +124,6 @@ void Tower::SetBlast(VECTOR vDir)
 			_collisionManager->ReserveRemovementCell(_cell);
 		}
 	}
-}
-
-void Tower::UpdateCollision()
-{
-	//for(int i = 0;i < _partsInfo.size();i++) {
-	//	_sphereCollision[i]->centerPos = VAdd(_partsInfo[i]->pos, VGet(0.0f, _up, 0.0f));
-	//}
 }
 
 void Tower::DrawDebugInfo()

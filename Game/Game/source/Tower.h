@@ -20,8 +20,6 @@ public:
 	void SetBlast(VECTOR vDir);
 	bool GetCanBlast() { return _canBlast; }
 
-	void UpdateCollision();
-
 
 	Sphere GetCollision() { return _sphereCollision; }
 
