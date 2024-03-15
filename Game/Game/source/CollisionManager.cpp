@@ -782,10 +782,14 @@ void CollisionManager::DrawAreaIndex()
 				obj = cell->_obj;
 				worldPos = static_cast<BuildingBase*>(obj)->GetPos();
 				break;
-				case OBJ_TYPE::TWR_PRT:
-					obj = cell->_obj;
-					worldPos = static_cast<TowerParts*>(obj)->GetPos();
-					break;
+			case OBJ_TYPE::TWR:
+				obj = cell->_obj;
+				worldPos = static_cast<Tower*>(obj)->GetPos();
+				break;
+			case OBJ_TYPE::TWR_PRT:
+				obj = cell->_obj;
+				worldPos = static_cast<TowerParts*>(obj)->GetPos();
+				break;
 			}
 			VECTOR screenPos = ConvWorldPosToScreenPos(worldPos);
 			if (0.0f < screenPos.z && screenPos.z < 1.0f) {
