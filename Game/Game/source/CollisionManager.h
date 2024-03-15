@@ -54,6 +54,7 @@ private:
 
 	void CheckHitIbAndEn(IronBall* ironBall, EnemyBase* enemy);
 	void CheckHitIbAndBldg(IronBall* ironBall, BuildingBase* building);
+	void CheckHitIbAndTwr(IronBall* ironBall, Tower* tower);
 
 	void CheckHitChAndEn(IronBall* ironBall, EnemyBase* enemy);
 	void CheckHitChAndBldg(IronBall* ironBall, BuildingBase* building);
