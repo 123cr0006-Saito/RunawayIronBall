@@ -50,24 +50,21 @@ void TowerParts::Init(int modelHandle, VECTOR startPos)
 void TowerParts::Process()
 {
 	if (_use) {
-		// 吹っ飛び処理
-		if ( _blast) {
-			BlastOffProcess();
-		}
-
 		// 落下処理
 		if (_isFalling) {
 			FallProcess();
 		}
 
-		// モデルの座標を更新
-		MV1SetPosition(_modelHandle, _pos);
-
-		// 当たり判定の更新
-		if (_useCollision) {
+		// 吹っ飛び処理
+		if (_blast) {
+			BlastOffProcess();
+			// 当たり判定の更新
 			UpdateCollision();
 			_collisionManager->UpdateCell(_cell);
 		}
+
+		// モデルの座標を更新
+		MV1SetPosition(_modelHandle, _pos);
 	}
 }
 
@@ -105,13 +102,5 @@ void TowerParts::Render()
 
 void TowerParts::UpdateCollision()
 {
-	//MV1SetPosition(_modelHandle, _pos);
-
-	//VECTOR vOrigin = VGet(0.0f, 0.0f, 0.0f);
-	//VECTOR pivotWorldPos = VTransform(vOrigin, MV1GetLocalWorldMatrix(_modelHandle));
-	//VECTOR topWorldPos = VTransform(vOrigin, MV1GetFrameLocalWorldMatrix(_modelHandle, 3));
-	//VECTOR vDir = VSub(topWorldPos, pivotWorldPos);
-	//vDir = VNorm(vDir);
-
 	_sphereCollision.centerPos =_pos;
 }

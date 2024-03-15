@@ -36,6 +36,9 @@ public:
 
 	void SetUseCollision(bool useCollision) {
 		_useCollision = useCollision;
+		if (_useCollision) {
+			UpdateCollision();
+		}
 	}
 
 	void SetBlast(VECTOR vDir) {
