@@ -107,7 +107,7 @@ void TowerParts::UpdateCollision()
 
 void TowerParts::DrawDebugInfo()
 {
-	if (_use) {
+	if (_useCollision) {
 		_sphereCollision.Render(COLOR_WHITE);
 	}
 }
