@@ -1,6 +1,9 @@
-#include "AppFrame.h"
-#include "ApplicationMain.h"
-#include "ModeTest.h"
+#include "ModeGame.h"
+#include "ModeClear.h"
+#include "ModePause.h"
+#include "ModeGameOver.h"
+#include "ModeLoading.h"
+#include "ModeFadeComeBack.h"
 #include "ModeZoomCamera.h"
 #include "ModeRotationCamera.h"
 
@@ -564,20 +567,17 @@ bool ModeGame::GateProcess() {
 
 		// ゴールゲートの当たり判定
 		if (Collision3D::SphereCol(pPos, pR, gPos, gR)) {
-			// ここでリアルタイムレンダリングのアニメーションが入る
-			// それが終わったらフェードアウト　→　ローディング・評価（引数　時間）　→　ローディングが終わったら次のステージ
-			// 今はここにステージ繊維関数を追加
-			int time = 4 * 1000; // 4秒
-			_stageNum++;
-		/*	ModeServer::GetInstance()->Add(NEW ModeLoading(&IsLoading), 100, "Loading");
-			LoadFunctionThread = NEW std::thread(&ModeGame::StageMutation, this);*/
-			ModeServer::GetInstance()->Add(NEW ModeClear(),100,"Clear");			
+			ModeServer::GetInstance()->Add(NEW ModeClear(this),100,"Clear");	
 		}
 	}
 	return true;
-};// ゴールゲートの処理
+};
 
-
+void ModeGame::NewStage(){
+	_stageNum++;
+	ModeServer::GetInstance()->Add(NEW ModeLoading(&IsLoading), 100, "Loading");
+	LoadFunctionThread = NEW std::thread(&ModeGame::StageMutation, this);
+};
 
 bool ModeGame::Render() {
 	if (LoadFunctionThread)return true;

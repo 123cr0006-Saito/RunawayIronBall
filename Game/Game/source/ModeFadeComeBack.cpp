@@ -1,4 +1,11 @@
 #include "ModeFadeComeBack.h"
+
+ModeFadeComeBack::ModeFadeComeBack(int Time) :ModeFade(Time, false) {
+	_fadeEnd = 255;
+	_fadeStart = 0;
+	_deleteMode = nullptr;
+};
+
 ModeFadeComeBack::ModeFadeComeBack(int Time, ModeBase* mode) :ModeFade(Time,false){
 	_fadeEnd = 255;
     _fadeStart = 0;
@@ -12,7 +19,9 @@ bool ModeFadeComeBack::Initialize(){
 
 bool ModeFadeComeBack::Terminate(){
 	base::Terminate();
-	_deleteMode = nullptr;
+	if (_deleteMode != nullptr) {
+	   _deleteMode = nullptr;
+	}
 	return true;
 };
 
@@ -32,7 +41,9 @@ bool ModeFadeComeBack::Process(){
         _fadeStart = _fadeEnd;
         _fadeEnd = temp;
 		_currentTime = GetNowCount();
-		ModeServer::GetInstance()->Del(_deleteMode);
+		if(_deleteMode != nullptr){
+		   ModeServer::GetInstance()->Del(_deleteMode);
+		}
 	}
 	else if (_alphaFade < 0) {
 		// フェード終了 削除

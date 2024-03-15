@@ -2,16 +2,9 @@
 #include "appframe.h"
 
 #include <thread>
-
-#include "ModeClear.h"
-#include "ModePause.h"
-#include "ModeGameOver.h"
-#include "ModeLoading.h"
 #include "CollisionManager.h"
 
 #include "Camera.h"
-#include "ModeZoomCamera.h"
-#include "ModeRotationCamera.h"
 #include "Player.h"
 #include "Heart.h"
 
@@ -23,7 +16,6 @@
 #include "TimeLimit.h"
 
 #include "ScreenVibration.h"
-
 #include "BuildingBase.h"
 #include "House.h"
 #include "Tower.h"
@@ -66,6 +58,8 @@ public:
 	bool LoadStage(std::string fileName);// ステージの読み込み 敵も含む
 	bool StageMutation();// ステージクリア処理
 	bool GateProcess();// ゴールゲートの処理
+	void NewStage();// ステージの初期化
+	
 
 
 	//デバッグ用
@@ -108,8 +102,6 @@ protected:
 
 	// デバッグ表示をするかどうか
 	bool _drawDebug = false;
-
-
 
 	std::vector<ObjectParam>_objectParam;
 

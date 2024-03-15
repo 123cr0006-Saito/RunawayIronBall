@@ -1,8 +1,9 @@
-#include "ModeGameOver.h"
 #include "AppFrame.h"
-#include "ApplicationMain.h"
-#include "ModeTest.h"
+#include "ModeGameOver.h"
 #include "ModeTitle.h"
+#include "ModeGame.h"
+#include "ModeFade.h"
+
 bool ModeGameOver::Initialize() {
 	if (!base::Initialize()) { return false; }
 	_input = XInput::GetInstance();

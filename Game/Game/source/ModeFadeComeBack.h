@@ -4,6 +4,7 @@
 class ModeFadeComeBack : public ModeFade
 {
 public:
+	ModeFadeComeBack(int Time);
 	ModeFadeComeBack(int Time, ModeBase* mode);
 	virtual bool Initialize();
 	virtual bool Terminate();

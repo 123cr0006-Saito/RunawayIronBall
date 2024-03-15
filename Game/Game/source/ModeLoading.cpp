@@ -2,8 +2,9 @@
 ModeLoading::ModeLoading(bool* flag) {
 	_chara = nullptr;
 	IsClear = flag;
+	SetUseASyncLoadFlag(true);
 	_chara = new LoadingPlayer();
-
+	SetUseASyncLoadFlag(false);
 	// 3‚c‹óŠÔ‚Ì‰æ–Ê‚Ì’†S“_‚ğˆÚ“®
 	int sizeX, sizeY, colorBit;
 	GetScreenState(&sizeX, &sizeY, &colorBit);
