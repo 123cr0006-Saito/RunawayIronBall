@@ -8,7 +8,11 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 protected:
-
+	int _model;
+	int _attachAnim;
+	int _frameCount;
+	int _maxCount;
+	int _backGround;
 	XInput* input;
 };
 

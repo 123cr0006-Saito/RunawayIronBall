@@ -3,6 +3,7 @@
 
 #include <thread>
 
+#include "ModeClear.h"
 #include "ModePause.h"
 #include "ModeGameOver.h"
 #include "ModeLoading.h"

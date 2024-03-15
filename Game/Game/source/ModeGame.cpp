@@ -546,7 +546,7 @@ bool ModeGame::Process() {
 
 bool ModeGame::GateProcess() {
 
-	//_suppression->SubSuppression(1);
+	_suppression->SubSuppression(1);
 	if (_suppression->GetIsRatio() && _stageNum < 3 ) {
 		if (_gate == nullptr) {
 			int handle[43];
@@ -569,9 +569,9 @@ bool ModeGame::GateProcess() {
 			// ¡‚Í‚±‚±‚ÉƒXƒe[ƒW‘@ˆÛŠÖ”‚ð’Ç‰Á
 			int time = 4 * 1000; // 4•b
 			_stageNum++;
-			ModeServer::GetInstance()->Add(NEW ModeLoading(&IsLoading), 100, "Loading");
-			LoadFunctionThread = NEW std::thread(&ModeGame::StageMutation, this);
-			
+		/*	ModeServer::GetInstance()->Add(NEW ModeLoading(&IsLoading), 100, "Loading");
+			LoadFunctionThread = NEW std::thread(&ModeGame::StageMutation, this);*/
+			ModeServer::GetInstance()->Add(NEW ModeClear(),100,"Clear");			
 		}
 	}
 	return true;
