@@ -42,7 +42,6 @@ void TowerParts::Init(int modelHandle, VECTOR startPos)
 	MV1SetPosition(_modelHandle, _pos);
 
 	_sphereCollision.r = 250.0f;
-	UpdateCollision();
 
 	_cell->_objType = OBJ_TYPE::TWR_PRT;
 }
@@ -73,6 +72,7 @@ void TowerParts::BlastOffProcess()
 	_blastCnt++;
 	if (_blastCnt > BLAST_CNT_MAX) {
 		_use = false;
+		_useCollision = false;
 		_collisionManager->ReserveRemovementCell(_cell);
 	}
 }

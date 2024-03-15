@@ -42,11 +42,14 @@ public:
 	}
 
 	void SetBlast(VECTOR vDir) {
+		SetUseCollision(true);
 		_blast = true;
 		_blastDir = vDir;
 
 		_isFalling = false;
 	}
+
+	bool GetIsBlast() { return _blast; }
 
 	void SetFalling(VECTOR endPos) {
 		_isFalling = true;

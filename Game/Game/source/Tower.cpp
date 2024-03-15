@@ -56,7 +56,6 @@ void Tower::Init(std::array<int, 3> modelHandle, VECTOR startPos, VECTOR rotatio
 	}
 
 	_partsNum = _towerParts.size();
-	_towerParts[0]->SetUseCollision(true);
 }
 
 void Tower::Process()
@@ -75,7 +74,6 @@ void Tower::Process()
 			if (finishedFalling) {
 				_isFalling = false;
 				_canBlast = true;
-				_towerParts[_bottomIndex]->SetUseCollision(true);
 			}
 		}
 
