@@ -8,6 +8,7 @@ class Player;
 class IronBall;
 class EnemyBase;
 class BuildingBase;
+class Tower;
 class TowerParts;
 
 

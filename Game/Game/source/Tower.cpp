@@ -18,7 +18,8 @@ Tower::Tower() : ObjectBase::ObjectBase()
 
 	_bottomIndex = 0;
 
-	_bottomSphereCollision = nullptr;
+	_sphereCollision.centerPos = VGet(0.0f, 0.0f, 0.0f);
+	_sphereCollision.r = 0.0f;
 }
 
 Tower::~Tower()
@@ -32,6 +33,12 @@ Tower::~Tower()
 void Tower::Init(std::array<int, 3> modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale)
 {
 	_pos = startPos;
+	_sphereCollision.centerPos = _pos;
+	_sphereCollision.r = 250.0f;
+	_cell->_objType = OBJ_TYPE::TWR;
+	_collisionManager->UpdateCell(_cell);
+
+
 	for (int i = 0; i < 3; i++) {
 		TowerParts* tp = NEW TowerParts();
 		VECTOR tmpPos = VGet(0.0f, 0.0f, 0.0f);
@@ -49,7 +56,6 @@ void Tower::Init(std::array<int, 3> modelHandle, VECTOR startPos, VECTOR rotatio
 	}
 
 	_partsNum = _towerParts.size();
-
 	_towerParts[0]->SetUseCollision(true);
 }
 
@@ -130,6 +136,7 @@ void Tower::SetBlast(VECTOR vDir)
 
 		if (_bottomIndex >= _partsNum) {
 			_use = false;
+			_collisionManager->ReserveRemovementCell(_cell);
 		}
 	}
 }

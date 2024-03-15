@@ -4,6 +4,7 @@
 #include "IronBall.h"
 #include "EnemyBase.h"
 #include "BuildingBase.h"
+#include "Tower.h"
 #include "TowerParts.h"
 
 #include <math.h>
@@ -159,6 +160,14 @@ void CollisionManager::UpdateCell(Cell* cell)
 		pos2.y = 0.0f;
 	}
 	break;
+	case OBJ_TYPE::TWR:
+	{
+		Tower* tower = static_cast<Tower*>(cell->_obj);
+		Sphere sphere = tower->GetCollision();
+		pos1 = VGet(sphere.centerPos.x - sphere.r, 0.0f, sphere.centerPos.z - sphere.r);
+		pos2 = VGet(sphere.centerPos.x + sphere.r, 0.0f, sphere.centerPos.z + sphere.r);
+	}
+		break;
 	case OBJ_TYPE::TWR_PRT:
 	{
 		TowerParts* towerParts = static_cast<TowerParts*>(cell->_obj);
