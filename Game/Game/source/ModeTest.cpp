@@ -19,7 +19,7 @@ bool ModeTest::Initialize() {
 	MV1SetScale(_skySphere, VGet(3, 3, 3));
 	MV1SetPosition(_tile, VGet(0, 0, 0));
 
-	int playerModelHandle = MV1LoadModel("res/Character/cg_player_girl/cg_player_girl_TEST.mv1");
+	int playerModelHandle = MV1LoadModel("res/Character/cg_player_girl/Cg_Player_Girl.mv1");
 	_player = NEW Player();
 	_player->Init(playerModelHandle, VGet(0, 0, 0));
 	_player->SetNextExp("res/JsonFile/ExpList.json");

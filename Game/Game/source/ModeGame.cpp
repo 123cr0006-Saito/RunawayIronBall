@@ -28,7 +28,7 @@ bool ModeGame::Initialize() {
 	MV1SetScale(_skySphere, VGet(3, 3, 3));
 	MV1SetPosition(_tile, VGet(0, 0, 0));
 
-	int playerModelHandle = ResourceServer::MV1LoadModel("Player", "res/Character/cg_player_girl/cg_player_girl_TEST_Ver.2.mv1");
+	int playerModelHandle = ResourceServer::MV1LoadModel("Player", "res/Character/cg_player_girl/Cg_Player_Girl.mv1");
 	_player = NEW Player();
 	_player->Init(playerModelHandle, VGet(0, 0, 0));
 	_camera = NEW Camera(_player->GetPosition());
@@ -41,9 +41,9 @@ bool ModeGame::Initialize() {
 	{
 
 		ResourceServer::LoadDivGraph("Gate", "res/TemporaryMaterials/FX_Hole_2D00_sheet.png", 43, 16, 3, 1200, 1200);
-		ResourceServer::Load("Player", "res/Character/cg_player_girl/cg_player_girl_TEST_Ver.2.mv1");
-		ResourceServer::Load("IronBall", "res/Character/Tetsuo/cg_tetsuo.mv1");
-		ResourceServer::Load("Chain", "res/Chain/chain02.mv1");
+		ResourceServer::Load("Player", "res/Character/cg_player_girl/Cg_Player_Girl.mv1");
+		ResourceServer::Load("IronBall", "res/Character/Cg_Iron_Ball/Cg_Iron_Ball.mv1");
+		ResourceServer::Load("Chain", "res/Chain/Cg_Chain.mv1");
 		ResourceServer::Load("GirlTexWhite", "res/Character/cg_player_girl/FlickerTexture.png");
 
 		ResourceServer::Load("FX_3D_Level_Up", "res/Effekseer/FX_3D_Level_Up/FX_3D_Level_Up.efkefc");
