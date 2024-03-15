@@ -11,7 +11,7 @@ bool ModeGame::Initialize() {
 	_collisionManager->Init();
 
 	_gate = nullptr;
-	_stageNum = 1;
+	_stageNum = 2;
 	IsLoading = true;
 	LoadFunctionThread = nullptr;
 
@@ -21,11 +21,10 @@ bool ModeGame::Initialize() {
 	
 	int resolution = 8192;
 	_shadowHandle = MakeShadowMap(resolution, resolution);
-
-	_skySphere = MV1LoadModel(_T("res/SkySphere/skysphere.mv1"));
-	_tile = MV1LoadModel(_T("res/TemporaryMaterials/stage_normal_01.mv1"));
+	_skySphere = ResourceServer::Load("SkySpehe", "res/SkySphere/Skyspehre.mv1");
+	_tile = ResourceServer::Load("Tile", "res/Tile/Stage_Base_01.mv1");
 	MV1SetPosition(_skySphere, VGet(0, 0, 0));
-	MV1SetScale(_skySphere, VGet(3, 3, 3));
+	MV1SetScale(_skySphere, VScale(VGet(1,1,1),0.5f));
 	MV1SetPosition(_tile, VGet(0, 0, 0));
 
 	int playerModelHandle = ResourceServer::MV1LoadModel("Player", "res/Character/cg_player_girl/Cg_Player_Girl.mv1");
@@ -39,7 +38,6 @@ bool ModeGame::Initialize() {
 
 
 	{
-
 		ResourceServer::LoadDivGraph("Gate", "res/TemporaryMaterials/FX_Hole_2D00_sheet.png", 43, 16, 3, 1200, 1200);
 		ResourceServer::Load("Player", "res/Character/cg_player_girl/Cg_Player_Girl.mv1");
 		ResourceServer::Load("IronBall", "res/Character/Cg_Iron_Ball/Cg_Iron_Ball.mv1");
@@ -262,9 +260,9 @@ bool ModeGame::LoadStage(std::string fileName) {
 		v.z -= 4000.0f;
 
 		std::array<int, 3> towerModelHandle;
-		towerModelHandle[0] = ResourceServer::MV1LoadModel("Tower01", "res/Building/CG_OBJ_Tower/CG_OBJ_Tower_Under.mv1");
-		towerModelHandle[1] = ResourceServer::MV1LoadModel("Tower02", "res/Building/CG_OBJ_Tower/CG_OBJ_Tower_Under.mv1");
-		towerModelHandle[2] = ResourceServer::MV1LoadModel("Tower03", "res/Building/CG_OBJ_Tower/CG_OBJ_Tower_Top.mv1");
+		towerModelHandle[0] = ResourceServer::MV1LoadModel("Tower01", "res/Building/CG_OBJ_Tower/Tower_Under.mv1");
+		towerModelHandle[1] = ResourceServer::MV1LoadModel("Tower02", "res/Building/CG_OBJ_Tower/Tower_Under.mv1");
+		towerModelHandle[2] = ResourceServer::MV1LoadModel("Tower03", "res/Building/CG_OBJ_Tower/Tower_Top.mv1");
 
 		Tower* tower = NEW Tower();
 		tower->Init(towerModelHandle, v, VGet(0, 0, 0), VGet(1, 1, 1));

@@ -72,27 +72,27 @@ void EnemyPool::Create(myJson json, int stageNum){
 			// èâä˙âª
 			if (enemyDataList.first == "CryStar_Glass") {
 				enemy = NEW CrystarPattern1();
-				handle = ResourceServer::MV1LoadModel("CryStar_Glass","res/Enemy/Crystar/cg_crystar.mv1");
+				handle = ResourceServer::MV1LoadModel("CryStar_Glass","res/Enemy/Cg_Enemy_Crystar_Glass/Cg_Crystar_Glass.mv1");
 			}
 			else if (enemyDataList.first == "CryStar_Rock") {
 				enemy = NEW CrystarPattern2();
-				handle = ResourceServer::MV1LoadModel("CryStar_Rock","res/Enemy/Crystar/cg_crystar.mv1");
+				handle = ResourceServer::MV1LoadModel("CryStar_Rock","res/Enemy/Cg_Enemy_Crystar_Rock/Cg_Crystar_Rock.mv1");
 			}
 			else if (enemyDataList.first == "CryStar_Iron") {
-				enemy = NEW CrystarPattern3();
-				handle = ResourceServer::MV1LoadModel("CryStar_Iron","res/Enemy/Crystar/cg_crystar.mv1");
+				//enemy = NEW CrystarPattern3();
+				handle = ResourceServer::MV1LoadModel("CryStar_Iron","res/Enemy/Cg_Enemy_Crystar_Iron/Cg_Crystar_Iron.mv1");
 			}
 			else if (enemyDataList.first == "Slablock_Glass" || enemyDataList.first == "Slablock_Rock") {
-				enemy = NEW SlaBlock();
-				handle = ResourceServer::MV1LoadModel("Slablock","res/Enemy/SlaBlock/cg_surablock_TEST.mv1");
+				//enemy = NEW SlaBlock();
+				handle = ResourceServer::MV1LoadModel("Slablock","res/Enemy/Cg_Enemy_Slablock/Cg_Enemy_Slablock.mv1");
 			}
 			else if (enemyDataList.first == "Slablock_Iron") {
-				enemy = NEW SlaBlockPattern2();
-				handle = ResourceServer::MV1LoadModel("Slablock_Iron","res/Enemy/SlaBlock/cg_surablock_TEST.mv1");
+				//enemy = NEW SlaBlockPattern2();
+				handle = ResourceServer::MV1LoadModel("Slablock_Iron","res/Enemy/Cg_Enemy_Slablock/Cg_Enemy_Slablock.mv1");
 			}
 			else if (enemyDataList.first == "ChainGuard") {
-				enemy = NEW Chainguard();
-				handle = ResourceServer::MV1LoadModel("Chainguard", "res/Enemy/Chainguard/cg_chain_guard_TEST.mv1");
+				//enemy = NEW Chainguard();
+				handle = ResourceServer::MV1LoadModel("Chainguard", "res/Enemy/Cg_Enemy_ChainGuard/Cg_Enemy_ChainGuard.mv1");
 			}
 
 			// èâä˙âªÇ≥ÇÍÇƒÇ¢ÇΩÇÁí«â¡

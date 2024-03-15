@@ -23,8 +23,8 @@ void CrystarPattern3::InheritanceInit() {
 
 void CrystarPattern3::AnimInit() {
 
-	_roof[0] = NEW CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof_Glass", "res/Enemy/Crystar/cg_crystar_glass.mv1"), _model,"joint1");
-	_roof[1] = NEW CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof_Iron", "res/Enemy/Crystar/cg_crystar_iron.mv1"), _model, "joint2");
+	_roof[0] = NEW CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof_Glass", "res/Enemy/Cg_Enemy_Crystar_Iron/Cg_Crystar_Roof_Iron.mv1"), _model,"joint1");
+	_roof[1] = NEW CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof_Iron", "res/Enemy/Cg_Enemy_Crystar_Iron/Cg_Helmet_Enemy_Crystar_Iron.mv1"), _model, "joint2");
 
 	//// モーションリストのロード
 	MotionList::Load("Crystarl", "MotionList_Crystarl.csv");

@@ -20,7 +20,7 @@ void CrystarPattern1::InheritanceInit() {
 
 void CrystarPattern1::AnimInit() {
 
-	_roof = NEW CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof_glsss","res/Enemy/Crystar/cg_crystar_glass.mv1"), _model, "joint1");
+	_roof = NEW CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof_glsss","res/Enemy/Cg_Enemy_Crystar_Glass/Cg_Crystar_Roof_Glass.mv1"), _model, "joint1");
 
 	//// モーションリストのロード
 	MotionList::Load("Crystarl", "MotionList_Crystarl.csv");
