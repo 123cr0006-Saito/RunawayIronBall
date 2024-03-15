@@ -60,7 +60,6 @@ void TowerParts::Process()
 			BlastOffProcess();
 			// 当たり判定の更新
 			UpdateCollision();
-			_collisionManager->UpdateCell(_cell);
 		}
 
 		// モデルの座標を更新
