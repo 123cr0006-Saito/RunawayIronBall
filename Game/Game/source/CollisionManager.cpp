@@ -460,10 +460,17 @@ void CollisionManager::CheckColList()
 				CheckHit(enemy, building);
 			}
 			break;
+			case OBJ_TYPE::TWR_PRT:
+			{
+				TowerParts* towerParts = static_cast<TowerParts*>(cell2->_obj);
+				CheckHit(building, towerParts);
+			}
+			break;
 			}
 		}
 		break; // end obj1 case OBJ_TYPE::BLDG
 
+		// オブジェクト1がタワー本体の場合
 		case OBJ_TYPE::TWR:
 		{
 			Tower* tower = static_cast<Tower*>(cell1->_obj);
@@ -496,23 +503,24 @@ void CollisionManager::CheckColList()
 			break;
 			}
 		}
+		break; // end obj1 case OBJ_TYPE::TWR
 
-
-
-
-
-
-		//int n = 0;
-		//for (int i = 0; i < treeSize; i++) {
-		//	Cell* cell = _tree[i]->_next;
-		//	while (cell != nullptr)
-		//	{
-		//		n++;
-		//		cell = cell->_next;
-		//	}
-		//}
-
-		//int m = 0;
+		// オブジェクト1がタワーのパーツの場合
+		case OBJ_TYPE::TWR_PRT:
+		{
+			TowerParts* towerParts = static_cast<TowerParts*>(cell1->_obj);
+			switch (cell2->_objType) {
+			case OBJ_TYPE::NONE:
+				break;
+			case OBJ_TYPE::BLDG:
+			{
+				BuildingBase* building = static_cast<BuildingBase*>(cell2->_obj);
+				CheckHit(building, towerParts);
+			}
+			break;
+			}
+		}
+		break; // end obj1 case OBJ_TYPE::TWR_PRT
 		}
 	}
 }
@@ -741,6 +749,21 @@ void CollisionManager::CheckHit(EnemyBase* enemy, Tower* tower)
 		VECTOR vDir = VScale(vSub, 1.0f / length);
 		VECTOR tmpPos = VAdd(tCol.centerPos, VScale(vDir, tCol.r + eCol.r + 1.0f));
 		enemy->SetPos(tmpPos);
+	}
+}
+
+void CollisionManager::CheckHit(BuildingBase* building, TowerParts* towerParts)
+{
+	bool isBlast = towerParts->GetIsBlast();
+	if (isBlast) {
+		OBB bCol = building->GetOBBCollision();
+		Sphere tCol = towerParts->GetCollision();
+
+		if (Collision3D::OBBSphereCol(bCol, tCol)) {
+			VECTOR vDir = VSub(bCol.pos, tCol.centerPos);
+			building->SetHit(vDir);
+			global._soundServer->DirectPlay("OBJ_RockBreak");
+		}
 	}
 }
 

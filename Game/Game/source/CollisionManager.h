@@ -64,6 +64,8 @@ private:
 	void CheckHit(EnemyBase* enemy, BuildingBase* building);
 	void CheckHit(EnemyBase* enemy, Tower* tower);
 
+	void CheckHit(BuildingBase* building, TowerParts* towerParts);
+
 	static CollisionManager* _instance;
 
 	float _offsetX;

@@ -398,15 +398,6 @@ bool ModeGame::Process() {
 			//		}
 			//	}
 			//}
-
-			for (auto tpItr = TowerParts::_blastTowerParts.begin(); tpItr != TowerParts::_blastTowerParts.end(); ++tpItr) {
-				Sphere tpSphere = (*tpItr)->GetCollision();
-				if (Collision3D::OBBSphereCol(houseObb, tpSphere)) {
-					VECTOR vDir = VSub(houseObb.pos, tpSphere.centerPos);
-					(*itr)->SetHit(vDir);
-					continue;
-				}
-			}
 		}
 	}
 
