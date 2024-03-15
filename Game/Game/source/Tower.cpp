@@ -23,7 +23,7 @@ Tower::Tower()
 Tower::~Tower()
 {
 	for (auto itr = _towerParts.begin(); itr != _towerParts.end(); ++itr) {
-		delete* itr;
+		delete *itr;
 	}
 	_towerParts.clear();
 }
@@ -48,55 +48,27 @@ void Tower::Init(std::array<int, 3> modelHandle, VECTOR startPos, VECTOR rotatio
 	}
 
 	_partsNum = _towerParts.size();
+
+	_towerParts[0]->SetUseCollision(true);
 }
 
 void Tower::Process()
 {
 	if (_use) {
-		//if (_isFalling) {
-
-		//	int i = _bottomIndex;
-		//	if (i < _partsNum) {
-
-		//		float cnt = FALL_CNT_MAX - _fallCnt;
-		//		float x = Easing::InQuint(cnt, _startPos.x, _endPos.x, FALL_CNT_MAX);
-		//		float y = Easing::InQuint(cnt, _startPos.y, _endPos.y, FALL_CNT_MAX);
-		//		float z = Easing::InQuint(cnt, _startPos.z, _endPos.z, FALL_CNT_MAX);
-		//		_towerParts[i]->_pos = VGet(x, y, z);
-		//		MV1SetPosition(_towerParts[i]->_modelHandle, _towerParts[i]->_pos);
-
-		//		i++;
-		//		for (i; i < _partsNum; i++) {
-		//			VECTOR vOrigin = VGet(0.0f, 0.0f, 0.0f);
-		//			MATRIX m = MV1GetFrameLocalWorldMatrix(_towerParts[i - 1]->_modelHandle, 3);
-		//			_towerParts[i]->_pos = VTransform(vOrigin, m);
-		//			MV1SetPosition(_towerParts[i]->_modelHandle, _towerParts[i]->_pos);
-		//		}
-
-		//	}
-
-
-
-
-		//	_fallCnt--;
-		//	if (_fallCnt < 0) {
-		//		_fallCnt = 0;
-		//		_isFalling = false;
-		//	}
-		//}
-
-
+		// 落下処理
 		if (_isFalling) {
-			bool fallingFinished = true;
+			// 残っている全てのパーツが落下終了したかどうかを判定する
+			bool finishedFalling = true;
 			for (int i = _bottomIndex; i < _partsNum; i++) {
 				if(_towerParts[i]->GetUse() == false) continue;
 
-				fallingFinished = fallingFinished && !(_towerParts[i]->GetIsFalling());
+				finishedFalling = finishedFalling && !(_towerParts[i]->GetIsFalling());
 			}
-
-			if (fallingFinished) {
+			// 全てのパーツが落下終了したら、落下処理を終了する
+			if (finishedFalling) {
 				_isFalling = false;
 				_canBlast = true;
+				_towerParts[_bottomIndex]->SetUseCollision(true);
 			}
 		}
 

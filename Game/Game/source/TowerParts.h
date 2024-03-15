@@ -30,6 +30,14 @@ public:
 		return _use;
 	}
 
+	VECTOR GetPos() {
+		return _pos;
+	}
+
+	void SetUseCollision(bool useCollision) {
+		_useCollision = useCollision;
+	}
+
 	void SetBlast(VECTOR vDir) {
 		_blast = true;
 		_blastDir = vDir;
@@ -46,7 +54,7 @@ public:
 
 	bool GetIsFalling() { return _isFalling; }
 
-	Sphere GetSphereCollision() { return _sphereCollision; }
+	Sphere GetCollision() { return _sphereCollision; }
 
 protected:
 	// êÅÇ¡îÚÇ—èàóù

@@ -2,6 +2,7 @@
 #include "appframe.h"
 #include "Cell.h"
 #include "ObjectBase.h"
+
 class CharacterBase;
 class Player;
 class IronBall;

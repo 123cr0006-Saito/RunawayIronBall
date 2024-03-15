@@ -7,7 +7,7 @@ namespace {
 }
 
 std::vector<TowerParts*> TowerParts::_blastTowerParts;
-TowerParts::TowerParts()
+TowerParts::TowerParts() : ObjectBase::ObjectBase()
 {
 	_use = true;
 	_useCollision = false;
@@ -33,10 +33,6 @@ TowerParts::TowerParts()
 
 TowerParts::~TowerParts()
 {
-	if (_modelHandle != -1) {
-		MV1DeleteModel(_modelHandle);
-		_modelHandle = -1;
-	}
 }
 
 void TowerParts::Init(int modelHandle, VECTOR startPos)
@@ -48,7 +44,7 @@ void TowerParts::Init(int modelHandle, VECTOR startPos)
 	_sphereCollision.r = 250.0f;
 	UpdateCollision();
 
-	_cell->_objType = OBJ_TYPE::TWR;
+	_cell->_objType = OBJ_TYPE::TWR_PRT;
 }
 
 void TowerParts::Process()
@@ -68,9 +64,10 @@ void TowerParts::Process()
 		MV1SetPosition(_modelHandle, _pos);
 
 		// “–‚½‚è”»’è‚ÌXV
-		//if (_useCollision) {
+		if (_useCollision) {
 			UpdateCollision();
-		//}
+			_collisionManager->UpdateCell(_cell);
+		}
 	}
 }
 
@@ -80,6 +77,7 @@ void TowerParts::BlastOffProcess()
 	_blastCnt++;
 	if (_blastCnt > BLAST_CNT_MAX) {
 		_use = false;
+		_collisionManager->ReserveRemovementCell(_cell);
 	}
 }
 
@@ -91,6 +89,7 @@ void TowerParts::FallProcess()
 	_pos = VGet(x, y, z);
 
 	_fallCnt++;
+	// —Ž‰º‚ªI—¹‚µ‚½‚ç
 	if (_fallCnt > FALL_CNT_MAX) {
 		_isFalling = false;
 	}

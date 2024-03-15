@@ -22,7 +22,7 @@ public:
 	void UpdateCollision();
 
 
-	Sphere GetBottomSphereCollision() { return _towerParts[_bottomIndex]->GetSphereCollision(); }
+	Sphere GetBottomSphereCollision() { return _towerParts[_bottomIndex]->GetCollision(); }
 
 
 	// デバッグ情報の表示

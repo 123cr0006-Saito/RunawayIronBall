@@ -1,8 +1,10 @@
 #include "CollisionManager.h"
 
 #include "Player.h"
+#include "IronBall.h"
 #include "EnemyBase.h"
 #include "BuildingBase.h"
+#include "TowerParts.h"
 
 #include <math.h>
 
@@ -112,8 +114,8 @@ void CollisionManager::UpdateCell(Cell* cell)
 		pos1 = capsule.up_pos;
 		pos2 = capsule.up_pos;
 		// ç≈è¨ç¿ïW
-		if(pos1.x > capsule.down_pos.x) pos1.x = capsule.down_pos.x;
-		if(pos1.z > capsule.down_pos.z) pos1.z = capsule.down_pos.z;
+		if (pos1.x > capsule.down_pos.x) pos1.x = capsule.down_pos.x;
+		if (pos1.z > capsule.down_pos.z) pos1.z = capsule.down_pos.z;
 		// ç≈ëÂç¿ïW
 		if (pos2.x < capsule.down_pos.x) pos2.x = capsule.down_pos.x;
 		if (pos2.z < capsule.down_pos.z) pos2.z = capsule.down_pos.z;
@@ -155,6 +157,14 @@ void CollisionManager::UpdateCell(Cell* cell)
 
 		pos1.y = 0.0f;
 		pos2.y = 0.0f;
+	}
+	break;
+	case OBJ_TYPE::TWR_PRT:
+	{
+		TowerParts* towerParts = static_cast<TowerParts*>(cell->_obj);
+		Sphere sphere = towerParts->GetCollision();
+		pos1 = VGet(sphere.centerPos.x - sphere.r, 0.0f, sphere.centerPos.z - sphere.r);
+		pos2 = VGet(sphere.centerPos.x + sphere.r, 0.0f, sphere.centerPos.z + sphere.r);
 	}
 	break;
 	}
@@ -699,6 +709,10 @@ void CollisionManager::DrawAreaIndex()
 				obj = cell->_obj;
 				worldPos = static_cast<BuildingBase*>(obj)->GetPos();
 				break;
+				case OBJ_TYPE::TWR_PRT:
+					obj = cell->_obj;
+					worldPos = static_cast<TowerParts*>(obj)->GetPos();
+					break;
 			}
 			VECTOR screenPos = ConvWorldPosToScreenPos(worldPos);
 			if (0.0f < screenPos.z && screenPos.z < 1.0f) {

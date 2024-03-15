@@ -10,7 +10,8 @@ enum OBJ_TYPE {
 	EN,
 	EN_IB,
 	BLDG,
-	TWR
+	TWR,
+	TWR_PRT,
 };
 
 class ObjectBase;
