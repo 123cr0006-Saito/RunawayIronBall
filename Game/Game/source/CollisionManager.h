@@ -60,6 +60,7 @@ private:
 
 	void CheckHit(EnemyBase* enemy1, EnemyBase* enemy2);
 	void CheckHit(EnemyBase* enemy, BuildingBase* building);
+	void CheckHit(EnemyBase* enemy, Tower* tower);
 
 	static CollisionManager* _instance;
 
