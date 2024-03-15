@@ -1,7 +1,6 @@
 #include "bone.h"
 
 const Vector3D bone::_orign(0,0,0);
-const Vector3D bone::_gravityDir(0.0f, -1.0f, 0.0f);
 
 //1Ｆ 大体0.015 ~ 0.017秒ぐらい 
 //1回だと発散する
@@ -45,6 +44,8 @@ bone::bone(
 	}
 	_orignPos[0] = MV1GetFramePosition(*_model, _frameList[0]);
 	_orignPos[1] = MV1GetFramePosition(*_model, _frameList[1]);
+
+	_gravityDir = VGet(0.0f, -1.0f, 0.0f);
 
 	//----------------------------------------------------------------------------------
 	//物理演算をするための変数の初期化
@@ -183,6 +184,7 @@ void bone::DebugRender() {
 bool bone::Process() {
 
 	double _elapsedTime = global._timer->GetElapsedTime();
+
 	while (1)
 	{
 		//1フレームを_processIntervalで差分化する
@@ -193,6 +195,16 @@ bool bone::Process() {
 	SetMain(_massPosList);
 
 	return true;
+};
+
+void bone::SetGravity(std::string end, std::string start){
+	int frame = MV1SearchFrame(*_model, end.c_str());
+	VECTOR headPos = MV1GetFramePosition(*_model, frame);
+	frame = MV1SearchFrame(*_model, start.c_str());
+	VECTOR spinePos = MV1GetFramePosition(*_model, frame);
+	
+	VECTOR dirVec = VSub(spinePos, headPos);
+	_gravityDir = VNorm(VScale(dirVec, -1));
 };
 
 //参考サイト

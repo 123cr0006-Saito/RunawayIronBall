@@ -206,7 +206,8 @@ private:
 
 	//------------
 	//齋藤が書きました。
-	bone* _bone[2];// 0:leftHear 1:RightHear
+	std::map<std::string,bone*> _bone;
+	//bone* _bone[2];// 0:leftHear 1:RightHear
 	int _nowLevel;//現在のレベルが入ります。
 	int _nowExp; //現在持っている経験値を格納します。
 	int _maxLevel;//レベルの最大値

@@ -101,7 +101,7 @@ Player::Player()
 	_rightHandFrameIndex = -1;
 
 
-
+	SetCameraNearFar(20.0f, 30000.0f);
 
 	_nowExp = 0;
 	_nowLevel = 0;
@@ -112,10 +112,8 @@ Player::Player()
 	_animManager = nullptr;
 	_frameData = nullptr;
 	_modelColor = nullptr;
-	for (int i = 0; i < 2; i++) {
-		_bone[i] = nullptr;
-	}
 
+	_bone.clear();
 
 	_instance = nullptr;
 }
@@ -129,9 +127,10 @@ Player::~Player()
 	delete _modelColor;
 	delete _ironBall;
 
-	for (int i = 0; i < 2; i++) {
-		delete _bone[i];
+	for (auto&& bone : _bone) {
+		delete bone.second;
 	}
+	_bone.clear();
 
 }
 
@@ -186,7 +185,7 @@ void Player::SetBone() {
 	bone_left_list[3] = MV1SearchFrame(_modelHandle,"Left_mitsuami4");
 	bone_left_list[4] = MV1SearchFrame(_modelHandle,"Left_mitsuami5");
 	bone_left_list[5] = MV1SearchFrame(_modelHandle,"Left_mitsuami6");
-	_bone[0] = NEW bone(&_modelHandle, bone_left_list, bone_left_list.size() - 2, "res/JsonFile/hair_parameters.json");
+	_bone["Left_mitsuami"] = NEW bone(&_modelHandle, bone_left_list, bone_left_list.size() - 2, "res/JsonFile/hair_parameters.json");
 	//‰E”¯
 	std::vector<int> bone_right_list(6);
 	bone_right_list[0] = MV1SearchFrame(_modelHandle,"Right_mitsuami1");
@@ -195,7 +194,7 @@ void Player::SetBone() {
 	bone_right_list[3] = MV1SearchFrame(_modelHandle,"Right_mitsuami4");
 	bone_right_list[4] = MV1SearchFrame(_modelHandle,"Right_mitsuami5");
 	bone_right_list[5] = MV1SearchFrame(_modelHandle,"Right_mitsuami6");
-	_bone[1] = NEW bone(&_modelHandle, bone_right_list, bone_right_list.size() - 2, "res/JsonFile/hair_parameters.json");
+	_bone["Right_mitsuami"] = NEW bone(&_modelHandle, bone_right_list, bone_right_list.size() - 2, "res/JsonFile/hair_parameters.json");
 };
 
 void Player::SetNextExp(std::string FileName) {
@@ -527,7 +526,14 @@ bool Player::Process(float camAngleY)
 	UpdateBone();
 	//-------------------
 
-	
+	if(CheckHitKey(KEY_INPUT_Z)){
+		_animStatus = ANIM_STATE::WIN;
+		int flame = MV1SearchFrame(_modelHandle,"camera1");
+		VECTOR pos = MV1GetFramePosition(_modelHandle,flame);
+		flame = MV1SearchFrame(_modelHandle, "camera1_aim");
+		VECTOR target = MV1GetFramePosition(_modelHandle, flame);
+		SetCameraPositionAndTarget_UpVecY(pos,target);
+	}
 
 
 	_ironBall->Process();
@@ -606,16 +612,18 @@ bool Player::UpdateLevel()
 }
 
 void Player::UpdateBone() {
-	for (int i = 0; i < sizeof(_bone) / sizeof(_bone[0]); i++) {
-		_bone[i]->Process();
-		_bone[i]->SetMain(_bone[i]->_massPosList);
+
+	std::string name[2] = { "Left_mitsuami","Right_mitsuami" };
+
+	for(int i = 0; i < 2; i++){
+		_bone[name[i]]->SetGravity("Character1_Spine", "Character1_Head");
 	}
-	if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN)) {
-		for (int i = 0; i < sizeof(_bone) / sizeof(_bone[0]); i++) {
-			_bone[i]->SetDebugDraw();
-			_bone[i]->DebugProcess(12);
-		}
+	
+	for (int i = 0; i < _bone.size(); i++) {
+		_bone[name[i]]->Process();
+		_bone[name[i]]->SetMain(_bone[name[i]]->_massPosList);
 	}
+
 };
 
 VECTOR Player::GetRightHandPos()
@@ -722,9 +730,6 @@ void Player::CheckFrameDataCommand()
 
 void Player::DrawDebugInfo()
 {
-	for (int i = 0; i < sizeof(_bone) / sizeof(_bone[0]); i++) {
-		_bone[i]->DebugRender();
-	}
 
 	DrawCapsule3D(_capsuleCollision.up_pos, _capsuleCollision.down_pos, _capsuleCollision.r, 16, COLOR_RED, COLOR_RED, false);
 
