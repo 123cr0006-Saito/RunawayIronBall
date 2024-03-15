@@ -142,7 +142,7 @@ void Tower::UpdateCollision()
 
 void Tower::DrawDebugInfo()
 {
-	for(auto itr = _towerParts.begin(); itr != _towerParts.end(); ++itr) {
-		DrawSphere3D((*itr)->_sphereCollision.centerPos, (*itr)->_sphereCollision.r, 16, COLOR_WHITE, COLOR_WHITE, false);
+	for (int i = 0; i < _partsNum; i++) {
+		_towerParts[i]->DrawDebugInfo();
 	}
 }

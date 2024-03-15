@@ -59,6 +59,10 @@ public:
 
 	Sphere GetCollision() { return _sphereCollision; }
 
+
+	// デバッグ情報の表示
+	void DrawDebugInfo();
+
 protected:
 	// 吹っ飛び処理
 	void BlastOffProcess();

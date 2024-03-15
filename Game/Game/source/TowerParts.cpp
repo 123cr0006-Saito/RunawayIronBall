@@ -103,4 +103,12 @@ void TowerParts::Render()
 void TowerParts::UpdateCollision()
 {
 	_sphereCollision.centerPos =_pos;
+	_collisionManager->UpdateCell(_cell);
+}
+
+void TowerParts::DrawDebugInfo()
+{
+	if (_use) {
+		_sphereCollision.Render(COLOR_WHITE);
+	}
 }
