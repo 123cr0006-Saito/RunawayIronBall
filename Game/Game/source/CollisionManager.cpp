@@ -425,6 +425,12 @@ void CollisionManager::CheckColList()
 				CheckHit(enemy1, tower);
 			}
 			break;
+			case OBJ_TYPE::TWR_PRT:
+			{
+				TowerParts* towerParts = static_cast<TowerParts*>(cell2->_obj);
+				CheckHit(enemy1, towerParts);
+			}
+			break;
 			}
 		}
 		break; // end obj1 case OBJ_TYPE::EN
@@ -512,6 +518,12 @@ void CollisionManager::CheckColList()
 			switch (cell2->_objType) {
 			case OBJ_TYPE::NONE:
 				break;
+			case OBJ_TYPE::EN:
+			{
+				EnemyBase* enemy = static_cast<EnemyBase*>(cell2->_obj);
+				CheckHit(enemy, towerParts);
+			}
+			break;
 			case OBJ_TYPE::BLDG:
 			{
 				BuildingBase* building = static_cast<BuildingBase*>(cell2->_obj);
@@ -749,6 +761,20 @@ void CollisionManager::CheckHit(EnemyBase* enemy, Tower* tower)
 		VECTOR vDir = VScale(vSub, 1.0f / length);
 		VECTOR tmpPos = VAdd(tCol.centerPos, VScale(vDir, tCol.r + eCol.r + 1.0f));
 		enemy->SetPos(tmpPos);
+	}
+}
+
+void CollisionManager::CheckHit(EnemyBase* enemy, TowerParts* towerParts)
+{
+	bool isBlast = towerParts->GetIsBlast();
+	if (isBlast) {
+		Sphere eCol = { enemy->GetCollisionPos(), enemy->GetR() };
+		Sphere tCol = towerParts->GetCollision();
+
+		if (Collision3D::SphereCol(eCol, tCol)) {
+			VECTOR vDir = VSub(tCol.centerPos, eCol.centerPos);
+			enemy->SetKnockBackAndDamage(vDir, 200);
+		}
 	}
 }
 
