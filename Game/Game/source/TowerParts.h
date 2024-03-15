@@ -1,7 +1,8 @@
 #pragma once
 #include "appframe.h"
+#include "ObjectBase.h"
 
-class TowerParts
+class TowerParts : public ObjectBase
 {
 public:
 	friend class Tower;

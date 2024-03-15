@@ -4,9 +4,11 @@
 #include "ObjectBase.h"
 class CharacterBase;
 class Player;
+class IronBall;
 class EnemyBase;
 class BuildingBase;
-class IronBall;
+class TowerParts;
+
 
 // XZ平面上で4分木空間分割を行い、当たり判定を行うクラス
 class CollisionManager

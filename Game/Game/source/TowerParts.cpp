@@ -45,28 +45,10 @@ void TowerParts::Init(int modelHandle, VECTOR startPos)
 	_pos = startPos;
 	MV1SetPosition(_modelHandle, _pos);
 
-	//VECTOR pivotLocalPos = VGet(0.0f, 0.0f, 0.0f);
-	//VECTOR topLocalPos = VTransform(pivotLocalPos, MV1GetFrameLocalMatrix(_modelHandle, 3));
-
-	//{
-	//	VECTOR vDir = VSub(topLocalPos, pivotLocalPos);
-	//	float length = VSize(vDir);
-	//	vDir = VNorm(vDir);
-	//	_localCenterPos = VAdd(pivotLocalPos, VScale(vDir, length / 2.0f));
-	//}
-
-	//{
-	//	VECTOR pivotWorldPos = VTransform(pivotLocalPos, MV1GetLocalWorldMatrix(_modelHandle));
-	//	VECTOR topWorldPos = VTransform(pivotLocalPos, MV1GetFrameLocalWorldMatrix(_modelHandle, 3));
-	//	VECTOR vDir = VSub(topWorldPos, pivotWorldPos);
-	//	float length = VSize(vDir);
-
-	//	_sphereCollision.r = length / 2.0f;
-	//}
 	_sphereCollision.r = 250.0f;
-
-
 	UpdateCollision();
+
+	_cell->_objType = OBJ_TYPE::TWR;
 }
 
 void TowerParts::Process()
