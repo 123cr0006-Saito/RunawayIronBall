@@ -50,6 +50,7 @@ private:
 	// “–‚½‚è”»’èˆ—
 	void CheckHit(Player* player, EnemyBase* enemy);
 	void CheckHit(Player* player, BuildingBase* building);
+	void CheckHit(Player* player, Tower* tower);
 
 	void CheckHitIbAndEn(IronBall* ironBall, EnemyBase* enemy);
 	void CheckHitIbAndBldg(IronBall* ironBall, BuildingBase* building);

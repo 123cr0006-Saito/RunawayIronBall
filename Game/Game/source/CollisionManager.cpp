@@ -314,6 +314,12 @@ void CollisionManager::CheckColList()
 				CheckHit(player, building);
 			}
 			break;
+			case OBJ_TYPE::TWR:
+			{
+				Tower* tower = static_cast<Tower*>(cell2->_obj);
+				CheckHit(player, tower);
+			}
+			break;
 			}
 		}
 		break; // end obj1 case OBJ_TYPE::PL
@@ -439,9 +445,22 @@ void CollisionManager::CheckColList()
 			}
 			break;
 			}
-		} 
+		}
 		break; // end obj1 case OBJ_TYPE::BLDG
 
+		case OBJ_TYPE::TWR:
+		{
+			Tower* tower = static_cast<Tower*>(cell1->_obj);
+			switch (cell2->_objType) {
+			case OBJ_TYPE::NONE:
+				break;
+			case OBJ_TYPE::PL:
+			{
+				Player* player = static_cast<Player*>(cell2->_obj);
+				CheckHit(player, tower);
+			}
+			break;
+			}
 		}
 
 
@@ -460,9 +479,9 @@ void CollisionManager::CheckColList()
 		//}
 
 		//int m = 0;
+		}
 	}
 }
-
 void CollisionManager::CheckHit(Player* player, EnemyBase* enemy)
 {
 	// “G‚ªŒ‚”jƒmƒbƒNƒoƒbƒNó‘Ô‚ÌŽž‚Í“–‚½‚è”»’è‚ðs‚í‚È‚¢
@@ -501,6 +520,22 @@ void CollisionManager::CheckHit(Player* player, BuildingBase* building)
 		vDir = VNorm(vDir);
 		hitPos.y = 0.0f;
 		VECTOR tmpPos = VAdd(hitPos, VScale(vDir, pCol.r));
+		player->SetPos(tmpPos);
+	}
+}
+
+void CollisionManager::CheckHit(Player* player, Tower* tower)
+{
+	Capsule pCol = player->GetCollision();
+	Sphere tCol = tower->GetCollision();
+	pCol.down_pos.y = 0.0f;
+	tCol.centerPos.y = 0.0f;
+	VECTOR vSub = VSub(pCol.down_pos, tCol.centerPos);
+	float sqLength = VSquareSize(vSub);
+	if (sqLength < (pCol.r + tCol.r) * (pCol.r + tCol.r)) {
+		float length = sqrt(sqLength);
+		VECTOR vDir = VScale(vSub, 1.0f / length);
+		VECTOR tmpPos = VAdd(tCol.centerPos, VScale(vDir, tCol.r + pCol.r + 1.0f));
 		player->SetPos(tmpPos);
 	}
 }

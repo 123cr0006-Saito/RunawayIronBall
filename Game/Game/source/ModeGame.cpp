@@ -415,7 +415,7 @@ bool ModeGame::Process() {
 
 		if ((*itr)->GetUse()) {
 			VECTOR tPos = (*itr)->GetPos();
-			Sphere tSphere = (*itr)->GetBottomSphereCollision();
+			Sphere tSphere = (*itr)->GetCollision();
 			if ((*itr)->GetCanBlast()) {
 				if (isAttackState) {
 					if (Collision3D::SphereCol(ibSphere, tSphere)) {
@@ -447,19 +447,6 @@ bool ModeGame::Process() {
 					en->SetPos(VAdd(enPos, VScale(vDir, len)));
 				}
 				en = nullptr;
-			}
-
-			// プレイヤーの押出
-			VECTOR pColPos = _player->GetPosition(); pColPos.y = 0;
-			float pR = _player->GetCollision().r;
-			float tR = tSphere.r;
-
-
-			VECTOR vDir = VSub(pColPos, tSphere.centerPos);
-			if (VSize(vDir) <= pR + tR) {
-				float len = (pR + tR) - VSize(vDir);
-				vDir = VNorm(vDir);
-				_player->SetPos(VAdd(pColPos, VScale(vDir, len)));
 			}
 		}
 	}
