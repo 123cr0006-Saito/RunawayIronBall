@@ -150,6 +150,9 @@ void Tower::UpdateCollision()
 
 void Tower::DrawDebugInfo()
 {
+	if (_use) {
+		_sphereCollision.Render(COLOR_GREEN);
+	}
 	for (int i = 0; i < _partsNum; i++) {
 		_towerParts[i]->DrawDebugInfo();
 	}
