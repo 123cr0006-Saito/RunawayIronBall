@@ -11,7 +11,7 @@ namespace {
 	constexpr int IDLE_CNT_ADD_MAX = 60;
 
 	constexpr int IDLE_CNT_MAX = 30;
-	constexpr float IDLE_MOVE_SPEED = 100.0f / 30.0f; // 30フレームで1m移動
+	constexpr float IDLE_MOVE_SPEED = 180.0f / 30.0f; // 30フレームで1.8m移動
 	constexpr float IDLE_MOVE_SPEED_DEBUG = 100.0f; // 30フレームで1m移動
 
 
@@ -57,12 +57,17 @@ BossIronBall::BossIronBall()
 
 BossIronBall::~BossIronBall()
 {
+	ResourceServer::MV1DeleteModel("Bossnake", _ibModelHandle);
+	_ibModelHandle = -1;
+	ResourceServer::MV1DeleteModel("Chain", _chainModelHandle);
+	_chainModelHandle = -1;
+
 	_stakePos = nullptr;
 }
 
 void BossIronBall::LoadModel()
 {
-	_ibModelHandle = ResourceServer::MV1LoadModel("Bossnake", "res/Enemy/Bossnake/Bossnake/cg_Boss.mv1");
+	_ibModelHandle = ResourceServer::MV1LoadModel("Bossnake", "res/Enemy/Cg_Enemy_Bossnake/Cg_Enemy_Bossnake.mv1");
 	_chainModelHandle = ResourceServer::MV1LoadModel("Chain", "res/Chain/Cg_Chain.mv1");
 }
 
