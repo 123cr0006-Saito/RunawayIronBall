@@ -7,8 +7,12 @@ namespace {
 
 	constexpr float ROTAION_RADIUS_MAX = 1000.0f;
 
-	constexpr int IDLE_CNT_BASE = 120;
-	constexpr int IDLE_CNT_ADD_MAX = 60;
+	// 待機状態
+	// 小ジャンプの間隔フレーム数（120 ~ 180）
+	// 基準値 
+	constexpr int IDLE_INTERVAL_BASE = 120;
+	// 乱数で追加されるフレーム数の最大値
+	constexpr int IDLE_INTERVAL_ADD_MAX = 60;
 
 	constexpr int IDLE_CNT_MAX = 30;
 	constexpr float IDLE_MOVE_SPEED = 180.0f / 30.0f; // 30フレームで1.8m移動
@@ -236,8 +240,9 @@ void BossIronBall::IdleProcess()
 	_ibIdleCnt++;
 	if (_ibIdleCnt > IDLE_CNT_MAX) {
 		_ibIdleCnt = IDLE_CNT_MAX;
+		// 硬直状態に遷移
 		_ibState = IB_STATE::IB_STATE_STIFFEN;
-		SetStiffen(IDLE_CNT_BASE + (rand() % IDLE_CNT_ADD_MAX));
+		SetStiffen(IDLE_INTERVAL_BASE + (rand() % IDLE_INTERVAL_ADD_MAX));
 	}
 }
 
