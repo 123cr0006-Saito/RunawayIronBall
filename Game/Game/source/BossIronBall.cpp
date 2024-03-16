@@ -12,7 +12,6 @@ namespace {
 
 	constexpr int IDLE_CNT_MAX = 30;
 	constexpr float IDLE_MOVE_SPEED = 180.0f / 30.0f; // 30フレームで1.8m移動
-	constexpr float IDLE_MOVE_SPEED_DEBUG = 100.0f; // 30フレームで1m移動
 
 
 	// 1フレームあたりの回転角
@@ -229,33 +228,17 @@ void BossIronBall::CheckState()
 
 void BossIronBall::IdleProcess()
 {
-	//_ibPos = VAdd(_ibPos, VScale(_ibMoveDir, IDLE_MOVE_SPEED));
+	_ibPos = VAdd(_ibPos, VScale(_ibMoveDir, IDLE_MOVE_SPEED));
 
-	//float rad = _ibIdleCnt / 30.0f * DX_PI;
-	//_ibPos.y = sinf(rad) * 100.0f + _ibSphereCol.r;
-
-	//_ibIdleCnt++;
-	//if (_ibIdleCnt > IDLE_CNT_MAX) {
-	//	_ibIdleCnt = IDLE_CNT_MAX;
-	//	_ibState = IB_STATE::IB_STATE_STIFFEN;
-	//	SetStiffen(IDLE_CNT_BASE + (rand() % IDLE_CNT_ADD_MAX));
-	//}
-
-	float moveSpeed = debugValueMax / debugFrameMax;
-	_ibPos = VAdd(_ibPos, VScale(_ibMoveDir, moveSpeed));
-
-	float rad = _ibIdleCnt / static_cast<float>(debugFrameMax) * DX_PI;
+	float rad = _ibIdleCnt / 30.0f * DX_PI;
 	_ibPos.y = sinf(rad) * 100.0f + _ibSphereCol.r;
 
 	_ibIdleCnt++;
-	if (_ibIdleCnt > debugFrameMax) {
-		_ibIdleCnt = debugFrameMax;
+	if (_ibIdleCnt > IDLE_CNT_MAX) {
+		_ibIdleCnt = IDLE_CNT_MAX;
 		_ibState = IB_STATE::IB_STATE_STIFFEN;
 		SetStiffen(IDLE_CNT_BASE + (rand() % IDLE_CNT_ADD_MAX));
 	}
-
-
-
 }
 
 void BossIronBall::StiffenProcess()
