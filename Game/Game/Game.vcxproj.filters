@@ -55,7 +55,6 @@
     <ClCompile Include="source\ModeTest.cpp" />
     <ClCompile Include="source\ModeTitle.cpp" />
     <ClCompile Include="source\Player.cpp" />
-    <ClCompile Include="source\Chain.cpp" />
     <ClCompile Include="source\SlaBlock.cpp" />
     <ClCompile Include="source\UIBase.cpp" />
     <ClCompile Include="source\UIExpPoint.cpp" />
@@ -91,6 +90,7 @@
     <ClCompile Include="source\EffectBase.cpp" />
     <ClCompile Include="source\EffectManeger.cpp" />
     <ClCompile Include="source\Suppression.cpp" />
+    <ClCompile Include="source\ModeBossBattle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\IronBall.cpp" />
@@ -177,7 +177,6 @@
     <ClInclude Include="source\ModeTest.h" />
     <ClInclude Include="source\ModeTitle.h" />
     <ClInclude Include="source\Player.h" />
-    <ClInclude Include="source\Chain.h" />
     <ClInclude Include="source\SlaBlock.h" />
     <ClInclude Include="source\UIBase.h" />
     <ClInclude Include="source\UIExpPoint.h" />
@@ -389,6 +388,9 @@
       <Filter>Mode</Filter>
     </ClInclude>
     <ClInclude Include="source\ModeTutorial.h" />
+    <ClInclude Include="source\ModeBossBattle.h">
+      <Filter>Mode</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CharacterBase.h">
