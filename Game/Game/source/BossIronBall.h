@@ -46,11 +46,11 @@ private:
 	Sphere _ibSphereCol;
 
 	enum class IB_STATE {
-		IB_STATE_IDLE,
-		IB_STATE_STIFFEN,
-		IB_STATE_ATTACK_RUSH,
-		IB_STATE_ATTACK_DROP,
-		IB_STATE_ATTACK_ROTATION,
+		IB_STATE_IDLE,							// ë“ã@
+		IB_STATE_STIFFEN,					// çdíº
+		IB_STATE_ATTACK_RUSH,			// ìÀêiçUåÇ
+		IB_STATE_ATTACK_DROP,			// óéâ∫çUåÇ
+		IB_STATE_ATTACK_ROTATION,	// âÒì]çUåÇ
 	} _ibState;
 
 	//
