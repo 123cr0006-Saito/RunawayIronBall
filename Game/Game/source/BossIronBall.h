@@ -14,8 +14,15 @@ public:
 	void Process();
 	void Render();
 
+	VECTOR GetPosition() { return _ibPos; }
+	void SetPosition(VECTOR pos) { _ibPos = pos; }
+
 
 	void UpdateIBCollision();
+	Sphere GetIBCollision() { return _ibSphereCol; }
+
+	void SetHitStake(bool isHit) { _isHitStake = isHit; }
+	bool GetHitStake() { return _isHitStake; }
 
 	// デバッグ情報の表示
 	void DrawDebugInfo();
@@ -70,6 +77,7 @@ private:
 	VECTOR _posBeforeMoving;
 	VECTOR _targetPos;
 
+	bool _isHitStake;
 
 	//
 	int _ibIdleCnt;

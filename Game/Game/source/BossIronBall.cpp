@@ -60,6 +60,8 @@ BossIronBall::BossIronBall()
 	_posBeforeMoving = VGet(0.0f, 0.0f, 0.0f);
 	_targetPos = VGet(0.0f, 0.0f, 0.0f);
 
+	_isHitStake = false;
+
 	_ibIdleCnt = 0;
 	_ibMoveDir = VGet(0.0f, 0.0f, 0.0f);
 
@@ -153,10 +155,11 @@ void BossIronBall::Process()
 	}
 
 	//_ibPos = _chainPos[CHAIN_MAX - 1];
-	//_ibPos.y -= 1.0f;
+	_ibPos.y -= 16.0f;
 	if (_ibPos.y - _ibSphereCol.r < 0.0f) _ibPos.y = _ibSphereCol.r;
 	UpdateIBCollision();
 
+	_isHitStake = false;
 
 	// ‰¼
 	if (1 == CheckHitKey(KEY_INPUT_UP)) {
@@ -303,6 +306,16 @@ void BossIronBall::RushProcess()
 	switch (_phase)
 	{
 	case 0: 			// Y‚Ì•t‹ß‚ÖˆÚ“®
+		if (_isHitStake) {
+			_phase++;
+			_phaseCnt = 0;
+			VECTOR vDir = VSub(_player->GetPosition(), _ibPos);
+			vDir.y = 0.0f;
+			vDir = VNorm(vDir);
+			_ibMoveDir = vDir;
+			_isHitStake = false;
+			break;
+		}
 		VECTOR v = VGet(0.0f, 0.0f, 0.0f);
 		v.x = Easing::Linear(_phaseCnt, _posBeforeMoving.x, _targetPos.x, RU_REACH_STAKE_CNT);
 		v.y = _ibSphereCol.r +  500.0f * sinf(DX_PI_F * (_phaseCnt / static_cast<float>(RU_REACH_STAKE_CNT)));

@@ -17,10 +17,10 @@ public:
 
 
 	Capsule GetStakeCollision() { return _stakeCapsuleCol; }
+	Sphere GetIBCollision() { return _ironBall->GetIBCollision(); }
 
 
-
-
+	void CheckHitBossAndStake();
 
 
 	// デバッグ情報の表示
