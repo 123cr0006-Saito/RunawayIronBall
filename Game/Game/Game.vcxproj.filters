@@ -80,6 +80,7 @@
     <ClCompile Include="source\UnbreakableObject.cpp" />
     <ClCompile Include="source\ModeRotationCamera.cpp" />
     <ClCompile Include="source\ModeZoomCamera.cpp" />
+    <ClCompile Include="source\ModeTutorial.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\RotationCamera.h" />
@@ -179,9 +180,6 @@
     </ClCompile>
     <ClCompile Include="source\EnemyPool.cpp">
       <Filter>Character\Enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Chain.cpp">
-      <Filter>Character\Player</Filter>
     </ClCompile>
     <ClCompile Include="source\Player.cpp">
       <Filter>Character\Player</Filter>
@@ -316,6 +314,7 @@
     <ClInclude Include="source\ModeFadeComeBack.h">
       <Filter>Mode</Filter>
     </ClInclude>
+    <ClInclude Include="source\ModeTutorial.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CharacterBase.h">
@@ -350,9 +349,6 @@
     </ClInclude>
     <ClInclude Include="source\EnemyPool.h">
       <Filter>Character\Enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Chain.h">
-      <Filter>Character\Player</Filter>
     </ClInclude>
     <ClInclude Include="source\Player.h">
       <Filter>Character\Player</Filter>
