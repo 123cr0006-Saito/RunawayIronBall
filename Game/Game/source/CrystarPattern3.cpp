@@ -9,7 +9,9 @@ CrystarPattern3::CrystarPattern3() :EnemyBase::EnemyBase() {
 CrystarPattern3::~CrystarPattern3() {
 	delete _frameData;
 	delete _animManager;
-	delete _roof;
+	for (int i = 0; i < 2; i++) {
+		delete _roof[i];
+	}
 };
 
 void CrystarPattern3::InheritanceInit() {
@@ -21,7 +23,8 @@ void CrystarPattern3::InheritanceInit() {
 
 void CrystarPattern3::AnimInit() {
 
-	_roof = NEW CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof","res/Enemy/Crystar/cg_crystar_roof.mv1"), _model);
+	_roof[0] = NEW CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof_Glass", "res/Enemy/Cg_Enemy_Crystar_Iron/Cg_Crystar_Roof_Iron.mv1"), _model,"joint1");
+	_roof[1] = NEW CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof_Iron", "res/Enemy/Cg_Enemy_Crystar_Iron/Cg_Helmet_Enemy_Crystar_Iron.mv1"), _model, "joint2");
 
 	//// モーションリストのロード
 	MotionList::Load("Crystarl", "MotionList_Crystarl.csv");
@@ -200,7 +203,9 @@ bool CrystarPattern3::ModeKnockBack() {
 };
 
 bool CrystarPattern3::IndividualProcessing() {
-	_roof->Updata();
+	for(int i = 0; i < 2; i++){
+	_roof[i]->Updata();
+	}
 	_animManager->Process(static_cast<int>(_animState));
 	_frameData->Process(static_cast<int>(_animState), _animManager->GetPlayTime());
 	return true;
@@ -216,7 +221,9 @@ bool CrystarPattern3::SetState() {
 };
 
 bool CrystarPattern3::IndividualRendering() {
-	_roof->Render();
+	for (int i = 0; i < 2; i++) {
+		_roof[i]->Render();
+	}
 	return true;
 };
 

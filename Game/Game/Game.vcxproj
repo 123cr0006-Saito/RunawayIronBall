@@ -155,6 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\ModeTutorial.cpp" />
     <ClCompile Include="source\ModeZoomCamera.cpp" />
     <ClCompile Include="source\ModeRotationCamera.cpp" />
     <ClCompile Include="source\ModeFadeComeBack.cpp" />
@@ -227,6 +228,7 @@
     <ClCompile Include="source\TargetZoomCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\ModeTutorial.h" />
     <ClInclude Include="source\ModeZoomCamera.h" />
     <ClInclude Include="source\ModeRotationCamera.h" />
     <ClInclude Include="source\ModeFadeComeBack.h" />

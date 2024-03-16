@@ -59,7 +59,7 @@ IronBall::~IronBall()
 void IronBall::Init() {
 	_input = XInput::GetInstance();
 
-	_cModelHandle = MV1LoadModel("res/Chain/chain02.mv1");
+	_cModelHandle = MV1LoadModel("res/Chain/Cg_Chain.mv1");
 	_cPos[0] = VGet(0.0f, 0.0f, 0.0f);
 	MV1SetPosition(_cModelHandle, _cPos[0]);
 	MV1SetScale(_cModelHandle, VGet(0.5f, 0.5f, 0.5f));
@@ -68,7 +68,7 @@ void IronBall::Init() {
 		_cPos[i] = VAdd(_cPos[i - 1], VGet(0.0f, 0.0f, -100.0f));
 	}
 
-	_iModelHandle = MV1LoadModel("res/Character/Tetsuo/cg_tetsuo.mv1");
+	_iModelHandle = MV1LoadModel("res/Character/Cg_Iron_Ball/Cg_Iron_Ball.mv1");
 	_iPos = VAdd(_cPos[CHAIN_MAX - 1], VGet(0.0f, 10.0f, 0.0f));
 	_ibDefaultScale = VGet(2.5f, 2.5f, 2.5f);
 	MV1SetScale(_iModelHandle, _ibDefaultScale);
