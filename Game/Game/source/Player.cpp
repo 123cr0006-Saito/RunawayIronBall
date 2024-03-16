@@ -113,7 +113,7 @@ Player::Player()
 	_frameData = nullptr;
 	_modelColor = nullptr;
 
-	_bone.clear();
+	//_bone.clear();
 
 	_instance = nullptr;
 }
@@ -127,10 +127,10 @@ Player::~Player()
 	delete _modelColor;
 	delete _ironBall;
 
-	for (auto&& bone : _bone) {
-		delete bone.second;
-	}
-	_bone.clear();
+	//for (auto&& bone : _bone) {
+	//	delete bone.second;
+	//}
+	//_bone.clear();
 
 }
 
@@ -178,23 +178,65 @@ void Player::SetDamage()
 
 void Player::SetBone() {
 	//ç∂îØ
-	std::vector<int> bone_left_list(6);
-	bone_left_list[0] = MV1SearchFrame(_modelHandle,"Left_mitsuami1");
-	bone_left_list[1] = MV1SearchFrame(_modelHandle,"Left_mitsuami2");
-	bone_left_list[2] = MV1SearchFrame(_modelHandle,"Left_mitsuami3");
-	bone_left_list[3] = MV1SearchFrame(_modelHandle,"Left_mitsuami4");
-	bone_left_list[4] = MV1SearchFrame(_modelHandle,"Left_mitsuami5");
-	bone_left_list[5] = MV1SearchFrame(_modelHandle,"Left_mitsuami6");
-	_bone["Left_mitsuami"] = NEW bone(&_modelHandle, bone_left_list, bone_left_list.size() - 2, "res/JsonFile/hair_parameters.json");
+	std::vector<int> Left_mitsuami(6);
+	Left_mitsuami[0] = MV1SearchFrame(_modelHandle,"Left_mitsuami1");
+	Left_mitsuami[1] = MV1SearchFrame(_modelHandle,"Left_mitsuami2");
+	Left_mitsuami[2] = MV1SearchFrame(_modelHandle,"Left_mitsuami3");
+	Left_mitsuami[3] = MV1SearchFrame(_modelHandle,"Left_mitsuami4");
+	Left_mitsuami[4] = MV1SearchFrame(_modelHandle,"Left_mitsuami5");
+	Left_mitsuami[5] = MV1SearchFrame(_modelHandle,"Left_mitsuami6");
+	//_bone["Left_mitsuami"] = NEW bone(&_modelHandle, Left_mitsuami, Left_mitsuami.size() - 2, "Data/BoneParam/Hear.json");
+	_bone[0] = NEW bone(&_modelHandle, Left_mitsuami, Left_mitsuami.size() - 2, "Data/BoneParam/Hear.json");
 	//âEîØ
-	std::vector<int> bone_right_list(6);
-	bone_right_list[0] = MV1SearchFrame(_modelHandle,"Right_mitsuami1");
-	bone_right_list[1] = MV1SearchFrame(_modelHandle,"Right_mitsuami2");
-	bone_right_list[2] = MV1SearchFrame(_modelHandle,"Right_mitsuami3");
-	bone_right_list[3] = MV1SearchFrame(_modelHandle,"Right_mitsuami4");
-	bone_right_list[4] = MV1SearchFrame(_modelHandle,"Right_mitsuami5");
-	bone_right_list[5] = MV1SearchFrame(_modelHandle,"Right_mitsuami6");
-	_bone["Right_mitsuami"] = NEW bone(&_modelHandle, bone_right_list, bone_right_list.size() - 2, "res/JsonFile/hair_parameters.json");
+	std::vector<int> Right_mitsuami(6);
+	Right_mitsuami[0] = MV1SearchFrame(_modelHandle,"Right_mitsuami1");
+	Right_mitsuami[1] = MV1SearchFrame(_modelHandle,"Right_mitsuami2");
+	Right_mitsuami[2] = MV1SearchFrame(_modelHandle,"Right_mitsuami3");
+	Right_mitsuami[3] = MV1SearchFrame(_modelHandle,"Right_mitsuami4");
+	Right_mitsuami[4] = MV1SearchFrame(_modelHandle,"Right_mitsuami5");
+	Right_mitsuami[5] = MV1SearchFrame(_modelHandle,"Right_mitsuami6");
+	//_bone["Right_mitsuami"] = NEW bone(&_modelHandle, Right_mitsuami, Right_mitsuami.size() - 2, "Data/BoneParam/Hear.json");
+	_bone[1] = NEW bone(&_modelHandle, Right_mitsuami, Right_mitsuami.size() - 2, "Data/BoneParam/Hear.json");
+	//std::vector<int> Scarf_Underf(3);
+	//Scarf_Underf[0] = MV1SearchFrame(_modelHandle, "Under_sukafu1");
+	//Scarf_Underf[1] = MV1SearchFrame(_modelHandle, "Under_sukafu2");
+	//Scarf_Underf[2] = MV1SearchFrame(_modelHandle, "Under_sukafu3");
+	////_bone["Scarf_Under"] = NEW bone(&_modelHandle, Scarf_Underf, Scarf_Underf.size() - 2, "Data/BoneParam/Scarf.json");
+	//_bone[2] = NEW bone(&_modelHandle, Scarf_Underf, Scarf_Underf.size() - 2, "Data/BoneParam/Scarf.json");
+	/*std::vector<int> Scarf_Top(3);
+	Scarf_Top[0] = MV1SearchFrame(_modelHandle, "Up_sukafu3");
+	Scarf_Top[1] = MV1SearchFrame(_modelHandle, "Up_sukafu3");
+	Scarf_Top[2] = MV1SearchFrame(_modelHandle, "Up_sukafu3");
+	_bone["Scarf_Top"] = NEW bone(&_modelHandle, Scarf_Top, Scarf_Top.size() - 2, "res/JsonFile/hair_parameters.json");*/
+	//std::vector<int> Left_Sarope(3);
+	//Left_Sarope[0] = MV1SearchFrame(_modelHandle, "Left_sarope1");
+	//Left_Sarope[1] = MV1SearchFrame(_modelHandle, "Left_sarope2");
+	//Left_Sarope[2] = MV1SearchFrame(_modelHandle, "Left_sarope3");
+	//_bone["Left_Sarope"] = NEW bone(&_modelHandle, Left_Sarope, Left_Sarope.size() - 2, "res/JsonFile/hair_parameters.json");
+	//std::vector<int> Right_Sarope(3);
+	//Right_Sarope[0] = MV1SearchFrame(_modelHandle, "Right_sarope1");
+	//Right_Sarope[1] = MV1SearchFrame(_modelHandle, "Right_sarope2");
+	//Right_Sarope[2] = MV1SearchFrame(_modelHandle, "Right_sarope3");
+	//_bone["Right_Sarope"] = NEW bone(&_modelHandle, Right_Sarope, Right_Sarope.size() - 2, "res/JsonFile/hair_parameters.json");
+	/*std::vector<int> Left_ribbon(4);
+	Left_ribbon[0] = MV1SearchFrame(_modelHandle, "Left_ribbon1");
+	Left_ribbon[1] = MV1SearchFrame(_modelHandle, "Left_ribbon2");
+	Left_ribbon[2] = MV1SearchFrame(_modelHandle, "Left_ribbon3");
+	Left_ribbon[3] = MV1SearchFrame(_modelHandle, "Left_ribbon4");
+	_bone["Left_ribbon"] = NEW bone(&_modelHandle, Left_ribbon, Left_ribbon.size() - 2, "res/JsonFile/hair_parameters.json");
+	std::vector<int> Right_ribbon(4);
+	Right_ribbon[0] = MV1SearchFrame(_modelHandle, "Right_ribbon1");
+	Right_ribbon[1] = MV1SearchFrame(_modelHandle, "Right_ribbon2");
+	Right_ribbon[2] = MV1SearchFrame(_modelHandle, "Right_ribbon3");
+	Right_ribbon[3] = MV1SearchFrame(_modelHandle, "Right_ribbon4");
+	_bone["Right_ribbon"] = NEW bone(&_modelHandle, Right_ribbon, Right_ribbon.size() - 2, "res/JsonFile/hair_parameters.json");
+
+	std::vector<int> Ahoge(3);
+	Ahoge[0] = MV1SearchFrame(_modelHandle, "Ahoge1");
+	Ahoge[1] = MV1SearchFrame(_modelHandle, "Ahoge2");
+	Ahoge[2] = MV1SearchFrame(_modelHandle, "Ahoge3");
+	_bone["Ahoge"] = NEW bone(&_modelHandle, Ahoge, Ahoge.size() - 2, "res/JsonFile/hair_parameters.json");*/
+
 };
 
 void Player::SetNextExp(std::string FileName) {
@@ -613,17 +655,24 @@ bool Player::UpdateLevel()
 
 void Player::UpdateBone() {
 
-	std::string name[2] = { "Left_mitsuami","Right_mitsuami" };
+//	std::string name[3] = { "Left_mitsuami","Right_mitsuami","Scarf_Under"/*"Scarf_Top","Left_Sarope","Right_Sarope" ,*//*"Left_ribbon","Right_ribbon","Ahoge"*/};
 
+	//for(int i = 0; i < 2; i++){
+	//	_bone[name[i]]->SetGravity("Character1_Spine", "Character1_Head");
+	//}
+	//
+	//for (int i = 0; i < _bone.size(); i++) {
+	//	_bone[name[i]]->Process();
+	//	_bone[name[i]]->SetMain(_bone[name[i]]->_massPosList);
+	//}
 	for(int i = 0; i < 2; i++){
-		_bone[name[i]]->SetGravity("Character1_Spine", "Character1_Head");
+	_bone[i]->SetGravity("Character1_Spine", "Character1_Head");
+	_bone[i]->Process();
+	_bone[i]->SetMain(_bone[i]->_massPosList);
 	}
-	
-	for (int i = 0; i < _bone.size(); i++) {
-		_bone[name[i]]->Process();
-		_bone[name[i]]->SetMain(_bone[name[i]]->_massPosList);
-	}
-
+	//for (int i = 0; i < 2; i++) {
+	//
+	//}
 };
 
 VECTOR Player::GetRightHandPos()

@@ -13,11 +13,11 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance) {
 	if (!base::Initialize(hInstance)) { return false; }
 
 	// ƒ‚[ƒh‚Ì“o˜^
-	ModeServer::GetInstance()->Add(NEW ModeTitle(), 1, "Title");
+	//ModeServer::GetInstance()->Add(NEW ModeTitle(), 1, "Title");
 	//ModeServer::GetInstance()->Add(NEW ModeGameOver(), 1, "Title");
 	//ModeServer::GetInstance()->Add(NEW ModeTest(), 1, "Game");
 	//ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario01.csv"), 2, "Scenario");
-	//ModeServer::GetInstance()->Add(NEW ModeGame(), 1, "Game");
+	ModeServer::GetInstance()->Add(NEW ModeGame(), 1, "Game");
 	
 
 	global.Init();

@@ -36,7 +36,8 @@ bool ModeGame::Initialize() {
 	_classificationEffect = NEW ClassificationEffect();
 	_effectManeger = NEW EffectManeger();
 
-
+	SetFogEnable(true);
+	
 	{
 		ResourceServer::LoadDivGraph("Gate", "res/TemporaryMaterials/FX_Hole_2D00_sheet.png", 43, 16, 3, 1200, 1200);
 		ResourceServer::Load("Player", "res/Character/cg_player_girl/Cg_Player_Girl.mv1");
@@ -321,9 +322,17 @@ bool ModeGame::StageMutation() {
 	delete LoadFunctionThread; LoadFunctionThread = nullptr;
 	return true;
 }
-
+float fogend = 3000.0f;
 bool ModeGame::Process() {
 	base::Process();
+
+	SetFogStartEnd(1000.0f, fogend);
+	if(CheckHitKey(KEY_INPUT_DOWN)){
+		fogend -= 10.0f;
+	}
+	if (CheckHitKey(KEY_INPUT_UP)) {
+		fogend += 10.0f;
+	}
 
 	bool isAttackState = _player->GetEnabledIBAttackCollision();
 	bool isInvincible = _player->GetIsInvincible();
