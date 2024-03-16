@@ -1,14 +1,23 @@
 #include "Camera.h"
-Camera::Camera(VECTOR InitPos) {
-	this->_input = XInput::GetInstance();//コンストラクタで入力用のクラスのポインタを取得
-
-	_cameraDirX = 0.53f;
-	_cameraDirY = 0.0f;
-	//_pointDistance = VGet(0, 0, -2360);
-	_pointDistance = VGet(0, 0, -600);
-	_gazeShift = VGet(0, 80, 0);
+Camera::Camera(VECTOR InitPos) : CameraBase() {
+	
+	_gazeShift = VGet(0, 120, 0);
 	_reverseX = -1;
 	_reverseY = 1;
+
+	_cameraDistanceCount = 0;
+	_startDistance = 0.0f;
+	_endDistance = 0.0f;
+	_zoomCount = 0;
+	_IsZoom = false;
+
+	float cameraChangeDistance[CAMERA_ZOOM_MAX] = { -400.0f, -600.0f, -800.0f };
+
+	for (int i = 0; i < CAMERA_ZOOM_MAX; i++) {
+		_cameraChangeDistance[i] = cameraChangeDistance[i];
+	}
+
+	_pointDistance.z =  _cameraChangeDistance[_cameraDistanceCount];
 
 	//カメラの位置を計算
 	MATRIX origin = MGetIdent();
@@ -39,17 +48,6 @@ Camera::~Camera() {
 };
 
 bool Camera::Process(VECTOR pos, int map) {
-
-	if (_IsEvent) {
-		UpdateCameraToEvent();
-	}
-	else {
-		UpdateCameraToMatrix(pos, map);
-	}
-	return true;
-};
-
-bool Camera::UpdateCameraToMatrix(VECTOR pos, int map) {
 	//入力から得た値で移動値を返す関数
 	auto move_speed_process = [](float pos, float pos_max, float max_speed) {return pos * max_speed / pos_max; };
 
@@ -60,18 +58,10 @@ bool Camera::UpdateCameraToMatrix(VECTOR pos, int map) {
 	if (_input->GetRy() != 0) {
 		_cameraDirX += move_speed_process(_input->GetRy(), 32768, 0.02) * _reverseX;
 	}
-	//トリガ入力でカメラの距離を変更
-	//カメラが遠くに移動
-	if (_input->GetRTrg() > 25) {
-		if (_pointDistance.z > _cameraMaxDistance) {
-			_pointDistance.z -= _input->GetRTrg() / 25;
-		}
-	}
-	//カメラが近くに移動
-	if (_input->GetLTrg() > 25) {
-		if (_pointDistance.z < _cameraMinDistance) {
-			_pointDistance.z += _input->GetLTrg() / 25;
-		}
+
+	//RB入力でカメラの距離を変更
+	if (_input->GetTrg(XINPUT_BUTTON_RIGHT_SHOULDER)) {
+		SetCameraDistance();
 	}
 
 	//±で1周回ったら０度に変換
@@ -82,12 +72,16 @@ bool Camera::UpdateCameraToMatrix(VECTOR pos, int map) {
 		_cameraDirY = 0;
 	}
 
+	// 回転値の上限
 	if (_cameraDirX >= 1.39491415f) {
 		_cameraDirX = 1.39491415f;
 	}
 	else if (_cameraDirX <= -1.39491415f) {
 		_cameraDirX = -1.39491415f;
 	}
+
+	// ZoomFlagが立っていればzoomのprocessを回す
+	ZoomProcess();
 
 	//カメラの位置を計算
 	MATRIX origin = MGetIdent();
@@ -123,58 +117,33 @@ bool Camera::UpdateCameraToMatrix(VECTOR pos, int map) {
 		//カプセルの半径である５０分y軸方向に移動
 		VecAdd.y += cameraR;
 	}
+	MV1CollResultPolyDimTerminate(HitPolyDim);
 
 	//カメラのセット
 	SetCameraPositionAndTarget_UpVecY(VecAdd, target);
 	return true;
 };
 
-bool Camera::UpdateCameraToEvent() {
-	int nowTime = GetNowCount() - _currentTime;
-	VECTOR playerPos = _targetPos;
+void Camera::SetCameraDistance() {
+	_cameraDistanceCount++;
+	_cameraDistanceCount = (_cameraDistanceCount + CAMERA_ZOOM_MAX) % CAMERA_ZOOM_MAX;
+	_startDistance = _pointDistance.z;
+	_endDistance = _cameraChangeDistance[_cameraDistanceCount];
+	_zoomCount = 0;
+	_IsZoom = true;
+	_currentTime = GetNowCount();
+};
 
-	//行列の掛け算
-	MATRIX origin = MGetIdent();
-	MATRIX MatrixX = MGetRotX(_cameraDirX);
-	MATRIX MatrixY = MGetRotY(_cameraDirY);
-
-	origin = MMult(origin, MatrixX);
-	origin = MMult(origin, MatrixY);
-
-	//注視点からの距離に行列を変換する
-	VECTOR Vecter = VTransform(_pointDistance, origin);
-
-	Vecter = VAdd(Vecter, _targetPos);
-
-	//注視点の位置に移動
-	VECTOR nowPos;
-	if (nowTime > _moveTime) {
-		nowTime = _moveTime;
-		if (_IsReturn) {
-			_IsReturn = _IsEvent = false;
+bool Camera::ZoomProcess() {
+	if (_IsZoom) {
+		float moveTime = 5.0f ;// 5フレームで移動
+		_zoomCount++;
+		// 移動
+		_pointDistance.z = Easing::InQuad(_zoomCount,_startDistance,_endDistance, moveTime);
+		// 終了
+		if (_zoomCount >= 5) {
+			_IsZoom = false;
 		}
 	}
-	nowPos.x = Easing::Linear(nowTime, _keepPos.x, Vecter.x, _moveTime);
-	nowPos.y = Easing::Linear(nowTime, _keepPos.y, Vecter.y, _moveTime);
-	nowPos.z = Easing::Linear(nowTime, _keepPos.z, Vecter.z, _moveTime);
-
-	SetCameraPositionAndTarget_UpVecY(nowPos, _targetPos);
 	return true;
 };
-
-void Camera::SetEventCamera(VECTOR pos, int time) {
-	_targetPos = pos;
-	_moveTime = time;
-	_keepPos = GetCameraPosition();
-	_currentTime = GetNowCount();
-	_IsEvent = true;
-};
-
-void Camera::SetReturnCamera(VECTOR pos) {
-	if (_IsEvent) {
-		_IsReturn = true;
-		_currentTime = GetNowCount();
-		_targetPos = pos;
-		_keepPos = GetCameraPosition();
-	}
-}

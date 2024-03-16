@@ -6,14 +6,14 @@ class CrystarPattern3 : public EnemyBase
 {
 public:
 	CrystarPattern3();
-	~CrystarPattern3();
+	~CrystarPattern3()override;
 
 	void Init(VECTOR pos)override;
 	void InheritanceInit()override;
 	void AnimInit()override;
 	void CommandProcess()override;
 
-	bool ModeSearch()override;
+	bool ModeSearch(bool plAttack)override;
 	bool ModeAttack()override;
 	bool ModeCoolTime()override;
 	bool ModeKnockBack()override;
@@ -23,7 +23,7 @@ public:
 	bool SetState()override;
 
 	bool DebugRender()override;
-	VECTOR GetCollisionPos()override { return VAdd(VAdd(_pos, _diffeToCenter), _attackPos); }
+	VECTOR GetCollisionPos()override { return MV1GetFramePosition(_model, _collisionFrame); }
 
 	int GetModelHandle() { return _model; }
 protected:
@@ -36,12 +36,12 @@ protected:
 		HANDSTANDLOOP,
 		HANDBUTT
 	};
-
+	static int _collisionFrame;
 	ANIMSTATE _animState;
 
 	VECTOR _attackPos;//çUåÇéûÇ…ëùÇ¶ÇÈíl
 	float _attackDir;//çUåÇÇµÇΩéûÇ…égópÇ∑ÇÈäpìx
 
-	CrystarRoof* _roof;
+	CrystarRoof* _roof[2];
 };
 

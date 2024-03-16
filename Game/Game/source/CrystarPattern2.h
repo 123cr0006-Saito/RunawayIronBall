@@ -5,14 +5,14 @@ class CrystarPattern2 :public EnemyBase
 {
 public:
 	CrystarPattern2();
-	~CrystarPattern2();
+	~CrystarPattern2()override;
 
 	void Init(VECTOR pos)override;
 	void InheritanceInit()override;
 	void AnimInit()override;
 	void CommandProcess()override;
 
-	bool ModeSearch()override;
+	bool ModeSearch(bool plAttack)override;
 	bool ModeDisCover()override;
 	bool ModeAttack()override;
 	bool ModeCoolTime()override;
@@ -23,7 +23,7 @@ public:
 	bool SetState()override;
 
 	bool DebugRender()override;
-	VECTOR GetCollisionPos()override { return VAdd(_pos, _diffeToCenter); }
+	VECTOR GetCollisionPos()override { return MV1GetFramePosition(_model, _collisionFrame); }
 
 	int GetModelHandle() { return _model; }
 protected:
@@ -35,6 +35,7 @@ protected:
 		HANDSTANDLOOP,
 		HANDBUTT
 	};
+	static int _collisionFrame;
 	ANIMSTATE _animState;
 	CrystarRoof* _roof;
 };

@@ -10,11 +10,31 @@ bool ModeGameOver::Initialize() {
 	_handle["Retry"] = ResourceServer::LoadGraph("Retry","res/ModeGameOver/UI_Game_Over_Retry.png");
 	_handle["Give"] = ResourceServer::LoadGraph("Give","res/ModeGameOver/UI_Game_Over_Title_Back.png");
 	_selectItem = 0;
+
+	// モデルの読み込み
+	_model = ResourceServer::MV1LoadModel("Player","res/Character/cg_player_girl/Cg_Player_Girl.mv1");
+	MV1SetPosition(_model, VGet(0, 0, 0));
+	// アニメーションのアタッチ
+	int animIndex = MV1GetAnimIndex(_model, "MO_PL_Game_Over");
+	int attachAnim = MV1AttachAnim(_model, animIndex, -1, false);
+	// アニメーションの再生時間を設定
+	MV1SetAttachAnimTime(_model, attachAnim, 140);
+	//カメラのターゲットを取得
+	int frameIndex = MV1SearchFrame(_model, "Character1_Hips");
+	_targetPos = MV1GetFramePosition(_model, frameIndex);
+	// カメラの位置を設定
+	_cameraPos= VGet(0, 500, -500);
+
+	ModeServer::GetInstance()->Add(new ModeFade(3000, true), 10, "Fade");
+
+	global._soundServer->DirectPlay("PL_GameOver");
 	return true;
 };
 
 bool ModeGameOver::Terminate() {
 	base::Terminate();
+	_input = nullptr;
+	_handle.clear();
 	return true;
 };
 
@@ -43,11 +63,19 @@ bool ModeGameOver::Process() {
 		}
 	}
 
+	MATRIX matrix = MGetRotY(0.02f);
+	_cameraPos = VTransform(_cameraPos, matrix);
+	VECTOR pos = VAdd(_cameraPos, _targetPos);
+	SetCameraPositionAndTarget_UpVecY(pos, _targetPos);
+
 	return true;
 };
 
 bool ModeGameOver::Render() {
 	base::Render();
+    // モデルの描画
+	MV1DrawModel(_model);
+
 	int handleX, handleY;
 	std::vector<std::string> name = { "Logo","Retry","Give" };
 
@@ -58,6 +86,7 @@ bool ModeGameOver::Render() {
 		GetGraphSize(_handle[name[i]], &handleX, &handleY);
 		DrawRotaGraph(1920 / 2, 1080 / 2 + 175 * i, exrate, 0.0f, _handle[name[i]], true);
 	}
+
 	
 	return true;
 };

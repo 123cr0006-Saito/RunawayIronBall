@@ -31,6 +31,9 @@ private:
 	// モーションブレンド用
 	float _closeTotalTime;
 	float _closeTime;
+	float _openTotalTime;
+	float _openTime;
+	
 
 	// ループカウント用
 	int _loopCnt;

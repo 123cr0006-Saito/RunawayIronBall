@@ -16,7 +16,7 @@ ClassificationEffect::ClassificationEffect() {
 			std::pair<std::string, int> param;
 			c += GetString(&p[c], &param.first); // エフェクト名を取得
 			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &key); // keyを取得
-			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &param.second); // keyを取得
+			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &param.second); // パラメーターを取得
 			c += SkipSpace(&p[c], &p[size]); // 空白やコントロールコードをスキップする
 			// データを追加
 			_commandList[key] = param;
@@ -40,8 +40,14 @@ void ClassificationEffect::SetClassification(CommandParam param) {
 	}
 	else if (param.first == Play_SE) {
 		// SE
-		int seName = static_cast<int>(param.second);
-		global._soundServer->DirectPlay(_commandList[seName].first);
+		int voiceNum = static_cast<int>(param.second);
+		std::string voiceName = _commandList[voiceNum].first;
+		int randomMax = _commandList[voiceNum].second;
+		if (randomMax != 0) {
+			int randomNum = rand() % randomMax + 1;
+			voiceName += std::to_string(randomNum);
+		}
+		global._soundServer->DirectPlay(voiceName);
 	}
 	else if (param.first == Play_CameraVibration_X) {
 		// カメラバイブレーション X
@@ -58,14 +64,16 @@ void ClassificationEffect::SetClassification(CommandParam param) {
 		if (handle.AllNum != 0) {
 			VECTOR pos = Player::GetInstance()->GetIBPos();
 			float animSpeed = 1.0f / 60.0f * 1000;
-			BoardPolygonDust* dust = new BoardPolygonDust(pos, _commandList[effectName].second, handle.handle, handle.AllNum, animSpeed);
+			BoardPolygonDust* dust = NEW BoardPolygonDust(pos, _commandList[effectName].second, handle.handle, handle.AllNum, animSpeed);
 			EffectManeger::GetInstance()->LoadEffect(dust);
 		}
 	}
 	else if (param.first == Play_Effekseer_PC) {
 		// エフェクシア プレイヤー中心
-		VECTOR vec = VGet(0,0,0);
-		CreateEffeckseer(param.second, &vec);
+		VECTOR* vec = Player::GetInstance()->GetPositionPtr();
+		VECTOR* dir = Player::GetInstance()->GetForwardDir();
+		float height = Player::GetInstance()->GetCollision().up_pos.y / 2.0f; // 高さの半分を割り出す
+		CreateEffeckseer(param.second, vec,height,*dir);
 	}
 	else if (param.first == Play_Effekseer_IC) {
 		// エフェクシア 鉄球中心
@@ -75,7 +83,19 @@ void ClassificationEffect::SetClassification(CommandParam param) {
 	else if (param.first == Play_Effekseer_IU) {
 		// エフェクシア 鉄球足元
 		VECTOR* pos = Player::GetInstance()->GetIBPosPtr();
-		CreateEffeckseer(param.second, pos);
+		float height = Player::GetInstance()->GetIBCollision().r * -1.0f; // 高さの半分を割り出す 今回は高さぶん下げるので -1を掛ける
+		CreateEffeckseer(param.second, pos,height);
+	}
+	else if (param.first == Play_Effekseer_Rotation) {
+		int effectName = static_cast<int>(param.second);
+		int handle = ResourceServer::SearchSingle(_commandList[effectName].first.c_str(), ResourceServer::TYPE::Efk);
+		if (handle != -1) {
+			VECTOR* pos = Player::GetInstance()->GetPositionPtr();
+			VECTOR* dir = Player::GetInstance()->GetForwardDir();
+			float height = Player::GetInstance()->GetCollision().up_pos.y / 2.0f; // 高さの半分を割り出す
+			EffekseerRotation* effect = NEW EffekseerRotation(handle, pos, _commandList[effectName].second, dir, height);
+			EffectManeger::GetInstance()->LoadEffect(effect);
+		}
 	}
 	else {
 #ifdef _DEBUG
@@ -84,9 +104,9 @@ void ClassificationEffect::SetClassification(CommandParam param) {
 	}
 };
 
-void ClassificationEffect::CreateEffeckseer(float param, VECTOR* pos) {
+void ClassificationEffect::CreateEffeckseer(float param, VECTOR* pos, float height , VECTOR rotation ) {
 	int effectName = static_cast<int>(param);
 	int handle = ResourceServer::SearchSingle(_commandList[effectName].first.c_str(), ResourceServer::TYPE::Efk);
-	EffekseerBase* effekseer = new EffekseerPosSynchro(handle, pos, _commandList[effectName].second);
+	EffekseerBase* effekseer = NEW EffekseerPosSynchro(handle, pos, _commandList[effectName].second, rotation,height);
 	EffectManeger::GetInstance()->LoadEffect(effekseer);
 };
