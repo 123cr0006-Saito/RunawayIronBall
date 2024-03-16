@@ -1,8 +1,8 @@
 #include "BossIronBall.h"
 
 namespace {
-	constexpr int CHAIN_MAX = 10;
-	constexpr float CHAIN_TOTAL_LENGTH = 500.0f;
+	constexpr int BOSS_CHAIN_MAX = 10;
+	constexpr float BOSS_CHAIN_TOTAL_LENGTH = 500.0f;
 
 
 	constexpr float ROTAION_RADIUS_MAX = 1000.0f;
@@ -15,8 +15,15 @@ namespace {
 	constexpr int IDLE_INTERVAL_ADD_MAX = 60;
 
 	constexpr int IDLE_CNT_MAX = 30;
-	constexpr float IDLE_MOVE_SPEED = 180.0f / 30.0f; // 30フレームで1.8m移動
+	constexpr float IDLE_MOVE_SPEED = 180.0f / IDLE_CNT_MAX; // 30フレームで1.8m移動
 
+	// 落下攻撃
+	// 飛び上がってから、最高地点に到達するまでのフレーム数
+	constexpr int DR_REACH_HIGHEST_CNT = 90;
+	// 最高地点に到達してから、地面に着地するまでのフレーム数
+	constexpr int DR_REACH_GROUND_CNT = 30;
+	// 地面に着地後の硬直時間
+	constexpr int DR_STIFFEN_CNT = 60;
 
 	// 1フレームあたりの回転角
 	constexpr float ROTATION_ANGULAR_VELOCITY_MIN = (2.0f * DX_PI) / 90.0f; // 60フレームで一回転
@@ -36,6 +43,11 @@ BossIronBall::BossIronBall()
 	_ibSphereCol.r = 0.0f;
 	_ibState = IB_STATE::IB_STATE_IDLE;
 
+	_phase = 0;
+	_phaseCnt = 0;
+
+	_posBeforeMoving = VGet(0.0f, 0.0f, 0.0f);
+	_targetPos = VGet(0.0f, 0.0f, 0.0f);
 
 	_ibIdleCnt = 0;
 	_ibMoveDir = VGet(0.0f, 0.0f, 0.0f);
@@ -56,6 +68,9 @@ BossIronBall::BossIronBall()
 	_stakePos = nullptr;
 	_mStakePos = MGetIdent();
 	_mStakePosInv = MGetIdent();
+
+
+	_player = nullptr;
 }
 
 BossIronBall::~BossIronBall()
@@ -66,6 +81,8 @@ BossIronBall::~BossIronBall()
 	_chainModelHandle = -1;
 
 	_stakePos = nullptr;
+
+	_player = nullptr;
 }
 
 void BossIronBall::LoadModel()
@@ -77,16 +94,18 @@ void BossIronBall::LoadModel()
 void BossIronBall::Init(VECTOR* stakePos)
 {
 	_stakePos = stakePos;
-	_chainDistance = CHAIN_TOTAL_LENGTH / CHAIN_MAX;
-	for (int i = 0; i < CHAIN_MAX; i++) {
+	_chainDistance = BOSS_CHAIN_TOTAL_LENGTH / BOSS_CHAIN_MAX;
+	for (int i = 0; i < BOSS_CHAIN_MAX; i++) {
 		_chainPos.push_back(VAdd(*_stakePos, VGet(0.0f, 0.0f, -_chainDistance * 2 * i)));
 	}
 
 
-	_ibPos = _chainPos[CHAIN_MAX - 1];
+	_ibPos = _chainPos[BOSS_CHAIN_MAX - 1];
 	_ibSphereCol.centerPos = _ibPos;
 	_ibSphereCol.r = 20.0f * SCALE;
 	MV1SetScale(_ibModelHandle, VScale(VGet(1.0f, 1.0f, 1.0f), SCALE));
+
+	_ibState = IB_STATE::IB_STATE_IDLE;
 
 
 	_mStakePos = MGetTranslate(*_stakePos);
@@ -94,6 +113,9 @@ void BossIronBall::Init(VECTOR* stakePos)
 
 
 	_rotAngle = -1.0f;
+
+
+	_player = Player::GetInstance();
 }
 
 void BossIronBall::Process()
@@ -109,6 +131,7 @@ void BossIronBall::Process()
 	case BossIronBall::IB_STATE::IB_STATE_ATTACK_RUSH:
 		break;
 	case BossIronBall::IB_STATE::IB_STATE_ATTACK_DROP:
+		DropProcess();
 		break;
 	case BossIronBall::IB_STATE::IB_STATE_ATTACK_ROTATION:
 		_activeRotationAcceleration = true;
@@ -180,7 +203,7 @@ void BossIronBall::Process()
 
 void BossIronBall::Render()
 {
-	for (int i = 0; i < CHAIN_MAX; i++) {
+	for (int i = 0; i < BOSS_CHAIN_MAX; i++) {
 		MV1SetPosition(_chainModelHandle, _chainPos[i]);
 		MV1DrawModel(_chainModelHandle);
 	}
@@ -197,7 +220,7 @@ void BossIronBall::UpdateIBCollision()
 void BossIronBall::CheckState()
 {
 	// 仮
-	_ibState = IB_STATE::IB_STATE_IDLE;
+	_ibState = IB_STATE::IB_STATE_ATTACK_DROP;
 
 	switch (_ibState)
 	{
@@ -224,10 +247,17 @@ void BossIronBall::CheckState()
 	case BossIronBall::IB_STATE::IB_STATE_ATTACK_RUSH:
 		break;
 	case BossIronBall::IB_STATE::IB_STATE_ATTACK_DROP:
+		SetDrop();
 		break;
 	case BossIronBall::IB_STATE::IB_STATE_ATTACK_ROTATION:
 		break;
 	}
+}
+
+void BossIronBall::ResetPhase()
+{
+	_phase = 0;
+	_phaseCnt = 0;
 }
 
 void BossIronBall::IdleProcess()
@@ -253,6 +283,55 @@ void BossIronBall::StiffenProcess()
 		_ibStiffenCnt = 0;
 		CheckState();
 	}
+}
+
+void BossIronBall::DropProcess()
+{
+	switch (_phase)
+	{
+	case 0:				// 飛び上がり
+	{
+		VECTOR highestPos = VAdd(_targetPos, VGet(0.0f, 500.0f, 0.0f));
+		VECTOR v = VGet(0.0f, 0.0f, 0.0f);
+		v.x = Easing::OutExpo(_phaseCnt, _posBeforeMoving.x, highestPos.x, DR_REACH_HIGHEST_CNT);
+		v.y = Easing::OutExpo(_phaseCnt, _posBeforeMoving.y, highestPos.y, DR_REACH_HIGHEST_CNT);
+		v.z = Easing::OutExpo(_phaseCnt, _posBeforeMoving.z, highestPos.z, DR_REACH_HIGHEST_CNT);
+		_ibPos = v;
+		_phaseCnt++;
+		if (_phaseCnt > DR_REACH_HIGHEST_CNT) {
+			_posBeforeMoving = _ibPos;
+			_phaseCnt = 0;
+			_phase++;
+		}
+	}
+	break;
+
+	case 1:				// 着地
+	{
+		VECTOR v = VGet(0.0f, 0.0f, 0.0f);
+		v.x = Easing::EasingOutElastic(_phaseCnt, _posBeforeMoving.x, _targetPos.x, DR_REACH_GROUND_CNT);
+		v.y = Easing::EasingOutElastic(_phaseCnt, _posBeforeMoving.y, _targetPos.y, DR_REACH_GROUND_CNT);
+		v.z = Easing::EasingOutElastic(_phaseCnt, _posBeforeMoving.z, _targetPos.z, DR_REACH_GROUND_CNT);
+
+
+		_ibPos = v;
+		_phaseCnt++;
+		if (_phaseCnt > DR_REACH_GROUND_CNT) {
+			ResetPhase();
+			SetStiffen(DR_STIFFEN_CNT);
+		}
+	}
+	break;
+	}
+}
+
+void BossIronBall::SetDrop()
+{
+	ResetPhase();
+
+	_posBeforeMoving = _ibPos;
+	_targetPos = _player->GetPosition();
+	_targetPos.y = _ibSphereCol.r;
 }
 
 void BossIronBall::RotationProcess()
@@ -309,10 +388,11 @@ void BossIronBall::DrawDebugInfo()
 	std::array<std::string, 5> stateStr = { "IDLE", "STIFFEN", "ATTACK_RUSH", "ATTACK_DROP", "ATTACK_ROTATION" };
 	DrawFormatString(x, y + 20 * line, COLOR_WHITE, "State:%s", stateStr[static_cast<int>(_ibState)].c_str()); line++;
 	DrawFormatString(x, y + 20 * line, COLOR_WHITE, "pos: x %3.2f, y %3.2f, z %3.2f", _ibPos.x, _ibPos.y, _ibPos.z); line++;
+	DrawFormatString(x, y + 20 * line, COLOR_WHITE, "_phase: %d, _phaseCnt: %d", _phase, _phaseCnt); line++;
 
-	line++;
-	DrawFormatString(x, y + 20 * line, COLOR_WHITE, "idleCnt:%d", _ibIdleCnt); line++;
-	DrawFormatString(x, y + 20 * line, COLOR_WHITE, "idleCntMax:%d", debugFrameMax); line++;
-	DrawFormatString(x, y + 20 * line, COLOR_WHITE, "次に設定するフレーム数:%d", debugFrame); line++;
-	DrawFormatString(x, y + 20 * line, COLOR_WHITE, "次に設定する移動距離:%3.2f cm", debugValue); line++;
+	//line++;
+	//DrawFormatString(x, y + 20 * line, COLOR_WHITE, "idleCnt:%d", _ibIdleCnt); line++;
+	//DrawFormatString(x, y + 20 * line, COLOR_WHITE, "idleCntMax:%d", debugFrameMax); line++;
+	//DrawFormatString(x, y + 20 * line, COLOR_WHITE, "次に設定するフレーム数:%d", debugFrame); line++;
+	//DrawFormatString(x, y + 20 * line, COLOR_WHITE, "次に設定する移動距離:%3.2f cm", debugValue); line++;
 }

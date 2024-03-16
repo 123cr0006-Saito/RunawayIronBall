@@ -1,5 +1,6 @@
 #pragma once
 #include "appframe.h"
+#include "Player.h"
 
 class BossIronBall
 {
@@ -23,7 +24,7 @@ public:
 private:
 	void CheckState();
 
-
+	void ResetPhase();
 
 
 	// 待機状態の処理
@@ -32,6 +33,12 @@ private:
 	// 硬直状態の処理
 	void StiffenProcess();
 	void SetStiffen(int cnt) { _ibState = IB_STATE::IB_STATE_STIFFEN; _ibStiffenCnt = cnt; }
+
+
+
+	// 落下攻撃
+	void DropProcess();
+	void SetDrop();
 
 	// 回転攻撃
 	void RotationProcess();
@@ -52,6 +59,14 @@ private:
 		IB_STATE_ATTACK_DROP,			// 落下攻撃
 		IB_STATE_ATTACK_ROTATION,	// 回転攻撃
 	} _ibState;
+
+	// 各ステート内でのフェーズ番号
+	int _phase;
+	int _phaseCnt;
+
+	VECTOR _posBeforeMoving;
+	VECTOR _targetPos;
+
 
 	//
 	int _ibIdleCnt;
@@ -84,7 +99,7 @@ private:
 
 
 
-
+	Player* _player;
 
 
 	// デバッグ用
