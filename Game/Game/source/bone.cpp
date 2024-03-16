@@ -214,8 +214,8 @@ void bone::SetGravity(std::string end, std::string start){
 //時間があればルンゲクッタ法に変更したい
 void bone::UpdatePosAndAccel(double _elapsedTime) {
 	//時間で処理を細分化し少しずつ答えに近づけていく
-	static Vector3D* newPosList = NEW Vector3D[_massPointSize];
-	static Vector3D* newAccelList = NEW Vector3D[_massPointSize];
+	Vector3D* newPosList = NEW Vector3D[_massPointSize];
+	Vector3D* newAccelList = NEW Vector3D[_massPointSize];
 
 	//付け根の位置は固定
 	_massPosList[0] = MV1GetFramePosition(*_model, _frameList[1]);

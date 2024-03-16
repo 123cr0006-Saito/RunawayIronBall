@@ -1,6 +1,7 @@
 #include "Camera.h"
 Camera::Camera(VECTOR InitPos) : CameraBase() {
-	
+	SetCameraNearFar(20.0f, 30000.0f);
+
 	_gazeShift = VGet(0, 120, 0);
 	_reverseX = -1;
 	_reverseY = 1;
@@ -10,7 +11,7 @@ Camera::Camera(VECTOR InitPos) : CameraBase() {
 	_endDistance = 0.0f;
 	_zoomCount = 0;
 	_IsZoom = false;
-
+	
 	float cameraChangeDistance[CAMERA_ZOOM_MAX] = { -400.0f, -600.0f, -800.0f };
 
 	for (int i = 0; i < CAMERA_ZOOM_MAX; i++) {
