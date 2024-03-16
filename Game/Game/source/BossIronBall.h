@@ -35,6 +35,9 @@ private:
 	void SetStiffen(int cnt) { _ibState = IB_STATE::IB_STATE_STIFFEN; _ibStiffenCnt = cnt; }
 
 
+	// “ËiUŒ‚
+	void RushProcess();
+	void SetRush();
 
 	// —‰ºUŒ‚
 	void DropProcess();

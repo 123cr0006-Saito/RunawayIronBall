@@ -17,6 +17,16 @@ namespace {
 	constexpr int IDLE_CNT_MAX = 30;
 	constexpr float IDLE_MOVE_SPEED = 180.0f / IDLE_CNT_MAX; // 30フレームで1.8m移動
 
+	// 突進攻撃
+	// 杭の付近に到達するまでのフレーム数
+	constexpr int RU_REACH_STAKE_CNT = 60;
+	// 溜め時間
+	constexpr int RU_CHARGE_CNT = 60;
+	// 突進を行うフレーム数
+	constexpr int RU_ATTACK_CNT = 60;
+	// 突進後の硬直時間
+	constexpr int RU_STIFFEN_CNT = 120;
+
 	// 落下攻撃
 	// 飛び上がってから、最高地点に到達するまでのフレーム数
 	constexpr int DR_REACH_HIGHEST_CNT = 90;
@@ -24,6 +34,7 @@ namespace {
 	constexpr int DR_REACH_GROUND_CNT = 30;
 	// 地面に着地後の硬直時間
 	constexpr int DR_STIFFEN_CNT = 60;
+
 
 	// 1フレームあたりの回転角
 	constexpr float ROTATION_ANGULAR_VELOCITY_MIN = (2.0f * DX_PI) / 90.0f; // 60フレームで一回転
@@ -129,6 +140,7 @@ void BossIronBall::Process()
 		StiffenProcess();
 		break;
 	case BossIronBall::IB_STATE::IB_STATE_ATTACK_RUSH:
+		RushProcess();
 		break;
 	case BossIronBall::IB_STATE::IB_STATE_ATTACK_DROP:
 		DropProcess();
@@ -220,7 +232,7 @@ void BossIronBall::UpdateIBCollision()
 void BossIronBall::CheckState()
 {
 	// 仮
-	_ibState = IB_STATE::IB_STATE_ATTACK_DROP;
+	_ibState = IB_STATE::IB_STATE_ATTACK_RUSH;
 
 	switch (_ibState)
 	{
@@ -245,6 +257,7 @@ void BossIronBall::CheckState()
 	case BossIronBall::IB_STATE::IB_STATE_STIFFEN:
 		break;
 	case BossIronBall::IB_STATE::IB_STATE_ATTACK_RUSH:
+		SetRush();
 		break;
 	case BossIronBall::IB_STATE::IB_STATE_ATTACK_DROP:
 		SetDrop();
@@ -283,6 +296,55 @@ void BossIronBall::StiffenProcess()
 		_ibStiffenCnt = 0;
 		CheckState();
 	}
+}
+
+void BossIronBall::RushProcess()
+{
+	switch (_phase)
+	{
+	case 0: 			// 杭の付近へ移動
+		VECTOR v = VGet(0.0f, 0.0f, 0.0f);
+		v.x = Easing::Linear(_phaseCnt, _posBeforeMoving.x, _targetPos.x, RU_REACH_STAKE_CNT);
+		v.y = _ibSphereCol.r +  500.0f * sinf(DX_PI_F * (_phaseCnt / static_cast<float>(RU_REACH_STAKE_CNT)));
+		v.z = Easing::Linear(_phaseCnt, _posBeforeMoving.z, _targetPos.z, RU_REACH_STAKE_CNT);
+		_ibPos = v;
+		_phaseCnt++;
+		if (_phaseCnt > RU_REACH_STAKE_CNT) {
+
+			VECTOR vDir = VSub(_player->GetPosition(), _ibPos);
+			vDir.y = 0.0f;
+			vDir = VNorm(vDir);
+			_ibMoveDir = vDir;
+
+			_phaseCnt = 0;
+			_phase++;
+		}
+		break;
+	case 1:			// 溜め
+		_phaseCnt++;
+		if (_phaseCnt > RU_CHARGE_CNT) {
+			_phaseCnt = 0;
+			_phase++;
+		}
+		break;
+	case 2:			// 突進
+		_ibPos = VAdd(_ibPos, VScale(_ibMoveDir, 60.0f));
+		_phaseCnt++;
+		if (_phaseCnt > RU_ATTACK_CNT) {
+			ResetPhase();
+			SetStiffen(RU_STIFFEN_CNT);
+		}
+		break;
+	}
+}
+
+void BossIronBall::SetRush()
+{
+	ResetPhase();
+
+	_posBeforeMoving = _ibPos;
+	_targetPos = *_stakePos;
+	_targetPos.y = _ibSphereCol.r;
 }
 
 void BossIronBall::DropProcess()
