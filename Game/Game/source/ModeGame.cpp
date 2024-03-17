@@ -149,9 +149,9 @@ void ModeGame::DeleteObject() {
 
 	_floor->Delete();
 
-	for(auto itr = _house.begin(); itr != _house.end();++itr){
-		delete (*itr);(*itr) = nullptr;
-	}
+	//for(auto itr = _house.begin(); itr != _house.end();++itr){
+	//	delete (*itr);(*itr) = nullptr;
+	//}
 
 	//for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
 	//	delete (*itr);(*itr) = nullptr;
