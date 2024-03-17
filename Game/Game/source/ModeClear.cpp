@@ -82,8 +82,8 @@ void ModeClear::Valuation(){
 		int valuationCount = 3; // 0 s 1 a 2 b 3 c
 		float valuationPercentage[3] = {7.5f,5.0f,3.0f};
 		for(int i = 0; i < 3; i++){
-			int aaa = startTime / 10 * valuationPercentage[i];
-		   if(_valuationTime <=  aaa)valuationCount--;
+			int Parcentage = startTime / 10 * valuationPercentage[i];
+		   if(_valuationTime <= Parcentage)valuationCount--;
 		}
 		_valuation = valuationCount;
 	}
@@ -132,29 +132,32 @@ bool ModeClear::Render() {
 	GetGraphSize(_valuationHandle[_valuation],&handleX,&handleY);
 	GetScreenState(&screenX,&screenY,&screenDepth);
 	// •]‰¿‚Ì•\Ž¦
-	DrawGraph(screenX - handleX - 50, screenY - handleY - 50, _valuationHandle[_valuation],true);
+	DrawGraph(1100,300, _valuationHandle[_valuation],true);
 
 	// ŽžŠÔ‚Ì•\Ž¦
 	int time = _valuationTime;
 	int loopCount = 0;
-	int x = 1600, y = 400;
+	int x = 1800, y = 150;
 	while (1) {
-		
+
 		if (loopCount == 2) {
 			// ƒRƒƒ“‚ð•`‰æ
 			GetGraphSize(_handle["Colon"], &handleX, &handleY);
-			DrawGraph(x + handleX -40, y + 10, _handle["Colon"], true);
+			DrawRotaGraph(x + handleX -40 + handleX/2, y + 10 + handleY / 2.0f ,1.0f,-30*DX_PI/180.0f ,_handle["Colon"], true);
 			x -= handleX + 20;// ”Žš‚ÌŠÔŠu
+			y += handleY / 2.0f;// ”Žš‚ÌŠÔŠu
 		}
 
 		// •b”‚ð•`‰æ
 		int num = time % 10;
-		DrawGraph(x, y, _timeHandle[num], true);
+		GetGraphSize(_timeHandle[num], &handleX, &handleY);
+		DrawRotaGraph(x+ handleX/2, y + handleY / 2,1.0f,-30*DX_PI/180.0f, _timeHandle[num], true);
 		time /= 10;
 
-		GetGraphSize(_timeHandle[num], &handleX, &handleY);
+	
 
 		x -= handleX + 10;// ”Žš‚ÌŠÔŠu
+		y += handleY/2.0f;// ”Žš‚ÌŠÔŠu
 		loopCount++;// ‰½Œ…–Ú‚©”‚¦‚é
 
 		if (time == 0) {
@@ -164,8 +167,7 @@ bool ModeClear::Render() {
 	}
 	// timeƒnƒ“ƒhƒ‹‚Ì•`‰æ
 	GetGraphSize(_handle["Time"], &handleX, &handleY);
-	DrawGraph(x - handleX/2+50,y - handleY/2-80,_handle["Time"],true);
-
+	DrawGraph(1350,100,_handle["Time"],true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, _alphaValue);
 	return true;
 };
