@@ -67,23 +67,22 @@ bool ModeGame::Initialize() {
 
 	int size = 100;
 	int heartHandle[3];
-	ResourceServer::LoadMultGraph("Heart", "res/UI/UI_Heart", ".png", 3, heartHandle);
+	ResourceServer::LoadMultGraph("Heart", "res/UI/Heart/UI_Heart", ".png", 3, heartHandle);
 	ui[0] = NEW UIHeart(VGet(120, 20, 0), 3, heartHandle, 2);
 	ui[1] = NEW UIExpPoint(VGet(100, 150, 0));
-	ResourceServer::LoadMultGraph("Suppressiongauge", "res/TemporaryMaterials/SuppressionGauge/suppressiongauge", ".png", 3, heartHandle);
+	ResourceServer::LoadMultGraph("Suppressiongauge", "res/UI/SuppressionGauge/SuppressionGauge", ".png", 3, heartHandle);
 	ui[2] = NEW UISuppressionGauge(VGet(700, 100, 0), 3, heartHandle);
 	ui[3] = NEW UITimeLimit(VGet(1600, 100, 0));
 	_gaugeUI[0] = NEW DrawGauge(0, 3, size, true);
 	_gaugeUI[1] = NEW DrawGauge(0, 3, size, true);
-	_gaugeHandle[0] = ResourceServer::LoadGraph("Stamina03", _T("res/UI/UI_Stamina_03.png"));
-	_gaugeHandle[1] = ResourceServer::LoadGraph("Stamina02", _T("res/UI/UI_Stamina_02.png"));
-	_gaugeHandle[2] = ResourceServer::LoadGraph("Stamina01", _T("res/UI/UI_Stamina_01.png"));
-	_gaugeHandle[3] = ResourceServer::LoadGraph("Stamina04", _T("res/UI/UI_Stamina_04.png"));
+	_gaugeHandle[0] = ResourceServer::LoadGraph("Stamina03", ("res/UI/Stamina/UI_Stamina_03.png"));
+	_gaugeHandle[1] = ResourceServer::LoadGraph("Stamina02", ("res/UI/Stamina/UI_Stamina_02.png"));
+	_gaugeHandle[2] = ResourceServer::LoadGraph("Stamina01", ("res/UI/Stamina/UI_Stamina_01.png"));
+	_gaugeHandle[3] = ResourceServer::LoadGraph("Stamina04", ("res/UI/Stamina/UI_Stamina_04.png"));
 	_sVib = NEW ScreenVibration();
 
 	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(), 10, "camera");
 
-	//global._soundServer->DirectPlay("Stage03");
 	global._soundServer->BgmFadeIn("Stage03", 2000);
 
 

@@ -45,7 +45,7 @@ bool ModeScenario::LoadOnceHandleData() {
 	if (IsLoadHandle) {return true;}
 
 	// 初回だけ画像ハンドルを読み込む
-	std::string commonPath = "res/Scenario/";
+	std::string commonPath = "res/ModeScenario/";
 
 	// キャラ画像ハンドル
 	{
