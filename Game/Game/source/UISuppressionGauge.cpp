@@ -28,8 +28,11 @@ UISuppressionGauge::UISuppressionGauge(VECTOR pos, int size, int* handle) : UIBa
 		_residue[i].dif = GetColorU8(125, 125, 125, 255);
 		_residue[i].rhw = 1.0f;
 	}
-
-	GetGraphSizeF(handle[2], &_ironHandleSize.first.x, &_ironHandleSize.first.y);
+	// “S‹…‰æ‘œ‚Ì‰Šú‰»
+	int nowSuppression = _suppressionValue->GetNowSuppression();
+	int maxSuppression = _suppressionValue->GetMaxSuppression();
+	float ratio = static_cast<float>(nowSuppression) / maxSuppression;
+	_ironHandleSize.first = VAdd(_standardPos, VScale(VGet(_cx * ratio, 0, 0), 2));
 	_ironHandleSize.second = _cy / 2;
 };
 
