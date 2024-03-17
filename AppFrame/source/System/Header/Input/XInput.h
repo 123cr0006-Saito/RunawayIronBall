@@ -1,6 +1,6 @@
 #pragma once
 #include "dxlib.h"
-
+#include <cmath>
 
 //XInputのボタン配置
 
@@ -14,14 +14,19 @@
 //#define XINPUT_BUTTON_RIGHT_THUMB	       (7)	// 右スティック押し込み
 //#define XINPUT_BUTTON_LEFT_SHOULDER	   (8)	// LBボタン
 //#define XINPUT_BUTTON_RIGHT_SHOULDER   (9)	// RBボタン
-#define XINPUT_BUTTON_LT (10)
-#define XINPUT_BUTTON_RT (11)
+#define XINPUT_BUTTON_LT (10)                          // 左トリガ
+#define XINPUT_BUTTON_RT (11)                         // 右トリガ 
 //#define XINPUT_BUTTON_A		                         (12)   // Aボタン
 //#define XINPUT_BUTTON_B		                         (13)   // Bボタン
 //#define XINPUT_BUTTON_X		                         (14)   // Xボタン
 //#define XINPUT_BUTTON_Y		                         (15)   // Yボタン
+#define XINPUT_BUTTON_STICK_UP (16)             //上スティック
+#define XINPUT_BUTTON_STICK_DOWN (17)      //下スティック
+#define XINPUT_BUTTON_STICK_LEFT (18)         //左スティック
+#define XINPUT_BUTTON_STICK_RIGHT (19)      //右スティック
 
-#define PAD_BUTTON_MAX		16
+#define DXINPUT_BUTTON_MAX		16
+#define PAD_BUTTON_MAX		20
 const int PAYER_1 = 1;
 const int PAYER_2 = 2;
 const int PAYER_3 = 3;
@@ -65,6 +70,8 @@ public:
 
 private:
 	XINPUT_STATE _input;
+
+	unsigned char Buttons[PAD_BUTTON_MAX];
 
 
 	STICK _adjustedLStick;

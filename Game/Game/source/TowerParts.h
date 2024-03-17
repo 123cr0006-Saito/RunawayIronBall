@@ -1,7 +1,8 @@
 #pragma once
 #include "appframe.h"
+#include "ObjectBase.h"
 
-class TowerParts
+class TowerParts : public ObjectBase
 {
 public:
 	friend class Tower;
@@ -29,12 +30,26 @@ public:
 		return _use;
 	}
 
+	VECTOR GetPos() {
+		return _pos;
+	}
+
+	void SetUseCollision(bool useCollision) {
+		_useCollision = useCollision;
+		if (_useCollision) {
+			UpdateCollision();
+		}
+	}
+
 	void SetBlast(VECTOR vDir) {
+		SetUseCollision(true);
 		_blast = true;
 		_blastDir = vDir;
 
 		_isFalling = false;
 	}
+
+	bool GetIsBlast() { return _blast; }
 
 	void SetFalling(VECTOR endPos) {
 		_isFalling = true;
@@ -45,7 +60,11 @@ public:
 
 	bool GetIsFalling() { return _isFalling; }
 
-	Sphere GetSphereCollision() { return _sphereCollision; }
+	Sphere GetCollision() { return _sphereCollision; }
+
+
+	// デバッグ情報の表示
+	void DrawDebugInfo();
 
 protected:
 	// 吹っ飛び処理
@@ -74,27 +93,4 @@ protected:
 	VECTOR _vRot;
 
 	Sphere _sphereCollision;
-
-	VECTOR _localCenterPos;
-
-
-public:
-	// ベータ版　仮
-	static std::vector<TowerParts*> _blastTowerParts;
-	static void InitBlastTowerParts() {
-		_blastTowerParts.clear();
-	}
-	static void AddBlastTowerParts(TowerParts* towerParts) {
-		_blastTowerParts.push_back(towerParts);
-	}
-	static void CheckFinishedBlastTowerParts() {
-		for (auto itr = _blastTowerParts.begin(); itr != _blastTowerParts.end();) {
-			if ((*itr)->GetUse() == false) {
-				itr = _blastTowerParts.erase(itr);
-			}
-			else {
-				++itr;
-			}
-		}
-	}
 };

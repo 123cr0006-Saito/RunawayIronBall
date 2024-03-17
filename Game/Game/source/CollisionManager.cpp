@@ -1,8 +1,11 @@
 #include "CollisionManager.h"
 
 #include "Player.h"
+#include "IronBall.h"
 #include "EnemyBase.h"
 #include "BuildingBase.h"
+#include "Tower.h"
+#include "TowerParts.h"
 
 #include <math.h>
 
@@ -112,8 +115,8 @@ void CollisionManager::UpdateCell(Cell* cell)
 		pos1 = capsule.up_pos;
 		pos2 = capsule.up_pos;
 		// 最小座標
-		if(pos1.x > capsule.down_pos.x) pos1.x = capsule.down_pos.x;
-		if(pos1.z > capsule.down_pos.z) pos1.z = capsule.down_pos.z;
+		if (pos1.x > capsule.down_pos.x) pos1.x = capsule.down_pos.x;
+		if (pos1.z > capsule.down_pos.z) pos1.z = capsule.down_pos.z;
 		// 最大座標
 		if (pos2.x < capsule.down_pos.x) pos2.x = capsule.down_pos.x;
 		if (pos2.z < capsule.down_pos.z) pos2.z = capsule.down_pos.z;
@@ -155,6 +158,22 @@ void CollisionManager::UpdateCell(Cell* cell)
 
 		pos1.y = 0.0f;
 		pos2.y = 0.0f;
+	}
+	break;
+	case OBJ_TYPE::TWR:
+	{
+		Tower* tower = static_cast<Tower*>(cell->_obj);
+		Sphere sphere = tower->GetCollision();
+		pos1 = VGet(sphere.centerPos.x - sphere.r, 0.0f, sphere.centerPos.z - sphere.r);
+		pos2 = VGet(sphere.centerPos.x + sphere.r, 0.0f, sphere.centerPos.z + sphere.r);
+	}
+		break;
+	case OBJ_TYPE::TWR_PRT:
+	{
+		TowerParts* towerParts = static_cast<TowerParts*>(cell->_obj);
+		Sphere sphere = towerParts->GetCollision();
+		pos1 = VGet(sphere.centerPos.x - sphere.r, 0.0f, sphere.centerPos.z - sphere.r);
+		pos2 = VGet(sphere.centerPos.x + sphere.r, 0.0f, sphere.centerPos.z + sphere.r);
 	}
 	break;
 	}
@@ -295,6 +314,12 @@ void CollisionManager::CheckColList()
 				CheckHit(player, building);
 			}
 			break;
+			case OBJ_TYPE::TWR:
+			{
+				Tower* tower = static_cast<Tower*>(cell2->_obj);
+				CheckHit(player, tower);
+			}
+			break;
 			}
 		}
 		break; // end obj1 case OBJ_TYPE::PL
@@ -318,6 +343,12 @@ void CollisionManager::CheckColList()
 				CheckHitIbAndBldg(ironBall, building);
 			}
 			break;
+			case OBJ_TYPE::TWR:
+			{
+				Tower* tower = static_cast<Tower*>(cell2->_obj);
+				CheckHitIbAndTwr(ironBall, tower);
+			}
+			break;
 			}
 		}
 		break; // end obj1 case OBJ_TYPE::PL_IB
@@ -339,6 +370,12 @@ void CollisionManager::CheckColList()
 			{
 				BuildingBase* building = static_cast<BuildingBase*>(cell2->_obj);
 				CheckHitChAndBldg(ironBall, building);
+			}
+			break;
+			case OBJ_TYPE::TWR:
+			{
+				Tower* tower = static_cast<Tower*>(cell2->_obj);
+				CheckHitChAndTwr(ironBall, tower);
 			}
 			break;
 			}
@@ -382,8 +419,18 @@ void CollisionManager::CheckColList()
 				CheckHit(enemy1, building);
 			}
 			break;
-
-
+			case OBJ_TYPE::TWR:
+			{
+				Tower* tower = static_cast<Tower*>(cell2->_obj);
+				CheckHit(enemy1, tower);
+			}
+			break;
+			case OBJ_TYPE::TWR_PRT:
+			{
+				TowerParts* towerParts = static_cast<TowerParts*>(cell2->_obj);
+				CheckHit(enemy1, towerParts);
+			}
+			break;
 			}
 		}
 		break; // end obj1 case OBJ_TYPE::EN
@@ -419,31 +466,76 @@ void CollisionManager::CheckColList()
 				CheckHit(enemy, building);
 			}
 			break;
+			case OBJ_TYPE::TWR_PRT:
+			{
+				TowerParts* towerParts = static_cast<TowerParts*>(cell2->_obj);
+				CheckHit(building, towerParts);
 			}
-		} 
+			break;
+			}
+		}
 		break; // end obj1 case OBJ_TYPE::BLDG
 
+		// オブジェクト1がタワー本体の場合
+		case OBJ_TYPE::TWR:
+		{
+			Tower* tower = static_cast<Tower*>(cell1->_obj);
+			switch (cell2->_objType) {
+			case OBJ_TYPE::NONE:
+				break;
+			case OBJ_TYPE::PL:
+			{
+				Player* player = static_cast<Player*>(cell2->_obj);
+				CheckHit(player, tower);
+			}
+			break;
+			case OBJ_TYPE::PL_IB:
+			{
+				IronBall* ironBall = static_cast<IronBall*>(cell2->_obj);
+				CheckHitIbAndTwr(ironBall, tower);
+			}
+			break;
+			case OBJ_TYPE::PL_IB_CHAIN:
+			{
+				IronBall* ironBall = static_cast<IronBall*>(cell2->_obj);
+				CheckHitChAndTwr(ironBall, tower);
+			}
+			break;
+			case OBJ_TYPE::EN:
+			{
+				EnemyBase* enemy = static_cast<EnemyBase*>(cell2->_obj);
+				CheckHit(enemy, tower);
+			}
+			break;
+			}
 		}
+		break; // end obj1 case OBJ_TYPE::TWR
 
-
-
-
-
-
-		//int n = 0;
-		//for (int i = 0; i < treeSize; i++) {
-		//	Cell* cell = _tree[i]->_next;
-		//	while (cell != nullptr)
-		//	{
-		//		n++;
-		//		cell = cell->_next;
-		//	}
-		//}
-
-		//int m = 0;
+		// オブジェクト1がタワーのパーツの場合
+		case OBJ_TYPE::TWR_PRT:
+		{
+			TowerParts* towerParts = static_cast<TowerParts*>(cell1->_obj);
+			switch (cell2->_objType) {
+			case OBJ_TYPE::NONE:
+				break;
+			case OBJ_TYPE::EN:
+			{
+				EnemyBase* enemy = static_cast<EnemyBase*>(cell2->_obj);
+				CheckHit(enemy, towerParts);
+			}
+			break;
+			case OBJ_TYPE::BLDG:
+			{
+				BuildingBase* building = static_cast<BuildingBase*>(cell2->_obj);
+				CheckHit(building, towerParts);
+			}
+			break;
+			}
+		}
+		break; // end obj1 case OBJ_TYPE::TWR_PRT
+		}
 	}
 }
-
 void CollisionManager::CheckHit(Player* player, EnemyBase* enemy)
 {
 	// 敵が撃破ノックバック状態の時は当たり判定を行わない
@@ -486,6 +578,23 @@ void CollisionManager::CheckHit(Player* player, BuildingBase* building)
 	}
 }
 
+void CollisionManager::CheckHit(Player* player, Tower* tower)
+{
+	// XZ平面上に投影した円と円の当たり判定
+	Capsule pCol = player->GetCollision();
+	Sphere tCol = tower->GetCollision();
+	pCol.down_pos.y = 0.0f;
+	tCol.centerPos.y = 0.0f;
+	VECTOR vSub = VSub(pCol.down_pos, tCol.centerPos);
+	float sqLength = VSquareSize(vSub);
+	if (sqLength < (pCol.r + tCol.r) * (pCol.r + tCol.r)) {
+		float length = sqrt(sqLength);
+		VECTOR vDir = VScale(vSub, 1.0f / length);
+		VECTOR tmpPos = VAdd(tCol.centerPos, VScale(vDir, tCol.r + pCol.r + 1.0f));
+		player->SetPos(tmpPos);
+	}
+}
+
 void CollisionManager::CheckHitIbAndEn(IronBall* ironBall, EnemyBase* enemy)
 {
 	bool isAttackState = ironBall->GetEnabledAttackCollision();
@@ -522,6 +631,24 @@ void CollisionManager::CheckHitIbAndBldg(IronBall* ironBall, BuildingBase* build
 	}
 }
 
+void CollisionManager::CheckHitIbAndTwr(IronBall* ironBall, Tower* tower)
+{
+	bool isAttackState = ironBall->GetEnabledAttackCollision();
+	bool canBlast = tower->GetCanBlast();
+	if (isAttackState && canBlast) {
+		Sphere ibCol = ironBall->GetIBCollision();
+		Sphere tCol = tower->GetCollision();
+
+		if (Collision3D::SphereCol(ibCol, tCol)) {
+			Player* player = static_cast<Player*>(ironBall->GetParentInstance());
+			VECTOR vDir = VSub(tCol.centerPos, player->GetPosition());
+			player->SetExp(50);
+			tower->SetBlast(vDir);
+			global._soundServer->DirectPlay("OBJ_RockBreak");
+		}
+	}
+}
+
 void CollisionManager::CheckHitChAndEn(IronBall* ironBall, EnemyBase* enemy)
 {
 	bool isAttackState = ironBall->GetEnabledAttackCollision();
@@ -553,6 +680,24 @@ void CollisionManager::CheckHitChAndBldg(IronBall* ironBall, BuildingBase* build
 			VECTOR vDir = VSub(bCol.pos, player->GetPosition());
 			building->SetHit(vDir);
 			player->SetExp(50);
+			global._soundServer->DirectPlay("OBJ_RockBreak");
+		}
+	}
+}
+
+void CollisionManager::CheckHitChAndTwr(IronBall* ironBall, Tower* tower)
+{
+	bool isAttackState = ironBall->GetEnabledAttackCollision();
+	bool canBlast = tower->GetCanBlast();
+	if (isAttackState && canBlast) {
+		Capsule cCol = ironBall->GetChainCollision();
+		Sphere tCol = tower->GetCollision();
+
+		if (Collision3D::SphereCapsuleCol(tCol, cCol)) {
+			Player* player = static_cast<Player*>(ironBall->GetParentInstance());
+			VECTOR vDir = VSub(tCol.centerPos, player->GetPosition());
+			player->SetExp(50);
+			tower->SetBlast(vDir);
 			global._soundServer->DirectPlay("OBJ_RockBreak");
 		}
 	}
@@ -598,6 +743,52 @@ void CollisionManager::CheckHit(EnemyBase* enemy, BuildingBase* building)
 			hitPos.y = 0.0f;
 			VECTOR tmpPos = VAdd(hitPos, VScale(vDir, eCol.r));
 			enemy->SetPos(tmpPos);
+		}
+	}
+}
+
+void CollisionManager::CheckHit(EnemyBase* enemy, Tower* tower)
+{
+	// XZ平面上に投影した円と円の当たり判定
+	Sphere eCol = { enemy->GetCollisionPos(), enemy->GetR() };
+	Sphere tCol = tower->GetCollision();
+	eCol.centerPos.y = 0.0f;
+	tCol.centerPos.y = 0.0f;
+	VECTOR vSub = VSub(eCol.centerPos, tCol.centerPos);
+	float sqLength = VSquareSize(vSub);
+	if (sqLength < (eCol.r + tCol.r) * (eCol.r + tCol.r)) {
+		float length = sqrt(sqLength);
+		VECTOR vDir = VScale(vSub, 1.0f / length);
+		VECTOR tmpPos = VAdd(tCol.centerPos, VScale(vDir, tCol.r + eCol.r + 1.0f));
+		enemy->SetPos(tmpPos);
+	}
+}
+
+void CollisionManager::CheckHit(EnemyBase* enemy, TowerParts* towerParts)
+{
+	bool isBlast = towerParts->GetIsBlast();
+	if (isBlast) {
+		Sphere eCol = { enemy->GetCollisionPos(), enemy->GetR() };
+		Sphere tCol = towerParts->GetCollision();
+
+		if (Collision3D::SphereCol(eCol, tCol)) {
+			VECTOR vDir = VSub(tCol.centerPos, eCol.centerPos);
+			enemy->SetKnockBackAndDamage(vDir, 200);
+		}
+	}
+}
+
+void CollisionManager::CheckHit(BuildingBase* building, TowerParts* towerParts)
+{
+	bool isBlast = towerParts->GetIsBlast();
+	if (isBlast) {
+		OBB bCol = building->GetOBBCollision();
+		Sphere tCol = towerParts->GetCollision();
+
+		if (Collision3D::OBBSphereCol(bCol, tCol)) {
+			VECTOR vDir = VSub(bCol.pos, tCol.centerPos);
+			building->SetHit(vDir);
+			global._soundServer->DirectPlay("OBJ_RockBreak");
 		}
 	}
 }
@@ -698,6 +889,14 @@ void CollisionManager::DrawAreaIndex()
 			case OBJ_TYPE::BLDG:
 				obj = cell->_obj;
 				worldPos = static_cast<BuildingBase*>(obj)->GetPos();
+				break;
+			case OBJ_TYPE::TWR:
+				obj = cell->_obj;
+				worldPos = static_cast<Tower*>(obj)->GetPos();
+				break;
+			case OBJ_TYPE::TWR_PRT:
+				obj = cell->_obj;
+				worldPos = static_cast<TowerParts*>(obj)->GetPos();
 				break;
 			}
 			VECTOR screenPos = ConvWorldPosToScreenPos(worldPos);

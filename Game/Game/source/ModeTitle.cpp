@@ -190,5 +190,7 @@ bool ModeTitle::Render() {
 	else {
 		DrawCrackedScreen();
 	}
+	clsDx();
+
 	return true;
 }
