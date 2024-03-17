@@ -9,12 +9,16 @@
 #include "EnemyStract.h"
 #include "EnemyBase.h"
 #include "SlaBlock.h"
-#include "Crystarl.h"
-#include "CrystarlPattern2.h"
+#include "CrystarPattern1.h"
+#include "CrystarPattern2.h"
+#include "CrystarPattern3.h"
 #include "SlaBlockPattern2.h"
-
+#include "Chainguard.h"
+#include "Suppression.h"
 // create →model param 
 // init →pos
+
+#include "CollisionManager.h"
 
 class EnemyPool
 {
@@ -22,22 +26,29 @@ public:
 	EnemyPool(std::string paramJsonFile);
 	~EnemyPool();
 
-	void Create(myJson json);//敵の作成
-	void Create();//敵の作成
+	std::vector<std::string> LoadEnemyName(int stageNum);
+	void Create(myJson json,int stageNum);//敵の作成
 	void Init();//敵の配置などの初期化
-	void Init(VECTOR pos);//敵の配置　ループなし
-	std::vector<VECTOR> LoadJsonData(myJson jsonFile,std::string  loadName);//jsonファイルから敵の初期位置を読み込む
+	std::vector<std::pair<std::string, VECTOR>> LoadJsonData(myJson jsonFile,std::string  loadName);//jsonファイルから敵の初期位置を読み込む
 	void DeleteEnemy();//敵の削除 すべて消すか いらないのを消すかは未定
 
 	EnemyBase* Recicle();//使用していないオブジェクトを返す
 
-	bool Process();
+	bool Process(bool plAttack);
 	bool Render();
 
-	EnemyBase* GetEnemy(int i) { return _enemy[i]; }
-	static const int ENEMY_MAX_SIZE = 10;
+	static EnemyPool* GetInstance() { return _instance; }
+	static EnemyPool* _instance;
+
+	std::vector<EnemyBase*> GetEnemyContainer() { return _enemy; }
+	EnemyBase* GetEnemy(int i);
+	int GetSize() { return _enemy.size(); };
+
 private:
-	EnemyBase* _enemy[ENEMY_MAX_SIZE];
+	std::vector<EnemyBase*> _enemy;
 	std::map<std::string, EnemyParam> _enemyParametersMap;
+	std::vector<VECTOR> _enemyInitPos;
+
+	CollisionManager* _collisionManager;
 };
 

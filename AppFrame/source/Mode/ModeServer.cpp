@@ -41,6 +41,17 @@ int ModeServer::Add(ModeBase *mode, int layer, const char *name ) {
 }
 
 // 削除予約
+int ModeServer::Del(const char *name) {
+	ModeBase *mode = Get(name);
+	if (mode) {
+		_vModeDel.push_back(mode);
+		return 0;
+	}
+	return -1;
+};
+
+
+// 削除予約
 int ModeServer::Del(ModeBase *mode) {
 	_vModeDel.push_back(mode);
 	return 0;
@@ -79,7 +90,21 @@ void ModeServer::Clear() {
 	_vModeDel.clear();
 }
 
+bool ModeServer::Search(std::string name) {
+	for (auto itr = _vMode.begin(); itr != _vMode.end(); ++itr) {
+        if ((*itr)->_szName == name) {
+			return true;
+		}
+	}
+	return false;
+};
 
+void ModeServer::ChangeLayer(std::string modeName, int layerNum){
+	ModeBase* mode = Get(modeName.c_str());
+	if(mode != nullptr){
+		mode->_layer = layerNum;
+	}
+};
 
 // 削除予約されているか？
 bool ModeServer::IsDelRegist(ModeBase *mode) {
@@ -119,7 +144,7 @@ ModeBase *ModeServer::Get(int uid) {
 	for (; ite != _vModeAdd.end(); ++ite) {
 		if (!IsDelRegist((*ite)) && (*ite)->_uid == uid) { return (*ite); }
 	}
-	return NULL;
+	return nullptr;
 }
 
 // 名前から検索
@@ -134,7 +159,7 @@ ModeBase *ModeServer::Get(const char *name) {
 	for (; ite != _vModeAdd.end(); ++ite) {
 		if (!IsDelRegist((*ite)) && (*ite)->_szName == name) { return (*ite); }
 	}
-	return NULL;
+	return nullptr;
 }
 
 // ID取得
@@ -153,7 +178,7 @@ const char *ModeServer::GetName(ModeBase* mode) {
 	if (IsAdd(mode)) {
 		return mode->_szName.c_str();
 	}
-	return NULL;
+	return nullptr;
 }
 const char *ModeServer::GetName(int uid) {
 	return GetName(Get(uid));

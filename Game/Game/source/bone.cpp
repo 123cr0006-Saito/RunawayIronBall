@@ -25,9 +25,9 @@ bone::bone(
 	_naturalList(size + 1)
 {
 	//ボーンの初期化
-	_vecDirList = new Vector3D[_listSize];
-	_orignPos = new Vector3D[_listSize + 2];
-	_transMatrixList = new MATRIX[_listSize];
+	_vecDirList = NEW Vector3D[_listSize];
+	_orignPos = NEW Vector3D[_listSize + 2];
+	_transMatrixList = NEW MATRIX[_listSize];
 
 	_transFlag = 1;
 	_oldTransFlag = _transFlag;
@@ -49,14 +49,14 @@ bone::bone(
 	//----------------------------------------------------------------------------------
 	//物理演算をするための変数の初期化
 	_massPointSize = _frameList.size() - 1;
-	_massPosList = new Vector3D[_massPointSize];
-	_massAccelList = new Vector3D[_massPointSize];
+	_massPosList = NEW Vector3D[_massPointSize];
+	_massAccelList = NEW Vector3D[_massPointSize];
 
-	_massWeight = new float[_massPointSize];
-	 _viscousResistance = new float[_massPointSize];
-	 _gravity = new float[_massPointSize];
-	 _spring = new float[_massPointSize];
-	 _naturalCorrectionFactor = new float[_massPointSize];
+	_massWeight = NEW float[_massPointSize];
+	 _viscousResistance = NEW float[_massPointSize];
+	 _gravity = NEW float[_massPointSize];
+	 _spring = NEW float[_massPointSize];
+	 _naturalCorrectionFactor = NEW float[_massPointSize];
 
 	 //ファイル読み込み---------------------------------------------------
 	 myJson json(jsonFileName);
@@ -91,7 +91,11 @@ bone::bone(
 };
 
 bone::~bone() {
+	_frameList.clear();
+	_springList.clear();
+	_naturalList.clear();
 	_model = nullptr;
+
 	delete[] _vecDirList;         _vecDirList = nullptr;
 	delete[] _orignPos;           _orignPos = nullptr;
 	delete[] _transMatrixList; _transMatrixList = nullptr;
@@ -104,6 +108,7 @@ bone::~bone() {
 	delete[] _gravity;               _gravity = nullptr;
 	delete[] _spring;               _spring = nullptr;
 	delete[] _naturalCorrectionFactor; _naturalCorrectionFactor = nullptr;
+
 };
 
 void bone::SetMain(Vector3D* pos_list) {
@@ -185,6 +190,7 @@ bool bone::Process() {
 		_elapsedTime -= _processInterval;
 		UpdatePosAndAccel(_processInterval);
 	}
+	SetMain(_massPosList);
 
 	return true;
 };
@@ -196,8 +202,8 @@ bool bone::Process() {
 //時間があればルンゲクッタ法に変更したい
 void bone::UpdatePosAndAccel(double _elapsedTime) {
 	//時間で処理を細分化し少しずつ答えに近づけていく
-	static Vector3D* newPosList = new Vector3D[_massPointSize];
-	static Vector3D* newAccelList = new Vector3D[_massPointSize];
+	static Vector3D* newPosList = NEW Vector3D[_massPointSize];
+	static Vector3D* newAccelList = NEW Vector3D[_massPointSize];
 
 	//付け根の位置は固定
 	_massPosList[0] = MV1GetFramePosition(*_model, _frameList[1]);

@@ -1,6 +1,9 @@
 #pragma once
 #include "appframe.h"
 #include "ModeInstructions.h"
+#include "ModeTitle.h"
+#include <array>
+
 class ModePause : public ModeBase
 {
 	typedef ModeBase base;
@@ -26,11 +29,5 @@ protected:
 	bool _isVibration;
 	static const int MAX_MODE = 5;
 
-	int _backHandle;
-	int _optionHandle;
-	int _itemHandle[MAX_MODE];
-	int _volumBarHandle;
-	int _checkBoxHandle;
-	int _checkHandle;
-
+	std::unordered_map<std::string, int> _handleMap;
 };

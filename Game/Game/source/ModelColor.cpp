@@ -9,6 +9,12 @@ ModelColor::ModelColor()
 
 ModelColor::~ModelColor()
 {
+	for (auto itr = _defaultMaterial.begin(); itr != _defaultMaterial.end(); ++itr)
+	{
+		delete (*itr);
+		(*itr) = nullptr;
+	}
+	_defaultMaterial.clear();
 }
 
 void ModelColor::Init(int modelHandle)
@@ -26,7 +32,7 @@ void ModelColor::Init(int modelHandle)
 	}
 
 	_flickerEmissiveColor = GetColorF(1.0f, 1.0f, 1.0f, 1.0f);
-	_flickerTextureHandle = ResourceServer::LoadGraph("res/Character/cg_player_girl/white.png");
+	_flickerTextureHandle = ResourceServer::LoadGraph("GirlTexWhite","res/Character/cg_player_girl/FlickerTexture.png");
 }
 
 void ModelColor::SetTexture(int textureHandle)

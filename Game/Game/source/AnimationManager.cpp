@@ -119,7 +119,7 @@ void AnimationManager::AddAnimationItem(int statusNo)
 	// アニメーション情報が存在する場合
 	if (itr != (*_targetAnimMap).end())
 	{
-		AnimationItem* anim = new AnimationItem();
+		AnimationItem* anim = NEW AnimationItem();
 
 		ANIMATION_INFO info = itr->second;
 		int attachIndex = MV1AttachAnim(_modelHandle, info.animIndex, -1, FALSE);
@@ -177,6 +177,12 @@ void AnimationManager::Process(int statusNo)
 		if ((*itrItem)->_closeTime == 0.0f) {
 			// 再生時間を進める
 			(*itrItem)->_playTime += 1.0f;
+
+			if((*itrItem)->_openTime < (*itrItem)->_openTotalTime){
+				// ブレンド率を変更する
+				(*itrItem)->_openTime += 1.0f;
+				MV1SetAttachAnimBlendRate(_modelHandle, (*itrItem)->_attachIndex, (*itrItem)->_openTime / (*itrItem)->_openTotalTime);
+			}
 			
 			// 再生時間がアニメーションの総再生時間に達したら再生時間を０に戻す
 			if ((*itrItem)->_playTime > (*itrItem)->_totalTime) {
@@ -215,11 +221,17 @@ void AnimationManager::Process(int statusNo)
 
 void AnimationManager::DrawDebugInfo()
 {
-	int y = 0;
+	int y = 100;
 	int line = 0;
+
+	DrawBox(0, y, 300, y + 16 * 3, GetColor(128, 128, 128), TRUE);
+	DrawFormatString(0, y + line * 16, COLOR_BLUE, "PlayTime : %3.2f", _playTime); line++;
+
 	for (auto itr = _animContainer.begin(); itr != _animContainer.end(); ++itr)
 	{
 		DrawFormatString(0, y + line * 16, COLOR_BLUE, "アニメーション番号 : %d", (*itr)->_stateNo);
 		line++;
 	}
+
+	
 }

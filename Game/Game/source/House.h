@@ -1,32 +1,28 @@
 #pragma once
 #include "appframe.h"
 #include "BuildingBase.h"
+#include "BreakObject.h"
 
 
 class House : public BuildingBase
 {
-	typedef BuildingBase base;
-
 public:
 	House();
 	~House();
 
-	bool Init(int modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale) override;
-	bool Process() override;
-	bool Render() override;
+	void Init(int modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength) override;
+	void Process() override;
 
-	OBB GetOBBCollision() { return obb; }
+	void SetHit(VECTOR vDir = VGet(0.0f, 0.0f, -1.0f)) override;
+
 
 	// デバッグ情報の表示
-	bool DrawDebugInfo() override;
+	void DrawDebugInfo() override;
 
 protected:
-	// 当たり判定用
-	OBB obb;
+	// 破壊処理の有効化
+	void ActivateBreakObject(bool activate, VECTOR vDir = VGet(0.0f, 0.0f, 0.0f));
 
-	// 配置座標からモデルの中心座標までの差分ベクトル
-	// obbの位置を求めるために使用
-	VECTOR vDiffToCenter;
-
-	static std::vector<int> _breakFrame;
+	// 破壊処理クラス
+	BreakObject* _breakObj;
 };

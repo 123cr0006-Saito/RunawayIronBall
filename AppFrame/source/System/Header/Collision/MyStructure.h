@@ -1,5 +1,6 @@
 #pragma once
 #include "dxlib.h"
+#include <vector>
 
 // ‰~ü—¦
 #define	PI				(3.141592653589793)
@@ -58,6 +59,9 @@ public:
 		this->r = r;
 	}
 
+	// •`‰æˆ—
+	void Render(unsigned int color);
+
 	VECTOR centerPos;
 	float r;
 };
@@ -81,6 +85,9 @@ public:
 	// ‰ñ“]ˆ—
 	// x²->y²->z²‚Ì‡”Ô‚Å, Še²‚ğ‰ñ“]‚³‚¹‚é
 	void Rotate(VECTOR vRot);
+
+	// ’¸“_À•W‚Ìæ“¾
+	void GetVertexPos(std::vector<VECTOR>& vertexPosList);
 
 	// •`‰æˆ—
 	void Render(unsigned int color);
@@ -106,6 +113,9 @@ public:
 	void Update() {
 		up_pos = VAdd(down_pos,VGet(0,up,0));
 	};
+
+	// •`‰æˆ—
+	void Render(unsigned int color);
 
 	VECTOR up_pos = VGet(0, 0, 0);
 	VECTOR down_pos = VGet(0, 0, 0);

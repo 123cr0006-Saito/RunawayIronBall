@@ -2,15 +2,18 @@
 
 namespace {
 	constexpr float BLAST_SPEED = 60.0f;
+	constexpr int BLAST_CNT_MAX = 180;
 	constexpr float FALL_CNT_MAX = 30;
 }
-TowerParts::TowerParts()
+
+TowerParts::TowerParts() : ObjectBase::ObjectBase()
 {
 	_use = true;
 	_useCollision = false;
 
 	_blast = false;
 	_blastDir = VGet(0.0f, 0.0f, 0.0f);
+	_blastCnt = 0;
 
 	_isFalling = false;
 	_fallCnt = 0;
@@ -23,13 +26,10 @@ TowerParts::TowerParts()
 
 	_sphereCollision.centerPos = VGet(0.0f, 0.0f, 0.0f);
 	_sphereCollision.r = 0.0f;
-
-	_localCenterPos = VGet(0.0f, 0.0f, 0.0f);
 }
 
 TowerParts::~TowerParts()
 {
-	
 }
 
 void TowerParts::Init(int modelHandle, VECTOR startPos)
@@ -38,54 +38,40 @@ void TowerParts::Init(int modelHandle, VECTOR startPos)
 	_pos = startPos;
 	MV1SetPosition(_modelHandle, _pos);
 
-	VECTOR pivotLocalPos = VGet(0.0f, 0.0f, 0.0f);
-	VECTOR topLocalPos = VTransform(pivotLocalPos, MV1GetFrameLocalMatrix(_modelHandle, 3));
+	_sphereCollision.r = 250.0f;
 
-	{
-		VECTOR vDir = VSub(topLocalPos, pivotLocalPos);
-		float length = VSize(vDir);
-		vDir = VNorm(vDir);
-		_localCenterPos = VAdd(pivotLocalPos, VScale(vDir, length / 2.0f));
-	}
-
-	{
-		VECTOR pivotWorldPos = VTransform(pivotLocalPos, MV1GetLocalWorldMatrix(_modelHandle));
-		VECTOR topWorldPos = VTransform(pivotLocalPos, MV1GetFrameLocalWorldMatrix(_modelHandle, 3));
-		VECTOR vDir = VSub(topWorldPos, pivotWorldPos);
-		float length = VSize(vDir);
-
-		_sphereCollision.r = length / 2.0f;
-	}
-
-	UpdateCollision();
+	_cell->_objType = OBJ_TYPE::TWR_PRT;
 }
 
 void TowerParts::Process()
 {
 	if (_use) {
-		// 吹っ飛び処理
-		if ( _blast) {
-			BlastOffProcess();
-		}
-
 		// 落下処理
 		if (_isFalling) {
 			FallProcess();
 		}
 
+		// 吹っ飛び処理
+		if (_blast) {
+			BlastOffProcess();
+			// 当たり判定の更新
+			UpdateCollision();
+		}
+
 		// モデルの座標を更新
 		MV1SetPosition(_modelHandle, _pos);
-
-		// 当たり判定の更新
-		//if (_useCollision) {
-			UpdateCollision();
-		//}
 	}
 }
 
 void TowerParts::BlastOffProcess()
 {
 	_pos = VAdd(_pos, VScale(_blastDir, BLAST_SPEED));
+	_blastCnt++;
+	if (_blastCnt > BLAST_CNT_MAX) {
+		_use = false;
+		_useCollision = false;
+		_collisionManager->ReserveRemovementCell(_cell);
+	}
 }
 
 void TowerParts::FallProcess()
@@ -96,6 +82,7 @@ void TowerParts::FallProcess()
 	_pos = VGet(x, y, z);
 
 	_fallCnt++;
+	// 落下が終了したら
 	if (_fallCnt > FALL_CNT_MAX) {
 		_isFalling = false;
 	}
@@ -103,19 +90,21 @@ void TowerParts::FallProcess()
 
 void TowerParts::Render()
 {
-	MV1SetPosition(_modelHandle, _pos);
-	MV1DrawModel(_modelHandle);
+	if (_use) {
+		MV1SetPosition(_modelHandle, _pos);
+		MV1DrawModel(_modelHandle);
+	}
 }
 
 void TowerParts::UpdateCollision()
 {
-	MV1SetPosition(_modelHandle, _pos);
+	_sphereCollision.centerPos =_pos;
+	_collisionManager->UpdateCell(_cell);
+}
 
-	VECTOR vOrigin = VGet(0.0f, 0.0f, 0.0f);
-	VECTOR pivotWorldPos = VTransform(vOrigin, MV1GetLocalWorldMatrix(_modelHandle));
-	VECTOR topWorldPos = VTransform(vOrigin, MV1GetFrameLocalWorldMatrix(_modelHandle, 3));
-	VECTOR vDir = VSub(topWorldPos, pivotWorldPos);
-	vDir = VNorm(vDir);
-
-	_sphereCollision.centerPos = VAdd(pivotWorldPos, VScale(vDir, _sphereCollision.r));
+void TowerParts::DrawDebugInfo()
+{
+	if (_useCollision) {
+		_sphereCollision.Render(COLOR_WHITE);
+	}
 }

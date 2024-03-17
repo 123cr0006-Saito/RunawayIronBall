@@ -5,10 +5,12 @@ Player* Player::_instance = NULL;
 std::map<int, ANIMATION_INFO> Player::_animMap;
 
 namespace {
+	// 最大レベル
+	constexpr int LEVEL_MAX = 10;
 	// 最大HP
 	constexpr int HP_MAX = 4;
 	// 最大無敵時間
-	constexpr int INVINCIBLE_CNT_MAX = 90;
+	constexpr int INVINCIBLE_CNT_MAX = 240;
 
 	// 移動速度（通常状態）
 	// 最大値
@@ -31,86 +33,106 @@ namespace {
 	constexpr float MOVE_RUN_THRESHOLD = 0.6f;
 
 
-	// 仮
 	// スタミナの最大値
 	constexpr float STAMINA_MAX = 480.0f;
 	// 回転攻撃の1フレームあたりのスタミナ消費量
 	constexpr float ROTAION_SWING_STAMINA_DECREASE = 1.0f;
+	// 回避行動のスタミナ消費量
+	constexpr float AVOIDANCE_STAMINA_DECREASE = STAMINA_MAX / 6.0f;
 	// スタミナが0になってから最大値まで回復するのにかかる時間
 	constexpr float STANIMA_RECOVERY_TIME = 120.0f;
+
+	// フレームデータのコマンド
+	constexpr unsigned int	C_P_CHANGE_MOTION							= 0;
+	constexpr unsigned int 	C_P_ENABLE_MOVE								= 1;
+	constexpr unsigned int 	C_P_MOVE_FORWARD							= 2;
+	constexpr unsigned int 	C_P_ACCEPT_COMBO_INPUT					= 3;
+	constexpr unsigned int 	C_P_CHECK_CHANGE_COMBO				= 4;
+	constexpr unsigned int 	C_P_CHECK_CHANGE_ATTACK_STATE		= 5;
+	constexpr unsigned int 	C_P_ENACLE_MOTION_CANCEL				= 6;
+
+	constexpr unsigned int 	C_P_ENABLE_IB_ATTACK_COLLISION		= 100;
+	constexpr unsigned int 	C_P_ENABLE_IB_FOLLOWING_MODE		= 101;
+	constexpr unsigned int 	C_P_ENABLE_IB_INTERPOLATION			= 102;
 }
 
-Player::Player(int modelHandle, VECTOR pos) : CharacterBase(modelHandle, pos)
+Player::Player()
 {
-	_input = XInput::GetInstance();
-	_stickDir = VGet(0, 0, -1);
+	_input = nullptr;
+	_stickDir = VGet(0.0f, 0.0f, -1.0f);
 
-	_hp = HP_MAX;
+	_hp = 0;
 	_isInvincible = false;
 	_invincibleRemainingCnt = 0;
+	_idleFightingRemainingCnt = 0;
 
-	_stamina = STAMINA_MAX;
-	_staminaMax = STAMINA_MAX;
-	_isConsumingStamina = false;
+	_stamina = 0;
+	_staminaMax = 0;
+	_isRecoveringStamina = true;
+	_cntToStartRecoveryStamina = 0;
 	_isTired = false;
-	_staminaRecoverySpeed = _staminaMax / STANIMA_RECOVERY_TIME;
+	_staminaRecoverySpeed = 0;
 
-	_canMove = true;
-	_moveSpeed = 8.0f;
+	_canMove = false;
+	_moveSpeed = 0.0f;
 	_moveSpeedFWD = 0.0f;
 
-	_capsuleCollision.r = 30.0f;
-	_capsuleCollision.up = 65.0f;
-	UpdateCollision();
-
-	// 鉄球の移動状態を「追従」に設定
-	_ibMoveState = IB_MOVE_STATE::FOLLOWING;
-
 	_isAttackState = false;
+	_isSwinging = false;
+	_isRotationSwinging = false;
+	_rotationCnt = 0;
 
-	_playNextComboAnim = true;
+	_canMotionCancel = false;
+	_playNextComboAnim = false;
 
-
-	// ステートを「待機」に設定
+	_animManager = nullptr;
 	_animStatus = ANIM_STATE::IDLE;
+	_frameData = nullptr;
+
+	_ironBall = nullptr;
+
+	_capsuleCollision.r = 0.0f;
+	_capsuleCollision.up = 0.0f;
 
 
 	_blastOffDir = VGet(0, 0, 0);
 	_blastOffPower = 0.0f;
 
-	_rightHandFrameIndex = MV1SearchFrame(_modelHandle, "Character1_RightHand");
-
-	SetBone();
-
-	_isSwinging = false;
-	_isRotationSwinging = false;
-	_rotationCnt = 0;
+	_rightHandFrameIndex = -1;
 
 
-	_instance = this;
 
-	_idleFightingRemainingCnt = 0;
 
-	// モーションリストの読み込み
-	MotionList::Load("Player", "MotionList_Player.csv");
-	auto motionList = MotionList::GetMotionList("Player");
+	_nowExp = 0;
+	_nowLevel = 0;
+	_maxLevel = 0;
+	_power = 0;
+	_powerAndScale.clear();
+	_nextLevel.clear();
+	_animManager = nullptr;
+	_frameData = nullptr;
+	_modelColor = nullptr;
+	for (int i = 0; i < 2; i++) {
+		_bone[i] = nullptr;
+	}
 
-	// アニメーションマネージャーの初期設定
-	_animManager = new AnimationManager();
-	_animManager->InitMap("Player", _modelHandle, *motionList);
 
-	// フレームデータの初期設定
-	_frameData = new FrameData();
-	_frameData->LoadData("Player", *motionList);
-
-	_modelColor = new ModelColor();
-	_modelColor->Init(_modelHandle);
+	_instance = nullptr;
 }
 
 Player::~Player()
 {
 	_instance = nullptr;
+	_input = nullptr;
 	delete _animManager;
+	delete _frameData;
+	delete _modelColor;
+	delete _ironBall;
+
+	for (int i = 0; i < 2; i++) {
+		delete _bone[i];
+	}
+
 }
 
 // 無敵状態の更新
@@ -119,7 +141,6 @@ void Player::ChangeIsInvincible(bool b, int frame)
 	if (b) {
 		if (!_isInvincible) {
 			_invincibleRemainingCnt = frame;
-			_animStatus = ANIM_STATE::HIT;
 		}
 	}
 	else {
@@ -134,7 +155,26 @@ void Player::SetDamage()
 	if (_hp < 0) {
 		_hp = 0;
 	}
+	_isSwinging = false;
+	_isRotationSwinging = false;
+	_rotationCnt = 0;
+	_animStatus = ANIM_STATE::HIT;
 	ChangeIsInvincible(true, INVINCIBLE_CNT_MAX);
+	// ダメージサウンドの再生
+	switch (_hp) {
+	case 0:
+		global._soundServer->DirectPlay("PL_GameOver");
+		break;
+	case 1:
+		global._soundServer->DirectPlay("PL_HealthAlert");
+		break;
+	case 2:
+	case 3:
+		int voiceNum = rand() % 2 + 1;
+		std::string voiceName = "PL_Damage0" + std::to_string(voiceNum);
+		global._soundServer->DirectPlay(voiceName);
+		break;
+	}
 }
 
 void Player::SetBone() {
@@ -146,7 +186,7 @@ void Player::SetBone() {
 	bone_left_list[3] = MV1SearchFrame(_modelHandle,"Left_mitsuami4");
 	bone_left_list[4] = MV1SearchFrame(_modelHandle,"Left_mitsuami5");
 	bone_left_list[5] = MV1SearchFrame(_modelHandle,"Left_mitsuami6");
-	_bone[0] = new bone(&_modelHandle, bone_left_list, bone_left_list.size() - 2, "res/JsonFile/hair_parameters.json");
+	_bone[0] = NEW bone(&_modelHandle, bone_left_list, bone_left_list.size() - 2, "res/JsonFile/hair_parameters.json");
 	//右髪
 	std::vector<int> bone_right_list(6);
 	bone_right_list[0] = MV1SearchFrame(_modelHandle,"Right_mitsuami1");
@@ -155,7 +195,7 @@ void Player::SetBone() {
 	bone_right_list[3] = MV1SearchFrame(_modelHandle,"Right_mitsuami4");
 	bone_right_list[4] = MV1SearchFrame(_modelHandle,"Right_mitsuami5");
 	bone_right_list[5] = MV1SearchFrame(_modelHandle,"Right_mitsuami6");
-	_bone[1] = new bone(&_modelHandle, bone_right_list, bone_right_list.size() - 2, "res/JsonFile/hair_parameters.json");
+	_bone[1] = NEW bone(&_modelHandle, bone_right_list, bone_right_list.size() - 2, "res/JsonFile/hair_parameters.json");
 };
 
 void Player::SetNextExp(std::string FileName) {
@@ -175,21 +215,106 @@ bool Player::UpdateExp() {
 		if (_nowExp >= _nextLevel[_nowLevel]) {
 			_nowExp -= _nextLevel[_nowLevel];
 			_nowLevel++;
-		}
-	}
-
-	if (_input->GetTrg(XINPUT_BUTTON_A)) {
-		if (_nowLevel <= _maxLevel) {
-			_nowLevel--;
-		}
-	}
-	if (_input->GetTrg(XINPUT_BUTTON_B)) {
-		if (_nowLevel < _maxLevel) {
-			_nowLevel++;
+			UpdateLevel();
 		}
 	}
 	return true;
 };
+
+bool Player::Init(int modelHandle, VECTOR pos)
+{
+	CharacterBase::Init(modelHandle, pos);
+
+	_input = XInput::GetInstance();
+	_stickDir = VGet(0.0f, 0.0f, -1.0f);
+
+	_hp = HP_MAX;
+	_isInvincible = false;
+	_invincibleRemainingCnt = 0;
+
+	_stamina = STAMINA_MAX;
+	_staminaMax = STAMINA_MAX;
+	_isRecoveringStamina = true;
+	_isTired = false;
+	_staminaRecoverySpeed = _staminaMax / STANIMA_RECOVERY_TIME;
+
+	_canMove = true;
+	_moveSpeed = 8.0f;
+	_moveSpeedFWD = 0.0f;
+
+	_isAttackState = false;
+	_isSwinging = false;
+	_isRotationSwinging = false;
+	_rotationCnt = 0;
+
+	_canMotionCancel = true;
+	_playNextComboAnim = true;
+
+	// モーションリストの読み込み
+	MotionList::Load("Player", "MotionList_Player.csv");
+	auto motionList = MotionList::GetMotionList("Player");
+	// アニメーションマネージャーの初期設定
+	_animManager = NEW AnimationManager();
+	_animManager->InitMap("Player", _modelHandle, *motionList);
+	// フレームデータの初期設定
+	_frameData = NEW FrameData();
+	_frameData->LoadData("Player", *motionList);
+	// ステートを「待機」に設定
+	_animStatus = ANIM_STATE::IDLE;
+
+
+	// 鉄球の初期化
+	_ironBall = NEW IronBall();
+	_ironBall->Init();
+	_ironBall->SetParentInstance(this);
+	_ironBall->SetParentPosPtr(&_pos);
+	_ironBall->SetPlayerModelHandle(_modelHandle);
+	// 鉄球の移動状態を「追従」に設定
+	_ironBall->SetMoveState(IB_MOVE_STATE::FOLLOWING);
+
+	// 当たり判定の初期設定
+	_capsuleCollision.r = 30.0f;
+	_capsuleCollision.up = 65.0f;
+	UpdateCollision();
+
+	_cell->_objType = OBJ_TYPE::PL;
+
+	_blastOffDir = VGet(0, 0, 0);
+	_blastOffPower = 0.0f;
+
+	_rightHandFrameIndex = MV1SearchFrame(_modelHandle, "Character1_RightHand");
+
+	_modelColor = NEW ModelColor();
+	_modelColor->Init(_modelHandle);
+
+	SetBone();
+
+
+
+
+	_instance = this;
+
+	_idleFightingRemainingCnt = 0;
+
+	_nowExp = 0;
+	_nowLevel = 0;
+	SetNextExp("res/JsonFile/ExpList.json");
+	SetPowerScale("res/JsonFile/IronState.json");
+	UpdateLevel();
+
+
+
+
+
+
+
+
+
+
+
+
+	return true;
+}
 
 bool Player::Process(float camAngleY)
 {
@@ -222,7 +347,7 @@ bool Player::Process(float camAngleY)
 		// 左スティックの入力情報を取得する
 		auto lStick = _input->GetAdjustedStick_L();
 		VECTOR vMoveDir = VGet(lStick.x, 0, lStick.y);
-		if (_canMove) {
+		if (_canMove || _canMotionCancel) {
 			float size = VSize(vMoveDir);
 			// 左スティックの入力があったら
 			if (size > 0.000000f) {
@@ -251,9 +376,10 @@ bool Player::Process(float camAngleY)
 
 		if (_moveSpeedFWD != 0.f) {
 			_pos = VAdd(_pos, VScale(VNorm(_forwardDir), _moveSpeedFWD));
+			_moveSpeedFWD = 0.f;
 		}
 
-		if (!_isAttackState && _animStatus != ANIM_STATE::AVOIDANCE && _animStatus != ANIM_STATE::HIT) {
+		if (_canMotionCancel) {
 			if (_isMoved) {
 				if (_isTired) {
 					_animStatus = ANIM_STATE::WALK_TIRED;
@@ -279,7 +405,7 @@ bool Player::Process(float camAngleY)
 					_forwardDir = VTransform(_forwardDir, MGetRotAxis(vN, rotRad));
 				}
 			}
-			else {
+			else if(!_isAttackState) {
 				if (_isTired) {
 					_animStatus = ANIM_STATE::IDLE_TIRED;
 					_idleFightingRemainingCnt = 0;
@@ -298,7 +424,7 @@ bool Player::Process(float camAngleY)
 	}
 
 	// スタミナの更新
-	if (!_isConsumingStamina) {
+	if (_isRecoveringStamina) {
 		_staminaRecoverySpeed = STAMINA_MAX / STANIMA_RECOVERY_TIME;
 		_stamina += _staminaRecoverySpeed;
 		if (_stamina > STAMINA_MAX) {
@@ -309,23 +435,31 @@ bool Player::Process(float camAngleY)
 	}
 
 	if (_animStatus == ANIM_STATE::ROTATION_SWING) {
+		_isRecoveringStamina = false;
 		_stamina -= ROTAION_SWING_STAMINA_DECREASE;
-		_isConsumingStamina = true;
+		_cntToStartRecoveryStamina = 90;
 		if (_stamina < 0.0f) {
 			_stamina = 0.0f;
 			_isTired = true;
-			_isConsumingStamina = false;
 			_isRotationSwinging = false;
 			_rotationCnt = 0;
-			_isAttackState = false;
+			_forwardDir = _stickDir;
+			_animStatus = ANIM_STATE::HORISONTAL_SWING_03;
 		}
 	}
-	else {
-		_isConsumingStamina = false;
+
+	if (_cntToStartRecoveryStamina > 0) {
+		_cntToStartRecoveryStamina -= 1;
+		if (_cntToStartRecoveryStamina <= 0) {
+			_isRecoveringStamina = true;
+		}
 	}
+	//if(!_isAttackState ){
+	//	_isRecoveringStamina = false;
+	//}
 
 	// 攻撃状態の更新
-	if (_isTired == false && _animStatus != ANIM_STATE::AVOIDANCE) {
+	if (_isTired == false && _animStatus != ANIM_STATE::AVOIDANCE && _animStatus != ANIM_STATE::HIT) {
 		// 回転攻撃
 		if (_rotationCnt > 90) {
 			if (!_isRotationSwinging) {
@@ -352,7 +486,9 @@ bool Player::Process(float camAngleY)
 				_forwardDir = _stickDir;
 			}
 		}
+	}
 
+	if (!_isTired && _canMotionCancel) {
 		// 回避
 		if (_input->GetTrg(XINPUT_BUTTON_A)) {
 			if (!_isSwinging || _isRotationSwinging) {
@@ -360,10 +496,18 @@ bool Player::Process(float camAngleY)
 				// モデルの正面方向を更新する
 				_forwardDir = _stickDir;
 				_rotationCnt = 0;
+				_idleFightingRemainingCnt = 240;
+
+				_isRecoveringStamina = false;
+				_cntToStartRecoveryStamina = 90;
+				_stamina -= AVOIDANCE_STAMINA_DECREASE;
+				if (_stamina < 0.0f) {
+					_stamina = 0.0f;
+					_isTired = true;
+				}
 			}
 		}
 	}
-
 
 	if (_isRotationSwinging) {
 		float angle = _animStatus == ANIM_STATE::TO_ROTATION_SWING ? -(2.0f * DX_PI_F) / 80.0f : -(2.0f * DX_PI_F) / 30.0f;
@@ -383,13 +527,20 @@ bool Player::Process(float camAngleY)
 	UpdateBone();
 	//-------------------
 
+	
+
+
+	_ironBall->Process();
+
+	_collisionManager->UpdateCell(_cell);
+
+	return true;
+}
+
+bool Player::AnimationProcess()
+{
 	_animManager->Process(static_cast<int>(_animStatus));
 	_frameData->Process(static_cast<int>(_animStatus), _animManager->GetPlayTime());
-
-
-
-
-
 	return true;
 }
 
@@ -409,6 +560,7 @@ bool Player::BlastOffProcess()
 bool Player::Render()
 {
 	CharacterBase::Render();
+	_ironBall->Render();
 	return true;
 }
 
@@ -418,6 +570,39 @@ void Player::UpdateCollision()
 {
 	_capsuleCollision.down_pos = VAdd(_pos, VGet(0, _capsuleCollision.r, 0));
 	_capsuleCollision.Update();
+}
+
+void Player::SetPowerScale(std::string FileName)
+{
+	myJson json(FileName);
+	int level = 0;
+	int power = 0;
+	float scale = 0;
+	for (auto& list : json._json) {
+		list.at("Level").get_to(level);
+		list.at("Power").get_to(power);
+		list.at("Magnification").get_to(scale);
+		_powerAndScale[level] = std::make_pair(power, scale);
+	}
+}
+
+bool Player::UpdateLevel()
+{
+	_power = _powerAndScale[_nowLevel].first;
+	_ironBall->UpdateLevel(_powerAndScale[_nowLevel].second);
+	if (_nowLevel > 0) {
+		// レベルアップエフェクト
+		float size = 5.0f * _powerAndScale[_nowLevel].second;
+		VECTOR* pos = GetIBPosPtr();
+		int effectHandle = ResourceServer::Load("FX_3D_Level_Up", "res/Effekseer/FX_3D_Level_Up/FX_3D_Level_Up.efkefc");
+		EffekseerPosSynchro* effect = new EffekseerPosSynchro(effectHandle, pos, size);
+		EffectManeger::GetInstance()->LoadEffect(effect);
+		// レベルアップボイス
+		int randomNum = rand() % 2 + 1; // ランダムで音声を再生　1~2
+		std::string voiceName = "PL_LevelUp0" + std::to_string(randomNum);
+		global._soundServer->DirectPlay(voiceName);
+	}
+	return true;
 }
 
 void Player::UpdateBone() {
@@ -515,13 +700,21 @@ void Player::CheckFrameDataCommand()
 			_isAttackState = nextState;
 			break;
 		}
+		case C_P_ENACLE_MOTION_CANCEL:
+			_canMotionCancel = static_cast<bool>(param);
+			break;
+
 		case C_P_ENABLE_IB_ATTACK_COLLISION:
+			_ironBall->SetEnabledAttackCollision(static_cast<bool>(param));
 			break;
 		case C_P_ENABLE_IB_FOLLOWING_MODE:
-			_ibMoveState = static_cast<int>(param) == 0 ? IB_MOVE_STATE::PUTTING_ON_SOCKET : IB_MOVE_STATE::FOLLOWING;
+		{
+			IB_MOVE_STATE nextState = static_cast<int>(param) == 0 ? IB_MOVE_STATE::PUTTING_ON_SOCKET : IB_MOVE_STATE::FOLLOWING;
+			_ironBall->SetMoveState(nextState);
 			break;
+		}
 		case C_P_ENABLE_IB_INTERPOLATION:
-			_ibMoveState = IB_MOVE_STATE::INTERPOLATION;
+			_ironBall->SetMoveState(IB_MOVE_STATE::INTERPOLATION);
 			break;
 		}
 	}
@@ -547,4 +740,5 @@ void Player::DrawDebugInfo()
 
 
 	_animManager->DrawDebugInfo();
+	_ironBall->DrawDebugInfo();
 }

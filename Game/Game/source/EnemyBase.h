@@ -3,18 +3,23 @@
 #include "Player.h"
 #include "math.h"
 #include "EnemyStract.h"
-#include "PlaneEffectManeger.h"
+#include "BoardPolygon.h"
+#include "EffectManeger.h"
+#include "Suppression.h"
 
 #include <string>
+
+#include "ObjectBase.h"
+class ObjectBase;
 
 #define EN_MOTION_CHANGE 0
 
 //エネミー各種のもとになるクラス
-class EnemyBase
+class EnemyBase : public ObjectBase
 {
 public:
 	EnemyBase();
-	~EnemyBase();
+	virtual ~EnemyBase();
 
 	bool Create(int model, VECTOR pos, EnemyParam param,std::string name);
 	virtual void Init(VECTOR pos, float scale);
@@ -23,13 +28,16 @@ public:
 	virtual void AnimInit();
 
 	void SetPos(VECTOR pos);
+	void SetKindPos(VECTOR pos);
 
-	bool Process();
+	bool Process(bool plAttack);
 	bool Render();
+
+	virtual void CommandProcess();
 
 	virtual bool DebugRender();
 
-	virtual bool ModeSearch();
+	virtual bool ModeSearch(bool plAttack);
 	virtual bool ModeSearchToTurn();
 	virtual bool ModeSearchToMove();
 	virtual bool ModeSearchToCoolTime();
@@ -46,14 +54,15 @@ public:
 	virtual bool SetState();
 	virtual bool SetGravity();
 
-	bool StopPos();
-
-	void SetKnockBack(VECTOR vDir, float damage);//攻撃を受けた時の処理
+	virtual void SetKnockBackAndDamage(VECTOR vDir, float damage);//攻撃を受けた時の処理
 
 	bool GetUse() { return _IsUse; }
 	virtual VECTOR GetCollisionPos() { return VAdd(_pos, _diffeToCenter); }
+	VECTOR GetRotation() { return _rotation; }
 	float GetR() { return _r; }
 	ENEMYTYPE GetEnemyState() { return _modeState; }
+
+	int GetWeight() { return _weightExp; }
 
 	void SetExtrusionPos(VECTOR movePos) { _pos = VAdd(_pos, movePos); }
 
@@ -71,17 +80,19 @@ protected:
 
 	//索敵系変数
 	float _flontAngle;//視界範囲の角度
-	float _sartchRange;//索敵範囲の半径
+	float _searchRange;//索敵範囲の半径
 	float _moveRange;//移動範囲の半径
 	float _hearingRangeSize;//聴覚範囲の半径
 	float _discoverRangeSize;//発見時、対象の見失うまでの距離の半径
 	float _attackRangeSize;//正面の攻撃範囲
+	int _suppression; // 制圧値
 
 	//------------------------------------------------------------------------------------------------
 	
 	//主な変数
 	int    _model;//モデル
 	VECTOR _pos;//エネミーの座標
+	VECTOR _forwardVec; // 正面方向のベクトル
 	float _gravity;//重力加速度
 	VECTOR _rotation;//y軸の向いている方向
 	float _r;//当たり判定用の半径
