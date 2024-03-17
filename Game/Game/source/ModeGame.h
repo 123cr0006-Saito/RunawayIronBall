@@ -91,6 +91,7 @@ protected:
 
 	int _skySphere;
 	int _tile;
+	int _mountain;
 
 	int _effectSheet[30];
 	Gate* _gate;

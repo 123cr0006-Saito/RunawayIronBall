@@ -26,9 +26,11 @@ bool ModeGame::Initialize() {
 	_shadowHandle = MakeShadowMap(resolution, resolution);
 	_skySphere = ResourceServer::Load("SkySpehe", "res/SkySphere/Skyspehre.mv1");
 	_tile = ResourceServer::Load("Tile", "res/Tile/Stage_Base_01.mv1");
+	_mountain = ResourceServer::Load("Mountain", "res/Mountain/Stage_mountain_02.mv1");
 	MV1SetPosition(_skySphere, VGet(0, 0, 0));
 	MV1SetScale(_skySphere, VScale(VGet(1,1,1),0.5f));
 	MV1SetPosition(_tile, VGet(0, 0, 0));
+	MV1SetPosition(_mountain, VGet(0, 0, 0));
 
 	int playerModelHandle = ResourceServer::MV1LoadModel("Player", "res/Character/cg_player_girl/Cg_Player_Girl.mv1");
 	_player = NEW Player();
@@ -149,9 +151,9 @@ void ModeGame::DeleteObject() {
 
 	_floor->Delete();
 
-	for(auto itr = _house.begin(); itr != _house.end();++itr){
-		delete (*itr);(*itr) = nullptr;
-	}
+	//for(auto itr = _house.begin(); itr != _house.end();++itr){
+	//	delete (*itr);(*itr) = nullptr;
+	//}
 
 	//for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
 	//	delete (*itr);(*itr) = nullptr;
@@ -534,7 +536,9 @@ bool ModeGame::Render() {
 	SetUseBackCulling(TRUE);
 
 	MV1DrawModel(_skySphere);
-
+	if (_stageNum < 3) {
+		MV1DrawModel(_mountain);
+	}
 	// 描画に使用するシャドウマップを設定
 	SetUseShadowMap(0, _shadowHandle);
 	MV1DrawModel(_tile);
