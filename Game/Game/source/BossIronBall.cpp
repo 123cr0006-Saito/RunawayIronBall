@@ -52,7 +52,7 @@ BossIronBall::BossIronBall()
 	_ibPos = VGet(0.0f, 0.0f, 0.0f);
 	_ibSphereCol.centerPos = _ibPos;
 	_ibSphereCol.r = 0.0f;
-	_ibState = IB_STATE::IB_STATE_IDLE;
+	_ibState = IB_STATE::IDLE;
 
 	_phase = 0;
 	_phaseCnt = 0;
@@ -118,7 +118,7 @@ void BossIronBall::Init(VECTOR* stakePos)
 	_ibSphereCol.r = 20.0f * SCALE;
 	MV1SetScale(_ibModelHandle, VScale(VGet(1.0f, 1.0f, 1.0f), SCALE));
 
-	_ibState = IB_STATE::IB_STATE_IDLE;
+	_ibState = IB_STATE::IDLE;
 
 
 	_mStakePos = MGetTranslate(*_stakePos);
@@ -135,19 +135,19 @@ void BossIronBall::Process()
 {
 	switch (_ibState)
 	{
-	case BossIronBall::IB_STATE::IB_STATE_IDLE:
+	case BossIronBall::IB_STATE::IDLE:
 		IdleProcess();
 		break;
-	case BossIronBall::IB_STATE::IB_STATE_STIFFEN:
+	case BossIronBall::IB_STATE::STIFFEN:
 		StiffenProcess();
 		break;
-	case BossIronBall::IB_STATE::IB_STATE_ATTACK_RUSH:
+	case BossIronBall::IB_STATE::ATTACK_RUSH:
 		RushProcess();
 		break;
-	case BossIronBall::IB_STATE::IB_STATE_ATTACK_DROP:
+	case BossIronBall::IB_STATE::ATTACK_DROP:
 		DropProcess();
 		break;
-	case BossIronBall::IB_STATE::IB_STATE_ATTACK_ROTATION:
+	case BossIronBall::IB_STATE::ATTACK_ROTATION:
 		_activeRotationAcceleration = true;
 		RotationAcceleration();
 		RotationProcess();
@@ -235,11 +235,13 @@ void BossIronBall::UpdateIBCollision()
 void BossIronBall::CheckState()
 {
 	// âº
-	_ibState = IB_STATE::IB_STATE_ATTACK_RUSH;
+	//int next = 1 + rand() % 4;
+	//_ibState = static_cast<IB_STATE>(next);
+	_ibState = IB_STATE::ATTACK_RUSH;
 
 	switch (_ibState)
 	{
-	case BossIronBall::IB_STATE::IB_STATE_IDLE:
+	case BossIronBall::IB_STATE::IDLE:
 	{
 		_ibIdleCnt = 0;
 
@@ -257,15 +259,15 @@ void BossIronBall::CheckState()
 
 		break;
 	}
-	case BossIronBall::IB_STATE::IB_STATE_STIFFEN:
+	case BossIronBall::IB_STATE::STIFFEN:
 		break;
-	case BossIronBall::IB_STATE::IB_STATE_ATTACK_RUSH:
+	case BossIronBall::IB_STATE::ATTACK_RUSH:
 		SetRush();
 		break;
-	case BossIronBall::IB_STATE::IB_STATE_ATTACK_DROP:
+	case BossIronBall::IB_STATE::ATTACK_DROP:
 		SetDrop();
 		break;
-	case BossIronBall::IB_STATE::IB_STATE_ATTACK_ROTATION:
+	case BossIronBall::IB_STATE::ATTACK_ROTATION:
 		break;
 	}
 }
@@ -287,7 +289,7 @@ void BossIronBall::IdleProcess()
 	if (_ibIdleCnt > IDLE_CNT_MAX) {
 		_ibIdleCnt = IDLE_CNT_MAX;
 		// çdíºèÛë‘Ç…ëJà⁄
-		_ibState = IB_STATE::IB_STATE_STIFFEN;
+		_ibState = IB_STATE::STIFFEN;
 		SetStiffen(IDLE_INTERVAL_BASE + (rand() % IDLE_INTERVAL_ADD_MAX));
 	}
 }

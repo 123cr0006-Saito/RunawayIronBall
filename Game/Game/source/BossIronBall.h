@@ -39,7 +39,7 @@ private:
 
 	// 硬直状態の処理
 	void StiffenProcess();
-	void SetStiffen(int cnt) { _ibState = IB_STATE::IB_STATE_STIFFEN; _ibStiffenCnt = cnt; }
+	void SetStiffen(int cnt) { _ibState = IB_STATE::STIFFEN; _ibStiffenCnt = cnt; }
 
 
 	// 突進攻撃
@@ -63,11 +63,11 @@ private:
 	Sphere _ibSphereCol;
 
 	enum class IB_STATE {
-		IB_STATE_IDLE,							// 待機
-		IB_STATE_STIFFEN,					// 硬直
-		IB_STATE_ATTACK_RUSH,			// 突進攻撃
-		IB_STATE_ATTACK_DROP,			// 落下攻撃
-		IB_STATE_ATTACK_ROTATION,	// 回転攻撃
+		IDLE,							// 待機
+		STIFFEN,					// 硬直
+		ATTACK_RUSH,			// 突進攻撃
+		ATTACK_DROP,			// 落下攻撃
+		ATTACK_ROTATION,	// 回転攻撃
 	} _ibState;
 
 	// 各ステート内でのフェーズ番号
