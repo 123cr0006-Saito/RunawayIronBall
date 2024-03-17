@@ -20,11 +20,14 @@ protected:
 	int _attachAnim;
 	int _frameCount;
 	int _maxCount;
-	int _backGround;
-	int _valuationHandle;
+	std::unordered_map<std::string,int> _handle;
 	int _alphaValue;
 	int _currentTime;
 	XInput* input;
 	ModeGame* _modeGame;
+	int _valuationHandle[4];
+	int _valuationTime;
+	int _valuation;
+	int _timeHandle[10];
 };
 
