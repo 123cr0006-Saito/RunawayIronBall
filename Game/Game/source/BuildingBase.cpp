@@ -11,8 +11,8 @@ BuildingBase::BuildingBase()
 BuildingBase::~BuildingBase()
 {
 	if (_modelHandle != -1) {
-		MV1DeleteModel(_modelHandle);
-		_modelHandle = -1;
+	/*	MV1DeleteModel(_modelHandle);
+		_modelHandle = -1;*/
 	}
 }
 

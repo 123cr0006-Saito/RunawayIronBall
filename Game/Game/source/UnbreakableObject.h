@@ -5,7 +5,7 @@ class UnbreakableObject : public BuildingBase
 {
 public:
 	UnbreakableObject();
-	virtual ~UnbreakableObject();
+	 virtual ~UnbreakableObject();
 
 	void Init(int modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength);
 	void Process() override;

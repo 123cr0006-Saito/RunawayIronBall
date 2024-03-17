@@ -48,6 +48,7 @@ Camera::~Camera() {
 };
 
 bool Camera::Process(VECTOR pos, int map) {
+	float oldDirX = _cameraDirX;
 	//入力から得た値で移動値を返す関数
 	auto move_speed_process = [](float pos, float pos_max, float max_speed) {return pos * max_speed / pos_max; };
 
@@ -116,6 +117,8 @@ bool Camera::Process(VECTOR pos, int map) {
 		VecAdd.y = VScale(VAdd(VAdd(HitPolyDim.Dim[0].Position[0], HitPolyDim.Dim[0].Position[1]), HitPolyDim.Dim[0].Position[1]), 0.3333333).y;
 		//カプセルの半径である５０分y軸方向に移動
 		VecAdd.y += cameraR;
+
+		_cameraDirX = oldDirX;
 	}
 	MV1CollResultPolyDimTerminate(HitPolyDim);
 

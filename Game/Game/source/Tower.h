@@ -6,7 +6,7 @@ class Tower : public ObjectBase
 {
 public:
 	Tower();
-	~Tower();
+	virtual ~Tower();
 
 
 	void Init(std::array<int, 3> modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale);

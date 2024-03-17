@@ -64,7 +64,7 @@ public:
 
 
 	//デバッグ用
-	std::vector<OBJECTDATA> LoadJsonObject(nlohmann::json json, std::string loadName);//引数 読み込みたいオブジェクトの名前
+	std::vector<OBJECTDATA> LoadJsonObject(const myJson& json, std::string loadName);//引数 読み込みたいオブジェクトの名前
 
 protected:
 
@@ -106,6 +106,7 @@ protected:
 	bool _drawDebug = false;
 
 	std::vector<ObjectParam>_objectParam;
+	std::vector<std::string>  _objectName;
 
 	Light* _light;
 

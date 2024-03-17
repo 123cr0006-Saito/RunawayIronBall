@@ -84,7 +84,7 @@ bool ModeGame::Initialize() {
 	_gaugeHandle[3] = ResourceServer::LoadGraph("Stamina04", ("res/UI/Stamina/UI_Stamina_04.png"));
 	_sVib = NEW ScreenVibration();
 
-	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(), 10, "camera");
+//	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(), 10, "camera");
 
 	global._soundServer->BgmFadeIn("Stage03", 2000);
 
@@ -149,26 +149,30 @@ void ModeGame::DeleteObject() {
 
 	_floor->Delete();
 
-	for (auto&& house : _house) {
-		delete house;
+	for(auto itr = _house.begin(); itr != _house.end();++itr){
+		delete (*itr);(*itr) = nullptr;
 	}
-	 
-	for (auto&& tower : _tower) {
-		delete tower;
-	}
-	 
-	for (auto&& uObj : _uObj) {
-		delete uObj;
-	}
+
+	//for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
+	//	delete (*itr);(*itr) = nullptr;
+	//}
+
+	//for (auto itr = _uObj.begin(); itr != _uObj.end(); ++itr) {
+	//	delete (*itr); (*itr) = nullptr;
+	//}
 
 	_house.clear();
 	_tower.clear();
 	_uObj.clear();
 
+	for(auto&& name : _objectName){
+		ResourceServer::MV1DeleteModelAll(name);
+	}
+
 };
 
-std::vector<ModeGame::OBJECTDATA> ModeGame::LoadJsonObject(nlohmann::json json, std::string loadName) {
-	nlohmann::json loadObject = json.at(loadName);
+std::vector<ModeGame::OBJECTDATA> ModeGame::LoadJsonObject(const myJson& json, std::string loadName) {
+	nlohmann::json loadObject = json._json.at(loadName);
 	std::vector<ModeGame::OBJECTDATA> _objectList;
 	for (auto& list : loadObject) {
 		OBJECTDATA object;
@@ -269,18 +273,22 @@ bool ModeGame::LoadStage(std::string fileName) {
 
 		_tower.push_back(tower);
 	}
+	_objectName.push_back("Tower01");
+	_objectName.push_back("Tower02");
+	_objectName.push_back("Tower03");
 
 	std::string buildingName = "Building";
 	std::vector<std::string> objectName = LoadObjectName(buildingName);
 	for (auto&& nameList : objectName) {
 
-		auto itr = std::find_if(_objectParam.begin(), _objectParam.end(), [&](ObjectParam temp)
+		auto itr = std::find_if(_objectParam.begin(), _objectParam.end(), [=](ObjectParam temp)
 		{
 				return temp._name == nameList;
 		});
 
-		std::vector<ModeGame::OBJECTDATA> objectData = LoadJsonObject(json._json, nameList);
-		std::string modelName = (*itr)._name;
+		std::vector<ModeGame::OBJECTDATA> objectData = LoadJsonObject(json, nameList);
+		std::string modelName = nameList;
+		_objectName.push_back(modelName);
 		std::string modelPath = "res/Building/" + modelName + "/" + modelName + ".mv1";
 		for (auto&& object : objectData) {
 			int objHandle = ResourceServer::MV1LoadModel(modelName, modelPath);
@@ -311,16 +319,18 @@ bool ModeGame::StageMutation() {
 	std::string fileName = "Data/ObjectList/Stage_0" + std::to_string(_stageNum) + ".json";
 
 	 // 非同期読み込み設定
-	SetUseASyncLoadFlag(true);
+	//SetUseASyncLoadFlag(true);
 	LoadStage(fileName);
-	SetUseASyncLoadFlag(false);
+	//SetUseASyncLoadFlag(false);
 	// ロード終了
 
 	IsLoading = true;
 
 	// ロードスレッドを終了
+	if(LoadFunctionThread != nullptr){
 	LoadFunctionThread->detach();
 	delete LoadFunctionThread; LoadFunctionThread = nullptr;
+	}
 	return true;
 }
 
@@ -511,8 +521,9 @@ bool ModeGame::GateProcess() {
 
 void ModeGame::NewStage(){
 	_stageNum++;
-	ModeServer::GetInstance()->Add(NEW ModeLoading(&IsLoading), 100, "Loading");
-	LoadFunctionThread = NEW std::thread(&ModeGame::StageMutation, this);
+	//ModeServer::GetInstance()->Add(NEW ModeLoading(&IsLoading), 100, "Loading");
+	//LoadFunctionThread = NEW std::thread(&ModeGame::StageMutation, this);
+	StageMutation();
 };
 
 bool ModeGame::Render() {

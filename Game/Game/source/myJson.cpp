@@ -11,3 +11,7 @@ myJson::myJson(std::string fileName) {
 	//オブジェクトの数を格納
 	_size = _json.size();
 };
+
+myJson::~myJson(){
+	_json.clear();
+};
