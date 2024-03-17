@@ -13,11 +13,11 @@ bool ModeTitle::Initialize() {
 
 	_input = XInput::GetInstance();
 	_modeCount = 0;
-
-	_handleMap["title"] = ResourceServer::LoadGraph("Title",_T("res/ModeTitle/UI_Title.png"));
-	_handleMap["start"] = ResourceServer::LoadGraph("Start",_T("res/ModeTitle/UI_Title_Play.png"));
-	_handleMap["option"] = ResourceServer::LoadGraph("Option",_T("res/ModeTitle/UI_Title_Option.png"));
-	_handleMap["quit"] = ResourceServer::LoadGraph("Quit",_T("res/ModeTitle/UI_Title_Quit.png"));
+	_handleMap["BackGround"] = ResourceServer::LoadGraph("T_BackGround", _T("res/ModeTitle/title_base.png"));
+	_handleMap["Title"] = ResourceServer::LoadGraph("T_Title",_T("res/ModeTitle/UI_Title.png"));
+	_handleMap["Start"] = ResourceServer::LoadGraph("T_Start",_T("res/ModeTitle/UI_Start.png"));
+	_handleMap["Option"] = ResourceServer::LoadGraph("T_Option",_T("res/ModeTitle/UI_Option.png"));
+	_handleMap["Quit"] = ResourceServer::LoadGraph("T_Quit",_T("res/ModeTitle/UI_Quit.png"));
 
 	_IsGameStart = false;
 	//Š„‚ê‚éˆ—‚Ì‰Šú‰»
@@ -141,21 +141,21 @@ void ModeTitle::UpdateCrackedScreen(){
 };
 
 void ModeTitle::DrawTitleItems(){
-	DrawFillBox(0, 0, 1920, 1080, GetColor(0, 0, 0));
+	DrawGraph(0, 0, _handleMap["BackGround"], true);
 	int handleX, handleY;
 	//ƒ^ƒCƒgƒ‹ƒƒS‚Ì•`‰æ
-	GetGraphSize(_handleMap["title"], &handleX, &handleY);
+	GetGraphSize(_handleMap["Title"], &handleX, &handleY);
 	//x = 1920 / 2 - x / 2;
 	handleX = 840;
-	DrawGraph(handleX, 145, _handleMap["title"], true);
+	DrawGraph(handleX, 0, _handleMap["Title"], true);
 
 	//‚»‚ê‚¼‚ê‚Ì€–Ú‚Ì•`‰æ
 	
 	int centerX, centerY;
-	centerX = 1340;
-	centerY = 555;
+	centerX = 1400;
+	centerY = 600;
 
-	std::array<std::string,3> _handleNameList = { "start","option","quit" };
+	std::array<std::string,3> _handleNameList = { "Start","Option","Quit" };
 
 	for (int i = 0; i < 3; i++) {
 		int handleNum = i;
