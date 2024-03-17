@@ -14,7 +14,7 @@ bool ModeGame::Initialize() {
 	_collisionManager->Init();
 
 	_gate = nullptr;
-	_stageNum = 2;
+	_stageNum = 1;
 	IsLoading = true;
 	LoadFunctionThread = nullptr;
 

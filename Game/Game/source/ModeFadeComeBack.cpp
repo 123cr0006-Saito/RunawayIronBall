@@ -1,15 +1,21 @@
 #include "ModeFadeComeBack.h"
 
-ModeFadeComeBack::ModeFadeComeBack(int Time) :ModeFade(Time, false) {
+ModeFadeComeBack::ModeFadeComeBack(int Time, std::string modeName, int layer, bool IsProcessSkip) :ModeFade(Time, false) {
 	_fadeEnd = 255;
 	_fadeStart = 0;
 	_deleteMode = nullptr;
+	_changeLayer = layer;
+	_changeModeName = modeName;
+	_IsProcessSkip = IsProcessSkip;
 };
 
-ModeFadeComeBack::ModeFadeComeBack(int Time, ModeBase* mode) :ModeFade(Time,false){
+ModeFadeComeBack::ModeFadeComeBack(int Time, ModeBase* mode, bool IsProcessSkip) :ModeFade(Time,false){
 	_fadeEnd = 255;
     _fadeStart = 0;
 	_deleteMode = mode;
+	_changeLayer = 0;
+	_changeModeName = "";
+	_IsProcessSkip = IsProcessSkip;
 };
 
 bool ModeFadeComeBack::Initialize(){
@@ -19,15 +25,15 @@ bool ModeFadeComeBack::Initialize(){
 
 bool ModeFadeComeBack::Terminate(){
 	base::Terminate();
-	if (_deleteMode != nullptr) {
-	   _deleteMode = nullptr;
-	}
+	_deleteMode = nullptr;
 	return true;
 };
 
 bool ModeFadeComeBack::Process(){
 	base::Process();
-	//ModeServer::GetInstance()->SkipProcessUnderLayer();
+	if(_IsProcessSkip){
+	   ModeServer::GetInstance()->SkipProcessUnderLayer();
+	}
 	ModeServer::GetInstance()->PauseProcessUnderLayer();
 	int nowTime = GetNowCount() - _currentTime;
 
@@ -41,8 +47,14 @@ bool ModeFadeComeBack::Process(){
         _fadeStart = _fadeEnd;
         _fadeEnd = temp;
 		_currentTime = GetNowCount();
+
+		// 削除するモードがあるとき
 		if(_deleteMode != nullptr){
 		   ModeServer::GetInstance()->Del(_deleteMode);
+	    }
+		// レイヤーを変更する場合
+		else if(_changeModeName != ""){
+			ModeServer::GetInstance()->ChangeLayer(_changeModeName, _changeLayer);
 		}
 	}
 	else if (_alphaFade < 0) {
