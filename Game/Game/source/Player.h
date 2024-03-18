@@ -110,7 +110,6 @@ public:
 	VECTOR* GetIBPosPtr() { return _ironBall->GetBallPosPtr(); }
 
 
-	bool GetAttackState() { return _isAttackState; }
 	bool GetEnabledIBAttackCollision() { return _ironBall->GetEnabledAttackCollision(); }
 
 	// フレームデータのコマンドをチェックする
