@@ -1,4 +1,6 @@
 #include "ModeScenario.h"
+#include "ModeFadeComeBack.h"
+#include "ModeMovie.h"
 
 bool ModeScenario::IsLoadHandle = false;
 std::unordered_map<int, int> ModeScenario::_charaHandleMap;
@@ -6,8 +8,8 @@ std::unordered_map<int, std::string> ModeScenario::_nameHandleMap;
 std::unordered_map<int, int> ModeScenario::_backGroundHandleMap;
 std::unordered_map<int, int> ModeScenario::_textBoxHandle;
 
-ModeScenario::ModeScenario(std::string scenarioFile) {
-
+ModeScenario::ModeScenario(std::string scenarioFile,int scenarioNum) {
+	_scenarioNum = scenarioNum;
 	LoadOnceHandleData();
 
 	CFile ScenarioFile(scenarioFile);
@@ -205,7 +207,10 @@ bool ModeScenario::Process(){
 
 	// シナリオをすべて描画し終えた
 	if (_nowTextLine >= _scenarioData.size() || _input->GetTrg(XINPUT_BUTTON_START)) {
-		ModeServer::GetInstance()->Del(this);
+		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000,this), 100, "FadeIn");
+		if (_scenarioNum == 4) {
+			ModeServer::GetInstance()->Add(NEW ModeMovie(), 10, "Movie");
+		}
 	}
 	
 	return true;

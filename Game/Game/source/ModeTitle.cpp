@@ -65,7 +65,7 @@ bool ModeTitle::Terminate() {
 
 void ModeTitle::SelectGameStart() {
 	ModeServer::GetInstance()->Del(this);
-	ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario01.csv"), 100, "Scenario");
+	ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario01.csv",1), 100, "Scenario");
 	ModeServer::GetInstance()->Add(NEW ModeGame(), 1, "Game");
 };
 
