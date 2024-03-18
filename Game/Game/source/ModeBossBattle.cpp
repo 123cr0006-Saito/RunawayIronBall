@@ -125,25 +125,6 @@ bool ModeBossBattle::Terminate() {
 
 bool ModeBossBattle::Process() {
 	base::Process();
-
-	bool isAttackState = _player->GetEnabledIBAttackCollision();
-	bool isInvincible = _player->GetIsInvincible();
-	VECTOR pPos = _player->GetPosition();
-
-
-	Sphere ibSphere = _player->GetIBCollision();
-
-	int ibPower = _player->GetPower();
-
-
-	Capsule plCol = _player->GetCollision();
-	Sphere ibCol = _player->GetIBCollision();
-
-
-
-
-
-
 	global._timer->TimeElapsed();
 	_sVib->UpdateScreenVibration();
 
@@ -153,6 +134,23 @@ bool ModeBossBattle::Process() {
 
 	_timeLimit->Process();
 
+
+
+
+	Capsule bSCol = _boss->GetStakeCollision();
+	bSCol.down_pos.y = 0.0f;
+	Capsule pCol = _player->GetCollision();
+	
+	VECTOR vSub = VSub(pCol.down_pos, bSCol.down_pos);
+	vSub.y = 0.0f;
+	float squareLength = VSquareSize(vSub);
+	if (squareLength < (bSCol.r + pCol.r) * (bSCol.r + pCol.r)) {
+		VECTOR vDir = vSub;
+		vDir = VNorm(vDir);
+		float extrudeLength = bSCol.r + pCol.r;
+		VECTOR vMove = VAdd(bSCol.down_pos, VScale(vDir, extrudeLength));
+		_player->SetPos(vMove);
+	}
 
 	//for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
 	//	ui[i]->Process();
