@@ -42,7 +42,6 @@ bool ModeTitle::Initialize() {
 	 }
 
 	 MV1SetPosition(_modelHandle, VGet(0, 0, 0)); 
-	// MV1SetScale(_modelHandle, VScale(VGet(1, 1, 1), 0.1));
 	 SetCameraPositionAndTarget_UpVecY(VGet(0, 0, -1850), VGet(0, 0, 0));
 
 	 // bgm‚ÌÝ’è
@@ -98,10 +97,10 @@ void ModeTitle::UpdateSelectItems(){
 
 	//ƒ‚[ƒh‚Ì‘I‘ð
 	if (_input->GetTrg(XINPUT_BUTTON_A)) {
-		global._soundServer->DirectPlay("SE_Press");
 		int textureHandle = MakeGraph(1920, 1080);
 		switch (_modeCount) {
 		case 0:
+			global._soundServer->DirectPlay("SE_Break");
 			UpdateCrackedScreen();
 			GetDrawScreenGraph( 0, 0, 1920, 1080, textureHandle);
 			MV1SetTextureGraphHandle(_modelHandle, 0, textureHandle, false);
@@ -109,9 +108,11 @@ void ModeTitle::UpdateSelectItems(){
 			_currentTime = GetNowCount();
 			break;
 		case 1:
+			global._soundServer->DirectPlay("SE_Press");
 			SelectOption();
 			break;
 		case 2:
+			global._soundServer->DirectPlay("SE_Press");
 			SelectGameEnd();
 			break;
 		}

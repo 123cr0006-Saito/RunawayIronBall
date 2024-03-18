@@ -24,8 +24,12 @@ bool Global::SoundLoad() {
 	// ”ñ“¯Šú“Ç‚Ýž‚ÝÝ’è
 	SetUseASyncLoadFlag(TRUE);
 	//BGM
-	_soundServer->Add("Title", new SoundItemBGM("Sound/BGM/Bgm_title.mp3"));
-	_soundServer->Add("Stage03", new SoundItemBGM("Sound/BGM/Bgm_Stage.mp3"));
+	_soundServer->Add("Title", new SoundItemBGM("Sound/BGM/BGM_Title.wav"));
+	_soundServer->Add("Stage01", new SoundItemBGM("Sound/BGM/BGM_Stage_01.wav"));
+	_soundServer->Add("Stage02", new SoundItemBGM("Sound/BGM/BGM_Stage_02.wav"));
+	_soundServer->Add("Stage03", new SoundItemBGM("Sound/BGM/BGM_Stage_03.wav"));
+	_soundServer->Add("B_Scenario", new SoundItemBGM("Sound/BGM/BGM_Scenario_01.wav"));
+	_soundServer->Add("Result", new SoundItemBGM("Sound/BGM/BGM_Result.wav"));
 	//SE
 	//Object
 	_soundServer->Add("House_Glass_Break", new SoundItemSE("Sound/SE/Object/SE_HO_Glass_Break.wav"));
@@ -43,10 +47,11 @@ bool Global::SoundLoad() {
 	_soundServer->Add("CG_OBJ_Lantern_Break", new SoundItemSE("Sound/SE/Object/SE_HO_Rock_Break.wav"));
 	_soundServer->Add("CG_OBJ_Lantern_Hit", new SoundItemSE("Sound/SE/Object/SE_HO_Rock_Hit.wav"));
 	//Hit
-	_soundServer->Add("SE_Hit01", new SoundItemSE("Sound/SE/Hit/SE_Hit_combo_01.mp3"));
-	_soundServer->Add("SE_Hit02", new SoundItemSE("Sound/SE/Hit/SE_Hit_combo_02.mp3"));
-	_soundServer->Add("SE_Hit03", new SoundItemSE("Sound/SE/Hit/SE_Hit_combo_03.mp3"));
-	_soundServer->Add("SE_Hit_Rotate", new SoundItemSE("Sound/SE/Hit/SE_Hit_Rotate.mp3"));
+	_soundServer->Add("SE_Hit01", new SoundItemSE("Sound/SE/Player/SE_Hit_Combo_01.wav"));
+	_soundServer->Add("SE_Hit02", new SoundItemSE("Sound/SE/Player/SE_Hit_Combo_01.wav"));
+	_soundServer->Add("SE_Hit03", new SoundItemSE("Sound/SE/Player/SE_Hit_Combo_01.wav"));
+	_soundServer->Add("SE_Hit_Tower", new SoundItemSE("Sound/SE/Player/SE_Hit_Combo_01.wav"));
+	_soundServer->Add("SE_Hit_Rotate", new SoundItemSE("Sound/SE/Player/SE_Hit_Rotate.wav"));
 	_soundServer->Add("SE_Avoidance", new SoundItemSE("Sound/SE/Player/SE_PL_Avoidance.wav"));
 	_soundServer->Add("SE_Damage", new SoundItemSE("Sound/SE/Player/SE_PL_Damage.wav"));
 	_soundServer->Add("SE_Heal", new SoundItemSE("Sound/SE/Player/SE_PL_Heal.wav"));
@@ -57,6 +62,7 @@ bool Global::SoundLoad() {
 	_soundServer->Add("SE_Open", new SoundItemSE("Sound/SE/Select/SE_Menu_Open.wav"));
 	_soundServer->Add("SE_Press", new SoundItemSE("Sound/SE/Select/SE_Menu_Press.wav"));
 	_soundServer->Add("SE_Select", new SoundItemSE("Sound/SE/Select/SE_Menu_Select.wav"));
+	_soundServer->Add("SE_Break", new SoundItemSE("Sound/SE/Select/SE_Menu_Break.wav"));
 	// VOICE
 	// Plime
 	_soundServer->Add("PL_Ah", new SoundItemVOICE("Sound/VOICE/Plim/SE_PLVO_Ah.wav"));
@@ -93,6 +99,9 @@ bool Global::SoundLoad() {
 	_soundServer->Add("IB_Shocking", new SoundItemVOICE("Sound/VOICE/IB/SE_IBVO_Shocking.wav"));
 	_soundServer->Add("IB_Tired", new SoundItemVOICE("Sound/VOICE/IB/SE_IBVO_Tired.wav"));
 	_soundServer->Add("IB_Title", new SoundItemVOICE("Sound/VOICE/IB/SE_IBVO_Title.wav"));
+	//Enemy
+	_soundServer->Add("SE_SLV_Falling", new SoundItemSE("Sound/SE/Enemy/SE_SLB_Falling.wav"));
+	_soundServer->Add("SE_SLV_Jump", new SoundItemSE("Sound/SE/Enemy/SE_SLB_Jump.wav"));
 	SetUseASyncLoadFlag(FALSE);
 	return true;
 }

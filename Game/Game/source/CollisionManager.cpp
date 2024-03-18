@@ -620,7 +620,7 @@ void CollisionManager::CheckHitIbAndEn(IronBall* ironBall, EnemyBase* enemy)
 			VECTOR vDir = VSub(eCol.centerPos, pPos);
 			vDir = VNorm(vDir);
 			enemy->SetKnockBackAndDamage(vDir, player->GetPower());
-			global._soundServer->DirectPlay("OBJ_RockBreak");
+			global._soundServer->DirectPlay("SE_Hit01");
 		}
 	}
 }
@@ -655,7 +655,7 @@ void CollisionManager::CheckHitIbAndTwr(IronBall* ironBall, Tower* tower)
 			VECTOR vDir = VSub(tCol.centerPos, player->GetPosition());
 			player->SetExp(50);
 			tower->SetBlast(vDir);
-			global._soundServer->DirectPlay("OBJ_RockBreak");
+			global._soundServer->DirectPlay("SE_Hit_Tower");
 		}
 	}
 }
@@ -710,7 +710,7 @@ void CollisionManager::CheckHitChAndTwr(IronBall* ironBall, Tower* tower)
 			VECTOR vDir = VSub(tCol.centerPos, player->GetPosition());
 			player->SetExp(50);
 			tower->SetBlast(vDir);
-			global._soundServer->DirectPlay("OBJ_RockBreak");
+			global._soundServer->DirectPlay("SE_Hit_Tower");
 		}
 	}
 }

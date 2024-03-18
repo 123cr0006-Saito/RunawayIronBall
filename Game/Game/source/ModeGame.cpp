@@ -90,10 +90,6 @@ bool ModeGame::Initialize() {
 	_sVib = NEW ScreenVibration();
 
 	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(_stageNum), 50, "RotCamera");
-
-	global._soundServer->BgmFadeIn("Stage03",4000);
-
-
 	return true;
 }
 
@@ -542,6 +538,7 @@ bool ModeGame::GateProcess() {
 void ModeGame::NewStage(){
 	StageMutation();
 	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(_stageNum), 10, "RotCamera");
+	global._soundServer->DirectPlay("Stage0" + std::to_string(_stageNum));
 	SetTime();
 };
 

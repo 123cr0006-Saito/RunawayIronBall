@@ -44,7 +44,7 @@ bool ModeClear::Initialize(){
 	ResourceServer::LoadMultGraph("C_Time","res/ModeResult/Time/UI_Valuation_Time",".png",10,_timeHandle);
 	SetCameraNearFar(20.0f, 30000.0f);
 	MV1SetPosition(_model, VGet(0, 0, 0));
-
+	global._soundServer->DirectPlay("Result");
 	Valuation();
 
 	return true;

@@ -12,3 +12,5 @@ PL_LostStamina,11,0
 SE_Avoidance,12,0
 SE_Rotation,13,0
 SE_Swing,14,0
+SLB_Falling,15,0
+SLB_Jump,16,0

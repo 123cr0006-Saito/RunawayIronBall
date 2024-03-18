@@ -156,6 +156,8 @@ bool ModeScenario::Initialize(){
 	_currentTime = GetNowCount();
 	_input = XInput::GetInstance();
 
+	global._soundServer->DirectPlay("B_Scenario");
+
 	GetGraphSize(_charaHandleMap[_scenarioData.at(_nowTextLine).charaHandle], &_handleX, &_handleY);
 	_textFontHandle = CreateFontToHandle("メイリオ", 32, 3, DX_FONTTYPE_ANTIALIASING_EDGE_8X8);
 	_nameFontHandle = CreateFontToHandle("メイリオ", 64, 3, DX_FONTTYPE_ANTIALIASING_EDGE_8X8);
@@ -210,6 +212,9 @@ bool ModeScenario::Process(){
 		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000,this), 100, "FadeIn");
 		if (_scenarioNum == 4) {
 			ModeServer::GetInstance()->Add(NEW ModeMovie(), 10, "Movie");
+		}
+		else {
+			global._soundServer->DirectPlay("Stage0" + std::to_string(_scenarioNum));
 		}
 	}
 	
