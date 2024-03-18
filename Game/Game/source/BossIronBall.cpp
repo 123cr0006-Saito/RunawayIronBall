@@ -254,6 +254,7 @@ void BossIronBall::CheckState()
 		SetDrop();
 		break;
 	case BossIronBall::IB_STATE::ATTACK_ROTATION:
+		SetRotation();
 		break;
 	}
 }
@@ -462,6 +463,14 @@ void BossIronBall::RotationAcceleration()
 	}
 }
 
+void BossIronBall::SetRotation()
+{
+	_ibState = IB_STATE::ATTACK_ROTATION;
+	_rotationAccelerationCnt = 0;
+	_rotAngularVelocity = ROTATION_ANGULAR_VELOCITY_MIN;
+	_rotAngle = 0.0f;
+	_activeRotationAcceleration = true;
+}
 int BossIronBall::CheckPlayerInSearchRange()
 {
 	int rangeIndex = -1;

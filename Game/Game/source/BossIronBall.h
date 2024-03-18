@@ -57,6 +57,7 @@ private:
 	// ‰ñ“]UŒ‚
 	void RotationProcess();
 	void RotationAcceleration();
+	void SetRotation();
 
 private:
 	// “S‹…‚Ìƒ‚ƒfƒ‹ƒnƒ“ƒhƒ‹
