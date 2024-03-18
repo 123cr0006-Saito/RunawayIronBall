@@ -513,12 +513,12 @@ bool ModeGame::GateProcess() {
 
 	if (_suppression->GetIsRatio() ) {
 		if (_gate == nullptr) {
-			VECTOR pos = VGet(5000, 300, 0);
+			VECTOR pos = VGet(0, 300, 0);
 			int handle[43];
 			ResourceServer::LoadDivGraph("Gate", "res/TemporaryMaterials/FX_Hole_2D00_sheet.png", 43, 16, 3, 1200, 1200, handle);
 			float time = 1.0f / 60.0f * 1000.0f;
 			if (_stageNum == 3) {
-				pos = VGet(-6787.0f, 300.0f, -4965.0f);
+				pos = VGet(-6787.0f, 300.0f, 7486.0);
 			}
 			_gate = NEW Gate(pos, 300, handle, 43, time, 1000);
 			ModeServer::GetInstance()->Add(NEW ModeZoomCamera(pos), 10, "Camera");

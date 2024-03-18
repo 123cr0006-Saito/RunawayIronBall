@@ -84,15 +84,15 @@ void EnemyPool::Create(myJson json, int stageNum){
 			}
 			else if (enemyDataList.first == "Slablock_Glass" ) {
 				enemy = NEW SlaBlock();
-				handle = ResourceServer::MV1LoadModel("Slablock","res/Enemy/Cg_Enemy_Slablock/Cg_Slablock_Glass.mv1");
+				handle = ResourceServer::MV1LoadModel("Slablock_Glass","res/Enemy/Cg_Enemy_Slablock_Glass/Cg_Slablock_Glass.mv1");
 			}
 			else if (enemyDataList.first == "Slablock_Rock") {
 				enemy = NEW SlaBlock();
-				handle = ResourceServer::MV1LoadModel("Slablock", "res/Enemy/Cg_Enemy_Slablock/Cg_Slablock_Rock.mv1");
+				handle = ResourceServer::MV1LoadModel("Slablock_Rock", "res/Enemy/Cg_Enemy_Slablock_Rock/Cg_Slablock_Rock.mv1");
 			}
 			else if (enemyDataList.first == "Slablock_Iron") {
 				enemy = NEW SlaBlockPattern2();
-				handle = ResourceServer::MV1LoadModel("Slablock_Iron","res/Enemy/Cg_Enemy_Slablock/Cg_Slablock_Iron.mv1");
+				handle = ResourceServer::MV1LoadModel("Slablock_Iron","res/Enemy/Cg_Enemy_Slablock_Iron/Cg_Slablock_Iron.mv1");
 			}
 			else if (enemyDataList.first == "ChainGuard") {
 				//enemy = NEW Chainguard();
