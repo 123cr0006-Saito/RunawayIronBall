@@ -24,6 +24,9 @@ public:
 	void SetHitStake(bool isHit) { _isHitStake = isHit; }
 	bool GetHitStake() { return _isHitStake; }
 
+
+	int CheckPlayerInSearchRange();
+
 	// デバッグ情報の表示
 	void DrawDebugInfo();
 

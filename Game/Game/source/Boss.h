@@ -15,7 +15,6 @@ public:
 	void Process();
 	void Render();
 
-	int SearchPlayer();
 
 	Capsule GetStakeCollision() { return _stakeCapsuleCol; }
 	Sphere GetIBCollision() { return _ironBall->GetIBCollision(); }
@@ -34,8 +33,6 @@ private:
 	VECTOR _stakePos;
 	// Y‚Ì“–‚½‚è”»’è
 	Capsule _stakeCapsuleCol;
-
-	std::array<float, 2> _searchRange;
 
 	BossIronBall* _ironBall;
 

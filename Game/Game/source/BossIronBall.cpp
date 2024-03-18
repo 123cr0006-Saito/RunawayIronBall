@@ -5,6 +5,8 @@ namespace {
 	constexpr float BOSS_CHAIN_TOTAL_LENGTH = 500.0f;
 
 
+	constexpr float SEARCH_RANGE[2] = { 2000.0f, 3000.0f };
+
 	constexpr float ROTAION_RADIUS_MAX = 1000.0f;
 
 	// ‘Ò‹@ó‘Ô
@@ -454,9 +456,27 @@ void BossIronBall::RotationAcceleration()
 	}
 }
 
+int BossIronBall::CheckPlayerInSearchRange()
+{
+	int rangeIndex = -1;
+	float squareDistance = VSquareSize(VSub(_player->GetPosition(), *_stakePos));
+	if (squareDistance < SEARCH_RANGE[0] * SEARCH_RANGE[0]) {
+		rangeIndex = 0;
+	}
+	else if (squareDistance < SEARCH_RANGE[1] * SEARCH_RANGE[1]) {
+		rangeIndex = 1;
+	}
+	return rangeIndex;
+}
+
 void BossIronBall::DrawDebugInfo()
 {
 	_ibSphereCol.Render(COLOR_GREEN);
+
+	for (int i = 0; i < 2; i++) {
+		Sphere s = { *_stakePos, SEARCH_RANGE[i] };
+		s.Render(COLOR_RED);
+	}
 
 	int x = 0;
 	int y = 500;
