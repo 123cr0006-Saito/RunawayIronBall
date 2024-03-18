@@ -24,7 +24,14 @@ public:
 
 	void SetKnockBack(VECTOR vDir = VGet(0.0f, 0.0f, -1.0f)) { _ironBall->SetKnockBack(vDir); }
 	// Y‚ÌHP‚ğŒ¸‚ç‚·
-	void SetDamageStake(int damage) { _stakeHp -= damage; }
+	void SetDamageStake(int damage) {
+		_stakeHp -= damage;
+		if (_stakeHp < 0) { 
+			_stakeHp = 0; 
+			_isStakeBroken = true;
+			_ironBall->SetISStakeBroken(true);
+		}
+	}
 	// Y‚ÌHP‚ğæ“¾
 	int GetStakeHp() { return _stakeHp; }
 
@@ -40,7 +47,8 @@ private:
 	Capsule _stakeCapsuleCol;
 	// Y‚ÌHP
 	int _stakeHp;
-
+	// Y‚ª”j‰ó‚³‚ê‚½‚©‚Ç‚¤‚©
+	bool _isStakeBroken;
 
 	BossIronBall* _ironBall;
 

@@ -11,6 +11,7 @@ Boss::Boss()
 	_stakeCapsuleCol.up = 0.0f;
 
 	_stakeHp = 0;
+	_isStakeBroken = false;
 
 	_ironBall = NEW BossIronBall();
 
@@ -54,12 +55,16 @@ void Boss::Init(VECTOR polePos)
 void Boss::Process()
 {
 	_ironBall->Process();
-	CheckHitBossAndStake();
+	if (!_isStakeBroken) {
+		CheckHitBossAndStake();
+	}
 }
 
 void Boss::Render()
 {
-	MV1DrawModel(_stakeModelHandle);
+	if (!_isStakeBroken) {
+		MV1DrawModel(_stakeModelHandle);
+	}
 	_ironBall->Render();
 }
 
@@ -89,7 +94,8 @@ void Boss::CheckHitBossAndStake()
 
 void Boss::DrawDebugInfo()
 {
-	_stakeCapsuleCol.Render(COLOR_GREEN);
-
+	if (!_isStakeBroken) {
+		_stakeCapsuleCol.Render(COLOR_GREEN);
+	}
 	_ironBall->DrawDebugInfo();
 }

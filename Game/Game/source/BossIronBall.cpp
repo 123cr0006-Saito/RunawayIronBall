@@ -85,6 +85,7 @@ BossIronBall::BossIronBall()
 	_chainDistance = 0.0f;
 
 	_stakePos = nullptr;
+	_isStakeBroken = false;
 	_mStakePos = MGetIdent();
 	_mStakePosInv = MGetIdent();
 

@@ -24,6 +24,8 @@ public:
 	void SetHitStake(bool isHit) { _isHitStake = isHit; }
 	bool GetHitStake() { return _isHitStake; }
 
+	void SetISStakeBroken(bool isBroken) { _isStakeBroken = isBroken; }
+
 
 	int CheckPlayerInSearchRange();
 
@@ -131,6 +133,8 @@ private:
 
 	// Y‚ÌÀ•W
 	VECTOR* _stakePos;
+	// Y‚ª”j‰ó‚³‚ê‚½‚©‚Ç‚¤‚©
+	bool _isStakeBroken;
 
 	// Œ´“_‚©‚çY‚ÌÀ•W‚Ö‚Ì•½sˆÚ“®s—ñ
 	MATRIX _mStakePos;
