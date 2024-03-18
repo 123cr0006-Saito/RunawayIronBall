@@ -251,6 +251,16 @@ void CollisionManager::ReserveRemovementCell(Cell* cell)
 	_reserveRemovementList.push_back(cell);
 }
 
+void CollisionManager::ClearTreeAndList()
+{
+	for (int i = 0; i < _treeSize; i++) {
+		_tree[i]->_next = nullptr;
+		_tree[i]->_prev = nullptr;
+	}
+	_colList.clear();
+	_reserveRemovementList.clear();
+}
+
 void CollisionManager::RemoveCellFromReserveList()
 {
 	for (auto& cell : _reserveRemovementList) {
