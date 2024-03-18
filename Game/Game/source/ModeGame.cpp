@@ -86,7 +86,7 @@ bool ModeGame::Initialize() {
 	_gaugeHandle[3] = ResourceServer::LoadGraph("Stamina04", ("res/UI/Stamina/UI_Stamina_04.png"));
 	_sVib = NEW ScreenVibration();
 
-//	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(), 10, "camera");
+	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(_stageNum), 10, "RotCamera");
 
 	global._soundServer->BgmFadeIn("Stage03", 2000);
 
@@ -252,12 +252,12 @@ std::vector<std::string> ModeGame::LoadObjectName(std::string fileName) {
 }
 
 bool ModeGame::LoadStage(std::string fileName) {
-	myJson json(fileName);
+	myJson* json = new myJson(fileName);
 	int j = 0;
 
-	_enemyPool->Create(json,_stageNum);
+	_enemyPool->Create(*json,_stageNum);
 
-	_floor->Create(json, _stageNum);
+	_floor->Create(*json, _stageNum);
 
 	// タワー
 	for (int i = 0; i < 5; i++) {
@@ -288,7 +288,7 @@ bool ModeGame::LoadStage(std::string fileName) {
 				return temp._name == nameList;
 		});
 
-		std::vector<ModeGame::OBJECTDATA> objectData = LoadJsonObject(json, nameList);
+		std::vector<ModeGame::OBJECTDATA> objectData = LoadJsonObject(*json, nameList);
 		std::string modelName = nameList;
 		_objectName.push_back(modelName);
 		std::string modelPath = "res/Building/" + modelName + "/" + modelName + ".mv1";
@@ -308,6 +308,14 @@ bool ModeGame::LoadStage(std::string fileName) {
 			}
 		}
 	}
+
+	// プレイヤーの座標指定
+	//nlohmann::json loadObject = (*json)._json.at("Player_Start_Position");
+	//VECTOR pos;
+	//loadObject.at("translate").at("x").get_to(pos.x);
+	//loadObject.at("translate").at("y").get_to(pos.z);
+	//loadObject.at("translate").at("z").get_to(pos.y);
+	//_player->SetPos(pos);
 
 	return true;
 };
@@ -471,8 +479,8 @@ bool ModeGame::Process() {
 
 	if (_player->GetHP() <= 0) {
 		global._soundServer->BgmFadeOut(2000);
-		ModeServer::GetInstance()->Del(this);
-		ModeServer::GetInstance()->Add(NEW ModeGameOver(), 1, "gameover");
+		ModeServer::GetInstance()->Add(NEW ModeGameOver(), 0, "GameOver");
+		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(2500, "GameOver", 50), 100, "FadeComeBack");
 	}
 
 	VECTOR box_vec = ConvWorldPosToScreenPos(VAdd(_player->GetPosition(), VGet(0, 170, 0)));
@@ -515,6 +523,7 @@ bool ModeGame::GateProcess() {
 
 		// ゴールゲートの当たり判定
 		if (Collision3D::SphereCol(pPos, pR, gPos, gR)) {
+			_stageNum++;
 			ModeServer::GetInstance()->Add(NEW ModeClear(this),100,"Clear");	
 		}
 	}
@@ -522,10 +531,11 @@ bool ModeGame::GateProcess() {
 };
 
 void ModeGame::NewStage(){
-	_stageNum++;
+	
 	//ModeServer::GetInstance()->Add(NEW ModeLoading(&IsLoading), 100, "Loading");
 	//LoadFunctionThread = NEW std::thread(&ModeGame::StageMutation, this);
 	StageMutation();
+	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(_stageNum), 10, "RotCamera");
 };
 
 bool ModeGame::Render() {
@@ -628,15 +638,16 @@ bool ModeGame::Render() {
 	_effectManeger->Render();
 
 
-	//SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
-	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
-		ui[i]->Draw();
-	}
+	if (!ModeServer::GetInstance()->Search("RotCamera")) {
+		for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
+			ui[i]->Draw();
+		}
 
-	if (_player->GetStaminaRate() < 1.0f) {
-		int handleNum = floorf(_player->GetStaminaRate() * 100.0f / 33.4f);
-		_gaugeUI[1]->Draw(_gaugeHandle[handleNum]);
-		_gaugeUI[0]->Draw(_gaugeHandle[3]);
+		if (_player->GetStaminaRate() < 1.0f) {
+			int handleNum = floorf(_player->GetStaminaRate() * 100.0f / 33.4f);
+			_gaugeUI[1]->Draw(_gaugeHandle[handleNum]);
+			_gaugeUI[0]->Draw(_gaugeHandle[3]);
+		}
 	}
 
 
