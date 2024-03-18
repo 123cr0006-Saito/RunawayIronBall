@@ -1,5 +1,10 @@
 #include "Boss.h"
 
+namespace
+{
+	constexpr float SEARCH_RANGE[2] = { 2000.0f, 3000.0f };
+
+}
 Boss::Boss()
 {
 	_stakeModelHandle = -1;
@@ -10,7 +15,9 @@ Boss::Boss()
 	_stakeCapsuleCol.r = 0.0f;
 	_stakeCapsuleCol.up = 0.0f;
 
-	_ironBall = new BossIronBall();
+	_ironBall = NEW BossIronBall();
+
+	_player = nullptr;
 }
 
 Boss::~Boss()
@@ -20,6 +27,8 @@ Boss::~Boss()
 
 	delete _ironBall;
 	_ironBall = nullptr;
+
+	_player = nullptr;
 }
 
 void Boss::LoadModel()
@@ -38,7 +47,12 @@ void Boss::Init(VECTOR polePos)
 	_stakeCapsuleCol.up_pos = VAdd(_stakePos, VGet(0.0f, _stakeCapsuleCol.up, 0.0f));
 	_stakeCapsuleCol.r = 100.0f;
 
+	_searchRange[0] = 2000.0f;
+	_searchRange[1] = 3000.0f;
+
 	_ironBall->Init(&_stakePos);
+
+	_player = Player::GetInstance();
 }
 
 void Boss::Process()
@@ -51,6 +65,25 @@ void Boss::Render()
 {
 	MV1DrawModel(_stakeModelHandle);
 	_ironBall->Render();
+}
+
+int Boss::SearchPlayer()
+{
+	int rangeIndex = -1;
+	VECTOR playerPos = _player->GetPosition();
+	VECTOR vSub = VSub(playerPos, _stakePos);
+
+	float squareLength = VSquareSize(vSub);
+	if (squareLength < _searchRange[0] * _searchRange[0])
+	{
+		rangeIndex = 0;
+	}
+	else if (squareLength < _searchRange[1] * _searchRange[1])
+	{
+		rangeIndex = 1;
+	}
+
+	return rangeIndex;
 }
 
 void Boss::CheckHitBossAndStake()
@@ -73,6 +106,11 @@ void Boss::CheckHitBossAndStake()
 void Boss::DrawDebugInfo()
 {
 	_stakeCapsuleCol.Render(COLOR_GREEN);
+
+	for (int i = 0; i < 2; i++) {
+		Sphere searchRange = { _stakePos, _searchRange[i]};
+		searchRange.Render(COLOR_RED);
+	}
 
 	_ironBall->DrawDebugInfo();
 }
