@@ -607,8 +607,8 @@ void CollisionManager::CheckHit(Player* player, Tower* tower)
 
 void CollisionManager::CheckHitIbAndEn(IronBall* ironBall, EnemyBase* enemy)
 {
-	bool isAttackState = ironBall->GetEnabledAttackCollision();
-	if (isAttackState) {
+	bool enabledIBAttackCollision = ironBall->GetEnabledAttackCollision();
+	if (enabledIBAttackCollision) {
 		Sphere ibCol = ironBall->GetIBCollision();
 		Sphere eCol = { enemy->GetCollisionPos(), enemy->GetR() };
 
@@ -626,8 +626,8 @@ void CollisionManager::CheckHitIbAndEn(IronBall* ironBall, EnemyBase* enemy)
 
 void CollisionManager::CheckHitIbAndBldg(IronBall* ironBall, BuildingBase* building)
 {
-	bool isAttackState = ironBall->GetEnabledAttackCollision();
-	if (building->GetUseCollision() && building->GetCanBreak() && isAttackState) {
+	bool enabledIBAttackCollision = ironBall->GetEnabledAttackCollision();
+	if (building->GetUseCollision() && building->GetCanBreak() && enabledIBAttackCollision) {
 		Sphere ibCol = ironBall->GetIBCollision();
 		OBB bCol = building->GetOBBCollision();
 
@@ -643,9 +643,9 @@ void CollisionManager::CheckHitIbAndBldg(IronBall* ironBall, BuildingBase* build
 
 void CollisionManager::CheckHitIbAndTwr(IronBall* ironBall, Tower* tower)
 {
-	bool isAttackState = ironBall->GetEnabledAttackCollision();
+	bool enabledIBAttackCollision = ironBall->GetEnabledAttackCollision();
 	bool canBlast = tower->GetCanBlast();
-	if (isAttackState && canBlast) {
+	if (enabledIBAttackCollision && canBlast) {
 		Sphere ibCol = ironBall->GetIBCollision();
 		Sphere tCol = tower->GetCollision();
 
@@ -661,8 +661,8 @@ void CollisionManager::CheckHitIbAndTwr(IronBall* ironBall, Tower* tower)
 
 void CollisionManager::CheckHitChAndEn(IronBall* ironBall, EnemyBase* enemy)
 {
-	bool isAttackState = ironBall->GetEnabledAttackCollision();
-	if (isAttackState) {
+	bool enabledIBAttackCollision = ironBall->GetEnabledAttackCollision();
+	if (enabledIBAttackCollision) {
 		Capsule cCol = ironBall->GetChainCollision();
 		Sphere eCol = { enemy->GetCollisionPos(), enemy->GetR() };
 
@@ -680,8 +680,8 @@ void CollisionManager::CheckHitChAndEn(IronBall* ironBall, EnemyBase* enemy)
 
 void CollisionManager::CheckHitChAndBldg(IronBall* ironBall, BuildingBase* building)
 {
-	bool isAttackState = ironBall->GetEnabledAttackCollision();
-	if (building->GetUseCollision() && building->GetCanBreak() && isAttackState) {
+	bool enabledIBAttackCollision = ironBall->GetEnabledAttackCollision();
+	if (building->GetUseCollision() && building->GetCanBreak() && enabledIBAttackCollision) {
 		Capsule cCol = ironBall->GetChainCollision();
 		OBB bCol = building->GetOBBCollision();
 
@@ -697,9 +697,9 @@ void CollisionManager::CheckHitChAndBldg(IronBall* ironBall, BuildingBase* build
 
 void CollisionManager::CheckHitChAndTwr(IronBall* ironBall, Tower* tower)
 {
-	bool isAttackState = ironBall->GetEnabledAttackCollision();
+	bool enabledIBAttackCollision = ironBall->GetEnabledAttackCollision();
 	bool canBlast = tower->GetCanBlast();
-	if (isAttackState && canBlast) {
+	if (enabledIBAttackCollision && canBlast) {
 		Capsule cCol = ironBall->GetChainCollision();
 		Sphere tCol = tower->GetCollision();
 
