@@ -1,5 +1,7 @@
 #pragma once
 #include "appframe.h"
+#include "BossIronBall.h"
+#include "Player.h"
 
 class Boss
 {
@@ -14,12 +16,11 @@ public:
 	void Render();
 
 
-
 	Capsule GetStakeCollision() { return _stakeCapsuleCol; }
+	Sphere GetIBCollision() { return _ironBall->GetIBCollision(); }
 
 
-
-
+	void CheckHitBossAndStake();
 
 
 	// デバッグ情報の表示
@@ -32,4 +33,9 @@ private:
 	VECTOR _stakePos;
 	// 杭の当たり判定
 	Capsule _stakeCapsuleCol;
+
+	BossIronBall* _ironBall;
+
+
+	Player* _player;
 };
