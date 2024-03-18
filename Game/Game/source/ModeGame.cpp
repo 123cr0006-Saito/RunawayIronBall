@@ -91,7 +91,7 @@ bool ModeGame::Initialize() {
 
 	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(_stageNum), 50, "RotCamera");
 
-	global._soundServer->DirectPlay("Stage03");
+	global._soundServer->BgmFadeIn("Stage03",4000);
 
 
 	return true;

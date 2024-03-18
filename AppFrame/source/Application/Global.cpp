@@ -23,6 +23,10 @@ bool Global::Init() {
 bool Global::SoundLoad() {
 	// ”ñ“¯Šú“Ç‚Ýž‚ÝÝ’è
 	SetUseASyncLoadFlag(TRUE);
+	//BGM
+	_soundServer->Add("Title", new SoundItemBGM("Sound/BGM/Bgm_title.mp3"));
+	_soundServer->Add("Stage03", new SoundItemBGM("Sound/BGM/Bgm_Stage.mp3"));
+	//SE
 	//Object
 	_soundServer->Add("House_Glass_Break", new SoundItemSE("Sound/SE/Object/SE_HO_Glass_Break.wav"));
 	_soundServer->Add("House_Glass_Hit", new SoundItemSE("Sound/SE/Object/SE_HO_Glass_Hit.wav"));
