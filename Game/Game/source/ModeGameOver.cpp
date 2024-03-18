@@ -82,7 +82,7 @@ bool ModeGameOver::Render() {
 	int handleX, handleY;
 	std::vector<std::string> name = { "Logo","Retry","Give" };
 
-	DrawRotaGraph(1920/2, 300, 1.0f, 0.0f, _handle[name[0]], true);
+	DrawRotaGraph(1920/2, 200, 1.0f, 0.0f, _handle[name[0]], true);
 	for (int i = 1; i < name.size(); i++) {
 		float exrate = 1.0f;
 		if (i == _selectItem + 1)exrate = 1.1f;

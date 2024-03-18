@@ -53,6 +53,7 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
+	void SetTime();
 	void DeleteObject();
 	std::vector<std::string> LoadObjectName(std::string fileName); // オブジェクトの名前を読み込む
 	bool LoadObjectParam(std::string fileName); // オブジェクトのパラメータを読み込む

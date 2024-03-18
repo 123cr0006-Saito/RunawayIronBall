@@ -6,6 +6,7 @@
 #include "ModeFadeComeBack.h"
 #include "ModeZoomCamera.h"
 #include "ModeRotationCamera.h"
+#include "ModeTutorial.h"
 
 bool ModeGame::Initialize() {
 	if (!base::Initialize()) { return false; }
@@ -20,7 +21,7 @@ bool ModeGame::Initialize() {
 
 	_light = NEW Light("LightData");
 	_timeLimit = NEW TimeLimit();
-	_timeLimit->SetTimeLimit(12, 0);
+	SetTime();
 	
 	int resolution = 8192;
 	_shadowHandle = MakeShadowMap(resolution, resolution);
@@ -57,6 +58,7 @@ bool ModeGame::Initialize() {
 		ResourceServer::LoadMultGraph("split", "res/TemporaryMaterials/split/test", ".png", 30, _effectSheet);
 		ResourceServer::LoadDivGraph("Dust", "res/TemporaryMaterials/FX_Dust_2D.png", 44, 20, 3, 1000, 1000);
 		ResourceServer::LoadEffekseerEffect("Stanp", "res/Effekseer/Attack/HorizontalThird.efkefc");
+		ResourceServer::LoadMultGraph("Tutorial", "res/Tutorial/Tutorial", ".png", 5);
 	}
 
 	_suppression = NEW Suppression();
@@ -86,7 +88,10 @@ bool ModeGame::Initialize() {
 	_gaugeHandle[3] = ResourceServer::LoadGraph("Stamina04", ("res/UI/Stamina/UI_Stamina_04.png"));
 	_sVib = NEW ScreenVibration();
 
-	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(_stageNum), 10, "RotCamera");
+	int tutorialHandle[5];
+	ResourceServer::LoadMultGraph("Tutorial", "res/Tutorial/Tutorial", ".png", 5, tutorialHandle);
+	ModeServer::GetInstance()->Add(NEW ModeTutorial(tutorialHandle, 5), 10, "Tutorial");
+	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(_stageNum), 50, "RotCamera");
 
 	global._soundServer->BgmFadeIn("Stage03", 2000);
 
@@ -171,6 +176,11 @@ void ModeGame::DeleteObject() {
 		ResourceServer::MV1DeleteModelAll(name);
 	}
 
+};
+
+void ModeGame::SetTime() {
+	int min[3] = { 10,10,10 };
+	_timeLimit->SetTimeLimit(min[_stageNum - 1], 0);
 };
 
 std::vector<ModeGame::OBJECTDATA> ModeGame::LoadJsonObject(const myJson& json, std::string loadName) {
@@ -260,10 +270,8 @@ bool ModeGame::LoadStage(std::string fileName) {
 	_floor->Create(*json, _stageNum);
 
 	// タワー
-	for (int i = 0; i < 5; i++) {
-		VECTOR v = VGet(rand() % 8000, 0.0f, rand() % 8000);
-		v.x -= 4000.0f;
-		v.z -= 4000.0f;
+	std::vector<ModeGame::OBJECTDATA> towerData = LoadJsonObject(*json, "Tower");
+	for (auto&& towerParam : towerData) {
 
 		std::array<int, 3> towerModelHandle;
 		towerModelHandle[0] = ResourceServer::MV1LoadModel("Tower01", "res/Building/CG_OBJ_Tower/Tower_Under.mv1");
@@ -271,7 +279,7 @@ bool ModeGame::LoadStage(std::string fileName) {
 		towerModelHandle[2] = ResourceServer::MV1LoadModel("Tower03", "res/Building/CG_OBJ_Tower/Tower_Top.mv1");
 
 		Tower* tower = NEW Tower();
-		tower->Init(towerModelHandle, v, VGet(0, 0, 0), VGet(1, 1, 1));
+		tower->Init(towerModelHandle, towerParam._pos, towerParam._rotate, towerParam._scale);
 
 		_tower.push_back(tower);
 	}
@@ -310,12 +318,13 @@ bool ModeGame::LoadStage(std::string fileName) {
 	}
 
 	// プレイヤーの座標指定
-	//nlohmann::json loadObject = (*json)._json.at("Player_Start_Position");
-	//VECTOR pos;
-	//loadObject.at("translate").at("x").get_to(pos.x);
-	//loadObject.at("translate").at("y").get_to(pos.z);
-	//loadObject.at("translate").at("z").get_to(pos.y);
-	//_player->SetPos(pos);
+	nlohmann::json loadObject = (*json)._json.at("Player_Start_Position");
+	VECTOR pos;
+	loadObject.at("translate").at("x").get_to(pos.x);
+	loadObject.at("translate").at("y").get_to(pos.z);
+	loadObject.at("translate").at("z").get_to(pos.y);
+	 pos.x *= -1;
+	_player->SetPos(pos);
 
 	return true;
 };
@@ -327,19 +336,15 @@ bool ModeGame::StageMutation() {
 	DeleteObject();
 	// オブジェクトのデータの読み込み ファイル名は 1 から始まるので +1 する
 	std::string fileName = "Data/ObjectList/Stage_0" + std::to_string(_stageNum) + ".json";
-
-	 // 非同期読み込み設定
-	//SetUseASyncLoadFlag(true);
 	LoadStage(fileName);
-	//SetUseASyncLoadFlag(false);
 	// ロード終了
 
 	IsLoading = true;
 
 	// ロードスレッドを終了
-	if(LoadFunctionThread != nullptr){
-	LoadFunctionThread->detach();
-	delete LoadFunctionThread; LoadFunctionThread = nullptr;
+	if (LoadFunctionThread != nullptr) {
+		LoadFunctionThread->detach();
+		delete LoadFunctionThread; LoadFunctionThread = nullptr;
 	}
 	return true;
 }
@@ -536,6 +541,7 @@ void ModeGame::NewStage(){
 	//LoadFunctionThread = NEW std::thread(&ModeGame::StageMutation, this);
 	StageMutation();
 	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(_stageNum), 10, "RotCamera");
+	SetTime();
 };
 
 bool ModeGame::Render() {
