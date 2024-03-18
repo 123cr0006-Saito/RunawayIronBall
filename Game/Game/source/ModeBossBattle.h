@@ -78,6 +78,7 @@ protected:
 	TimeLimit* _timeLimit;
 
 	ScreenVibration* _sVib;
+	Suppression* _suppression;
 
 	Floor* _floor;
 
