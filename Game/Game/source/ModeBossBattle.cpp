@@ -136,10 +136,9 @@ bool ModeBossBattle::Process() {
 
 
 
-
+	Capsule pCol = _player->GetCollision();
 	Capsule bSCol = _boss->GetStakeCollision();
 	bSCol.down_pos.y = 0.0f;
-	Capsule pCol = _player->GetCollision();
 	
 	VECTOR vSub = VSub(pCol.down_pos, bSCol.down_pos);
 	vSub.y = 0.0f;
@@ -151,6 +150,21 @@ bool ModeBossBattle::Process() {
 		VECTOR vMove = VAdd(bSCol.down_pos, VScale(vDir, extrudeLength));
 		_player->SetPos(vMove);
 	}
+
+	bool isAttackState = _player->GetAttackState();
+	if (isAttackState) {
+
+		Sphere pIBCol = _player->GetIBCollision();
+		Sphere bIBCol = _boss->GetIBCollision();
+		if (Collision3D::SphereCol(pIBCol, bIBCol)) {
+			VECTOR vDir = VSub(bIBCol.centerPos, pCol.down_pos);
+			vDir.y = 0.0f;
+			vDir = VNorm(vDir);
+			_boss->SetKnockBack(vDir);
+		}
+	}
+
+
 
 	//for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
 	//	ui[i]->Process();
