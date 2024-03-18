@@ -39,6 +39,7 @@ private:
 
 	// ‘Ò‹@ó‘Ô‚Ìˆ—
 	void IdleProcess();
+	void SetIdle();
 
 	// d’¼ó‘Ô‚Ìˆ—
 	void StiffenProcess();

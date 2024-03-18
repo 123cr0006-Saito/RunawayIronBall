@@ -237,30 +237,14 @@ void BossIronBall::UpdateIBCollision()
 void BossIronBall::CheckState()
 {
 	// ‰¼
-	//int next = 1 + rand() % 4;
-	//_ibState = static_cast<IB_STATE>(next);
-	_ibState = IB_STATE::ATTACK_RUSH;
+	int next = 2 + rand() % 2;
+	_ibState = static_cast<IB_STATE>(next);
+	//_ibState = IB_STATE::ATTACK_RUSH;
 
 	switch (_ibState)
 	{
 	case BossIronBall::IB_STATE::IDLE:
-	{
-		_ibIdleCnt = 0;
-
-		// -100 ~ 100‚Ì”ÍˆÍ‚Åƒ‰ƒ“ƒ_ƒ€‚ÉˆÚ“®•ûŒü‚ðŒˆ’è
-		float x = (rand() % 201) - 100;
-		float z = (rand() % 201) - 100;
-
-		_ibMoveDir = VGet(x, 0.0f, z);
-		_ibMoveDir = VNorm(_ibMoveDir);
-
-
-
-		debugFrameMax = debugFrame;
-		debugValueMax = debugValue;
-
 		break;
-	}
 	case BossIronBall::IB_STATE::STIFFEN:
 		break;
 	case BossIronBall::IB_STATE::ATTACK_RUSH:
@@ -282,18 +266,40 @@ void BossIronBall::ResetPhase()
 
 void BossIronBall::IdleProcess()
 {
-	_ibPos = VAdd(_ibPos, VScale(_ibMoveDir, IDLE_MOVE_SPEED));
+	switch (_phase)
+	{
+	case 0 :
+		_ibPos = VAdd(_ibPos, VScale(_ibMoveDir, IDLE_MOVE_SPEED));
+		_ibPos.y = sinf(_phaseCnt / 30.0f * DX_PI) * 100.0f + _ibSphereCol.r;
 
-	float rad = _ibIdleCnt / 30.0f * DX_PI;
-	_ibPos.y = sinf(rad) * 100.0f + _ibSphereCol.r;
+		_phaseCnt++;
+		if (_phaseCnt > IDLE_CNT_MAX) {
+			_ibIdleCnt = IDLE_INTERVAL_BASE + (rand() % IDLE_INTERVAL_ADD_MAX);
 
-	_ibIdleCnt++;
-	if (_ibIdleCnt > IDLE_CNT_MAX) {
-		_ibIdleCnt = IDLE_CNT_MAX;
-		// d’¼ó‘Ô‚É‘JˆÚ
-		_ibState = IB_STATE::STIFFEN;
-		SetStiffen(IDLE_INTERVAL_BASE + (rand() % IDLE_INTERVAL_ADD_MAX));
+			_phaseCnt = 0;
+			_phase++;
+		}
+		break;
+	case 1:
+		_phaseCnt++;
+		if (_phaseCnt > _ibIdleCnt) {
+			ResetPhase();
+			CheckState();
+		}
+		break;
 	}
+}
+
+void BossIronBall::SetIdle()
+{
+	ResetPhase();
+	_ibState = IB_STATE::IDLE;
+	_ibIdleCnt = 0;
+	// -100 ~ 100‚Ì”ÍˆÍ‚Åƒ‰ƒ“ƒ_ƒ€‚ÉˆÚ“®•ûŒü‚ðŒˆ’è
+	float x = (rand() % 201) - 100;
+	float z = (rand() % 201) - 100;
+	_ibMoveDir = VGet(x, 0.0f, z);
+	_ibMoveDir = VNorm(_ibMoveDir);
 }
 
 void BossIronBall::StiffenProcess()
@@ -301,7 +307,7 @@ void BossIronBall::StiffenProcess()
 	_ibStiffenCnt--;
 	if (_ibStiffenCnt < 0) {
 		_ibStiffenCnt = 0;
-		CheckState();
+		SetIdle();
 	}
 }
 
