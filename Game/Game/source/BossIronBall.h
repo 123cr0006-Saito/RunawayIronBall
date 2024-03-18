@@ -59,6 +59,9 @@ private:
 	void RotationAcceleration();
 	void SetRotation();
 
+
+	void ChainProcess();
+
 private:
 	// “S‹…‚Ìƒ‚ƒfƒ‹ƒnƒ“ƒhƒ‹
 	int _ibModelHandle;

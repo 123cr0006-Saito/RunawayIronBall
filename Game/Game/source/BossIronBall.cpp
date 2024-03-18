@@ -1,8 +1,8 @@
 #include "BossIronBall.h"
 
 namespace {
-	constexpr int BOSS_CHAIN_MAX = 10;
-	constexpr float BOSS_CHAIN_TOTAL_LENGTH = 500.0f;
+	constexpr int BOSS_CHAIN_MAX = 12;
+	constexpr float BOSS_CHAIN_TOTAL_LENGTH = 3000.0f;
 
 
 	constexpr float SEARCH_RANGE[2] = { 2000.0f, 3000.0f };
@@ -111,7 +111,7 @@ void BossIronBall::Init(VECTOR* stakePos)
 	_stakePos = stakePos;
 	_chainDistance = BOSS_CHAIN_TOTAL_LENGTH / BOSS_CHAIN_MAX;
 	for (int i = 0; i < BOSS_CHAIN_MAX; i++) {
-		_chainPos.push_back(VAdd(*_stakePos, VGet(0.0f, 0.0f, -_chainDistance * 2 * i)));
+		_chainPos.push_back(VAdd(*_stakePos, VGet(0.0f, 500.0f, -_chainDistance * 2 * i)));
 	}
 
 
@@ -179,43 +179,7 @@ void BossIronBall::Process()
 		debugValue -= 1.0f;
 	}
 
-	//static float angle = 0.0f;
-	//angle += 0.05f;
-	//MATRIX mStake = MGetTranslate(*_stakePos);
-
-	////MATRIX m = MInverse(mStake);
-	////m = MMult(m, MGetRotY(angle));
-	////m = MMult(m, mStake);
-	////_chainPos[CHAIN_MAX - 1] = VTransform(VGet(0.0f, 0.0f, -1000.0f), m);
-
-	//VECTOR v = VGet(0.0f, 0.0f, -1000.0f);
-	//MATRIX m =  MGetRotY(angle);
-	//m = MMult(m, mStake);
-	//_chainPos[CHAIN_MAX - 1] = VTransform(v, m);
-
-
-	//for (int i = 0; i < CHAIN_MAX - 1; i++) {
-	//	VECTOR vNext = _chainPos[i + 1];
-	//	VECTOR vDelta = VSub(vNext, _chainPos[i]);
-	//	float distance = VSize(vDelta);
-	//	float difference = _chainDistance - distance;
-
-	//	float offsetX = (difference * vDelta.x / distance) * 0.9f;
-	//	float offsetY = (difference * vDelta.y / distance) * 0.9f;
-	//	float offsetZ = (difference * vDelta.z / distance) * 0.9f;
-
-	//	if (i != 0) {
-	//		_chainPos[i].x -= offsetX;
-	//		_chainPos[i].y -= offsetY;
-	//		_chainPos[i].z -= offsetZ;
-	//	}
-	//	float mul = 1.0f;
-	//	//if (i == 0) mul = 2.0f;
-	//	_chainPos[i + 1].x += offsetX * mul;
-	//	_chainPos[i + 1].y += offsetY * mul;
-	//	_chainPos[i + 1].z += offsetZ * mul;
-	//}
-	//_ibPos = _chainPos[CHAIN_MAX - 1];
+	ChainProcess();
 }
 
 void BossIronBall::Render()
@@ -237,9 +201,22 @@ void BossIronBall::UpdateIBCollision()
 void BossIronBall::CheckState()
 {
 	// ‰¼
-	int next = 2 + rand() % 2;
-	_ibState = static_cast<IB_STATE>(next);
+	//int next = 2 + rand() % 2;
+	//_ibState = static_cast<IB_STATE>(next);
 	//_ibState = IB_STATE::ATTACK_RUSH;
+
+
+	int searchRangeIndex = CheckPlayerInSearchRange();
+	if (searchRangeIndex == -1) {
+		_ibState = IB_STATE::IDLE;
+	}
+	else if (searchRangeIndex == 0) {
+		_ibState = IB_STATE::ATTACK_DROP;
+	}
+	else {
+		_ibState = IB_STATE::ATTACK_RUSH;
+	}
+	//_ibState = IB_STATE::ATTACK_ROTATION;
 
 	switch (_ibState)
 	{
@@ -471,6 +448,40 @@ void BossIronBall::SetRotation()
 	_rotAngle = 0.0f;
 	_activeRotationAcceleration = true;
 }
+
+void BossIronBall::ChainProcess()
+{
+	_chainPos[BOSS_CHAIN_MAX - 1] = _ibPos;
+	for (int i = 1; i < BOSS_CHAIN_MAX - 1; i++) {
+		_chainPos[i].y -= 16.0f;
+		if(_chainPos[i].y - 20.0f < 0.0f) _chainPos[i].y = 20.0f;
+	}
+
+	for (int i = BOSS_CHAIN_MAX - 1; i != 0; i--) {
+		
+		VECTOR vNext = _chainPos[i - 1];
+		VECTOR vDelta = VSub(vNext, _chainPos[i]);
+		float distance = VSize(vDelta);
+		float difference = _chainDistance - distance;
+
+		float offsetX = (difference * vDelta.x / distance) * 0.9f;
+		float offsetY = (difference * vDelta.y / distance) * 0.9f;
+		float offsetZ = (difference * vDelta.z / distance) * 0.9f;
+
+		if (i != BOSS_CHAIN_MAX - 1) {
+			_chainPos[i].x -= offsetX;
+			_chainPos[i].y -= offsetY;
+			_chainPos[i].z -= offsetZ;
+		}
+
+		if (i - 1 != 0) {
+			_chainPos[i - 1].x += offsetX;
+			_chainPos[i - 1].y += offsetY;
+			_chainPos[i - 1].z += offsetZ;
+		}
+	}
+}
+
 int BossIronBall::CheckPlayerInSearchRange()
 {
 	int rangeIndex = -1;
