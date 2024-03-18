@@ -10,6 +10,8 @@ Boss::Boss()
 	_stakeCapsuleCol.r = 0.0f;
 	_stakeCapsuleCol.up = 0.0f;
 
+	_stakeHp = 0;
+
 	_ironBall = NEW BossIronBall();
 
 	_player = nullptr;
@@ -42,6 +44,8 @@ void Boss::Init(VECTOR polePos)
 	_stakeCapsuleCol.up_pos = VAdd(_stakePos, VGet(0.0f, _stakeCapsuleCol.up, 0.0f));
 	_stakeCapsuleCol.r = 100.0f;
 
+	_stakeHp = 100;
+
 	_ironBall->Init(&_stakePos);
 
 	_player = Player::GetInstance();
@@ -64,7 +68,7 @@ void Boss::CheckHitBossAndStake()
 	_ironBall->UpdateIBCollision();
 	Sphere ibCol = _ironBall->GetIBCollision();
 	VECTOR shortestPos = VGet(0.0f, 0.0f, 0.0f);
-	
+
 	if (Collision3D::SphereCapsuleCol(ibCol, _stakeCapsuleCol, &shortestPos))
 	{
 		VECTOR vDir = VSub(ibCol.centerPos, shortestPos);
@@ -73,6 +77,13 @@ void Boss::CheckHitBossAndStake()
 		VECTOR vMove = VAdd(shortestPos, VScale(vDir, length));
 		_ironBall->SetPosition(vMove);
 		_ironBall->SetHitStake(true);
+
+		if (_ironBall->GetKnockBack()) {
+			vDir.y = 0.0f;
+			_ironBall->SetKnockBack(vDir);
+
+			SetDamageStake(20);
+		}
 	}
 }
 

@@ -152,8 +152,8 @@ bool ModeBossBattle::Process() {
 		_player->SetPos(vMove);
 	}
 
-	bool isAttackState = _player->GetAttackState();
-	if (isAttackState) {
+	bool enabledIBAttackCollision = _player->GetEnabledIBAttackCollision();
+	if (enabledIBAttackCollision) {
 
 		Sphere pIBCol = _player->GetIBCollision();
 		Sphere bIBCol = _boss->GetIBCollision();
@@ -162,6 +162,10 @@ bool ModeBossBattle::Process() {
 			vDir.y = 0.0f;
 			vDir = VNorm(vDir);
 			_boss->SetKnockBack(vDir);
+		}
+
+		if (Collision3D::SphereCapsuleCol(pIBCol, bSCol)) {
+			_boss->SetDamageStake(3);
 		}
 	}
 

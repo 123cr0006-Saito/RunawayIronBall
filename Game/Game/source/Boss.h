@@ -23,6 +23,10 @@ public:
 	void CheckHitBossAndStake();
 
 	void SetKnockBack(VECTOR vDir = VGet(0.0f, 0.0f, -1.0f)) { _ironBall->SetKnockBack(vDir); }
+	// Y‚ÌHP‚ğŒ¸‚ç‚·
+	void SetDamageStake(int damage) { _stakeHp -= damage; }
+	// Y‚ÌHP‚ğæ“¾
+	int GetStakeHp() { return _stakeHp; }
 
 	// ƒfƒoƒbƒOî•ñ‚Ì•\¦
 	void DrawDebugInfo();
@@ -34,6 +38,9 @@ private:
 	VECTOR _stakePos;
 	// Y‚Ì“–‚½‚è”»’è
 	Capsule _stakeCapsuleCol;
+	// Y‚ÌHP
+	int _stakeHp;
+
 
 	BossIronBall* _ironBall;
 
