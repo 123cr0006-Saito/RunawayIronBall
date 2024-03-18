@@ -17,14 +17,14 @@ ModeClear::ModeClear() {
 ModeClear::ModeClear(ModeGame* mode){
 	_modeGame = mode;
 	input = nullptr;
-	 _model = 0;
-	 _attachAnim = 0;
-	 _frameCount = 0;
-	 _maxCount = 0;
-	 _alphaValue = 0;
-	 _currentTime = 0;
-	 _valuation = 0;
-	 _valuationTime = 0;
+	_model = 0;
+	_attachAnim = 0;
+	_frameCount = 0;
+	_maxCount = 0;
+	_alphaValue = 0;
+	_currentTime = 0;
+	_valuation = 0;
+	_valuationTime = 0;
 };
 
 bool ModeClear::Initialize(){
@@ -74,7 +74,6 @@ void ModeClear::AnimProcess(){
 };
 
 void ModeClear::Valuation(){
-
 	if(TimeLimit::GetInstance() != nullptr){
 		TimeLimit* time = TimeLimit::GetInstance();
 		_valuationTime =time->GetElapsedTime();
@@ -143,7 +142,7 @@ bool ModeClear::Render() {
 		if (loopCount == 2) {
 			// ƒRƒƒ“‚ğ•`‰æ
 			GetGraphSize(_handle["Colon"], &handleX, &handleY);
-			DrawRotaGraph(x + handleX -40 + handleX/2, y + 10 + handleY / 2.0f ,1.0f,-30*DX_PI/180.0f ,_handle["Colon"], true);
+			DrawRotaGraph(x + handleX + 40 + handleX/2, y + 10 + handleY / 2.0f ,1.0f,-30*DX_PI/180.0f ,_handle["Colon"], true);
 			x -= handleX + 20;// ”š‚ÌŠÔŠu
 			y += handleY / 2.0f;// ”š‚ÌŠÔŠu
 		}
