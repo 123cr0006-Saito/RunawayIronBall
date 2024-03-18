@@ -32,7 +32,7 @@ private:
 
 	// ↓ ここから下は物理演算で使う変数や関数
 public:
-	
+	void SetGravity(std::string end, std::string start);
 	void UpdatePosAndAccel(double _elapsedTime);
 	Vector3D ForceWorksToMassPoint(int i, Vector3D* posList, Vector3D* accelList); //質点に働く力を計算 F=ma
 	bool Process();
@@ -54,7 +54,7 @@ private:
 	static const double _processInterval; //処理の細分化の間隔
 
 	float* _naturalCorrectionFactor; //髪の毛の自然体の長さを出すときに使用する補正係数
-	static const Vector3D _gravityDir;//重力の方向 
+	Vector3D _gravityDir;//重力の方向 
 
 	int _massPointSize; //質点数
 	std::vector<float> _springList; // ばね定数のリスト
