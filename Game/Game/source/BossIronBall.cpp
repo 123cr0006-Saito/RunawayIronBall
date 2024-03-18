@@ -460,13 +460,14 @@ void BossIronBall::SetRotation()
 void BossIronBall::ChainProcess()
 {
 	_chainPos[BOSS_CHAIN_MAX - 1] = _ibPos;
-	for (int i = 1; i < BOSS_CHAIN_MAX - 1; i++) {
+	for (int i = 0; i < BOSS_CHAIN_MAX - 1; i++) {
+		if (i == 0 && !_isStakeBroken) continue;
 		_chainPos[i].y -= 16.0f;
-		if(_chainPos[i].y - 20.0f < 0.0f) _chainPos[i].y = 20.0f;
+		if (_chainPos[i].y - 20.0f < 0.0f) _chainPos[i].y = 20.0f;
 	}
 
 	for (int i = BOSS_CHAIN_MAX - 1; i != 0; i--) {
-		
+
 		VECTOR vNext = _chainPos[i - 1];
 		VECTOR vDelta = VSub(vNext, _chainPos[i]);
 		float distance = VSize(vDelta);
@@ -482,11 +483,10 @@ void BossIronBall::ChainProcess()
 			_chainPos[i].z -= offsetZ;
 		}
 
-		if (i - 1 != 0) {
-			_chainPos[i - 1].x += offsetX;
-			_chainPos[i - 1].y += offsetY;
-			_chainPos[i - 1].z += offsetZ;
-		}
+		if (i - 1 == 0 && !_isStakeBroken) continue;
+		_chainPos[i - 1].x += offsetX;
+		_chainPos[i - 1].y += offsetY;
+		_chainPos[i - 1].z += offsetZ;
 	}
 }
 
