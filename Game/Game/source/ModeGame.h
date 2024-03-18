@@ -61,7 +61,7 @@ public:
 	bool StageMutation();// ステージクリア処理
 	bool GateProcess();// ゴールゲートの処理
 	void NewStage();// ステージの初期化
-	
+	void CreateTutorial();// チュートリアルの作成
 
 
 	//デバッグ用
@@ -113,6 +113,7 @@ protected:
 	Light* _light;
 
 	// ステージ読み込み用変数
+	bool IsTutorial;
 	bool IsLoading;
 	std::thread* LoadFunctionThread;
 };

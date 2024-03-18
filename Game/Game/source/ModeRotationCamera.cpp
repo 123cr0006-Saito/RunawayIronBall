@@ -33,7 +33,7 @@ bool ModeRotationCamera::Process() {
 	if (nowTime > endTime) {
 		bool SearchFade = ModeServer::GetInstance()->Search("Fade");
 		if (!SearchFade) {
-			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(4000, this), 100, "Fade");
+			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(3000, this), 100, "Fade");
 		}
 	}
 	return true;

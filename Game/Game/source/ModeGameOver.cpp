@@ -41,6 +41,9 @@ bool ModeGameOver::Terminate() {
 
 bool ModeGameOver::Process() {
 	base::Process();
+	ModeServer::GetInstance()->SkipProcessUnderLayer();
+	ModeServer::GetInstance()->PauseProcessUnderLayer();
+	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
 	//‘I‘ð€–Ú‚ÌØ‚è‘Ö‚¦
 	if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP)) {

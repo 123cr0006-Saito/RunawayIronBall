@@ -99,9 +99,9 @@ void ModeClear::ValuationProcess(){
 		_alphaValue = Easing::Linear(nowTime,0, 255, endTime);
 
 	   if (_alphaValue >= 255 && input->GetTrg(XINPUT_BUTTON_A)) {
-		   ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(2000,this), 100, "Fade");
-		   if(_modeGame != nullptr){
-	   	   _modeGame->NewStage();
+		   ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000,this), 100, "Fade");
+		   if (_modeGame != nullptr ) {
+			   _modeGame->NewStage();
 		   }
 	   }
 	}

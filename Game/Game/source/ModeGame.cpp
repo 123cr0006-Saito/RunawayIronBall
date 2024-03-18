@@ -17,6 +17,7 @@ bool ModeGame::Initialize() {
 	_gate = nullptr;
 	_stageNum = 1;
 	IsLoading = true;
+	IsTutorial = false;
 	LoadFunctionThread = nullptr;
 
 	_light = NEW Light("LightData");
@@ -88,9 +89,6 @@ bool ModeGame::Initialize() {
 	_gaugeHandle[3] = ResourceServer::LoadGraph("Stamina04", ("res/UI/Stamina/UI_Stamina_04.png"));
 	_sVib = NEW ScreenVibration();
 
-	int tutorialHandle[5];
-	ResourceServer::LoadMultGraph("Tutorial", "res/Tutorial/Tutorial", ".png", 5, tutorialHandle);
-	ModeServer::GetInstance()->Add(NEW ModeTutorial(tutorialHandle, 5), 10, "Tutorial");
 	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(_stageNum), 50, "RotCamera");
 
 	global._soundServer->BgmFadeIn("Stage03", 2000);
@@ -156,17 +154,17 @@ void ModeGame::DeleteObject() {
 
 	_floor->Delete();
 
-	//for(auto itr = _house.begin(); itr != _house.end();++itr){
-	//	delete (*itr);(*itr) = nullptr;
-	//}
+	for(auto itr = _house.begin(); itr != _house.end();++itr){
+		delete (*itr);(*itr) = nullptr;
+	}
 
-	//for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
-	//	delete (*itr);(*itr) = nullptr;
-	//}
+	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
+		delete (*itr);(*itr) = nullptr;
+	}
 
-	//for (auto itr = _uObj.begin(); itr != _uObj.end(); ++itr) {
-	//	delete (*itr); (*itr) = nullptr;
-	//}
+	for (auto itr = _uObj.begin(); itr != _uObj.end(); ++itr) {
+		delete (*itr); (*itr) = nullptr;
+	}
 
 	_house.clear();
 	_tower.clear();
@@ -320,11 +318,11 @@ bool ModeGame::LoadStage(std::string fileName) {
 	// プレイヤーの座標指定
 	nlohmann::json loadObject = (*json)._json.at("Player_Start_Position");
 	VECTOR pos;
-	loadObject.at("translate").at("x").get_to(pos.x);
-	loadObject.at("translate").at("y").get_to(pos.z);
-	loadObject.at("translate").at("z").get_to(pos.y);
+	loadObject.at(0).at("translate").at("x").get_to(pos.x);
+	loadObject.at(0).at("translate").at("y").get_to(pos.z);
+	loadObject.at(0).at("translate").at("z").get_to(pos.y);
 	 pos.x *= -1;
-	_player->SetPos(pos);
+	//_player->SetPos(pos);
 
 	return true;
 };
@@ -485,7 +483,7 @@ bool ModeGame::Process() {
 	if (_player->GetHP() <= 0) {
 		global._soundServer->BgmFadeOut(2000);
 		ModeServer::GetInstance()->Add(NEW ModeGameOver(), 0, "GameOver");
-		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(2500, "GameOver", 50), 100, "FadeComeBack");
+		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(2500, "GameOver", 50), 100, "Fade");
 	}
 
 	VECTOR box_vec = ConvWorldPosToScreenPos(VAdd(_player->GetPosition(), VGet(0, 170, 0)));
@@ -503,6 +501,7 @@ bool ModeGame::Process() {
 	_camera->Process(_player->GetPosition(), _tile);
 
 	GateProcess();
+	CreateTutorial();
 
 	return true;
 }
@@ -510,7 +509,7 @@ bool ModeGame::Process() {
 
 bool ModeGame::GateProcess() {
 
-	_suppression->SubSuppression(1);
+	//_suppression->SubSuppression(1);
 	if (_suppression->GetIsRatio() && _stageNum < 3 ) {
 		if (_gate == nullptr) {
 			int handle[43];
@@ -536,12 +535,25 @@ bool ModeGame::GateProcess() {
 };
 
 void ModeGame::NewStage(){
-	
-	//ModeServer::GetInstance()->Add(NEW ModeLoading(&IsLoading), 100, "Loading");
-	//LoadFunctionThread = NEW std::thread(&ModeGame::StageMutation, this);
 	StageMutation();
 	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(_stageNum), 10, "RotCamera");
 	SetTime();
+};
+
+void ModeGame::CreateTutorial() {
+	if (!IsTutorial) {
+		IsTutorial = true;
+		if (_stageNum == 1) {
+			int tutorialHandle[5];
+			ResourceServer::LoadMultGraph("Tutorial", "res/Tutorial/Tutorial", ".png", 5, tutorialHandle);
+			ModeServer::GetInstance()->Add(NEW ModeTutorial(tutorialHandle, 5), 10, "Tutorial");
+		}
+		else if (_stageNum == 4) {
+			int tutorialHandle[5];
+			ResourceServer::LoadMultGraph("Tutorial", "res/Tutorial/Tutorial", ".png", 5, tutorialHandle);
+			ModeServer::GetInstance()->Add(NEW ModeTutorial(tutorialHandle, 5), 10, "Tutorial");
+		}
+	}
 };
 
 bool ModeGame::Render() {
