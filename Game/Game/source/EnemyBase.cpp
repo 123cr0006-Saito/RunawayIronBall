@@ -21,7 +21,7 @@ EnemyBase::~EnemyBase() {
 };
 
 bool EnemyBase::Create(int model, VECTOR pos, EnemyParam param, std::string name) {
-	_model = model;
+	_modelHandle = model;
 
 	_player = Player::GetInstance();
 
@@ -42,9 +42,9 @@ bool EnemyBase::Create(int model, VECTOR pos, EnemyParam param, std::string name
 
 	Init(pos);
 	InheritanceInit();
-	AnimInit();
+	
 
-	MV1SetPosition(_model, _pos);
+	MV1SetPosition(_modelHandle, _pos);
 
 	return true;
 };
@@ -66,7 +66,7 @@ void EnemyBase::Init(VECTOR pos) {
 	_forwardVec = VScale(Math::MatrixToVector(MGetRotY(_rotation.y), 2), -1);// モデルが-ｚの方向を正面としているので-1をかける
 
 	float randSize = (float)(rand() % 75) / 100 + 0.75;// 1 + 0.0 ~ 0.5
-	MV1SetScale(_model, VScale(VGet(1.0f, 1.0f, 1.0f), 2 * randSize));//スラブロックの借りが小さかったため2倍に設定
+	MV1SetScale(_modelHandle, VScale(VGet(1.0f, 1.0f, 1.0f), 2 * randSize));//スラブロックの借りが小さかったため2倍に設定
 
 	_diffeToCenter = VGet(0, 125 * randSize, 0);
 	_r = 150.0f * randSize;
@@ -270,9 +270,9 @@ bool EnemyBase::IndividualProcessing() {
 
 bool EnemyBase::SetState() {
 	//最終的なモデルの位置や角度を調整
-	if (_model != 0) {
-		MV1SetRotationXYZ(_model, VGet(0.0f, _rotation.y, 0.0f));
-		MV1SetPosition(_model, _pos);
+	if (_modelHandle != 0) {
+		MV1SetRotationXYZ(_modelHandle, VGet(0.0f, _rotation.y, 0.0f));
+		MV1SetPosition(_modelHandle, _pos);
 	}
 	return true;
 };
@@ -398,11 +398,11 @@ bool EnemyBase::IndividualRendering() {
 };
 
 bool EnemyBase::Render() {
-	if (_model != 0) {   
+	if (_modelHandle != 0) {   
 #ifdef _DEBUG
 	//	DebugRender();
 #endif
-		MV1DrawModel(_model);
+		MV1DrawModel(_modelHandle);
 		IndividualRendering();
 	}
 	return true;

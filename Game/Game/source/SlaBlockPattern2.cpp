@@ -23,13 +23,13 @@ void SlaBlockPattern2::AnimInit() {
 	auto motionList = MotionList::GetMotionList("Slablock");
 	// アニメーションマネージャーの初期化
 	_animManager = NEW AnimationManager();
-	_animManager->InitMap("Slablock", _model, *motionList);
+	_animManager->InitMap("Slablock", _modelHandle, *motionList);
 	// フレームデータの初期化
 	_frameData = NEW FrameData();
 	_frameData->LoadData("Slablock", *motionList);
 
 	if (_collisionFrame == -1) {
-		_collisionFrame = MV1SearchFrame(_model, "face1");
+		_collisionFrame = MV1SearchFrame(_modelHandle, "face1");
 	}
 }
 
@@ -233,6 +233,6 @@ bool SlaBlockPattern2::IndividualRendering() {
 };
 
 bool SlaBlockPattern2::DebugRender() {
-	DrawSphere3D(MV1GetFramePosition(_model, _collisionFrame), _r, 8, GetColor(0, 0, 255), GetColor(0, 0, 255), false);
+	DrawSphere3D(MV1GetFramePosition(_modelHandle, _collisionFrame), _r, 8, GetColor(0, 0, 255), GetColor(0, 0, 255), false);
 	return true;
 }

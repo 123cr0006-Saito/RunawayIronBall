@@ -23,21 +23,21 @@ void CrystarPattern3::InheritanceInit() {
 
 void CrystarPattern3::AnimInit() {
 
-	_roof[0] = NEW CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof_Glass", "res/Enemy/Cg_Enemy_Crystar_Iron/Cg_Crystar_Roof_Iron.mv1"), _model,"joint1");
-	_roof[1] = NEW CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof_Iron", "res/Enemy/Cg_Enemy_Crystar_Iron/Cg_Helmet_Enemy_Crystar_Iron.mv1"), _model, "joint2");
+	_roof[0] = NEW CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof_Glass", "res/Enemy/Cg_Enemy_Crystar_Iron/Cg_Crystar_Roof_Iron.mv1"), _modelHandle,"joint1");
+	_roof[1] = NEW CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof_Iron", "res/Enemy/Cg_Enemy_Crystar_Iron/Cg_Helmet_Enemy_Crystar_Iron.mv1"), _modelHandle, "joint2");
 
 	//// モーションリストのロード
 	MotionList::Load("Crystarl", "MotionList_Crystarl.csv");
 	auto motionList = MotionList::GetMotionList("Crystarl");
 	// アニメーションマネージャーの初期化
 	_animManager = NEW AnimationManager();
-	_animManager->InitMap("Crystarl", _model, *motionList);
+	_animManager->InitMap("Crystarl", _modelHandle, *motionList);
 	// フレームデータの初期化
 	_frameData = NEW FrameData();
 	_frameData->LoadData("Crystarl", *motionList);
 
 	if (_collisionFrame == -1) {
-		_collisionFrame = MV1SearchFrame(_model, "Hip");
+		_collisionFrame = MV1SearchFrame(_modelHandle, "Hip");
 	}
 
 }
@@ -72,7 +72,7 @@ void CrystarPattern3::Init(VECTOR pos) {
 	_rotation = VGet(0, 0, 0);
 
 	float randSize = (float)(rand() % 75) / 100 + 0.75;// 1 + 0.0 ~ 0.5
-	MV1SetScale(_model, VScale(VGet(1.0f, 1.0f, 1.0f), 2.0f * randSize));
+	MV1SetScale(_modelHandle, VScale(VGet(1.0f, 1.0f, 1.0f), 2.0f * randSize));
 
 	_diffeToCenter = VGet(0, 20.0f * 2.0f * randSize, 0);
 	_r = 25.0f * 2.0f * randSize;
@@ -213,9 +213,9 @@ bool CrystarPattern3::IndividualProcessing() {
 
 bool CrystarPattern3::SetState() {
 	//最終的なモデルの位置や角度を調整
-	if (_model != 0) {
-		MV1SetRotationXYZ(_model, VGet(0.0f, _rotation.y + _attackDir, 0.0f));
-		MV1SetPosition(_model, _pos);
+	if (_modelHandle != 0) {
+		MV1SetRotationXYZ(_modelHandle, VGet(0.0f, _rotation.y + _attackDir, 0.0f));
+		MV1SetPosition(_modelHandle, _pos);
 	}
 	return true;
 };
@@ -228,6 +228,6 @@ bool CrystarPattern3::IndividualRendering() {
 };
 
 bool CrystarPattern3::DebugRender() {
-	DrawSphere3D(MV1GetFramePosition(_model, _collisionFrame), _r, 8, GetColor(0, 255, 0), GetColor(0, 0, 255), false);
+	DrawSphere3D(MV1GetFramePosition(_modelHandle, _collisionFrame), _r, 8, GetColor(0, 255, 0), GetColor(0, 0, 255), false);
 	return true;
 };

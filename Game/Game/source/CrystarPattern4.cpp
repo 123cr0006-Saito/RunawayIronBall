@@ -55,9 +55,9 @@ bool CrystarPattern4::ModeCoolTime() {
 
 bool CrystarPattern4::SetState() {
 	//最終的なモデルの位置や角度を調整
-	if (_model != 0) {
-		MV1SetRotationXYZ(_model, VGet(_rotation.x, _rotation.y + _attackDir, 0.0f));
-		MV1SetPosition(_model, VAdd(_pos, _attackPos));
+	if (_modelHandle != 0) {
+		MV1SetRotationXYZ(_modelHandle, VGet(_rotation.x, _rotation.y + _attackDir, 0.0f));
+		MV1SetPosition(_modelHandle, VAdd(_pos, _attackPos));
 	}
 	return true;
 };

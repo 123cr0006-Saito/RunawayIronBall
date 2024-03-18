@@ -12,3 +12,7 @@ ObjectBase::~ObjectBase()
 {
 	SAFE_DELETE(_cell);
 }
+
+void ObjectBase::LoadModel() {
+	_modelHandle = ResourceServer::MV1LoadModel(_name.c_str(), _path.c_str());
+};

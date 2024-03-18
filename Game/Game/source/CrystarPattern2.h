@@ -23,9 +23,9 @@ public:
 	bool SetState()override;
 
 	bool DebugRender()override;
-	VECTOR GetCollisionPos()override { return MV1GetFramePosition(_model, _collisionFrame); }
+	VECTOR GetCollisionPos()override { return MV1GetFramePosition(_modelHandle, _collisionFrame); }
 
-	int GetModelHandle() { return _model; }
+	int GetModelHandle() { return _modelHandle; }
 protected:
 	static enum ANIMSTATE : int {
 		IDLE = 0,

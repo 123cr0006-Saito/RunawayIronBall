@@ -18,7 +18,7 @@ void Chainguard::AnimInit(){
 	auto motionList = MotionList::GetMotionList("Chainguard");
 	// アニメーションマネージャーの初期化
 	_animManager = new AnimationManager();
-	_animManager->InitMap("Chainguard", _model, *motionList);
+	_animManager->InitMap("Chainguard", _modelHandle, *motionList);
 	// フレームデータの初期化
 	_frameData = new FrameData();
 	_frameData->LoadData("Chainguard", *motionList);

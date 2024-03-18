@@ -1,5 +1,6 @@
 #include "ModeLoading.h"
-ModeLoading::ModeLoading(bool* flag) {
+ModeLoading::ModeLoading(bool* flag,ModeGame* mode) {
+	_mode = mode;
 	_chara = nullptr;
 	IsClear = flag;
 	SetUseASyncLoadFlag(true);
@@ -28,6 +29,9 @@ bool ModeLoading::Process(){
 
 	if ((*IsClear) && GetASyncLoadNum() <= 0) {
 		int time = 4 * 1000;
+		if (_mode != nullptr) {
+			_mode->LoadNowStageModel();
+		}
 		ModeServer::GetInstance()->Add(new ModeFade(time,true),1000,"FadeIn");
 		ModeServer::GetInstance()->Del(this);
 
