@@ -15,7 +15,7 @@ bool ModeGame::Initialize() {
 	_collisionManager->Init();
 
 	_gate = nullptr;
-	_stageNum = 3;
+	_stageNum = 1;
 	IsLoading = true;
 	IsTutorial = false;
 	LoadFunctionThread = nullptr;
@@ -322,7 +322,7 @@ bool ModeGame::LoadStage(std::string fileName) {
 	loadObject.at(0).at("translate").at("y").get_to(pos.z);
 	loadObject.at(0).at("translate").at("z").get_to(pos.y);
 	 pos.x *= -1;
-	//_player->SetPos(pos);
+	_player->SetPos(pos);
 
 	return true;
 };
@@ -349,6 +349,8 @@ bool ModeGame::StageMutation() {
 
 bool ModeGame::Process() {
 	base::Process();
+	ModeServer::GetInstance()->SkipProcessUnderLayer();
+	ModeServer::GetInstance()->PauseProcessUnderLayer();
 
 	bool isAttackState = _player->GetEnabledIBAttackCollision();
 	bool isInvincible = _player->GetIsInvincible();
@@ -482,7 +484,7 @@ bool ModeGame::Process() {
 
 	if (_player->GetHP() <= 0) {
 		global._soundServer->BgmFadeOut(2000);
-		ModeServer::GetInstance()->Add(NEW ModeGameOver(), 0, "GameOver");
+		ModeServer::GetInstance()->Add(NEW ModeGameOver(this), 0, "GameOver");
 		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(2500, "GameOver", 50), 100, "Fade");
 	}
 
@@ -509,7 +511,6 @@ bool ModeGame::Process() {
 
 bool ModeGame::GateProcess() {
 
-	_suppression->SubSuppression(2);
 	if (_suppression->GetIsRatio() ) {
 		if (_gate == nullptr) {
 			VECTOR pos = VGet(5000, 300, 0);
@@ -583,13 +584,13 @@ bool ModeGame::Render() {
 	SetUseLighting(TRUE);
 
 	// 0,0,0を中心に線を引く
-	{
-		float linelength = 1000.f;
-		VECTOR v = { 0, 0, 0 };
-		DrawLine3D(VAdd(v, VGet(-linelength, 0, 0)), VAdd(v, VGet(linelength, 0, 0)), GetColor(255, 0, 0));
-		DrawLine3D(VAdd(v, VGet(0, -linelength, 0)), VAdd(v, VGet(0, linelength, 0)), GetColor(0, 255, 0));
-		DrawLine3D(VAdd(v, VGet(0, 0, -linelength)), VAdd(v, VGet(0, 0, linelength)), GetColor(0, 0, 255));
-	}
+	//{
+	//	float linelength = 1000.f;
+	//	VECTOR v = { 0, 0, 0 };
+	//	DrawLine3D(VAdd(v, VGet(-linelength, 0, 0)), VAdd(v, VGet(linelength, 0, 0)), GetColor(255, 0, 0));
+	//	DrawLine3D(VAdd(v, VGet(0, -linelength, 0)), VAdd(v, VGet(0, linelength, 0)), GetColor(0, 255, 0));
+	//	DrawLine3D(VAdd(v, VGet(0, 0, -linelength)), VAdd(v, VGet(0, 0, linelength)), GetColor(0, 0, 255));
+	//}
 
 	//------------------------------------
 	// シャドウマップの設定　

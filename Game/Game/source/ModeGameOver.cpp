@@ -2,7 +2,11 @@
 #include "ModeGameOver.h"
 #include "ModeTitle.h"
 #include "ModeGame.h"
-#include "ModeFade.h"
+#include "ModeFadeComeBack.h"
+
+ModeGameOver::ModeGameOver(ModeGame* mode) {
+	_mode = mode;
+};
 
 bool ModeGameOver::Initialize() {
 	if (!base::Initialize()) { return false; }
@@ -25,8 +29,6 @@ bool ModeGameOver::Initialize() {
 	_targetPos = MV1GetFramePosition(_model, frameIndex);
 	// ƒJƒƒ‰‚ÌˆÊ’u‚ðÝ’è
 	_cameraPos= VGet(0, 500, -500);
-
-	ModeServer::GetInstance()->Add(new ModeFade(3000, true), 10, "Fade");
 
 	global._soundServer->DirectPlay("PL_GameOver");
 	return true;
@@ -58,13 +60,15 @@ bool ModeGameOver::Process() {
 	if (_input->GetTrg(XINPUT_BUTTON_A)) {
 		global._soundServer->DirectPlay("SE_Press");
 		if (_selectItem == 0) {
+			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(3000, this), 100, "Fade");
 			if (_mode != nullptr) {
 				_mode->NewStage();
+				Player::GetInstance()->MaxHeal();
 			}
-			ModeServer::GetInstance()->Del(this);
 		}
 		else {
 			ModeServer::GetInstance()->Add(new ModeTitle(), 1, "Title");
+			ModeServer::GetInstance()->Del(_mode);
 			ModeServer::GetInstance()->Del(this);
 		}
 	}

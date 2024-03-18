@@ -55,6 +55,7 @@ public:
 
 
 	int GetHP() { return _hp; }
+	void MaxHeal() { _hp = 4; }
 	bool GetIsInvincible() { return _isInvincible; }
 	// –³“Gó‘Ô‚ÌXV
 	void ChangeIsInvincible(bool b, int frame);
