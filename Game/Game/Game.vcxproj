@@ -157,6 +157,7 @@
   <ItemGroup>
     <ClCompile Include="source\ModeMovie.cpp" />
     <ClCompile Include="source\Fog.cpp" />
+    <ClCompile Include="source\ModeBossBattle.cpp" />
     <ClCompile Include="source\ModeTutorial.cpp" />
     <ClCompile Include="source\ModeZoomCamera.cpp" />
     <ClCompile Include="source\ModeRotationCamera.cpp" />
@@ -179,6 +180,7 @@
     <ClCompile Include="source\ModeScenario.cpp" />
     <ClCompile Include="source\EffectManeger.cpp" />
     <ClCompile Include="source\Boss.cpp" />
+    <ClCompile Include="source\BossIronBall.cpp" />
     <ClCompile Include="source\ObjectBase.cpp" />
     <ClCompile Include="source\PlaneEffectBase.cpp" />
     <ClCompile Include="source\BoardPolygonDust.cpp" />
@@ -232,6 +234,7 @@
   <ItemGroup>
     <ClInclude Include="source\ModeMovie.h" />
     <ClInclude Include="source\Fog.h" />
+    <ClInclude Include="source\ModeBossBattle.h" />
     <ClInclude Include="source\ModeTutorial.h" />
     <ClInclude Include="source\ModeZoomCamera.h" />
     <ClInclude Include="source\ModeRotationCamera.h" />
@@ -259,6 +262,7 @@
     <ClInclude Include="source\ModeScenario.h" />
     <ClInclude Include="source\EffectManeger.h" />
     <ClInclude Include="source\Boss.h" />
+    <ClInclude Include="source\BossIronBall.h" />
     <ClInclude Include="source\ObjectBase.h" />
     <ClInclude Include="source\PlaneEffectBase.h" />
     <ClInclude Include="source\BoardPolygonDust.h" />
