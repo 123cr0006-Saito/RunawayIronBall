@@ -79,6 +79,8 @@ BossIronBall::BossIronBall()
 
 	_isKnockBack = false;
 	_knockBackDir = VGet(0.0f, 0.0f, -1.0f);
+	_knockBackCnt = 0;
+	_gravity = 0.0f;
 
 	_chainModelHandle = -1;
 	_chainPos.clear();
