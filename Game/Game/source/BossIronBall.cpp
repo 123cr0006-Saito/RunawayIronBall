@@ -216,17 +216,22 @@ void BossIronBall::CheckState()
 	//_ibState = IB_STATE::ATTACK_RUSH;
 
 
-	int searchRangeIndex = CheckPlayerInSearchRange();
-	if (searchRangeIndex == -1) {
-		_ibState = IB_STATE::IDLE;
-	}
-	else if (searchRangeIndex == 0) {
-		_ibState = IB_STATE::ATTACK_DROP;
+	int searchRangeIndex = -1;
+	if (!_isStakeBroken) {
+		searchRangeIndex = CheckPlayerInSearchRange();
+		if (searchRangeIndex == -1) {
+			_ibState = IB_STATE::IDLE;
+		}
+		else if (searchRangeIndex == 0) {
+			_ibState = IB_STATE::ATTACK_DROP;
+		}
+		else {
+			_ibState = IB_STATE::ATTACK_RUSH;
+		}
 	}
 	else {
-		_ibState = IB_STATE::ATTACK_RUSH;
+		_ibState = IB_STATE::IDLE;
 	}
-	//_ibState = IB_STATE::ATTACK_ROTATION;
 
 	switch (_ibState)
 	{
