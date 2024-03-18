@@ -91,7 +91,7 @@ bool ModeGame::Initialize() {
 
 	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(_stageNum), 50, "RotCamera");
 
-	global._soundServer->BgmFadeIn("Stage03", 2000);
+	global._soundServer->DirectPlay("Stage03");
 
 
 	return true;
@@ -303,13 +303,13 @@ bool ModeGame::LoadStage(std::string fileName) {
 			if ((*itr).isBreak == 1) {
 				// 壊れるオブジェクト
 				House* building = NEW House();
-				building->Init(objHandle, object._pos, object._rotate, object._scale, (*itr)._size);
+				building->Init(objHandle, nameList,object._pos, object._rotate, object._scale, (*itr)._size);
 				_house.push_back(building);
 			}
 			else {
 				// 壊れないオブジェクト
 				UnbreakableObject* uObj = NEW UnbreakableObject();
-				uObj->Init(objHandle, object._pos, object._rotate, object._scale, (*itr)._size);
+				uObj->Init(objHandle, nameList,object._pos, object._rotate, object._scale, (*itr)._size);
 				_uObj.push_back(uObj);
 			}
 		}

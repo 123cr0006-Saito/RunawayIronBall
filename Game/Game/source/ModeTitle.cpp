@@ -18,6 +18,7 @@ bool ModeTitle::Initialize() {
 	_handleMap["Start"] = ResourceServer::LoadGraph("T_Start",_T("res/ModeTitle/UI_Start.png"));
 	_handleMap["Option"] = ResourceServer::LoadGraph("T_Option",_T("res/ModeTitle/UI_Option.png"));
 	_handleMap["Quit"] = ResourceServer::LoadGraph("T_Quit",_T("res/ModeTitle/UI_Quit.png"));
+	_handleMap["Logo"] = ResourceServer::LoadGraph("T_Logo", _T("res/ModeTitle/UI_Logo.png"));
 
 	_IsGameStart = false;
 	//Š„‚ê‚éˆ—‚Ì‰Šú‰»
@@ -148,7 +149,9 @@ void ModeTitle::DrawTitleItems(){
 	//x = 1920 / 2 - x / 2;
 	handleX = 840;
 	DrawGraph(handleX, 0, _handleMap["Title"], true);
-
+	//ƒ`[ƒ€ƒƒS‚Ì•`‰æ
+	GetGraphSize(_handleMap["Logo"], &handleX, &handleY);
+	DrawGraph(0, 1080 - handleY, _handleMap["Logo"], true);
 	//‚»‚ê‚¼‚ê‚Ì€–Ú‚Ì•`‰æ
 	
 	int centerX, centerY;

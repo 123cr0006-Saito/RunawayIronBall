@@ -78,10 +78,10 @@ bool ModeBossBattle::Initialize() {
 	_gaugeHandle[3] = ResourceServer::LoadGraph("Stamina04", _T("res/UI/UI_Stamina_04.png"));
 	_sVib = NEW ScreenVibration();
 
-	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(), 10, "camera");
+	//ModeServer::GetInstance()->Add(NEW ModeRotationCamera(_stageNum), 10, "camera");
 
 	//global._soundServer->DirectPlay("Stage03");
-	global._soundServer->BgmFadeIn("Stage03", 2000);
+	//global._soundServer->BgmFadeIn("Stage03", 2000);
 
 
 	return true;
@@ -191,7 +191,7 @@ bool ModeBossBattle::Process() {
 	if (_player->GetHP() <= 0) {
 		global._soundServer->BgmFadeOut(2000);
 		ModeServer::GetInstance()->Del(this);
-		ModeServer::GetInstance()->Add(NEW ModeGameOver(), 1, "gameover");
+		//ModeServer::GetInstance()->Add(NEW ModeGameOver(), 1, "gameover");
 	}
 
 	VECTOR box_vec = ConvWorldPosToScreenPos(VAdd(_player->GetPosition(), VGet(0, 170, 0)));

@@ -620,6 +620,7 @@ void CollisionManager::CheckHitIbAndEn(IronBall* ironBall, EnemyBase* enemy)
 			VECTOR vDir = VSub(eCol.centerPos, pPos);
 			vDir = VNorm(vDir);
 			enemy->SetKnockBackAndDamage(vDir, player->GetPower());
+			global._soundServer->DirectPlay("OBJ_RockBreak");
 		}
 	}
 }
@@ -636,7 +637,7 @@ void CollisionManager::CheckHitIbAndBldg(IronBall* ironBall, BuildingBase* build
 			VECTOR vDir = VSub(bCol.pos, player->GetPosition());
 			building->SetHit(vDir);
 			player->SetExp(50);
-			global._soundServer->DirectPlay("OBJ_RockBreak");
+			global._soundServer->DirectPlay(building->GetName() + "_Break");
 		}
 	}
 }
@@ -674,6 +675,7 @@ void CollisionManager::CheckHitChAndEn(IronBall* ironBall, EnemyBase* enemy)
 			VECTOR vDir = VSub(eCol.centerPos, pPos);
 			vDir = VNorm(vDir);
 			enemy->SetKnockBackAndDamage(vDir, player->GetPower());
+			global._soundServer->DirectPlay("SE_Hit01");
 		}
 	}
 }
@@ -690,7 +692,7 @@ void CollisionManager::CheckHitChAndBldg(IronBall* ironBall, BuildingBase* build
 			VECTOR vDir = VSub(bCol.pos, player->GetPosition());
 			building->SetHit(vDir);
 			player->SetExp(50);
-			global._soundServer->DirectPlay("OBJ_RockBreak");
+			global._soundServer->DirectPlay(building->GetName() + "_Break");
 		}
 	}
 }
@@ -784,6 +786,7 @@ void CollisionManager::CheckHit(EnemyBase* enemy, TowerParts* towerParts)
 		if (Collision3D::SphereCol(eCol, tCol)) {
 			VECTOR vDir = VSub(tCol.centerPos, eCol.centerPos);
 			enemy->SetKnockBackAndDamage(vDir, 200);
+			global._soundServer->DirectPlay("SE_Hit01");
 		}
 	}
 }
@@ -798,7 +801,7 @@ void CollisionManager::CheckHit(BuildingBase* building, TowerParts* towerParts)
 		if (Collision3D::OBBSphereCol(bCol, tCol)) {
 			VECTOR vDir = VSub(bCol.pos, tCol.centerPos);
 			building->SetHit(vDir);
-			global._soundServer->DirectPlay("OBJ_RockBreak");
+			global._soundServer->DirectPlay(building->GetName() + "_Break");
 		}
 	}
 }

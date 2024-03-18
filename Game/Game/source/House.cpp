@@ -14,9 +14,9 @@ House::~House()
 	SAFE_DELETE(_breakObj);
 }
 
-void House::Init(int modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength)
+void House::Init(int modelHandle, std::string objName, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength)
 {
-	BuildingBase::Init(modelHandle, startPos, rotation, scale, obbLength);
+	BuildingBase::Init(modelHandle, objName,startPos, rotation, scale, obbLength);
 
 	_canBreak = true;
 	// ”j‰óˆ—ƒNƒ‰ƒX‚Ì‰Šú‰»
