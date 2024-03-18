@@ -1,4 +1,5 @@
 #include "BossIronBall.h"
+#include "BossIronBall.h"
 
 namespace {
 	constexpr int BOSS_CHAIN_MAX = 12;
@@ -75,6 +76,9 @@ BossIronBall::BossIronBall()
 	_rotationAccelerationCnt = 0;
 	_rotAngularVelocity = 0.0f;
 	_rotAngle = 0.0f;
+
+	_isKnockBack = false;
+	_knockBackDir = VGet(0.0f, 0.0f, -1.0f);
 
 	_chainModelHandle = -1;
 	_chainPos.clear();
@@ -153,6 +157,9 @@ void BossIronBall::Process()
 		_activeRotationAcceleration = true;
 		RotationAcceleration();
 		RotationProcess();
+		break;
+	case BossIronBall::IB_STATE::KNOCK_BACK:
+		KnockBackProcess();
 		break;
 	}
 
@@ -508,7 +515,7 @@ void BossIronBall::DrawDebugInfo()
 	int y = 500;
 	int line = 0;
 	DrawBox(x, y, x + 300, y + 500, GetColor(0, 0, 0), TRUE);
-	std::array<std::string, 5> stateStr = { "IDLE", "STIFFEN", "ATTACK_RUSH", "ATTACK_DROP", "ATTACK_ROTATION" };
+	std::array<std::string, 6> stateStr = { "IDLE", "STIFFEN", "ATTACK_RUSH", "ATTACK_DROP", "ATTACK_ROTATION", "KnockBack"};
 	DrawFormatString(x, y + 20 * line, COLOR_WHITE, "State:%s", stateStr[static_cast<int>(_ibState)].c_str()); line++;
 	DrawFormatString(x, y + 20 * line, COLOR_WHITE, "pos: x %3.2f, y %3.2f, z %3.2f", _ibPos.x, _ibPos.y, _ibPos.z); line++;
 	DrawFormatString(x, y + 20 * line, COLOR_WHITE, "_phase: %d, _phaseCnt: %d", _phase, _phaseCnt); line++;
@@ -518,4 +525,24 @@ void BossIronBall::DrawDebugInfo()
 	//DrawFormatString(x, y + 20 * line, COLOR_WHITE, "idleCntMax:%d", debugFrameMax); line++;
 	//DrawFormatString(x, y + 20 * line, COLOR_WHITE, "éüÇ…ê›íËÇ∑ÇÈÉtÉåÅ[ÉÄêî:%d", debugFrame); line++;
 	//DrawFormatString(x, y + 20 * line, COLOR_WHITE, "éüÇ…ê›íËÇ∑ÇÈà⁄ìÆãóó£:%3.2f cm", debugValue); line++;
+}
+
+void BossIronBall::KnockBackProcess()
+{
+	if (_isKnockBack) {
+		_ibPos = VAdd(_ibPos, VScale(_knockBackDir, 12.0f));
+		_ibPos.y += _gravity;
+		if (_ibPos.y - _ibSphereCol.r < 0.0f) {
+			_gravity = 40.0f;
+		}
+		else {
+			_gravity -= 6.0f;
+		}
+		_knockBackCnt--;
+		if (_knockBackCnt < 0) {
+			_knockBackCnt = 0;
+			_isKnockBack = false;
+			SetStiffen(30);
+		}
+	}
 }

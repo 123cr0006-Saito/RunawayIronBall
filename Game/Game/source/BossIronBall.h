@@ -27,6 +27,15 @@ public:
 
 	int CheckPlayerInSearchRange();
 
+	void SetKnockBack(VECTOR vDir = VGet(0.0f, 0.0f, -1.0f)) {
+		_isKnockBack = true;
+		_ibState = IB_STATE::KNOCK_BACK;
+		_knockBackDir = VNorm(vDir);
+		_knockBackCnt = 30;
+		_gravity = 80.0f;
+	}
+	bool GetKnockBack() { return _isKnockBack; }
+
 	// デバッグ情報の表示
 	void DrawDebugInfo();
 
@@ -59,6 +68,8 @@ private:
 	void RotationAcceleration();
 	void SetRotation();
 
+	// ノックバック処理
+	void KnockBackProcess();
 
 	void ChainProcess();
 
@@ -76,6 +87,7 @@ private:
 		ATTACK_RUSH,			// 突進攻撃
 		ATTACK_DROP,			// 落下攻撃
 		ATTACK_ROTATION,	// 回転攻撃
+		KNOCK_BACK,			// ノックバック
 	} _ibState;
 
 	// 各ステート内でのフェーズ番号
@@ -100,6 +112,15 @@ private:
 	int _rotationAccelerationCnt;
 	float _rotAngularVelocity;
 	float _rotAngle;
+
+	// ノックバック状態かどうか
+	bool _isKnockBack;
+	// ノックバック方向
+	VECTOR _knockBackDir;
+	// ノックバックを行うの残りフレーム数
+	int _knockBackCnt;
+
+	float _gravity;
 
 	// 鎖のモデルハンドル
 	int _chainModelHandle;

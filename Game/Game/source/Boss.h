@@ -22,6 +22,7 @@ public:
 
 	void CheckHitBossAndStake();
 
+	void SetKnockBack(VECTOR vDir = VGet(0.0f, 0.0f, -1.0f)) { _ironBall->SetKnockBack(vDir); }
 
 	// デバッグ情報の表示
 	void DrawDebugInfo();
