@@ -155,6 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\Fog.cpp" />
     <ClCompile Include="source\ModeBossBattle.cpp" />
     <ClCompile Include="source\ModeTutorial.cpp" />
     <ClCompile Include="source\ModeZoomCamera.cpp" />
@@ -230,6 +231,7 @@
     <ClCompile Include="source\TargetZoomCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\Fog.h" />
     <ClInclude Include="source\ModeBossBattle.h" />
     <ClInclude Include="source\ModeTutorial.h" />
     <ClInclude Include="source\ModeZoomCamera.h" />

@@ -8,7 +8,7 @@ public:
 	friend class Tower;
 
 	TowerParts();
-	~TowerParts();
+	virtual ~TowerParts();
 
 	// ‰Šú‰»ˆ—
 	void Init(int modelHandle, VECTOR startPos);

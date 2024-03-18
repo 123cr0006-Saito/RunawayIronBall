@@ -18,6 +18,15 @@ ModeFadeComeBack::ModeFadeComeBack(int Time, ModeBase* mode, bool IsProcessSkip)
 	_IsProcessSkip = IsProcessSkip;
 };
 
+ModeFadeComeBack::ModeFadeComeBack(int Time, ModeBase* mode, std::string modeName, int layer, bool IsProcessSkip) :ModeFade(Time, false) {
+	_fadeEnd = 255;
+	_fadeStart = 0;
+	_deleteMode = mode;
+	_changeLayer = layer;
+	_changeModeName = modeName;
+	_IsProcessSkip = IsProcessSkip;
+};
+
 bool ModeFadeComeBack::Initialize(){
 	if (!base::Initialize()) { return false; }
 	return true;

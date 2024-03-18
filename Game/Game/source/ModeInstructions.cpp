@@ -7,12 +7,9 @@ bool ModeInstructions::Initialize() {
 	_listChoice = 0;
 	_listViewNum = 0;
 
-	//画像の読み込み
-	for (int i = 0; i < LIST_SIZE_MAX; i++) {
-		_handle[i].item = 0;
-		_handle[i].image = 0;
-		_handle[i].explanation = 0;
-	}
+	_frameHandle = ResourceServer::LoadGraph("InstructionFrame", "res/ModePause/Operation/Frame.png");
+	ResourceServer::LoadMultGraph("Tutorial", "res/Tutorial/Tutorial", ".png", 5,_imageHandle);
+	ResourceServer::LoadMultGraph("OperateItem", "res/ModePause/Operation/UI_Operation", ".png", 5, _itemHandle);
 	return true;
 };
 
@@ -27,7 +24,7 @@ bool ModeInstructions::Process() {
 	ModeServer::GetInstance()->PauseProcessUnderLayer();
 	int count = 0;
 	//選択項目の移動
-	if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN)) {
+	if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN) ) {
 		count++;
 		global._soundServer->DirectPlay("SE_Select");
 	}
@@ -53,35 +50,23 @@ bool ModeInstructions::Process() {
 };
 
 bool ModeInstructions::Render() {
-	int y = 0;
-	int handle_x, handle_y;
-	GetGraphSize(_handle[0].item, &handle_x, &handle_y);
-#ifdef NO_IMAGE
-
+	int x = -30,y = 380;
+	int handleX, handleY;
+	DrawGraph(0,300,_frameHandle, true);
+	
 	for (int i = 0; i < LIST_SIZE_MAX; i++) {
-		int color = GetColor(0, 10 * i, 0);
-		if (i >= _listViewNum && i < _listViewNum + _listViewMax) {
-			if (i == _listChoice) {
-				color = GetColor(255, 0, 255);
-				DrawBox(1000, 200, 1800, 500, GetColor(0, 0, 10 * i), true);//座標は雑に設定 画像が来てから微調整
-				DrawBox(1000, 700, 1800, 1000, GetColor(0, 10 * i, 0), true);//座標は雑に設定 画像が来てから微調整
-			}
-			DrawBox(50, y + 100, 350, y + 100 + 100, color, true);
-			y += 100; //handle_y + 100; // 100は隙間 仮画像がなかったためhandle_yをコメントアウト
+		float Extrate = 1.0f;
+		GetGraphSize(_itemHandle[i], &handleX, &handleY);
+		
+		if (i == _listChoice) {
+			DrawGraph(500, 200, _imageHandle[i], true);//座標は雑に設定 画像が来てから微調整
+			Extrate = 1.1f;
 		}
+		DrawRotaGraph(300 + x, y, Extrate, 0.0f, _itemHandle[i], true);
+		y += 85;
+		x *= -1;
 	}
+	
 
-#else
-	for (int i = 0; i < LIST_SIZE_MAX; i++) {
-		if (i >= _listViewNum && i < _listViewNum + _listViewMax) {
-			DrawGraph(50, y, _handle[i].item, true);
-			if (i == _listChoice) {
-				DrawGraph(1000, 200, _handle[i].image, true);//座標は雑に設定 画像が来てから微調整
-				DrawGraph(1000, 700, _handle[i].explanation, true);//座標は雑に設定 画像が来てから微調整
-			}
-			y += /*handle_y + */100;// 100は隙間 仮画像がなかったためhandle_yをコメントアウト
-		}
-	}
-#endif
 	return true;
 };

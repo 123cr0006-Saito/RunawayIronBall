@@ -32,12 +32,15 @@ ModeServer::~ModeServer()
 
 // 登録はするが、一度メインを回さないといけない
 int ModeServer::Add(ModeBase *mode, int layer, const char *name ) {
-	_vModeAdd.push_back(mode);		// 登録予約
-	mode->_uid = _uid_count;
-	_uid_count++;
-	mode->_layer = layer;
-	mode->_szName = name;
-	return mode->_uid;
+	if (!Search(name)) {
+		_vModeAdd.push_back(mode);		// 登録予約
+		mode->_uid = _uid_count;
+		_uid_count++;
+		mode->_layer = layer;
+		mode->_szName = name;
+		return mode->_uid;
+	}
+	return -1;
 }
 
 // 削除予約
@@ -104,6 +107,13 @@ void ModeServer::ChangeLayer(std::string modeName, int layerNum){
 	if(mode != nullptr){
 		mode->_layer = layerNum;
 	}
+};
+
+bool ModeServer::IsAboutLayer(ModeBase* mode) {
+	for (auto itr = _vMode.begin(); itr != _vMode.end(); ++itr) {
+		if ((*itr)->_layer > mode->_layer) { return true; }
+	}
+	return false;
 };
 
 // 削除予約されているか？

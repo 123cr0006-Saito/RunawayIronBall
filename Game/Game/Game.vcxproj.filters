@@ -119,6 +119,7 @@
     <ClCompile Include="source\ModeRotationCamera.cpp" />
     <ClCompile Include="source\ModeZoomCamera.cpp" />
     <ClCompile Include="source\ModeTutorial.cpp" />
+    <ClCompile Include="source\Fog.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\RotationCamera.h" />
@@ -388,6 +389,7 @@
       <Filter>Mode</Filter>
     </ClInclude>
     <ClInclude Include="source\ModeTutorial.h" />
+    <ClInclude Include="source\Fog.h" />
     <ClInclude Include="source\ModeBossBattle.h">
       <Filter>Mode</Filter>
     </ClInclude>

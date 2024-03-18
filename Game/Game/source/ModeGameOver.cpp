@@ -1,8 +1,9 @@
-#include "ModeGameOver.h"
 #include "AppFrame.h"
-#include "ApplicationMain.h"
-#include "ModeTest.h"
+#include "ModeGameOver.h"
 #include "ModeTitle.h"
+#include "ModeGame.h"
+#include "ModeFade.h"
+
 bool ModeGameOver::Initialize() {
 	if (!base::Initialize()) { return false; }
 	_input = XInput::GetInstance();
@@ -40,6 +41,9 @@ bool ModeGameOver::Terminate() {
 
 bool ModeGameOver::Process() {
 	base::Process();
+	ModeServer::GetInstance()->SkipProcessUnderLayer();
+	ModeServer::GetInstance()->PauseProcessUnderLayer();
+	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
 	//‘I‘ð€–Ú‚ÌØ‚è‘Ö‚¦
 	if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP)) {
@@ -54,7 +58,9 @@ bool ModeGameOver::Process() {
 	if (_input->GetTrg(XINPUT_BUTTON_A)) {
 		global._soundServer->DirectPlay("SE_Press");
 		if (_selectItem == 0) {
-			ModeServer::GetInstance()->Add(new ModeGame(), 1, "Game");
+			if (_mode != nullptr) {
+				_mode->NewStage();
+			}
 			ModeServer::GetInstance()->Del(this);
 		}
 		else {
@@ -79,7 +85,7 @@ bool ModeGameOver::Render() {
 	int handleX, handleY;
 	std::vector<std::string> name = { "Logo","Retry","Give" };
 
-	DrawRotaGraph(1920/2, 300, 1.0f, 0.0f, _handle[name[0]], true);
+	DrawRotaGraph(1920/2, 200, 1.0f, 0.0f, _handle[name[0]], true);
 	for (int i = 1; i < name.size(); i++) {
 		float exrate = 1.0f;
 		if (i == _selectItem + 1)exrate = 1.1f;
