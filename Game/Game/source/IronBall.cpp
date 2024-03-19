@@ -1,8 +1,11 @@
 #include "IronBall.h"
 
 namespace {
+	// 鉄球のSphereコリジョンの半径（地面との判定用）
 	constexpr float IB_BODY_COLLISION_RADIUS = 50.0f;
+	// 鉄球の攻撃Sphereコリジョンの半径
 	constexpr float IB_ATTACK_COLLISION_RADIUS = 100.0f;
+	// 鎖の攻撃Capsuleコリジョンの半径
 	constexpr float CHAIN_COLLISION_RADIUS = 75.0f;
 }
 
