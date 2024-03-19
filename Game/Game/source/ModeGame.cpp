@@ -45,7 +45,7 @@ bool ModeGame::Initialize() {
 
 
 	{
-		ResourceServer::LoadDivGraph("Gate", "res/TemporaryMaterials/FX_Hole_2D00_sheet.png", 43, 16, 3, 1200, 1200);
+		
 		ResourceServer::Load("Player", "res/Character/cg_player_girl/Cg_Player_Girl.mv1");
 		ResourceServer::Load("IronBall", "res/Character/Cg_Iron_Ball/Cg_Iron_Ball.mv1");
 		ResourceServer::Load("Chain", "res/Chain/Cg_Chain.mv1");
@@ -56,8 +56,9 @@ bool ModeGame::Initialize() {
 		ResourceServer::Load("Rotation", "res/Effekseer/FX_3D_Rotate_2/FX_3D_Rotate.efkefc");
 		ResourceServer::Load("SlashR", "res/Effekseer/Slash/SlashRight.efkefc");
 		ResourceServer::Load("SlashL", "res/Effekseer/Slash/SlashLeft.efkefc");
-		ResourceServer::LoadMultGraph("split", "res/TemporaryMaterials/split/test", ".png", 30, _effectSheet);
+		ResourceServer::LoadMultGraph("split", "res/TemporaryMaterials/split/test", ".png", 30);
 		ResourceServer::LoadDivGraph("Dust", "res/TemporaryMaterials/FX_Dust_2D.png", 44, 20, 3, 1000, 1000);
+		ResourceServer::LoadDivGraph("Gate", "res/TemporaryMaterials/FX_Hole_2D00_sheet.png", 43, 16, 3, 1200, 1200);
 		ResourceServer::LoadEffekseerEffect("Stanp", "res/Effekseer/Attack/HorizontalThird.efkefc");
 		ResourceServer::LoadMultGraph("Tutorial", "res/Tutorial/Tutorial", ".png", 5);
 	}
@@ -78,8 +79,9 @@ bool ModeGame::Initialize() {
 	ResourceServer::LoadMultGraph("Heart", "res/UI/Heart/UI_Heart", ".png", 3, heartHandle);
 	ui[0] = NEW UIHeart(VGet(120, 20, 0), 3, heartHandle, 2);
 	ui[1] = NEW UIExpPoint(VGet(100, 150, 0));
-	ResourceServer::LoadMultGraph("Suppressiongauge", "res/UI/SuppressionGauge/SuppressionGauge", ".png", 3, heartHandle);
-	ui[2] = NEW UISuppressionGauge(VGet(700, 100, 0), 3, heartHandle);
+	int suppressionHandle[3];
+	ResourceServer::LoadMultGraph("SuppressionGauge", "res/UI/SuppressionGauge/SuppressionGauge", ".png", 3, suppressionHandle);
+	ui[2] = NEW UISuppressionGauge(VGet(700, 100, 0), 3, suppressionHandle);
 	ui[3] = NEW UITimeLimit(VGet(1600, 100, 0));
 	_gaugeUI[0] = NEW DrawGauge(0, 3, size, true);
 	_gaugeUI[1] = NEW DrawGauge(0, 3, size, true);

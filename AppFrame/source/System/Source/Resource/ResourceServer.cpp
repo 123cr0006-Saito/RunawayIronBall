@@ -12,7 +12,7 @@ int ResourceServer::Load(std::string key, std::string handleName) {
 	int value = 0;
 	int size = handleName.length();
 	std::string extension = handleName.substr(size - 3); //3•¶Žš•ª‚ÌŠg’£Žq‚ðŽæ“¾
-	if (extension == "png" || extension == "jpg" || extension == "peg") {
+	if (extension == "png" || extension == "jpg" || extension == "peg" || extension == "mp4") {
 		value = LoadGraph(key, handleName);
 	}
 	else if (extension == "efk" || extension == "efc") {

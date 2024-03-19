@@ -13,7 +13,7 @@ Camera::Camera(VECTOR InitPos) : CameraBase() {
 	_zoomCount = 0;
 	_IsZoom = false;
 
-	float cameraChangeDistance[CAMERA_ZOOM_MAX] = { -400.0f, -600.0f, -800.0f };
+	float cameraChangeDistance[CAMERA_ZOOM_MAX] = { -400.0f, -800.0f, -1200.0f };
 
 	for (int i = 0; i < CAMERA_ZOOM_MAX; i++) {
 		_cameraChangeDistance[i] = cameraChangeDistance[i];
