@@ -621,15 +621,16 @@ bool ModeGame::Render() {
 
 		
 		//}
-		for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
-			(*itr)->Render();
-		}
+
 
 		for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
 			(*itr)->Render();
 		}
 
 		for (auto itr = _uObj.begin(); itr != _uObj.end(); ++itr) {
+			(*itr)->Render();
+		}
+		for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
 			(*itr)->Render();
 		}
 	}
