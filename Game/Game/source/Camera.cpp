@@ -152,3 +152,15 @@ bool Camera::ZoomProcess() {
 	}
 	return true;
 };
+
+void Camera::SetForwardCamera(){
+	_IsForwardCamera = true;
+	_forwardCount = 0;
+	_startDirY = _cameraDirY;
+	_endDirY = 0.0f;
+	XInput::STICK stick = _input->GetAdjustedStick_L();
+};
+
+void Camera::MoveProcess(){
+
+};

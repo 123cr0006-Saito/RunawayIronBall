@@ -60,7 +60,7 @@ bool ModeGameOver::Process() {
 	if (_input->GetTrg(XINPUT_BUTTON_A)) {
 		global._soundServer->DirectPlay("SE_Press");
 		if (_selectItem == 0) {
-			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(3000, this), 100, "Fade");
+			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(3000, this,true), 100, "Fade");
 			if (_mode != nullptr) {
 				_mode->NewStage();
 				Player::GetInstance()->MaxHeal();
