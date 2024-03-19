@@ -57,7 +57,6 @@ public:
 	std::vector<std::string> LoadObjectName(std::string fileName); // オブジェクトの名前を読み込む
 	bool LoadObjectParam(std::string fileName); // オブジェクトのパラメータを読み込む
 	bool LoadStage(std::string fileName);// ステージの読み込み 敵も含む
-	bool LoadNowStageModel();// モデルの読み込み
 	bool StageMutation();// ステージクリア処理
 	bool GateProcess();// ゴールゲートの処理
 	void NewStage();// ステージの初期化

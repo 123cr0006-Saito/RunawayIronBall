@@ -28,7 +28,7 @@ public:
 
 protected:
 	// モデルハンドル
-	//int    _modelHandle;
+	int _modelHandle;
 	// モデルの座標
 	VECTOR _pos;
 

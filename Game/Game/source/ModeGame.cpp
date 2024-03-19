@@ -69,7 +69,6 @@ bool ModeGame::Initialize() {
 	// ステージのデータの読み込み
 	std::string fileName = "Data/ObjectList/Stage_0" + std::to_string(_stageNum) + ".json";
 	LoadStage(fileName);
-	LoadNowStageModel();
 
 	int size = 100;
 	int heartHandle[3];
@@ -294,43 +293,22 @@ bool ModeGame::LoadStage(std::string fileName) {
 		_objectName.push_back(modelName);
 		std::string modelPath = "res/Building/" + modelName + "/" + modelName + ".mv1";
 		for (auto&& object : objectData) {
-			//int objHandle = ResourceServer::MV1LoadModel(modelName, modelPath);
-			
+			int objHandle = ResourceServer::MV1LoadModel(modelName, modelPath);
 			if ((*itr).isBreak == 1) {
 				// 壊れるオブジェクト
 				House* building = NEW House();
-				building->Init(0, object._pos, object._rotate, object._scale, (*itr)._size);
-				building->SetModelName(modelName, modelPath);
+				building->Init(objHandle, object._pos, object._rotate, object._scale, (*itr)._size);
 				_house.push_back(building);
 			}
 			else {
 				// 壊れないオブジェクト
 				UnbreakableObject* uObj = NEW UnbreakableObject();
-				uObj->Init(0, object._pos, object._rotate, object._scale, (*itr)._size);
-				uObj->SetModelName(modelName, modelPath);
+				uObj->Init(objHandle, object._pos, object._rotate, object._scale, (*itr)._size);
 				_uObj.push_back(uObj);
 			}
 		}
 	}
 
-	return true;
-};
-
-bool ModeGame::LoadNowStageModel() {
-	for (auto&& enemy : _enemyPool->GetEnemyContainer()) {
-		enemy->LoadModel();
-		enemy->AnimInit();
-	}
-	for (auto&& house : _house) {
-		house->LoadModel();
-	
-	}
-	for (auto&& tower : _tower) {
-		tower->LoadModel();
-	}
-	for (auto&& uObj : _uObj) {
-		uObj->LoadModel();
-	}
 	return true;
 };
 
@@ -545,9 +523,9 @@ bool ModeGame::GateProcess() {
 
 void ModeGame::NewStage(){
 	_stageNum++;
-	ModeServer::GetInstance()->Add(NEW ModeLoading(&IsLoading,this), 100, "Loading");
-	LoadFunctionThread = NEW std::thread(&ModeGame::StageMutation, this);
-	//StageMutation();
+	//ModeServer::GetInstance()->Add(NEW ModeLoading(&IsLoading), 100, "Loading");
+	//LoadFunctionThread = NEW std::thread(&ModeGame::StageMutation, this);
+	StageMutation();
 };
 
 bool ModeGame::Render() {

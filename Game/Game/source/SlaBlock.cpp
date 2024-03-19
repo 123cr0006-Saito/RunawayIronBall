@@ -23,13 +23,13 @@ void SlaBlock::AnimInit() {
 	auto motionList = MotionList::GetMotionList("Slablock");
 	// アニメーションマネージャーの初期化
 	_animManager = NEW AnimationManager();
-	_animManager->InitMap("Slablock", _modelHandle, *motionList);
+	_animManager->InitMap("Slablock", _model, *motionList);
 	// フレームデータの初期化
 	_frameData = NEW FrameData();
 	_frameData->LoadData("Slablock", *motionList);
 
 	if (_collisionFrame == -1) {
-		_collisionFrame = MV1SearchFrame(_modelHandle,"face1");
+		_collisionFrame = MV1SearchFrame(_model,"face1");
 	}
 
 }

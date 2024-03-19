@@ -20,20 +20,20 @@ void CrystarPattern1::InheritanceInit() {
 
 void CrystarPattern1::AnimInit() {
 
-	_roof = NEW CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof_glsss","res/Enemy/Cg_Enemy_Crystar_Glass/Cg_Crystar_Roof_Glass.mv1"), _modelHandle, "joint1");
+	_roof = NEW CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof_glsss","res/Enemy/Cg_Enemy_Crystar_Glass/Cg_Crystar_Roof_Glass.mv1"), _model, "joint1");
 
 	//// モーションリストのロード
 	MotionList::Load("Crystarl", "MotionList_Crystarl.csv");
 	auto motionList = MotionList::GetMotionList("Crystarl");
 	// アニメーションマネージャーの初期化
 	_animManager = NEW AnimationManager();
-	_animManager->InitMap("Crystarl", _modelHandle, *motionList);
+	_animManager->InitMap("Crystarl", _model, *motionList);
 	// フレームデータの初期化
 	_frameData = NEW FrameData();
 	_frameData->LoadData("Crystarl", *motionList);
 
 	if (_collisionFrame == -1) {
-		_collisionFrame = MV1SearchFrame(_modelHandle, "Hip");
+		_collisionFrame = MV1SearchFrame(_model, "Hip");
 	}
 }
 
@@ -67,7 +67,7 @@ void CrystarPattern1::Init(VECTOR pos) {
 	_rotation = VGet(0, 0, 0);
 
 	float randSize = (float)(rand() % 75) / 100 + 0.75;// 1 + 0.0 ~ 0.5
-	MV1SetScale(_modelHandle, VScale(VGet(1.0f, 1.0f, 1.0f), 2.0f * randSize));
+	MV1SetScale(_model, VScale(VGet(1.0f, 1.0f, 1.0f), 2.0f * randSize));
 
 	_diffeToCenter = VGet(0, 20.0f * 2.0f * randSize, 0);
 	_r = 25.0f * 2.0f * randSize;
@@ -182,9 +182,9 @@ bool CrystarPattern1::IndividualProcessing() {
 
 bool CrystarPattern1::SetState() {
 	//最終的なモデルの位置や角度を調整
-	if (_modelHandle != 0) {
-		MV1SetRotationXYZ(_modelHandle, VGet(0.0f, _rotation.y, 0.0f));
-		MV1SetPosition(_modelHandle, _pos);
+	if (_model != 0) {
+		MV1SetRotationXYZ(_model, VGet(0.0f, _rotation.y, 0.0f));
+		MV1SetPosition(_model, _pos);
 	}
 	return true;
 };
@@ -195,6 +195,6 @@ bool CrystarPattern1::IndividualRendering() {
 };
 
 bool CrystarPattern1::DebugRender() {
-	DrawSphere3D(MV1GetFramePosition(_modelHandle, _collisionFrame), _r, 8, GetColor(0, 255, 0), GetColor(0, 0, 255), false);
+	DrawSphere3D(MV1GetFramePosition(_model, _collisionFrame), _r, 8, GetColor(0, 255, 0), GetColor(0, 0, 255), false);
 	return true;
 };
