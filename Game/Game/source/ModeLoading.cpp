@@ -1,5 +1,5 @@
 #include "ModeLoading.h"
-
+#include "ModeScenario.h"
 bool ModeLoading::Initialize(){
 	
 	_chara = new LoadingPlayer();
@@ -27,7 +27,8 @@ bool ModeLoading::Process(){
 
 	if (GetASyncLoadNum() <= 0) {
 		int time = 4 * 1000;
-		ModeServer::GetInstance()->Add(new ModeFadeComeBack(time,this),1000,"Fade");
+		ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario01.csv", 1), 1, "Scenario");
+		ModeServer::GetInstance()->Add(new ModeFadeComeBack(time,this),100,"Fade");
 	}
 
 	_chara->Process();

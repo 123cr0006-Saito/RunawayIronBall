@@ -6,6 +6,7 @@ class ModeScenario : public ModeBase
 public:
 	ModeScenario(std::string scenarioFile,int scenarioNum);
 	bool LoadOnceHandleData();
+	void ScenarioUniqueProcess();
 	virtual bool Initialize();
 	virtual bool Terminate();
 	virtual bool Process();

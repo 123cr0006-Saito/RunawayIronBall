@@ -139,6 +139,7 @@ bool Global::ResourceLoad() {
 	ResourceServer::Load("Ending","res/Movie/Ending.mp4");
 
 	SetUseASyncLoadFlag(false);
+	return true;
 };
 
 bool Global::SoundLoad() {

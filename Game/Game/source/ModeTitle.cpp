@@ -1,9 +1,8 @@
-
 #include "AppFrame.h"
 #include "ApplicationMain.h"
 #include "ModeTitle.h"
 #include "ModeGame.h"
-#include "ModeTest.h"
+#include "ModeLoading.h"
 #include "ModePause.h"
 #include "math.h"
 
@@ -22,7 +21,7 @@ bool ModeTitle::Initialize() {
 
 	_IsGameStart = false;
 	//Š„‚ê‚éˆ—‚Ì‰Šú‰»
-	 _modelHandle = ResourceServer::MV1LoadModel("Board",_T("res/TemporaryMaterials/board.mv1"));
+	 _modelHandle = ResourceServer::Load("Board", "res/TemporaryMaterials/board.mv1");
 	 _currentTime = 0;
 	 _IsBreak = false;
 	 _frameSize = MV1GetFrameNum(_modelHandle);
@@ -65,8 +64,7 @@ bool ModeTitle::Terminate() {
 
 void ModeTitle::SelectGameStart() {
 	ModeServer::GetInstance()->Del(this);
-	ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario01.csv",1), 100, "Scenario");
-	ModeServer::GetInstance()->Add(NEW ModeGame(), 1, "Game");
+	ModeServer::GetInstance()->Add(NEW ModeLoading(),10,"Loading");
 };
 
 void ModeTitle::SelectOption() {

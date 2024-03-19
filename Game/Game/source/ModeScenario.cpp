@@ -1,6 +1,7 @@
 #include "ModeScenario.h"
 #include "ModeFadeComeBack.h"
 #include "ModeMovie.h"
+#include "ModeGame.h"
 
 bool ModeScenario::IsLoadHandle = false;
 std::unordered_map<int, int> ModeScenario::_charaHandleMap;
@@ -177,6 +178,20 @@ bool ModeScenario::Terminate(){
 	return true;
 };
 
+void  ModeScenario::ScenarioUniqueProcess(){
+	switch(_scenarioNum){
+	case 1 :
+		global._soundServer->DirectPlay("Stage01");
+		ModeServer::GetInstance()->Add(NEW ModeGame(), 1, "Game");
+		break;
+	case 2:
+		break;
+	case 3:
+		ModeServer::GetInstance()->Add(NEW ModeMovie(), 10, "Movie");
+		break;
+	}
+};
+
 bool ModeScenario::Process(){
 	base::Process();
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
@@ -212,13 +227,8 @@ bool ModeScenario::Process(){
 	// シナリオをすべて描画し終えた
 	if (_nowTextLine >= _scenarioData.size() || _input->GetTrg(XINPUT_BUTTON_START)) {
 		_nowTextLine = _scenarioData.size()-1;
+		ScenarioUniqueProcess();
 		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000,this), 100, "FadeIn");
-		if (_scenarioNum == 4) {
-			ModeServer::GetInstance()->Add(NEW ModeMovie(), 10, "Movie");
-		}
-		else {
-			global._soundServer->DirectPlay("Stage0" + std::to_string(_scenarioNum));
-		}
 	}
 	
 	return true;
