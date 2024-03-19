@@ -63,6 +63,8 @@ public:
 	void NewStage();// ステージの初期化
 	void CreateTutorial();// チュートリアルの作成
 
+	int GetStageNum() { return _stageNum; };
+
 
 	//デバッグ用
 	std::vector<OBJECTDATA> LoadJsonObject(const myJson& json, std::string loadName);//引数 読み込みたいオブジェクトの名前

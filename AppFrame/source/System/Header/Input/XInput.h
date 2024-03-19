@@ -1,5 +1,6 @@
 #pragma once
 #include "dxlib.h"
+#include "../Function/mymath.h"
 #include <cmath>
 
 //XInputのボタン配置
@@ -21,16 +22,16 @@
 //#define XINPUT_BUTTON_X		                         (14)   // Xボタン
 //#define XINPUT_BUTTON_Y		                         (15)   // Yボタン
 #define XINPUT_BUTTON_STICK_UP (16)             //上スティック
-#define XINPUT_BUTTON_STICK_DOWN (17)      //下スティック
-#define XINPUT_BUTTON_STICK_LEFT (18)         //左スティック
+#define XINPUT_BUTTON_STICK_LEFT (17)         //左スティック
+#define XINPUT_BUTTON_STICK_DOWN (18)      //下スティック
 #define XINPUT_BUTTON_STICK_RIGHT (19)      //右スティック
 
 #define DXINPUT_BUTTON_MAX		16
 #define PAD_BUTTON_MAX		20
-const int PAYER_1 = 1;
-const int PAYER_2 = 2;
-const int PAYER_3 = 3;
-const int PAYER_4 = 4;
+const int PLAYER_1 = 1;
+const int PLAYER_2 = 2;
+const int PLAYER_3 = 3;
+const int PLAYER_4 = 4;
 
 class XInput
 {
@@ -83,5 +84,7 @@ private:
 	unsigned char	 _trg[PAD_BUTTON_MAX], _rel[PAD_BUTTON_MAX];
 
 	int pad_num;
+
+	unsigned char _stickInput[4];
 
 };

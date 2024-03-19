@@ -15,7 +15,7 @@ bool ModeGame::Initialize() {
 	_collisionManager->Init();
 
 	_gate = nullptr;
-	_stageNum = 3;
+	_stageNum = 1;
 	IsLoading = true;
 	IsTutorial = false;
 	LoadFunctionThread = nullptr;
@@ -90,10 +90,6 @@ bool ModeGame::Initialize() {
 	_sVib = NEW ScreenVibration();
 
 	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(_stageNum), 50, "RotCamera");
-
-	global._soundServer->BgmFadeIn("Stage03", 2000);
-
-
 	return true;
 }
 
@@ -145,6 +141,7 @@ bool ModeGame::Terminate() {
 }
 
 void ModeGame::DeleteObject() {
+	_suppression->ClearSuppression();
 	_collisionManager->ClearTreeAndList();
 	if (_gate != nullptr) {
 		delete _gate; _gate = nullptr;
@@ -303,13 +300,13 @@ bool ModeGame::LoadStage(std::string fileName) {
 			if ((*itr).isBreak == 1) {
 				// 壊れるオブジェクト
 				House* building = NEW House();
-				building->Init(objHandle, object._pos, object._rotate, object._scale, (*itr)._size);
+				building->Init(objHandle, nameList,object._pos, object._rotate, object._scale, (*itr)._size);
 				_house.push_back(building);
 			}
 			else {
 				// 壊れないオブジェクト
 				UnbreakableObject* uObj = NEW UnbreakableObject();
-				uObj->Init(objHandle, object._pos, object._rotate, object._scale, (*itr)._size);
+				uObj->Init(objHandle, nameList,object._pos, object._rotate, object._scale, (*itr)._size);
 				_uObj.push_back(uObj);
 			}
 		}
@@ -322,7 +319,7 @@ bool ModeGame::LoadStage(std::string fileName) {
 	loadObject.at(0).at("translate").at("y").get_to(pos.z);
 	loadObject.at(0).at("translate").at("z").get_to(pos.y);
 	 pos.x *= -1;
-	//_player->SetPos(pos);
+	_player->SetPos(pos);
 
 	return true;
 };
@@ -349,25 +346,21 @@ bool ModeGame::StageMutation() {
 
 bool ModeGame::Process() {
 	base::Process();
+	ModeServer::GetInstance()->SkipProcessUnderLayer();
+	ModeServer::GetInstance()->PauseProcessUnderLayer();
 
-	bool isAttackState = _player->GetEnabledIBAttackCollision();
-	bool isInvincible = _player->GetIsInvincible();
-	VECTOR pPos = _player->GetPosition();
+	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_BACK)) {
+		_stageNum++;
+		NewStage();
+	}
 
-
-	Sphere ibSphere = _player->GetIBCollision();
-
-	int ibPower = _player->GetPower();
-
-	
-	Capsule plCol = _player->GetCollision();
-	Sphere ibCol = _player->GetIBCollision();
+	bool enabledIBAttackCollision = _player->GetEnabledIBAttackCollision();
 
 	global._timer->TimeElapsed();
 	_sVib->UpdateScreenVibration();
 
 	_player->Process(_camera->GetCamY());
-	_enemyPool->Process(isAttackState);
+	_enemyPool->Process(enabledIBAttackCollision);
 	_timeLimit->Process();
 	_fog->Process();
 
@@ -379,110 +372,24 @@ bool ModeGame::Process() {
 
 	for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
 		(*itr)->Process();
-
-		if ((*itr)->GetUseCollision()) {
-			OBB houseObb = (*itr)->GetOBBCollision();
-
-			//if (Collision3D::OBBSphereCol(houseObb, ibSphere)) {
-			//	if (isAttackState) {
-			//		VECTOR vDir = VSub(houseObb.pos, pPos);
-			//		(*itr)->SetHit(vDir);
-			//		_player->SetExp(50);
-			//		global._soundServer->DirectPlay("OBJ_RockBreak");
-			//		continue;
-			//	}
-			//}
-
-			////エネミーがノックバック状態の時、建物にぶつかったら破壊する
-			//houseObb.pos.y = 0; houseObb.length[1] = 0; //平面での当たり判定のため建物のy軸の長さを0にする]
-			//int enemySize = _enemyPool->GetSize();
-			//for (int i = 0; i < enemySize; i++) {
-			//	EnemyBase* en = _enemyPool->GetEnemy(i);
-			//	if (!en) { continue; }
-			//	if (!en->GetUse()) { continue; }
-
-			//	ENEMYTYPE enState = en->GetEnemyState();
-
-			//	VECTOR enPos = en->GetCollisionPos(); enPos.y = 0;
-			//	VECTOR hitPos = VGet(0, 0, 0);
-			//	float enR = en->GetR();
-
-			//	if (Collision3D::OBBSphereCol(houseObb, enPos, enR, &hitPos)) {
-			//		if (enState == ENEMYTYPE::DEAD) {
-			//			VECTOR vDir = VSub(houseObb.pos, pPos);
-			//			(*itr)->SetHit(vDir);
-			//			global._soundServer->DirectPlay("OBJ_RockBreak");
-			//			continue;
-			//		}
-			//		else {
-			//			VECTOR dirVec = VSub(enPos, hitPos);
-			//			dirVec = VNorm(dirVec);
-			//			VECTOR movePos = VAdd(hitPos, VScale(dirVec, enR));
-			//			en->SetPos(movePos);
-			//		}
-			//	}
-			//}
-		}
 	}
 
 	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
 		(*itr)->Process();
 	}
 
-	//int enemySize = _enemyPool->GetSize();
-	//for (int i = 0; i < enemySize; i++) {
-	//	EnemyBase* enemy = _enemyPool->GetEnemy(i);
-	//	if (!enemy) { continue; }
-	//	if (!enemy->GetUse()) { continue; }
-	//	if (isAttackState) {
-
-	//		VECTOR enPos = enemy->GetCollisionPos();
-	//		float enR = enemy->GetR();
-
-	//		if (Collision3D::SphereCol(ibSphere.centerPos, ibSphere.r, enPos, enR)) {
-	//			VECTOR vDir = VSub(enPos, pPos);
-	//			vDir = VNorm(vDir);
-	//			enemy->SetKnockBackAndDamage(vDir, ibPower);
-	//		}
-	//	}
-	//}
-
-
-
-
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_START)) {
-		//_enemyPool->Init();
-		//_player->SetDamage();
 		ModeServer::GetInstance()->Add(NEW ModePause(), 10, "Pause");
 	}
 
-	if (XInput::GetInstance()->GetKey(XINPUT_BUTTON_Y)) {
-		if (nowParcent > 0) {
-			nowParcent -= 1.0f / 120 * 100;
-		}
-	}
-	else {
-		if (nowParcent < 100) {
-			nowParcent += 1.0f / 120 * 100;
-		}
-	}
-
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_BACK)) {
-		_drawDebug = !_drawDebug;
-		//VECTOR pPos = _player->GetPosition();
-		//for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
-		//	
-		//	VECTOR hPos = (*itr)->GetPos();
-		//	VECTOR tmpDir = VSub(hPos, pPos);
-		//	tmpDir.y = 0.0f;
-		//	(*itr)->SetBlast(tmpDir);
-		//}
+		//_drawDebug = !_drawDebug;
 	}
 
 	if (_player->GetHP() <= 0) {
 		global._soundServer->BgmFadeOut(2000);
-		ModeServer::GetInstance()->Add(NEW ModeGameOver(), 0, "GameOver");
+		ModeServer::GetInstance()->Add(NEW ModeGameOver(this), 0, "GameOver");
 		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(2500, "GameOver", 50), 100, "Fade");
 	}
 
@@ -509,15 +416,14 @@ bool ModeGame::Process() {
 
 bool ModeGame::GateProcess() {
 
-	_suppression->SubSuppression(2);
 	if (_suppression->GetIsRatio() ) {
 		if (_gate == nullptr) {
-			VECTOR pos = VGet(5000, 300, 0);
+			VECTOR pos = VGet(0, 300, 0);
 			int handle[43];
 			ResourceServer::LoadDivGraph("Gate", "res/TemporaryMaterials/FX_Hole_2D00_sheet.png", 43, 16, 3, 1200, 1200, handle);
 			float time = 1.0f / 60.0f * 1000.0f;
 			if (_stageNum == 3) {
-				pos = VGet(-6787.0f, 300.0f, -4965.0f);
+				pos = VGet(-6787.0f, 300.0f, 7486.0);
 			}
 			_gate = NEW Gate(pos, 300, handle, 43, time, 1000);
 			ModeServer::GetInstance()->Add(NEW ModeZoomCamera(pos), 10, "Camera");
@@ -541,6 +447,7 @@ bool ModeGame::GateProcess() {
 void ModeGame::NewStage(){
 	StageMutation();
 	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(_stageNum), 10, "RotCamera");
+	global._soundServer->DirectPlay("Stage0" + std::to_string(_stageNum));
 	SetTime();
 };
 
@@ -582,15 +489,6 @@ bool ModeGame::Render() {
 	// ライト設定
 	SetUseLighting(TRUE);
 
-	// 0,0,0を中心に線を引く
-	{
-		float linelength = 1000.f;
-		VECTOR v = { 0, 0, 0 };
-		DrawLine3D(VAdd(v, VGet(-linelength, 0, 0)), VAdd(v, VGet(linelength, 0, 0)), GetColor(255, 0, 0));
-		DrawLine3D(VAdd(v, VGet(0, -linelength, 0)), VAdd(v, VGet(0, linelength, 0)), GetColor(0, 255, 0));
-		DrawLine3D(VAdd(v, VGet(0, 0, -linelength)), VAdd(v, VGet(0, 0, linelength)), GetColor(0, 0, 255));
-	}
-
 	//------------------------------------
 	// シャドウマップの設定　
 	// shadowCount 0 シャドウマップに描画 1 モデルの描画
@@ -619,19 +517,15 @@ bool ModeGame::Render() {
 
 		_player->Render();
 		_enemyPool->Render();
-		//_chain->DrawDebugInfo();
-
-		
-		//}
-		for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
-			(*itr)->Render();
-		}
 
 		for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
 			(*itr)->Render();
 		}
 
 		for (auto itr = _uObj.begin(); itr != _uObj.end(); ++itr) {
+			(*itr)->Render();
+		}
+		for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
 			(*itr)->Render();
 		}
 	}
@@ -671,12 +565,6 @@ bool ModeGame::Render() {
 			_gaugeUI[0]->Draw(_gaugeHandle[3]);
 		}
 	}
-
-
-	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-	//for (auto itr = _buildingBase.begin(); itr != _buildingBase.end(); ++itr) {
-	//	(*itr)->DrawDebugInfo();
-	//}
 
 	return true;
 }

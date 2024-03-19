@@ -106,6 +106,13 @@ void ModeServer::ChangeLayer(std::string modeName, int layerNum){
 	ModeBase* mode = Get(modeName.c_str());
 	if(mode != nullptr){
 		mode->_layer = layerNum;
+		for (auto firstItr = _vMode.begin(); firstItr != _vMode.end(); firstItr++) {
+			for (auto secondItr = _vMode.begin(); secondItr != _vMode.end(); secondItr++) {
+				if ((*firstItr)->_layer < (*secondItr)->_layer) {
+					std::swap((*firstItr), (*secondItr));
+				}
+			}
+		}
 	}
 };
 

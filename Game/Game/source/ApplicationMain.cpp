@@ -51,7 +51,7 @@ bool ApplicationMain::Process() {
 
 bool ApplicationMain::Render() {
 	base::Render();
-	_fpsController->DrawFps(0, 0);
+	//_fpsController->DrawFps(0, 0);
 	return true;
 }
 
