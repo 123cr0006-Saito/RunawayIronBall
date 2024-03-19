@@ -21,6 +21,13 @@ bool Global::Init() {
 };
 
 bool Global::ResourceLoad() {
+	// Effekseer
+	ResourceServer::Load("Stanp", "res/Effekseer/Attack/HorizontalThird.efkefc");
+	ResourceServer::Load("Rotation", "res/Effekseer/FX_3D_Rotate_2/FX_3D_Rotate.efkefc");
+	ResourceServer::Load("SlashR", "res/Effekseer/Slash/SlashRight.efkefc");
+	ResourceServer::Load("SlashL", "res/Effekseer/Slash/SlashLeft.efkefc");
+	ResourceServer::Load("Stanp", "res/Effekseer/Attack/HorizontalThird.efkefc");
+	ResourceServer::Load("FX_3D_Level_Up", "res/Effekseer/FX_3D_Level_Up/FX_3D_Level_Up.efkefc");
 	SetUseASyncLoadFlag(true);
 	// Model
 	// StageModel
@@ -66,7 +73,7 @@ bool Global::ResourceLoad() {
 	ResourceServer::Load("House_Glass", "res/Building/House_Glass/House_Glass.mv1");
 	ResourceServer::Load("House_Rock", "res/Building/House_Rock/House_Rock.mv1");
 	ResourceServer::Load("House_Iron", "res/Building/House_Iron/House_Iron.mv1");
-	ResourceServer::Load("Board", "res/TemporaryMaterials/board.mv1");
+	ResourceServer::Load("Board", "res/ModeTitle/board.mv1");
 	// Item
 	ResourceServer::Load("Heart", "res/Item/Cg_Object_Heart/Cg_Object_Heart.mv1");
 	// UI
@@ -118,13 +125,6 @@ bool Global::ResourceLoad() {
 	ResourceServer::Load("Colon", "res/ModeResult/Time/UI_Valuation_Time_Colon.png");
 	ResourceServer::LoadMultGraph("Valuation", "res/ModeResult/Rank/UI_Valuation", ".png",4);
 	ResourceServer::LoadMultGraph("C_Time", "res/ModeResult/Time/UI_Valuation_Time", ".png", 10);
-	// Effekseer
-	ResourceServer::Load("Stanp", "res/Effekseer/Attack/HorizontalThird.efkefc");
-	ResourceServer::Load("Rotation", "res/Effekseer/FX_3D_Rotate_2/FX_3D_Rotate.efkefc");
-	ResourceServer::Load("SlashR", "res/Effekseer/Slash/SlashRight.efkefc");
-	ResourceServer::Load("SlashL", "res/Effekseer/Slash/SlashLeft.efkefc");
-	ResourceServer::Load("Stanp", "res/Effekseer/Attack/HorizontalThird.efkefc");
-	ResourceServer::Load("FX_3D_Level_Up", "res/Effekseer/FX_3D_Level_Up/FX_3D_Level_Up.efkefc");
 	// Effect
 	ResourceServer::LoadDivGraph("Dust", "res/HitEffect_Blue//FX_Dust_2D.png", 44, 20, 3, 1000, 1000);
 	ResourceServer::LoadMultGraph("HitEffect_Blue", "res/Effect/HitEffect_Blue/HitEffect_Blue", ".png", 30);

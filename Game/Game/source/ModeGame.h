@@ -115,6 +115,4 @@ protected:
 
 	// ステージ読み込み用変数
 	bool IsTutorial;
-	bool IsLoading;
-	std::thread* LoadFunctionThread;
 };

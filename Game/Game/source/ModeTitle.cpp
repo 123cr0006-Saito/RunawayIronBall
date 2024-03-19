@@ -21,7 +21,7 @@ bool ModeTitle::Initialize() {
 
 	_IsGameStart = false;
 	//Š„‚ê‚éˆ—‚Ì‰Šú‰»
-	 _modelHandle = ResourceServer::Load("Board", "res/TemporaryMaterials/board.mv1");
+	 _modelHandle = ResourceServer::MV1LoadModel("Board", "res/ModeTitle/board.mv1");
 	 _currentTime = 0;
 	 _IsBreak = false;
 	 _frameSize = MV1GetFrameNum(_modelHandle);
@@ -64,7 +64,7 @@ bool ModeTitle::Terminate() {
 
 void ModeTitle::SelectGameStart() {
 	ModeServer::GetInstance()->Del(this);
-	ModeServer::GetInstance()->Add(NEW ModeLoading(),10,"Loading");
+	ModeServer::GetInstance()->Add(NEW ModeLoading(),100,"Loading");
 };
 
 void ModeTitle::SelectOption() {

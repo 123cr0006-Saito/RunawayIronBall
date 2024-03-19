@@ -195,6 +195,8 @@ void  ModeScenario::ScenarioUniqueProcess(){
 bool ModeScenario::Process(){
 	base::Process();
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
+	ModeServer::GetInstance()->PauseProcessUnderLayer();
+	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
 	// ミリ秒単位での文字の描画
 	float speed = 3.0f / 60.0f * 1000;// ミリ秒単位
@@ -224,11 +226,11 @@ bool ModeScenario::Process(){
 		}
 	}
 
-	// シナリオをすべて描画し終えた
-	if (_nowTextLine >= _scenarioData.size() || _input->GetTrg(XINPUT_BUTTON_START)) {
+	// シナリオをすべて描画し終えた スキップするときは自分より上のレイヤーがないか確認する
+	if (_nowTextLine >= _scenarioData.size() || _input->GetTrg(XINPUT_BUTTON_START) && !ModeServer::GetInstance()->IsAboutLayer(this)) {
 		_nowTextLine = _scenarioData.size()-1;
 		ScenarioUniqueProcess();
-		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000,this), 100, "FadeIn");
+		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000,this), 1000, "Fade");
 	}
 	
 	return true;
