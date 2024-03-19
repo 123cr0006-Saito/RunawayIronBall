@@ -21,6 +21,7 @@ bool Global::Init() {
 };
 
 bool Global::ResourceLoad() {
+	SetUseASyncLoadFlag(true);
 	// Model
 	// StageModel
 	ResourceServer::Load("SkySpehe", "res/SkySphere/Skyspehre.mv1");
@@ -136,6 +137,8 @@ bool Global::ResourceLoad() {
 	ResourceServer::Load("GirlTexWhite", "res/Character/cg_player_girl/FlickerTexture.png");
 	// Ending
 	ResourceServer::Load("Ending","res/Movie/Ending.mp4");
+
+	SetUseASyncLoadFlag(false);
 };
 
 bool Global::SoundLoad() {
