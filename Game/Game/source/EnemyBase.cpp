@@ -260,6 +260,7 @@ bool EnemyBase::ModeDead() {
 	_knockBackSpeedFrame--;
 	if (_knockBackSpeedFrame <= 0) {
 		_IsUse = false;
+		_collisionManager->ReserveRemovementCell(_cell);
 	}
 	return true;
 };
