@@ -386,6 +386,7 @@ void IronBall::DrawDebugInfo() {
 bool IronBall::UpdateLevel(float scale)
 {
 	MV1SetScale(_iModelHandle, VScale(_ibDefaultScale, scale));
+	_ibBodySphereCollision.r = IB_BODY_COLLISION_RADIUS * scale;
 	_ibAttackSphereCollision.r = IB_ATTACK_COLLISION_RADIUS * scale;
 	return true;
 }
