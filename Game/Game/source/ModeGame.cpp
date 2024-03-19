@@ -15,7 +15,7 @@ bool ModeGame::Initialize() {
 	_collisionManager->Init();
 
 	_gate = nullptr;
-	_stageNum = 1;
+	_stageNum = 2;
 	IsLoading = true;
 	IsTutorial = false;
 	LoadFunctionThread = nullptr;
@@ -349,7 +349,7 @@ bool ModeGame::Process() {
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->PauseProcessUnderLayer();
 
-	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_BACK)) {
+	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_LEFT_THUMB) ) {
 		_stageNum++;
 		NewStage();
 	}
@@ -384,7 +384,7 @@ bool ModeGame::Process() {
 	}
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_BACK)) {
-		//_drawDebug = !_drawDebug;
+		_drawDebug = !_drawDebug;
 	}
 
 	if (_player->GetHP() <= 0) {
