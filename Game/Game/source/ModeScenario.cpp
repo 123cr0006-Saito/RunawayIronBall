@@ -200,15 +200,18 @@ bool ModeScenario::Process(){
 			_nowTextLine++;
 			_nowTextByte = 0;
 			_currentTime = GetNowCount();
-			std::string voiceName = _scenarioData.at(_nowTextLine).voiceData;
-			if (voiceName != "") {
-				global._soundServer->DirectPlay(voiceName);
+			if (_nowTextLine < _scenarioData.size()) {
+				std::string voiceName = _scenarioData.at(_nowTextLine).voiceData;
+				if (voiceName != "") {
+					global._soundServer->DirectPlay(voiceName);
+				}
 			}
 		}
 	}
 
 	// シナリオをすべて描画し終えた
 	if (_nowTextLine >= _scenarioData.size() || _input->GetTrg(XINPUT_BUTTON_START)) {
+		_nowTextLine = _scenarioData.size()-1;
 		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000,this), 100, "FadeIn");
 		if (_scenarioNum == 4) {
 			ModeServer::GetInstance()->Add(NEW ModeMovie(), 10, "Movie");
