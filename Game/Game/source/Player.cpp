@@ -32,6 +32,9 @@ namespace {
 	// 「スティック入力ベクトルの大きさ」がこの値を超えたら「走り」状態になる
 	constexpr float MOVE_RUN_THRESHOLD = 0.6f;
 
+	// 回転攻撃のカウント
+	// このフレーム数以上の間、ボタンを押し続けると回転攻撃が発動する
+	constexpr int ROTAION_SWING_CNT_MAX = 45;
 
 	// スタミナの最大値
 	constexpr float STAMINA_MAX = 480.0f;
@@ -498,7 +501,7 @@ bool Player::Process(float camAngleY)
 	// 攻撃状態の更新
 	if (_isTired == false && _animStatus != ANIM_STATE::AVOIDANCE && _animStatus != ANIM_STATE::HIT) {
 		// 回転攻撃
-		if (_rotationCnt > 90) {
+		if (_rotationCnt > ROTAION_SWING_CNT_MAX) {
 			if (!_isRotationSwinging) {
 				_animStatus = ANIM_STATE::TO_ROTATION_SWING;
 			}
@@ -523,6 +526,10 @@ bool Player::Process(float camAngleY)
 				_forwardDir = _inputWorldDir;
 			}
 		}
+	}
+
+	if (!_isRotationSwinging && _isAttackState) {
+		_rotationCnt = 0;
 	}
 
 	if (!_isTired && _canMotionCancel) {
@@ -763,12 +770,13 @@ void Player::DrawDebugInfo()
 
 	DrawCapsule3D(_capsuleCollision.up_pos, _capsuleCollision.down_pos, _capsuleCollision.r, 16, COLOR_RED, COLOR_RED, false);
 
-	//int x = 0;
-	//int y = 100;
-	//int line = 0;
+	int x = 0;
+	int y = 500;
+	int line = 0;
 	//DrawFormatString(x, y + line * 16, COLOR_RED, "HP:%d", _hp); line++;
 	//DrawFormatString(x, y + line * 16, COLOR_RED, "isInvincible:%d", _isInvincible); line++;
 	//DrawFormatString(x, y + line * 16, COLOR_RED, "invincibleCnt:%d", _invincibleRemainingCnt); line++;
+	DrawFormatString(x, y + line * 16, COLOR_RED, "_rotationCnt:%d", _rotationCnt); line++;
 
 	//DrawFormatString(x, y + line * 16, COLOR_RED, "ANIM:%d", _animStatus); line++;
 	//DrawCapsule3D(_capsuleCollision._startPos, _capsuleCollision._endPos, _capsuleCollision._r, 16, COLOR_RED, COLOR_RED, false);
