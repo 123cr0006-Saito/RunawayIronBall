@@ -141,6 +141,7 @@ bool ModeGame::Terminate() {
 }
 
 void ModeGame::DeleteObject() {
+	_suppression->ClearSuppression();
 	_collisionManager->ClearTreeAndList();
 	if (_gate != nullptr) {
 		delete _gate; _gate = nullptr;
