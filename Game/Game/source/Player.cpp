@@ -494,26 +494,32 @@ bool Player::Process(float camAngleY)
 			_isRecoveringStamina = true;
 		}
 	}
-	//if(!_isAttackState ){
-	//	_isRecoveringStamina = false;
-	//}
 
 	// UŒ‚ó‘Ô‚ÌXV
 	if (_isTired == false && _animStatus != ANIM_STATE::AVOIDANCE && _animStatus != ANIM_STATE::HIT) {
-		// ‰ñ“]UŒ‚
+		// ‰ñ“]UŒ‚‚ª”­¶‚·‚é‚©‚Ç‚¤‚©‚Ì”»’è
 		if (_rotationCnt > ROTAION_SWING_CNT_MAX) {
 			if (!_isRotationSwinging) {
 				_animStatus = ANIM_STATE::TO_ROTATION_SWING;
 			}
 		}
-		// ’ÊíUŒ‚
-		else if (_input->GetRel(XINPUT_BUTTON_X) != 0) {
-			_playNextComboAnim = true;
-			if (!_isAttackState) {
-				_animStatus = ANIM_STATE::HORISONTAL_SWING_01;
+		// ƒRƒ“ƒ{UŒ‚1’i–Ú‚Ì“ü—Í
+		else if (!_isAttackState) {
+			if (_input->GetRel(XINPUT_BUTTON_X) != 0) { // ƒŠƒŠ[ƒX“ü—Í
+				_playNextComboAnim = true;
+				if (!_isAttackState) {
+					_animStatus = ANIM_STATE::HORISONTAL_SWING_01;
+				}
+			}
+		}
+		// ƒRƒ“ƒ{UŒ‚2’i–ÚE3’i–Ú‚Ì“ü—Í
+		else if (_animStatus == ANIM_STATE::HORISONTAL_SWING_01 || _animStatus == ANIM_STATE::HORISONTAL_SWING_02) {
+			if (_input->GetTrg(XINPUT_BUTTON_X) != 0) { // ƒgƒŠƒK“ü—Í
+				_playNextComboAnim = true;
 			}
 		}
 
+		// ‰ñ“]UŒ‚‚Ì“ü—Í
 		if (_input->GetKey(XINPUT_BUTTON_X) != 0) {
 			_rotationCnt++;
 		}
