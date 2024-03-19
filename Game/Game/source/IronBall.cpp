@@ -1,8 +1,9 @@
 #include "IronBall.h"
 
 namespace {
-	constexpr float IB_COLLISION_RADIUS = 50.0f;
-	constexpr float CHAIN_COLLISION_RADIUS = 25.0f;
+	constexpr float IB_BODY_COLLISION_RADIUS = 50.0f;
+	constexpr float IB_ATTACK_COLLISION_RADIUS = 100.0f;
+	constexpr float CHAIN_COLLISION_RADIUS = 75.0f;
 }
 
 IronBall::IronBall()
@@ -23,8 +24,10 @@ IronBall::IronBall()
 	_iPos = VGet(0, 0, 0);
 	_ibDefaultScale = VGet(0, 0, 0);
 
-	_ibSphereCollision.centerPos = VGet(0, 0, 0);
-	_ibSphereCollision.r = 0;
+	_ibBodySphereCollision.centerPos = VGet(0, 0, 0);
+	_ibBodySphereCollision.r = 0;
+	_ibAttackSphereCollision.centerPos = VGet(0, 0, 0);
+	_ibAttackSphereCollision.r = 0;
 
 	_chainCapsuleCollision.up_pos = VGet(0, 0, 0);
 	_chainCapsuleCollision.down_pos = VGet(0, 0, 0);
@@ -74,9 +77,10 @@ void IronBall::Init() {
 	MV1SetScale(_iModelHandle, _ibDefaultScale);
 	MV1SetPosition(_iModelHandle, _iPos);
 
-
-	_ibSphereCollision.centerPos = _iPos;
-	_ibSphereCollision.r = IB_COLLISION_RADIUS;
+	_ibBodySphereCollision.centerPos = _iPos;
+	_ibBodySphereCollision.r = IB_BODY_COLLISION_RADIUS;
+	_ibAttackSphereCollision.centerPos = _iPos;
+	_ibAttackSphereCollision.r = IB_ATTACK_COLLISION_RADIUS;
 
 	_chainCapsuleCollision.up_pos = _cPos[0];
 	_chainCapsuleCollision.down_pos = _cPos[CHAIN_MAX - 1];
@@ -135,8 +139,8 @@ void IronBall::Process() {
 		_attackAnimCnt = 0;
 	}
 
-	if (_iPos.y - _ibSphereCollision.r < 0.0f) {
-		_iPos.y = 0.0f + _ibSphereCollision.r;
+	if (_iPos.y - _ibBodySphereCollision.r < 0.0f) {
+		_iPos.y = 0.0f + _ibBodySphereCollision.r;
 	}
 	for (int i = 1; i < CHAIN_MAX; i++) {
 		if (_cPos[i].y - 10.0f < 0.0f) {
@@ -346,7 +350,8 @@ void IronBall::Render()
 
 void IronBall::UpdateIBCollision()
 {
-	_ibSphereCollision.centerPos = _iPos;
+	_ibBodySphereCollision.centerPos = _iPos;
+	_ibAttackSphereCollision.centerPos = _iPos;
 }
 
 void IronBall::UpdateChainCollision()
@@ -366,10 +371,9 @@ void IronBall::SetPlayerModelHandle(int handle)
 
 void IronBall::DrawDebugInfo() {
 	unsigned int color = _enabledAttackCollision ? COLOR_RED : COLOR_WHITE;
-	DrawSphere3D(_ibSphereCollision.centerPos, _ibSphereCollision.r, 16, color, color, false);
-
-	//UpdateChainCollision();
-	_chainCapsuleCollision.Render(COLOR_WHITE);
+	_ibBodySphereCollision.Render(COLOR_GREEN);
+	_ibAttackSphereCollision.Render(color);
+	_chainCapsuleCollision.Render(color);
 
 	//int x = 0;
 	//int y = 0;
@@ -382,6 +386,6 @@ void IronBall::DrawDebugInfo() {
 bool IronBall::UpdateLevel(float scale)
 {
 	MV1SetScale(_iModelHandle, VScale(_ibDefaultScale, scale));
-	_ibSphereCollision.r = IB_COLLISION_RADIUS * scale;
+	_ibAttackSphereCollision.r = IB_ATTACK_COLLISION_RADIUS * scale;
 	return true;
 }
