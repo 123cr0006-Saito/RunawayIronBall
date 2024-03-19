@@ -29,6 +29,7 @@ public:
 	void ReserveRemovementCell(Cell* cell);
 
 
+	void ClearTreeAndList();
 
 	// デバッグ情報の表示
 	void DrawSegmentLine();

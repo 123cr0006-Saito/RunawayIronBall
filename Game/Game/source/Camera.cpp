@@ -1,5 +1,7 @@
 #include "Camera.h"
 Camera::Camera(VECTOR InitPos) : CameraBase() {
+
+	SetCameraNearFar(20.0f, 30000.0f);
 	
 	_gazeShift = VGet(0, 120, 0);
 	_reverseX = -1;

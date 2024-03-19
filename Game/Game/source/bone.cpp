@@ -1,7 +1,6 @@
 #include "bone.h"
 
-const Vector3D bone::_orign(0,0,0);
-const Vector3D bone::_gravityDir(0.0f, -1.0f, 0.0f);
+const Vector3D bone::_orign(0, 0, 0);
 
 //1Ｆ 大体0.015 ~ 0.017秒ぐらい 
 //1回だと発散する
@@ -46,6 +45,8 @@ bone::bone(
 	_orignPos[0] = MV1GetFramePosition(*_model, _frameList[0]);
 	_orignPos[1] = MV1GetFramePosition(*_model, _frameList[1]);
 
+	_gravityDir = VGet(0.0f, -1.0f, 0.0f);
+
 	//----------------------------------------------------------------------------------
 	//物理演算をするための変数の初期化
 	_massPointSize = _frameList.size() - 1;
@@ -53,23 +54,23 @@ bone::bone(
 	_massAccelList = NEW Vector3D[_massPointSize];
 
 	_massWeight = NEW float[_massPointSize];
-	 _viscousResistance = NEW float[_massPointSize];
-	 _gravity = NEW float[_massPointSize];
-	 _spring = NEW float[_massPointSize];
-	 _naturalCorrectionFactor = NEW float[_massPointSize];
+	_viscousResistance = NEW float[_massPointSize];
+	_gravity = NEW float[_massPointSize];
+	_spring = NEW float[_massPointSize];
+	_naturalCorrectionFactor = NEW float[_massPointSize];
 
-	 //ファイル読み込み---------------------------------------------------
-	 myJson json(jsonFileName);
-	 int i = 0;
-	 for (auto& bone : json._json) {
-		 bone.at("massWeight").get_to(_massWeight[i]);
-		 bone.at("viscousResistance").get_to(_viscousResistance[i]);
-		 bone.at("gravity").get_to(_gravity[i]);
-		 bone.at("spring").get_to(_spring[i]);
-		 bone.at("naturalCorrectionFactor").get_to(_naturalCorrectionFactor[i]);
-		 i++;
-	 }
-	 //--------------------------------------------------------------------------
+	//ファイル読み込み---------------------------------------------------
+	myJson json(jsonFileName);
+	int i = 0;
+	for (auto& bone : json._json) {
+		bone.at("massWeight").get_to(_massWeight[i]);
+		bone.at("viscousResistance").get_to(_viscousResistance[i]);
+		bone.at("gravity").get_to(_gravity[i]);
+		bone.at("spring").get_to(_spring[i]);
+		bone.at("naturalCorrectionFactor").get_to(_naturalCorrectionFactor[i]);
+		i++;
+	}
+	//--------------------------------------------------------------------------
 
 	for (int i = 0; i < _massPointSize; i++) {
 		_massPosList[i].Set(MV1GetFramePosition(*_model, _frameList[i + 1]));
@@ -183,6 +184,7 @@ void bone::DebugRender() {
 bool bone::Process() {
 
 	double _elapsedTime = global._timer->GetElapsedTime();
+
 	while (1)
 	{
 		//1フレームを_processIntervalで差分化する
@@ -195,6 +197,16 @@ bool bone::Process() {
 	return true;
 };
 
+void bone::SetGravity(std::string end, std::string start) {
+	int frame = MV1SearchFrame(*_model, end.c_str());
+	VECTOR headPos = MV1GetFramePosition(*_model, frame);
+	frame = MV1SearchFrame(*_model, start.c_str());
+	VECTOR spinePos = MV1GetFramePosition(*_model, frame);
+
+	VECTOR dirVec = VSub(spinePos, headPos);
+	_gravityDir = VNorm(VScale(dirVec, -1));
+};
+
 //参考サイト
 //http://www.den.t.u-tokyo.ac.jp/ad_prog/ode/ //オイラー法について
 //https://high-school-physics.com/spring-constant-of-the-combined-spring/ //ばねのつり合いについて
@@ -202,8 +214,8 @@ bool bone::Process() {
 //時間があればルンゲクッタ法に変更したい
 void bone::UpdatePosAndAccel(double _elapsedTime) {
 	//時間で処理を細分化し少しずつ答えに近づけていく
-	static Vector3D* newPosList = NEW Vector3D[_massPointSize];
-	static Vector3D* newAccelList = NEW Vector3D[_massPointSize];
+	Vector3D* newPosList = NEW Vector3D[_massPointSize];
+	Vector3D* newAccelList = NEW Vector3D[_massPointSize];
 
 	//付け根の位置は固定
 	_massPosList[0] = MV1GetFramePosition(*_model, _frameList[1]);

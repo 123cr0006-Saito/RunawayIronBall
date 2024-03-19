@@ -53,6 +53,7 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
+	void SetTime();
 	void DeleteObject();
 	std::vector<std::string> LoadObjectName(std::string fileName); // オブジェクトの名前を読み込む
 	bool LoadObjectParam(std::string fileName); // オブジェクトのパラメータを読み込む
@@ -60,7 +61,9 @@ public:
 	bool StageMutation();// ステージクリア処理
 	bool GateProcess();// ゴールゲートの処理
 	void NewStage();// ステージの初期化
-	
+	void CreateTutorial();// チュートリアルの作成
+
+	int GetStageNum() { return _stageNum; };
 
 
 	//デバッグ用
@@ -112,6 +115,7 @@ protected:
 	Light* _light;
 
 	// ステージ読み込み用変数
+	bool IsTutorial;
 	bool IsLoading;
 	std::thread* LoadFunctionThread;
 };

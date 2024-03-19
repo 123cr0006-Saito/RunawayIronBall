@@ -1,4 +1,6 @@
 #include "ModeScenario.h"
+#include "ModeFadeComeBack.h"
+#include "ModeMovie.h"
 
 bool ModeScenario::IsLoadHandle = false;
 std::unordered_map<int, int> ModeScenario::_charaHandleMap;
@@ -6,8 +8,8 @@ std::unordered_map<int, std::string> ModeScenario::_nameHandleMap;
 std::unordered_map<int, int> ModeScenario::_backGroundHandleMap;
 std::unordered_map<int, int> ModeScenario::_textBoxHandle;
 
-ModeScenario::ModeScenario(std::string scenarioFile) {
-
+ModeScenario::ModeScenario(std::string scenarioFile,int scenarioNum) {
+	_scenarioNum = scenarioNum;
 	LoadOnceHandleData();
 
 	CFile ScenarioFile(scenarioFile);
@@ -154,6 +156,8 @@ bool ModeScenario::Initialize(){
 	_currentTime = GetNowCount();
 	_input = XInput::GetInstance();
 
+	global._soundServer->DirectPlay("B_Scenario");
+
 	GetGraphSize(_charaHandleMap[_scenarioData.at(_nowTextLine).charaHandle], &_handleX, &_handleY);
 	_textFontHandle = CreateFontToHandle("メイリオ", 32, 3, DX_FONTTYPE_ANTIALIASING_EDGE_8X8);
 	_nameFontHandle = CreateFontToHandle("メイリオ", 64, 3, DX_FONTTYPE_ANTIALIASING_EDGE_8X8);
@@ -196,16 +200,25 @@ bool ModeScenario::Process(){
 			_nowTextLine++;
 			_nowTextByte = 0;
 			_currentTime = GetNowCount();
-			std::string voiceName = _scenarioData.at(_nowTextLine).voiceData;
-			if (voiceName != "") {
-				global._soundServer->DirectPlay(voiceName);
+			if (_nowTextLine < _scenarioData.size()) {
+				std::string voiceName = _scenarioData.at(_nowTextLine).voiceData;
+				if (voiceName != "") {
+					global._soundServer->DirectPlay(voiceName);
+				}
 			}
 		}
 	}
 
 	// シナリオをすべて描画し終えた
 	if (_nowTextLine >= _scenarioData.size() || _input->GetTrg(XINPUT_BUTTON_START)) {
-		ModeServer::GetInstance()->Del(this);
+		_nowTextLine = _scenarioData.size()-1;
+		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000,this), 100, "FadeIn");
+		if (_scenarioNum == 4) {
+			ModeServer::GetInstance()->Add(NEW ModeMovie(), 10, "Movie");
+		}
+		else {
+			global._soundServer->DirectPlay("Stage0" + std::to_string(_scenarioNum));
+		}
 	}
 	
 	return true;

@@ -295,6 +295,9 @@ void EnemyBase::SetKnockBackAndDamage(VECTOR vDir, float damage) {
 		_hp -= damage;
 		_knockBackDir = vDir;
 		_knockBackSpeedFrame = damage - _weightExp;
+		if (_knockBackSpeedFrame < 0) {
+			_knockBackSpeedFrame = 0;
+		}
 		_currentTime = GetNowCount();
 		VECTOR effectPos = VAdd(VAdd(_pos, _diffeToCenter), VScale(vDir, -50));
 

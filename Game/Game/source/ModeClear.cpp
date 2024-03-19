@@ -1,6 +1,8 @@
 #include "AppFrame.h"
 #include "ModeClear.h"
+#include "ModeScenario.h"
 #include "ModeFadeComeBack.h"
+
 ModeClear::ModeClear() {
 	_modeGame = nullptr;
 	input = nullptr;
@@ -17,14 +19,14 @@ ModeClear::ModeClear() {
 ModeClear::ModeClear(ModeGame* mode){
 	_modeGame = mode;
 	input = nullptr;
-	 _model = 0;
-	 _attachAnim = 0;
-	 _frameCount = 0;
-	 _maxCount = 0;
-	 _alphaValue = 0;
-	 _currentTime = 0;
-	 _valuation = 0;
-	 _valuationTime = 0;
+	_model = 0;
+	_attachAnim = 0;
+	_frameCount = 0;
+	_maxCount = 0;
+	_alphaValue = 0;
+	_currentTime = 0;
+	_valuation = 0;
+	_valuationTime = 0;
 };
 
 bool ModeClear::Initialize(){
@@ -42,7 +44,7 @@ bool ModeClear::Initialize(){
 	ResourceServer::LoadMultGraph("C_Time","res/ModeResult/Time/UI_Valuation_Time",".png",10,_timeHandle);
 	SetCameraNearFar(20.0f, 30000.0f);
 	MV1SetPosition(_model, VGet(0, 0, 0));
-
+	global._soundServer->DirectPlay("Result");
 	Valuation();
 
 	return true;
@@ -74,7 +76,6 @@ void ModeClear::AnimProcess(){
 };
 
 void ModeClear::Valuation(){
-
 	if(TimeLimit::GetInstance() != nullptr){
 		TimeLimit* time = TimeLimit::GetInstance();
 		_valuationTime =time->GetElapsedTime();
@@ -100,9 +101,15 @@ void ModeClear::ValuationProcess(){
 		_alphaValue = Easing::Linear(nowTime,0, 255, endTime);
 
 	   if (_alphaValue >= 255 && input->GetTrg(XINPUT_BUTTON_A)) {
-		   ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(2000,this), 100, "Fade");
-		   if(_modeGame != nullptr){
-	   	   _modeGame->NewStage();
+		   ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000,this), 100, "Fade");
+		   if (_modeGame != nullptr && _modeGame->GetStageNum() < 4) {
+			   _modeGame->NewStage();
+		   }
+		   else {
+			   ClearDrawScreen();
+			   ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario04.csv",4), 100, "Title");
+			   ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000, this,true), 100, "Fade");
+			   ModeServer::GetInstance()->Del(_modeGame);
 		   }
 	   }
 	}
@@ -143,7 +150,7 @@ bool ModeClear::Render() {
 		if (loopCount == 2) {
 			// ƒRƒƒ“‚ğ•`‰æ
 			GetGraphSize(_handle["Colon"], &handleX, &handleY);
-			DrawRotaGraph(x + handleX -40 + handleX/2, y + 10 + handleY / 2.0f ,1.0f,-30*DX_PI/180.0f ,_handle["Colon"], true);
+			DrawRotaGraph(x + handleX + 40 + handleX/2, y + 10 + handleY / 2.0f ,1.0f,-30*DX_PI/180.0f ,_handle["Colon"], true);
 			x -= handleX + 20;// ”š‚ÌŠÔŠu
 			y += handleY / 2.0f;// ”š‚ÌŠÔŠu
 		}

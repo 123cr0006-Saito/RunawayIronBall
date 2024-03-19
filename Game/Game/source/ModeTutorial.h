@@ -13,6 +13,6 @@ protected:
 	XInput* _input;
 	int* _handle;
 	int _pageSize;
-	int _currentTime;
+
 	int _selectItem;
 };

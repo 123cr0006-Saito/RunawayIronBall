@@ -4,7 +4,7 @@ class ModeScenario : public ModeBase
 {
 	typedef ModeBase base;
 public:
-	ModeScenario(std::string scenarioFile);
+	ModeScenario(std::string scenarioFile,int scenarioNum);
 	bool LoadOnceHandleData();
 	virtual bool Initialize();
 	virtual bool Terminate();
@@ -28,6 +28,7 @@ protected:
 	};
 	XInput* _input;
 	std::vector<ScenarioData> _scenarioData;
+	int _scenarioNum;
 	int _nameFontHandle;
 	int _textFontHandle;
 	int _nowTextByte;

@@ -18,6 +18,7 @@ bool ModeTitle::Initialize() {
 	_handleMap["Start"] = ResourceServer::LoadGraph("T_Start",_T("res/ModeTitle/UI_Start.png"));
 	_handleMap["Option"] = ResourceServer::LoadGraph("T_Option",_T("res/ModeTitle/UI_Option.png"));
 	_handleMap["Quit"] = ResourceServer::LoadGraph("T_Quit",_T("res/ModeTitle/UI_Quit.png"));
+	_handleMap["Logo"] = ResourceServer::LoadGraph("T_Logo", _T("res/ModeTitle/UI_Logo.png"));
 
 	_IsGameStart = false;
 	//Š„‚ê‚éˆ—‚Ì‰Šú‰»
@@ -41,7 +42,6 @@ bool ModeTitle::Initialize() {
 	 }
 
 	 MV1SetPosition(_modelHandle, VGet(0, 0, 0)); 
-	// MV1SetScale(_modelHandle, VScale(VGet(1, 1, 1), 0.1));
 	 SetCameraPositionAndTarget_UpVecY(VGet(0, 0, -1850), VGet(0, 0, 0));
 
 	 // bgm‚Ìİ’è
@@ -65,7 +65,7 @@ bool ModeTitle::Terminate() {
 
 void ModeTitle::SelectGameStart() {
 	ModeServer::GetInstance()->Del(this);
-	ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario01.csv"), 100, "Scenario");
+	ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario01.csv",1), 100, "Scenario");
 	ModeServer::GetInstance()->Add(NEW ModeGame(), 1, "Game");
 };
 
@@ -97,10 +97,10 @@ void ModeTitle::UpdateSelectItems(){
 
 	//ƒ‚[ƒh‚Ì‘I‘ğ
 	if (_input->GetTrg(XINPUT_BUTTON_A)) {
-		global._soundServer->DirectPlay("SE_Press");
 		int textureHandle = MakeGraph(1920, 1080);
 		switch (_modeCount) {
 		case 0:
+			global._soundServer->DirectPlay("SE_Break");
 			UpdateCrackedScreen();
 			GetDrawScreenGraph( 0, 0, 1920, 1080, textureHandle);
 			MV1SetTextureGraphHandle(_modelHandle, 0, textureHandle, false);
@@ -108,9 +108,11 @@ void ModeTitle::UpdateSelectItems(){
 			_currentTime = GetNowCount();
 			break;
 		case 1:
+			global._soundServer->DirectPlay("SE_Press");
 			SelectOption();
 			break;
 		case 2:
+			global._soundServer->DirectPlay("SE_Press");
 			SelectGameEnd();
 			break;
 		}
@@ -148,12 +150,14 @@ void ModeTitle::DrawTitleItems(){
 	//x = 1920 / 2 - x / 2;
 	handleX = 840;
 	DrawGraph(handleX, 0, _handleMap["Title"], true);
-
+	//ƒ`[ƒ€ƒƒS‚Ì•`‰æ
+	GetGraphSize(_handleMap["Logo"], &handleX, &handleY);
+	DrawGraph(0, 1080 - handleY, _handleMap["Logo"], true);
 	//‚»‚ê‚¼‚ê‚Ì€–Ú‚Ì•`‰æ
 	
 	int centerX, centerY;
-	centerX = 1400;
-	centerY = 600;
+	centerX = 1300;
+	centerY = 500;
 
 	std::array<std::string,3> _handleNameList = { "Start","Option","Quit" };
 
@@ -162,7 +166,7 @@ void ModeTitle::DrawTitleItems(){
 		float extRate = 1.0f;
 		GetGraphSize(_handleMap[_handleNameList[handleNum]], &handleX, &handleY);
 		if (i == _modeCount) { extRate = 1.1f; }
-		DrawRotaGraph(centerX + handleX / 2, centerY + handleY / 2 + i * (72 + handleY / 2), extRate, 0.0f, _handleMap[_handleNameList[handleNum]], true);
+		DrawRotaGraph(centerX + handleX / 2, centerY + handleY / 2 + i * (100 + handleY / 2), extRate, 0.0f, _handleMap[_handleNameList[handleNum]], true);
 	}
 };
 

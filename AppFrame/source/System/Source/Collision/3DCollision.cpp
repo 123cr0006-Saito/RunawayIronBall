@@ -391,15 +391,18 @@ bool Collision3D::TwoCapsuleCol(const Capsule& capsule1, const Capsule& capsule2
 	return Collision3D::TwoCapsuleCol(capsule1.down_pos, capsule1.up_pos, capsule1.r, capsule2.down_pos, capsule2.up_pos, capsule2.r);
 }
 
-bool Collision3D::SphereCapsuleCol(VECTOR spherePos, float sphereR, VECTOR capsuleStartPos, VECTOR capsuleEndPos, float capsuleR)
+bool Collision3D::SphereCapsuleCol(VECTOR spherePos, float sphereR, VECTOR capsuleStartPos, VECTOR capsuleEndPos, float capsuleR, VECTOR* shortestPos)
 {
 	POINT_LINE_SHORT value = Collision3D::PointLineSegShortLength(capsuleStartPos, capsuleEndPos, spherePos);
+	if (shortestPos != nullptr) {
+		*shortestPos = value.hit_point;
+	}
 	return Collision3D::SphereCol(spherePos, sphereR, value.hit_point, capsuleR);
 }
 
-bool Collision3D::SphereCapsuleCol(const Sphere& sphere, const Capsule& capsule)
+bool Collision3D::SphereCapsuleCol(const Sphere& sphere, const Capsule& capsule, VECTOR* shortestPos)
 {
-	return Collision3D::SphereCapsuleCol(sphere.centerPos, sphere.r, capsule.down_pos, capsule.up_pos, capsule.r);
+	return Collision3D::SphereCapsuleCol(sphere.centerPos, sphere.r, capsule.down_pos, capsule.up_pos, capsule.r, shortestPos);
 }
 
 VECTOR Collision3D::PointOBB(VECTOR point, OBB obb) {

@@ -9,7 +9,7 @@ public:
 	BuildingBase();
 	virtual ~BuildingBase();
 
-	virtual void Init(int modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength);
+	virtual void Init(int modelHandle, std::string objName,VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength);
 	virtual void Process();
 	virtual void Render();
 
@@ -20,6 +20,8 @@ public:
 	bool GetCanBreak() { return _canBreak; }
 	OBB GetOBBCollision() { return _obbCollision; }
 
+	std::string GetName() {return _objName;}
+
 
 	virtual void SetHit(VECTOR vDir = VGet(0.0f, 0.0f, -1.0f)) {};
 
@@ -29,6 +31,7 @@ public:
 protected:
 	// モデルハンドル
 	int _modelHandle;
+	std::string _objName;
 	// モデルの座標
 	VECTOR _pos;
 
