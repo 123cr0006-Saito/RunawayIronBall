@@ -59,7 +59,7 @@ namespace {
 Player::Player()
 {
 	_input = nullptr;
-	_stickDir = VGet(0.0f, 0.0f, -1.0f);
+	_inputWorldDir = VGet(0.0f, 0.0f, -1.0f);
 
 	_hp = 0;
 	_isInvincible = false;
@@ -263,7 +263,7 @@ bool Player::Init(int modelHandle, VECTOR pos)
 	CharacterBase::Init(modelHandle, pos);
 
 	_input = XInput::GetInstance();
-	_stickDir = VGet(0.0f, 0.0f, -1.0f);
+	_inputWorldDir = VGet(0.0f, 0.0f, -1.0f);
 
 	_hp = HP_MAX;
 	_isInvincible = false;
@@ -406,7 +406,7 @@ bool Player::Process(float camAngleY)
 
 				_pos = VAdd(_pos, VScale(vMoveDir, _moveSpeed));
 
-				_stickDir = vMoveDir;
+				_inputWorldDir = vMoveDir;
 				_isMoved = true;
 			}
 		}
@@ -480,7 +480,7 @@ bool Player::Process(float camAngleY)
 			_isTired = true;
 			_isRotationSwinging = false;
 			_rotationCnt = 0;
-			_forwardDir = _stickDir;
+			_forwardDir = _inputWorldDir;
 			_animStatus = ANIM_STATE::HORISONTAL_SWING_03;
 		}
 	}
@@ -520,7 +520,7 @@ bool Player::Process(float camAngleY)
 				_animStatus = ANIM_STATE::HORISONTAL_SWING_03;
 
 				// モデルの正面方向を更新する
-				_forwardDir = _stickDir;
+				_forwardDir = _inputWorldDir;
 			}
 		}
 	}
@@ -531,7 +531,7 @@ bool Player::Process(float camAngleY)
 			if (!_isSwinging || _isRotationSwinging) {
 				_animStatus = ANIM_STATE::AVOIDANCE;
 				// モデルの正面方向を更新する
-				_forwardDir = _stickDir;
+				_forwardDir = _inputWorldDir;
 				_rotationCnt = 0;
 				_idleFightingRemainingCnt = 240;
 
