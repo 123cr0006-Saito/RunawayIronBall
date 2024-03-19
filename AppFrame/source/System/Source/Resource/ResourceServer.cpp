@@ -19,7 +19,7 @@ int ResourceServer::Load(std::string key, std::string handleName) {
 		value = LoadEffekseerEffect(key, handleName);
 	}
 	else if (extension == "mv1") {
-		value = MV1LoadModel(key, handleName);
+		value = MV1LoadModel(key, handleName,false);
 	}
 	return value;
 };
@@ -207,7 +207,7 @@ int ResourceServer::LoadEffekseerEffect(std::string key_name, std::string handle
 	return value;
 };
 
-int ResourceServer::MV1LoadModel(std::string key_name, std::string model_name) {
+int ResourceServer::MV1LoadModel(std::string key_name, std::string model_name, bool duplicate) {
 	int value = 0;
 
 	auto itr = _modelOriginMap.find(key_name + "_Origin");
@@ -223,8 +223,11 @@ int ResourceServer::MV1LoadModel(std::string key_name, std::string model_name) {
 		if (originModel != -1) {
 			_modelOriginMap[key_name + "_Origin"] = originModel;
 			// ÉIÉäÉWÉiÉãÇ©ÇÁï°êª
-			value = MV1DuplicateModel(originModel);
-			_modelMap[key_name].push_back(value);
+			if (duplicate)
+			{
+				value = MV1DuplicateModel(originModel);
+				_modelMap[key_name].push_back(value);
+			}
 		}
 	}
 
