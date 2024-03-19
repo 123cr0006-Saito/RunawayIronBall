@@ -9,6 +9,9 @@ Fog::Fog(){
 };
 Fog::~Fog(){
 	_player = nullptr;
+	if (IsFog) {
+		SetFogEnable(false);
+	}
 };
 
 void Fog::UpdateIsFog(){
