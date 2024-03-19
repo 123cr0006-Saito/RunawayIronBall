@@ -3,3 +3,14 @@ Stanp,1,250
 Rotation,2,50
 SlashR,3,100
 SlashL,4,100
+PL_Avoidance0,5,3
+PL_PullAttack0,7,2
+PL_SideSwing0,8,2
+PL_Rotation,9,0
+PL_VerticalSwing0,10,2
+PL_LostStamina,11,0
+SE_Avoidance,12,0
+SE_Rotation,13,0
+SE_Swing,14,0
+SLB_Falling,15,0
+SLB_Jump,16,0

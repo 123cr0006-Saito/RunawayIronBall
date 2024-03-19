@@ -9,6 +9,12 @@ ModelColor::ModelColor()
 
 ModelColor::~ModelColor()
 {
+	for (auto itr = _defaultMaterial.begin(); itr != _defaultMaterial.end(); ++itr)
+	{
+		delete (*itr);
+		(*itr) = nullptr;
+	}
+	_defaultMaterial.clear();
 }
 
 void ModelColor::Init(int modelHandle)

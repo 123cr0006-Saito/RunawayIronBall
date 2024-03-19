@@ -4,7 +4,7 @@
 #include "bone.h"
 #include "myJson.h"
 
-#include "Chain.h"
+#include "IronBall.h"
 
 #include "AnimationManager.h"
 #include "AnimationItem.h"
@@ -44,9 +44,10 @@ private:
 	};
 
 public:
-	Player(int modelHandle, VECTOR pos);
+	Player();
 	~Player() override;
 
+	bool Init(int modelHandle, VECTOR pos) override;
 	bool Process(float camAngleY);
 	bool AnimationProcess();
 	bool BlastOffProcess();
@@ -54,6 +55,7 @@ public:
 
 
 	int GetHP() { return _hp; }
+	void MaxHeal() { _hp = 4; }
 	bool GetIsInvincible() { return _isInvincible; }
 	// 無敵状態の更新
 	void ChangeIsInvincible(bool b, int frame);
@@ -96,9 +98,9 @@ public:
 	void UpdateCollision();
 
 	Capsule GetCollision() { return _capsuleCollision; };
-	Sphere GetIBCollision() { return _chain->GetCollision(); };
-	VECTOR GetIBPos() { return _chain->GetBallPosition(); };
-	void SetIBPos(VECTOR pos) { _chain->SetBallPosition(pos); };
+	Sphere GetIBCollision() { return _ironBall->GetIBCollision(); };
+	VECTOR GetIBPos() { return _ironBall->GetBallPosition(); };
+	void SetIBPos(VECTOR pos) { _ironBall->SetBallPosition(pos); };
 
 	void SetBlastOffPower(VECTOR dir, float power) { _blastOffDir = dir; _blastOffPower = power; };
 
@@ -106,11 +108,10 @@ public:
 
 	VECTOR GetRightHandPos();
 
-	VECTOR* GetIBPosPtr() { return _chain->GetBallPosPtr(); }
+	VECTOR* GetIBPosPtr() { return _ironBall->GetBallPosPtr(); }
 
 
-	bool GetAttackState() { return _isAttackState; }
-	bool GetEnabledIBAttackCollision() { return _chain->GetEnabledAttackCollision(); }
+	bool GetEnabledIBAttackCollision() { return _ironBall->GetEnabledAttackCollision(); }
 
 	// フレームデータのコマンドをチェックする
 	void CheckFrameDataCommand();
@@ -119,13 +120,13 @@ public:
 
 	void DrawDebugInfo();
 
-	VECTOR GetStickDir() { return _stickDir; }
+	VECTOR GetInputWorld() { return _inputWorldDir; }
 private:
 	// 入力情報
 	XInput* _input;
-	// Lスティックの入力方向
+	// Lスティックの入力方向をカメラの回転を考慮してワールド上の方向に変換する
 	// Lスティック入力があった場合に更新する
-	VECTOR _stickDir;
+	VECTOR _inputWorldDir;
 
 	/* ステータス関連 */
 	// HP
@@ -134,13 +135,17 @@ private:
 	bool _isInvincible;
 	// 残りの無敵時間
 	int _invincibleRemainingCnt;
+	// 戦闘待機状態の残りフレーム数
+	int _idleFightingRemainingCnt;
 
 	// スタミナ
 	float _stamina;
 	// スタミナの最大値
 	float _staminaMax;
-	// スタミナを消費中かどうか
-	bool _isConsumingStamina;
+	// スタミナを回復中かどうか（最大まで回復しているときもtrue）
+	bool _isRecoveringStamina;
+	// スタミナが減少してから回復が始まるまでのフレーム数
+	int _cntToStartRecoveryStamina;
 	// スタミナが尽きたかどうか
 	bool _isTired;
 	// スタミナの1フレームあたりの回復速度
@@ -155,11 +160,12 @@ private:
 
 	// 攻撃状態かどうか
 	bool _isAttackState;
-
-	// 鉄球
-	Chain* _chain;
-
-	Capsule _capsuleCollision;
+	// 通常攻撃中かどうか
+	bool _isSwinging;
+	// 回転攻撃中かどうか
+	bool _isRotationSwinging;
+	// 回転攻撃のボタンが長押しされているフレーム数
+	int _rotationCnt;
 
 	/* アニメーション関連 */
 	// モーション変更可能かどうか
@@ -171,14 +177,18 @@ private:
 	AnimationManager* _animManager;
 	// アニメーション情報のマップコンテナ
 	static std::map<int, ANIMATION_INFO> _animMap;
-	// 戦闘待機状態の残りフレーム数
-	int _idleFightingRemainingCnt;
 
+	// アニメーションのステート
 	ANIM_STATE _animStatus;
 
 	// フレームデータ
 	FrameData* _frameData;
 
+	// 鉄球
+	IronBall* _ironBall;
+
+	// 当たり判定
+	Capsule _capsuleCollision;
 
 	VECTOR _blastOffDir;
 	float _blastOffPower;
@@ -187,19 +197,16 @@ private:
 	int _rightHandFrameIndex;
 
 
-	bool _isSwinging;
-	bool _isRotationSwinging;
-	int _rotationCnt;
 
 
+	// 被ダメージ時のモデル点滅処理を行うクラス
 	ModelColor* _modelColor;
 
 
-	static Player* _instance;
 
 	//------------
 	//齋藤が書きました。
-	bone* _bone[2];// 0:leftHear 1:RightHear
+	std::vector<bone*> _bone;
 	int _nowLevel;//現在のレベルが入ります。
 	int _nowExp; //現在持っている経験値を格納します。
 	int _maxLevel;//レベルの最大値
@@ -208,4 +215,7 @@ private:
 	int _power;//吹っ飛ばす力です。
 	std::map<int, std::pair<int, float>> _powerAndScale;//攻撃力と拡大率を格納したコンテナです。
 	//------------
+
+
+	static Player* _instance;
 };

@@ -1,9 +1,8 @@
-
 #include "AppFrame.h"
 #include "ApplicationMain.h"
 #include "ModeTitle.h"
 #include "ModeGame.h"
-#include "ModeTest.h"
+#include "ModeLoading.h"
 #include "ModePause.h"
 #include "math.h"
 
@@ -13,15 +12,16 @@ bool ModeTitle::Initialize() {
 
 	_input = XInput::GetInstance();
 	_modeCount = 0;
-
-	_handleMap["title"] = ResourceServer::LoadGraph("Title",_T("res/ModeTitle/UI_Title.png"));
-	_handleMap["start"] = ResourceServer::LoadGraph("Start",_T("res/ModeTitle/UI_Title_Play.png"));
-	_handleMap["option"] = ResourceServer::LoadGraph("Option",_T("res/ModeTitle/UI_Title_Option.png"));
-	_handleMap["quit"] = ResourceServer::LoadGraph("Quit",_T("res/ModeTitle/UI_Title_Quit.png"));
+	_handleMap["BackGround"] = ResourceServer::LoadGraph("T_BackGround", _T("res/ModeTitle/title_base.png"));
+	_handleMap["Title"] = ResourceServer::LoadGraph("T_Title",_T("res/ModeTitle/UI_Title.png"));
+	_handleMap["Start"] = ResourceServer::LoadGraph("T_Start",_T("res/ModeTitle/UI_Start.png"));
+	_handleMap["Option"] = ResourceServer::LoadGraph("T_Option",_T("res/ModeTitle/UI_Option.png"));
+	_handleMap["Quit"] = ResourceServer::LoadGraph("T_Quit",_T("res/ModeTitle/UI_Quit.png"));
+	_handleMap["Logo"] = ResourceServer::LoadGraph("T_Logo", _T("res/ModeTitle/UI_Logo.png"));
 
 	_IsGameStart = false;
 	//Š„‚ê‚éˆ—‚Ì‰Šú‰»
-	 _modelHandle = ResourceServer::MV1LoadModel("Board",_T("res/TemporaryMaterials/board.mv1"));
+	 _modelHandle = ResourceServer::MV1LoadModel("Board", "res/ModeTitle/board.mv1");
 	 _currentTime = 0;
 	 _IsBreak = false;
 	 _frameSize = MV1GetFrameNum(_modelHandle);
@@ -41,7 +41,6 @@ bool ModeTitle::Initialize() {
 	 }
 
 	 MV1SetPosition(_modelHandle, VGet(0, 0, 0)); 
-	// MV1SetScale(_modelHandle, VScale(VGet(1, 1, 1), 0.1));
 	 SetCameraPositionAndTarget_UpVecY(VGet(0, 0, -1850), VGet(0, 0, 0));
 
 	 // bgm‚Ìİ’è
@@ -56,15 +55,16 @@ bool ModeTitle::Initialize() {
 
 bool ModeTitle::Terminate() {
 	base::Terminate();
-	delete _MoveVec;
-	delete _rotVec;
+	delete[] _MoveVec;
+	delete[] _rotVec;
+	_input = nullptr;
+	_handleMap.clear();
 	return true;
 }
 
 void ModeTitle::SelectGameStart() {
 	ModeServer::GetInstance()->Del(this);
-	ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario01.csv"), 2, "Scenario");
-	ModeServer::GetInstance()->Add(NEW ModeGame(), 1, "Game");
+	ModeServer::GetInstance()->Add(NEW ModeLoading(),100,"Loading");
 };
 
 void ModeTitle::SelectOption() {
@@ -95,10 +95,10 @@ void ModeTitle::UpdateSelectItems(){
 
 	//ƒ‚[ƒh‚Ì‘I‘ğ
 	if (_input->GetTrg(XINPUT_BUTTON_A)) {
-		global._soundServer->DirectPlay("SE_Press");
 		int textureHandle = MakeGraph(1920, 1080);
 		switch (_modeCount) {
 		case 0:
+			global._soundServer->DirectPlay("SE_Break");
 			UpdateCrackedScreen();
 			GetDrawScreenGraph( 0, 0, 1920, 1080, textureHandle);
 			MV1SetTextureGraphHandle(_modelHandle, 0, textureHandle, false);
@@ -106,9 +106,11 @@ void ModeTitle::UpdateSelectItems(){
 			_currentTime = GetNowCount();
 			break;
 		case 1:
+			global._soundServer->DirectPlay("SE_Press");
 			SelectOption();
 			break;
 		case 2:
+			global._soundServer->DirectPlay("SE_Press");
 			SelectGameEnd();
 			break;
 		}
@@ -139,28 +141,30 @@ void ModeTitle::UpdateCrackedScreen(){
 };
 
 void ModeTitle::DrawTitleItems(){
-	DrawFillBox(0, 0, 1920, 1080, GetColor(0, 0, 0));
+	DrawGraph(0, 0, _handleMap["BackGround"], true);
 	int handleX, handleY;
 	//ƒ^ƒCƒgƒ‹ƒƒS‚Ì•`‰æ
-	GetGraphSize(_handleMap["title"], &handleX, &handleY);
+	GetGraphSize(_handleMap["Title"], &handleX, &handleY);
 	//x = 1920 / 2 - x / 2;
 	handleX = 840;
-	DrawGraph(handleX, 145, _handleMap["title"], true);
-
+	DrawGraph(handleX, 0, _handleMap["Title"], true);
+	//ƒ`[ƒ€ƒƒS‚Ì•`‰æ
+	GetGraphSize(_handleMap["Logo"], &handleX, &handleY);
+	DrawGraph(0, 1080 - handleY, _handleMap["Logo"], true);
 	//‚»‚ê‚¼‚ê‚Ì€–Ú‚Ì•`‰æ
 	
 	int centerX, centerY;
-	centerX = 1340;
-	centerY = 555;
+	centerX = 1300;
+	centerY = 500;
 
-	std::array<std::string,3> _handleNameList = { "start","option","quit" };
+	std::array<std::string,3> _handleNameList = { "Start","Option","Quit" };
 
 	for (int i = 0; i < 3; i++) {
 		int handleNum = i;
 		float extRate = 1.0f;
 		GetGraphSize(_handleMap[_handleNameList[handleNum]], &handleX, &handleY);
 		if (i == _modeCount) { extRate = 1.1f; }
-		DrawRotaGraph(centerX + handleX / 2, centerY + handleY / 2 + i * (72 + handleY / 2), extRate, 0.0f, _handleMap[_handleNameList[handleNum]], true);
+		DrawRotaGraph(centerX + handleX / 2, centerY + handleY / 2 + i * (100 + handleY / 2), extRate, 0.0f, _handleMap[_handleNameList[handleNum]], true);
 	}
 };
 
@@ -188,5 +192,7 @@ bool ModeTitle::Render() {
 	else {
 		DrawCrackedScreen();
 	}
+	clsDx();
+
 	return true;
 }

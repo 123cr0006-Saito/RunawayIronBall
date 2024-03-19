@@ -1,14 +1,17 @@
 #pragma once
 #include "ObjectBase.h"
-//#include "EnemyBase.h"
 
 
 enum OBJ_TYPE {
 	NONE,
 	PL,
 	PL_IB,
+	PL_IB_CHAIN,
 	EN,
-	EN_IB
+	EN_IB,
+	BLDG,
+	TWR,
+	TWR_PRT,
 };
 
 class ObjectBase;
@@ -17,7 +20,6 @@ class Cell
 public:
 	Cell() {
 		_segment = nullptr;
-		//_enObj = nullptr;
 		_obj = nullptr;
 		_objType = OBJ_TYPE::NONE;
 		_prev = nullptr;
@@ -25,14 +27,12 @@ public:
 	}
 	~Cell() {
 		_segment = nullptr;
-		//_enObj = nullptr;
 		_obj = nullptr;
 		_prev = nullptr;
 		_next = nullptr;
 	}
 
 	Cell* _segment;
-	//EnemyBase* _enObj;
 	ObjectBase* _obj;
 	OBJ_TYPE _objType;
 

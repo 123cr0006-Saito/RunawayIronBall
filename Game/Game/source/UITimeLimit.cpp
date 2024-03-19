@@ -8,16 +8,19 @@ UITimeLimit::UITimeLimit(VECTOR pos,VECTOR numPos, int size, int* numhandle, int
 
 UITimeLimit::UITimeLimit(VECTOR pos) :UIBase(pos){
 	_timeLimit = TimeLimit::GetInstance();
-	_numPos = VAdd(pos,VGet(190,110,0));
+	_numPos = VAdd(pos,VGet(200,130,0));
 
 	_handle = new int[10];
-	ResourceServer::LoadMultGraph("TimeNum","res/UI/UITime/Ui_Time",".png",10,_handle);
-	_colonHandle = ResourceServer::Load("Colon", "res/UI/UITime/Time_UI_colon.png");
-	_frameHandle = ResourceServer::Load("TimeFrame", "res/UI/UITime/UI_TIME_Gauge.png");
+	ResourceServer::LoadMultGraph("TimeNum","res/UI/Time/Ui_Time",".png",10,_handle);
+	_colonHandle = ResourceServer::Load("TimeColon", "res/UI/Time/UI_Time_Colon.png");
+	_frameHandle = ResourceServer::Load("TimeFrame", "res/UI/Time/UI_TIME_Gauge.png");
 };
 
 UITimeLimit::~UITimeLimit(){
-	// ì¡Ç…Ç»Çµ
+	_timeLimit = nullptr;
+	if (_handle != nullptr) {
+		delete[] _handle; _handle = nullptr;
+	}
 };
 
 bool UITimeLimit::Process(){
@@ -36,7 +39,7 @@ bool UITimeLimit::Draw() {
 		if (loopCount == 2) {
 			// ÉRÉçÉìÇï`âÊ
 			GetGraphSize(_colonHandle, &handleX, &handleY);
-			DrawGraph(x+ handleX, _numPos.y + 10, _colonHandle, true);
+			DrawGraph(x+ handleX, _numPos.y , _colonHandle, true);
 			x -= handleX+20;// êîéöÇÃä‘äu
 		}
 		

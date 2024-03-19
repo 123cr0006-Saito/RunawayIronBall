@@ -34,7 +34,7 @@ public:
 	//画像の複数読み込み　名前は 拡張子と分けてください 名前はファイルのところでまとめて変更すればそのまま使えるはずです。
 	static int LoadMultGraph(std::string key_name, std::string handle_name, std::string extension, int AllNum, int* HandleBuf);
 	static int LoadEffekseerEffect(std::string key_name, std::string handle_name);//エフェクシアのエフェクトの読み込み
-	static int MV1LoadModel(std::string key_name, std::string  model_name);//dxlibの.mv1形式に対応した３Ｄモデルの読み込み
+	static int MV1LoadModel(std::string key_name, std::string  model_name,bool duplicate = true);//dxlibの.mv1形式に対応した３Ｄモデルの読み込み
 	static int LoadSound(std::string key_name, std::string sound_name);//サウンドの読み込み
 	
 	// 値を返さない読み込み関数
@@ -59,6 +59,7 @@ public:
 	static std::unordered_map<std::string, int> _soundMap;//se・bgmを保存する変数
 	static std::unordered_map<std::string, Mult> _multMap;//複数の画像を保存する変数
 	static std::unordered_map<std::string, int >_effekseerMap;//エフェクシアのエフェクトを保存する変数
+	static std::unordered_map<std::string, int >_modelOriginMap;//dxlibのモデルハンドルを保存する変数
 	static std::unordered_map<std::string, std::vector<int> >_modelMap;//dxlibのモデルハンドルを保存する変数
 
 };

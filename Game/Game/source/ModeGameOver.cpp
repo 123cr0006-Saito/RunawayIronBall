@@ -1,8 +1,13 @@
-#include "ModeGameOver.h"
 #include "AppFrame.h"
-#include "ApplicationMain.h"
-#include "ModeTest.h"
+#include "ModeGameOver.h"
 #include "ModeTitle.h"
+#include "ModeGame.h"
+#include "ModeFadeComeBack.h"
+
+ModeGameOver::ModeGameOver(ModeGame* mode) {
+	_mode = mode;
+};
+
 bool ModeGameOver::Initialize() {
 	if (!base::Initialize()) { return false; }
 	_input = XInput::GetInstance();
@@ -12,7 +17,7 @@ bool ModeGameOver::Initialize() {
 	_selectItem = 0;
 
 	// モデルの読み込み
-	_model = ResourceServer::MV1LoadModel("Player","res/Character/cg_player_girl/cg_player_girl_TEST_Ver.2.mv1");
+	_model = ResourceServer::MV1LoadModel("Player","res/Character/cg_player_girl/Cg_Player_Girl.mv1");
 	MV1SetPosition(_model, VGet(0, 0, 0));
 	// アニメーションのアタッチ
 	int animIndex = MV1GetAnimIndex(_model, "MO_PL_Game_Over");
@@ -25,19 +30,22 @@ bool ModeGameOver::Initialize() {
 	// カメラの位置を設定
 	_cameraPos= VGet(0, 500, -500);
 
-	ModeServer::GetInstance()->Add(new ModeFade(3000, true), 10, "Fade");
-
 	global._soundServer->DirectPlay("PL_GameOver");
 	return true;
 };
 
 bool ModeGameOver::Terminate() {
 	base::Terminate();
+	_input = nullptr;
+	_handle.clear();
 	return true;
 };
 
 bool ModeGameOver::Process() {
 	base::Process();
+	ModeServer::GetInstance()->SkipProcessUnderLayer();
+	ModeServer::GetInstance()->PauseProcessUnderLayer();
+	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
 	//選択項目の切り替え
 	if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP)) {
@@ -52,11 +60,15 @@ bool ModeGameOver::Process() {
 	if (_input->GetTrg(XINPUT_BUTTON_A)) {
 		global._soundServer->DirectPlay("SE_Press");
 		if (_selectItem == 0) {
-			ModeServer::GetInstance()->Add(new ModeGame(), 1, "Game");
-			ModeServer::GetInstance()->Del(this);
+			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(3000, this), 100, "Fade");
+			if (_mode != nullptr) {
+				_mode->NewStage();
+				Player::GetInstance()->MaxHeal();
+			}
 		}
 		else {
 			ModeServer::GetInstance()->Add(new ModeTitle(), 1, "Title");
+			ModeServer::GetInstance()->Del(_mode);
 			ModeServer::GetInstance()->Del(this);
 		}
 	}
@@ -77,7 +89,7 @@ bool ModeGameOver::Render() {
 	int handleX, handleY;
 	std::vector<std::string> name = { "Logo","Retry","Give" };
 
-	DrawRotaGraph(1920/2, 300, 1.0f, 0.0f, _handle[name[0]], true);
+	DrawRotaGraph(1920/2, 200, 1.0f, 0.0f, _handle[name[0]], true);
 	for (int i = 1; i < name.size(); i++) {
 		float exrate = 1.0f;
 		if (i == _selectItem + 1)exrate = 1.1f;

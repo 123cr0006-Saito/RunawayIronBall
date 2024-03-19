@@ -200,9 +200,9 @@
     <ClInclude Include="source\System\Header\Function\Timer.h" />
     <ClInclude Include="source\System\Header\Function\Vector3D.h" />
     <ClInclude Include="source\System\Header\Function\Vibration.h" />
+    <ClInclude Include="source\System\Header\Input\XInput.h" />
     <ClInclude Include="source\System\Header\Resource\ResourceServer.h" />
     <ClInclude Include="source\System\Header\Function\Fps.h" />
-    <ClInclude Include="source\System\Header\Input\XInput.h" />
     <ClInclude Include="source\System\Header\Function\mydraw.h" />
     <ClInclude Include="source\System\Header\Function\Easing.h" />
     <ClInclude Include="source\System\Header\Sound\SoundItem.h" />

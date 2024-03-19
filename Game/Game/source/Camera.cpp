@@ -1,5 +1,7 @@
 #include "Camera.h"
 Camera::Camera(VECTOR InitPos) : CameraBase() {
+
+	SetCameraNearFar(20.0f, 30000.0f);
 	
 	_gazeShift = VGet(0, 120, 0);
 	_reverseX = -1;
@@ -8,9 +10,10 @@ Camera::Camera(VECTOR InitPos) : CameraBase() {
 	_cameraDistanceCount = 0;
 	_startDistance = 0.0f;
 	_endDistance = 0.0f;
+	_zoomCount = 0;
 	_IsZoom = false;
 
-	float cameraChangeDistance[CAMERA_ZOOM_MAX] = { -400.0f, -600.0f, -800.0f };
+	float cameraChangeDistance[CAMERA_ZOOM_MAX] = { -400.0f, -800.0f, -1200.0f };
 
 	for (int i = 0; i < CAMERA_ZOOM_MAX; i++) {
 		_cameraChangeDistance[i] = cameraChangeDistance[i];
@@ -47,6 +50,7 @@ Camera::~Camera() {
 };
 
 bool Camera::Process(VECTOR pos, int map) {
+	float oldDirX = _cameraDirX;
 	//入力から得た値で移動値を返す関数
 	auto move_speed_process = [](float pos, float pos_max, float max_speed) {return pos * max_speed / pos_max; };
 
@@ -115,6 +119,8 @@ bool Camera::Process(VECTOR pos, int map) {
 		VecAdd.y = VScale(VAdd(VAdd(HitPolyDim.Dim[0].Position[0], HitPolyDim.Dim[0].Position[1]), HitPolyDim.Dim[0].Position[1]), 0.3333333).y;
 		//カプセルの半径である５０分y軸方向に移動
 		VecAdd.y += cameraR;
+
+		_cameraDirX = oldDirX;
 	}
 	MV1CollResultPolyDimTerminate(HitPolyDim);
 
@@ -126,22 +132,21 @@ bool Camera::Process(VECTOR pos, int map) {
 void Camera::SetCameraDistance() {
 	_cameraDistanceCount++;
 	_cameraDistanceCount = (_cameraDistanceCount + CAMERA_ZOOM_MAX) % CAMERA_ZOOM_MAX;
-
 	_startDistance = _pointDistance.z;
 	_endDistance = _cameraChangeDistance[_cameraDistanceCount];
-
+	_zoomCount = 0;
 	_IsZoom = true;
 	_currentTime = GetNowCount();
 };
 
 bool Camera::ZoomProcess() {
 	if (_IsZoom) {
-		float moveTime = 5.0f / 60.0f * 1000;// 5フレームで移動
-		int nowTime = GetNowCount() - _currentTime;
+		float moveTime = 5.0f ;// 5フレームで移動
+		_zoomCount++;
 		// 移動
-		_pointDistance.z = Easing::InQuad(nowTime,_startDistance,_endDistance,moveTime);
+		_pointDistance.z = Easing::InQuad(_zoomCount,_startDistance,_endDistance, moveTime);
 		// 終了
-		if (nowTime >= moveTime) {
+		if (_zoomCount >= 5) {
 			_IsZoom = false;
 		}
 	}

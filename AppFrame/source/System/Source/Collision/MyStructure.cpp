@@ -1,5 +1,12 @@
 #include "../../Header/Collision/MyStructure.h"
 
+// •`‰æˆ—
+void Sphere::Render(unsigned int color)
+{
+	DrawSphere3D(centerPos, r, 6, color, color, false);
+}
+
+
 // ‰ñ“]ˆ—
 // x²->y²->z²‚Ì‡”Ô‚Å, Še²‚ğ‰ñ“]‚³‚¹‚é
 void OBB::Rotate(VECTOR vRot)
@@ -13,9 +20,28 @@ void OBB::Rotate(VECTOR vRot)
 	}
 }
 
-void Sphere::Render(unsigned int color)
+// ’¸“_À•W‚Ìæ“¾
+void OBB::GetVertexPos(std::vector<VECTOR>& vertexPosList)
 {
-	DrawSphere3D(centerPos, r, 6, color, color, false);
+	VECTOR vDiff[3];
+	for (int i = 0; i < 3; i++) {
+		vDiff[i] = VScale(dir_vec[i], length[i] / 2.0f);
+	}
+
+	VECTOR vPos[8];
+	vPos[0] = VAdd(pos, VAdd(vDiff[0],							VAdd(vDiff[1],							vDiff[2]							)));
+	vPos[1] = VAdd(pos, VAdd(vDiff[0],							VAdd(vDiff[1],							VScale(vDiff[2], -1.0f)	)));
+	vPos[2] = VAdd(pos, VAdd(vDiff[0],							VAdd(VScale(vDiff[1], -1.0f),		vDiff[2]							)));
+	vPos[3] = VAdd(pos, VAdd(vDiff[0],							VAdd(VScale(vDiff[1], -1.0f),		VScale(vDiff[2], -1.0f)	)));
+
+	vPos[4] = VAdd(pos, VAdd(VScale(vDiff[0], -1.0f),	VAdd(vDiff[1],							vDiff[2]							)));
+	vPos[5] = VAdd(pos, VAdd(VScale(vDiff[0], -1.0f),	VAdd(vDiff[1],							VScale(vDiff[2], -1.0f)	)));
+	vPos[6] = VAdd(pos, VAdd(VScale(vDiff[0], -1.0f),	VAdd(VScale(vDiff[1], -1.0f),		vDiff[2]							)));
+	vPos[7] = VAdd(pos, VAdd(VScale(vDiff[0], -1.0f),	VAdd(VScale(vDiff[1], -1.0f),		VScale(vDiff[2], -1.0f)	)));
+
+	for (int i = 0; i < 8; i++) {
+		vertexPosList.push_back(vPos[i]);
+	}
 }
 
 // •`‰æˆ—

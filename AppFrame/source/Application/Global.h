@@ -10,6 +10,7 @@ public:
 	Global();
 	~Global();
 	bool Init();
+	bool ResourceLoad();
 	bool SoundLoad();
 	void SetExit() { exit_count = true; }
 	bool GetExit() { return exit_count; }

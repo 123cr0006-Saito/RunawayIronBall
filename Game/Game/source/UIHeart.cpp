@@ -41,7 +41,10 @@ UIHeart::UIHeart(VECTOR pos, int size, int* handle, int damageHandleNum) : UIBas
 
 
 UIHeart::~UIHeart() {
-	delete _heart;
+	delete _heart; _heart = nullptr;
+	if (_handle != nullptr) {
+		delete[] _handle; _handle = nullptr;
+	}
 };
 
 void UIHeart::SetDamage(int hp) {

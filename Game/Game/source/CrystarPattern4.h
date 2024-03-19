@@ -5,7 +5,7 @@ class CrystarPattern4 : public EnemyBase
 {
 public:
 	CrystarPattern4();
-	~CrystarPattern4();
+	~CrystarPattern4()override;
 	void InheritanceInit()override;
 	bool ModeAttack()override;
 	bool ModeCoolTime()override;

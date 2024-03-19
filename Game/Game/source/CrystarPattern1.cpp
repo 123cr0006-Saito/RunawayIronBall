@@ -20,7 +20,7 @@ void CrystarPattern1::InheritanceInit() {
 
 void CrystarPattern1::AnimInit() {
 
-	_roof = NEW CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof","res/Enemy/Crystar/cg_crystar_roof.mv1"), _model);
+	_roof = NEW CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof_glsss","res/Enemy/Cg_Enemy_Crystar_Glass/Cg_Crystar_Roof_Glass.mv1"), _model, "joint1");
 
 	//// モーションリストのロード
 	MotionList::Load("Crystarl", "MotionList_Crystarl.csv");
@@ -147,11 +147,9 @@ bool CrystarPattern1::ModeDisCover() {
 	return true;
 };
 
-bool CrystarPattern1::ModeCoolTime() {
-	//プランナーさん側で変更できる場所　※秒数単位 
-	float moveCoolTime = 2.0f * 1000; //攻撃してからのクールタイム   
+bool CrystarPattern1::ModeCoolTime() { 
 
-	if (GetNowCount() - _currentTime >= moveCoolTime) {
+	if (GetNowCount() - _currentTime >= _coolTime) {
 		_currentTime = GetNowCount();
 		_animState = ANIMSTATE::WALK;
 		_modeState = ENEMYTYPE::DISCOVER;
@@ -160,10 +158,14 @@ bool CrystarPattern1::ModeCoolTime() {
 };
 
 bool CrystarPattern1::ModeKnockBack() {
+	int nowTime = GetNowCount() - _currentTime;
+	float CoolTime = 3.0f * 1000; //硬直時間
 	VECTOR knockBackVecter = VScale(_knockBackDir, _knockBackSpeedFrame);
 	_pos = VAdd(_pos, knockBackVecter);
-	_knockBackSpeedFrame--;
-	if (_knockBackSpeedFrame <= 0) {
+	if (_knockBackSpeedFrame > 0) {
+		_knockBackSpeedFrame--;
+	}
+	if (_knockBackSpeedFrame <= 0 && nowTime > CoolTime) {
 		_currentTime = GetNowCount();
 		_animState = ANIMSTATE::WALK;
 		_modeState = ENEMYTYPE::DISCOVER;

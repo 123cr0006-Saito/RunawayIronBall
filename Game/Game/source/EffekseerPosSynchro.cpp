@@ -17,7 +17,7 @@ EffekseerPosSynchro::EffekseerPosSynchro(std::string name, VECTOR* pos, float si
 	}
 };
 
-EffekseerPosSynchro::EffekseerPosSynchro(int handle, VECTOR* pos, float size, VECTOR rotation, float height, float speed, bool loopFlag) :base(handle, pos, size, speed, loopFlag),
+EffekseerPosSynchro::EffekseerPosSynchro(int handle, VECTOR* pos, float size, VECTOR rotation, float height, float speed, bool loopFlag) :base(handle, pos, size, speed, loopFlag,false),
 _pos(pos),
 _height(height)
 {
@@ -35,8 +35,9 @@ _height(height)
 };
 
 EffekseerPosSynchro::~EffekseerPosSynchro() {
-	base::~EffekseerBase();
-	_pos = nullptr;
+	if (IsEffekseer3DEffectPlaying(_playingEffectHandle) != -1) {
+		StopEffekseer3DEffect(_playingEffectHandle);
+	}
 };
 
 bool EffekseerPosSynchro::Process() {

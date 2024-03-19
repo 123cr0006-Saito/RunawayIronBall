@@ -1,24 +1,18 @@
 #pragma once
-#include "appframe.h"
+#include "BuildingBase.h"
 
-class UnbreakableObject
+class UnbreakableObject : public BuildingBase
 {
 public:
 	UnbreakableObject();
-	virtual ~UnbreakableObject();
+	 virtual ~UnbreakableObject();
 
-	void Init(int modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength);
-	void Process();
-	void Render();
-
-	VECTOR GetPos() { return _pos; }
+	void Init(int modelHandle, std::string objName, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength);
+	void Process() override;
 
 	// デバッグ情報の表示
-	void DrawDebugInfo();
+	void DrawDebugInfo() override;
 
 protected:
-	int _modelHandle;
-	VECTOR _pos;
 
-	OBB _obbCol;
 };

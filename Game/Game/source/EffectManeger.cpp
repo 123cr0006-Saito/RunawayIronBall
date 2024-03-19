@@ -8,7 +8,11 @@ EffectManeger::EffectManeger(){
 };
 
 EffectManeger::~EffectManeger() {
-
+	_instance = nullptr;
+	for (auto&& effect : _effect) {
+		delete effect;
+	}
+	_effect.clear();
 };
 
 void EffectManeger::LoadEffect(EffectBase* effect) {

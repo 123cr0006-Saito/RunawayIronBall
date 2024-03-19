@@ -2,15 +2,10 @@
 #include "appframe.h"
 
 #include <thread>
-
-#include "ModePause.h"
-#include "ModeGameOver.h"
-#include "ModeLoading.h"
 #include "CollisionManager.h"
 
 #include "Camera.h"
 #include "Player.h"
-#include "Chain.h"
 #include "Heart.h"
 
 #include "UIBase.h"
@@ -21,13 +16,13 @@
 #include "TimeLimit.h"
 
 #include "ScreenVibration.h"
-
 #include "BuildingBase.h"
 #include "House.h"
 #include "Tower.h"
 #include "Floor.h"
 #include "UnbreakableObject.h"
 
+#include "Fog.h"
 #include "Light.h"
 #include "Gate.h"
 #include "ClassificationEffect.h"
@@ -58,16 +53,21 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
+	void SetTime();
 	void DeleteObject();
 	std::vector<std::string> LoadObjectName(std::string fileName); // オブジェクトの名前を読み込む
 	bool LoadObjectParam(std::string fileName); // オブジェクトのパラメータを読み込む
 	bool LoadStage(std::string fileName);// ステージの読み込み 敵も含む
 	bool StageMutation();// ステージクリア処理
 	bool GateProcess();// ゴールゲートの処理
+	void NewStage();// ステージの初期化
+	void CreateTutorial();// チュートリアルの作成
+
+	int GetStageNum() { return _stageNum; };
 
 
 	//デバッグ用
-	std::vector<OBJECTDATA> LoadJsonObject(nlohmann::json json, std::string loadName);//引数 読み込みたいオブジェクトの名前
+	std::vector<OBJECTDATA> LoadJsonObject(const myJson& json, std::string loadName);//引数 読み込みたいオブジェクトの名前
 
 protected:
 
@@ -75,8 +75,6 @@ protected:
 
 	Camera* _camera;
 	Player* _player;
-
-	Heart* _heart;
 
 	UIBase* ui[4];
 	DrawGauge* _gaugeUI[2];
@@ -94,30 +92,27 @@ protected:
 	std::vector<UnbreakableObject*> _uObj;
 	Floor* _floor;
 
-	int iii = 0;
-
 	int _skySphere;
 	int _tile;
+	int _mountain;
 
-	int _effectSheet[30];
 	Gate* _gate;
 	int _stageNum;
 	ClassificationEffect* _classificationEffect;
 	EffectManeger* _effectManeger;
 	OBB obb;
+	Fog* _fog;
 
 	int _shadowHandle;
 
 	// デバッグ表示をするかどうか
 	bool _drawDebug = false;
 
-
-
 	std::vector<ObjectParam>_objectParam;
+	std::vector<std::string>  _objectName;
 
 	Light* _light;
 
 	// ステージ読み込み用変数
-	bool IsLoading;
-	std::thread* LoadFunctionThread;
+	bool IsTutorial;
 };

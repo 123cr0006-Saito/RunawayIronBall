@@ -20,7 +20,7 @@
 	};
 
 	PlaneEffectBase::~PlaneEffectBase() {
-		 _handle = nullptr;
+		delete[] _handle;  _handle = nullptr;
 	};
 
 	bool PlaneEffectBase::Process(){

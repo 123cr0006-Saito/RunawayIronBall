@@ -91,10 +91,8 @@ bool Chainguard::ModeAttack(){
 };
 
 bool Chainguard::ModeCoolTime(){
-	//プランナーさん側で変更できる場所　※秒数単位 
-	float moveCoolTime = 3.0f * 1000; //攻撃してからのクールタイム   
 
-	if (GetNowCount() - _currentTime >= moveCoolTime) {
+	if (GetNowCount() - _currentTime >= _coolTime) {
 		_currentTime = 0;
 		_animState = ANIMSTATE::WALK;
 		_modeState = ENEMYTYPE::DISCOVER;
@@ -128,10 +126,10 @@ void Chainguard::SetKnockBackAndDamage(VECTOR vDir, float damage) {
 		// 攻撃エフェクト発生
 		VECTOR effectPos = VAdd(VAdd(_pos, _diffeToCenter), VScale(vDir, -50));
 		int effectHandle[30];
-		ResourceServer::LoadMultGraph("split", "res/TemporaryMaterials/split/test", ".png", 30, effectHandle);
+		ResourceServer::LoadMultGraph("HitEffect_Blue", "res/Effect/HitEffect_Blue/HitEffect_Blue", ".png", 30, effectHandle);
 		BoardPolygon* effect = new BoardPolygon(effectPos, GetCameraBillboardMatrix(), 200, effectHandle, 30, 0.5f / 60.0f * 1000.0f);
 		EffectManeger::GetInstance()->LoadEffect(effect);
-
+		_currentTime = GetNowCount();
 		// 状態を追跡所歌に変更
 		_modeState = ENEMYTYPE::DISCOVER;
 

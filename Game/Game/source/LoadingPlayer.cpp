@@ -1,22 +1,26 @@
 #include "LoadingPlayer.h"
 LoadingPlayer::LoadingPlayer(){
 
-	//_modelHandle = ResourceServer::Load("Player", "res/Character/cg_player_girl/cg_player_girl_TEST_Ver.2.mv1");
-	_modelHandle = MV1LoadModel("res/Character/cg_player_girl/cg_player_girl_TEST_Ver.2.mv1");
+	_modelHandle = ResourceServer::MV1LoadModel("Player", "res/Character/cg_player_girl/Cg_Player_Girl.mv1");
 	float rotation = Math::DegToRad(90);// -x •ûŒü‚ÉŒü‚¯‚é
 	MV1SetRotationXYZ(_modelHandle, VGet(0,rotation,0));
+	for(int i = 0; i < MV1GetMaterialNum(_modelHandle); i++){
+		MV1SetMaterialOutLineWidth(_modelHandle, i, 0);
+		MV1SetMaterialOutLineDotWidth(_modelHandle, i, 0);
+	}
+
 
 	_pos = VGet(0, 0, 0);
 	
 	// “S‹…‚Ì‰Šú‰»
-	_chain = new LoadingChain();
+	_chain = NEW LoadingChain();
 	_chain->Init();
 	_chain->SetPlayerModelHandle(_modelHandle);
 	// “S‹…‚ÌˆÚ“®ó‘Ô‚ðu’Ç]v‚ÉÝ’è
 	_chain->SetBallPosition(VAdd(_pos, VGet(500, 0, 0)));
 
 	// F‚Ì’²®
-	_modelColor = new ModelColor();
+	_modelColor = NEW ModelColor();
 	_modelColor->Init(_modelHandle);
 	_modelColor->ChangeFlickerTexture(true);
 
@@ -38,6 +42,8 @@ LoadingPlayer::LoadingPlayer(){
 
 LoadingPlayer::~LoadingPlayer() {
 	MV1DeleteModel(_modelHandle);
+	delete _chain; _chain = nullptr;
+	delete _modelColor; _modelColor = nullptr;
 };
 
 bool LoadingPlayer::Process(){

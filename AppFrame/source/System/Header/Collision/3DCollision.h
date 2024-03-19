@@ -47,19 +47,19 @@ public:
 	static bool TwoCapsuleCol(const Capsule& capsule1, const Capsule& capsule2);
 
 	// 球とカプセルの当たり判定
-	static bool SphereCapsuleCol(VECTOR spherePos, float sphereR, VECTOR capsuleStartPos, VECTOR capsuleEndPos, float capsuleR);
-	static bool SphereCapsuleCol(const Sphere& sphere, const Capsule& capsule);
+	static bool SphereCapsuleCol(VECTOR spherePos, float sphereR, VECTOR capsuleStartPos, VECTOR capsuleEndPos, float capsuleR, VECTOR* shortestPos = nullptr);
+	static bool SphereCapsuleCol(const Sphere& sphere, const Capsule& capsule, VECTOR* shortestPos = nullptr);
 
 	//点とＯＢＢの最接近点　OBBと点が一番近いOBBの位置を返します。
 	static  VECTOR PointOBB(VECTOR point, OBB obb);
 	
 	//OBBと球の当たり判定
 	static bool OBBSphereCol(OBB obb, VECTOR point, float r, VECTOR * hitPos = nullptr);
-	static bool OBBSphereCol(const OBB& obb, const Sphere& sphere);
+	static bool OBBSphereCol(const OBB& obb, const Sphere& sphere, VECTOR* hitPos = nullptr);
 
 	//OBBとカプセルの当たり判定
-	static bool OBBCapselCol(VECTOR line_start, VECTOR line_end, OBB obb, float r);
+	static bool OBBCapsuleCol(OBB obb, VECTOR line_start, VECTOR line_end, float r, VECTOR* hitPos = nullptr);
 	//オーバーロード
-	static bool OBBCapselCol(Capsule capsule, OBB obb);
+	static bool OBBCapsuleCol(OBB obb, Capsule capsule, VECTOR* hitPos = nullptr);
 
 };
