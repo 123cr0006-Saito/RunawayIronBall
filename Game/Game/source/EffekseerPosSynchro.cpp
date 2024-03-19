@@ -1,18 +1,18 @@
 #include "EffekseerPosSynchro.h"
 
 EffekseerPosSynchro::EffekseerPosSynchro(std::string name, VECTOR* pos, float size, VECTOR rotation, float height ,float speed, bool loopFlag) :
-	base( name, pos, size, speed ,loopFlag),
+	base( name, pos, size, speed ,loopFlag,false),
 	_pos(pos),
 	_height(height)
 {
+	_playingEffectHandle = PlayEffekseer3DEffect(_effectResourceHandle);
+	SetSpeedPlayingEffekseer3DEffect(_playingEffectHandle, _speed);
+	SetScalePlayingEffekseer3DEffect(_playingEffectHandle, _size, _size, _size);
 	if (rotation.x != 0.0f) {
 		VECTOR vBase = VGet(0.0f, 0.0f, -1.0f);
 		rotation.y = 0.0f;
 		float angle = Math::CalcVectorAngle(vBase, rotation);
 		angle *= rotation.x < 0.0f ? 1.0f : -1.0f;
-		_playingEffectHandle = PlayEffekseer3DEffect(_effectResourceHandle);
-		SetSpeedPlayingEffekseer3DEffect(_playingEffectHandle, _speed);
-		SetScalePlayingEffekseer3DEffect(_playingEffectHandle, _size, _size, _size);
 		SetRotationPlayingEffekseer3DEffect(_playingEffectHandle, 0, angle, 0);
 	}
 };
@@ -21,14 +21,14 @@ EffekseerPosSynchro::EffekseerPosSynchro(int handle, VECTOR* pos, float size, VE
 _pos(pos),
 _height(height)
 {
+	_playingEffectHandle = PlayEffekseer3DEffect(_effectResourceHandle);
+	SetSpeedPlayingEffekseer3DEffect(_playingEffectHandle, _speed);
+	SetScalePlayingEffekseer3DEffect(_playingEffectHandle, _size, _size, _size);
 	if (rotation.x != 0.0f) {
 		VECTOR vBase = VGet(0.0f, 0.0f, -1.0f);
 		rotation.y = 0.0f;
 		float angle = Math::CalcVectorAngle(vBase, rotation);
 		angle *= rotation.x < 0.0f ? 1.0f : -1.0f;
-		_playingEffectHandle = PlayEffekseer3DEffect(_effectResourceHandle);
-		SetSpeedPlayingEffekseer3DEffect(_playingEffectHandle, _speed);
-		SetScalePlayingEffekseer3DEffect(_playingEffectHandle, _size, _size, _size);
 		SetRotationPlayingEffekseer3DEffect(_playingEffectHandle, 0, angle, 0);
 	}
 	_currentTime = GetNowCount();
