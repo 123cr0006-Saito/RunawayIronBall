@@ -349,24 +349,18 @@ bool ModeGame::Process() {
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->PauseProcessUnderLayer();
 
-	bool isAttackState = _player->GetEnabledIBAttackCollision();
-	bool isInvincible = _player->GetIsInvincible();
-	VECTOR pPos = _player->GetPosition();
+	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_BACK)) {
+		_stageNum++;
+		NewStage();
+	}
 
-
-	Sphere ibSphere = _player->GetIBCollision();
-
-	int ibPower = _player->GetPower();
-
-	
-	Capsule plCol = _player->GetCollision();
-	Sphere ibCol = _player->GetIBCollision();
+	bool enabledIBAttackCollision = _player->GetEnabledIBAttackCollision();
 
 	global._timer->TimeElapsed();
 	_sVib->UpdateScreenVibration();
 
 	_player->Process(_camera->GetCamY());
-	_enemyPool->Process(isAttackState);
+	_enemyPool->Process(enabledIBAttackCollision);
 	_timeLimit->Process();
 	_fog->Process();
 
@@ -378,105 +372,19 @@ bool ModeGame::Process() {
 
 	for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
 		(*itr)->Process();
-
-		if ((*itr)->GetUseCollision()) {
-			OBB houseObb = (*itr)->GetOBBCollision();
-
-			//if (Collision3D::OBBSphereCol(houseObb, ibSphere)) {
-			//	if (isAttackState) {
-			//		VECTOR vDir = VSub(houseObb.pos, pPos);
-			//		(*itr)->SetHit(vDir);
-			//		_player->SetExp(50);
-			//		global._soundServer->DirectPlay("OBJ_RockBreak");
-			//		continue;
-			//	}
-			//}
-
-			////エネミーがノックバック状態の時、建物にぶつかったら破壊する
-			//houseObb.pos.y = 0; houseObb.length[1] = 0; //平面での当たり判定のため建物のy軸の長さを0にする]
-			//int enemySize = _enemyPool->GetSize();
-			//for (int i = 0; i < enemySize; i++) {
-			//	EnemyBase* en = _enemyPool->GetEnemy(i);
-			//	if (!en) { continue; }
-			//	if (!en->GetUse()) { continue; }
-
-			//	ENEMYTYPE enState = en->GetEnemyState();
-
-			//	VECTOR enPos = en->GetCollisionPos(); enPos.y = 0;
-			//	VECTOR hitPos = VGet(0, 0, 0);
-			//	float enR = en->GetR();
-
-			//	if (Collision3D::OBBSphereCol(houseObb, enPos, enR, &hitPos)) {
-			//		if (enState == ENEMYTYPE::DEAD) {
-			//			VECTOR vDir = VSub(houseObb.pos, pPos);
-			//			(*itr)->SetHit(vDir);
-			//			global._soundServer->DirectPlay("OBJ_RockBreak");
-			//			continue;
-			//		}
-			//		else {
-			//			VECTOR dirVec = VSub(enPos, hitPos);
-			//			dirVec = VNorm(dirVec);
-			//			VECTOR movePos = VAdd(hitPos, VScale(dirVec, enR));
-			//			en->SetPos(movePos);
-			//		}
-			//	}
-			//}
-		}
 	}
 
 	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
 		(*itr)->Process();
 	}
 
-	//int enemySize = _enemyPool->GetSize();
-	//for (int i = 0; i < enemySize; i++) {
-	//	EnemyBase* enemy = _enemyPool->GetEnemy(i);
-	//	if (!enemy) { continue; }
-	//	if (!enemy->GetUse()) { continue; }
-	//	if (isAttackState) {
-
-	//		VECTOR enPos = enemy->GetCollisionPos();
-	//		float enR = enemy->GetR();
-
-	//		if (Collision3D::SphereCol(ibSphere.centerPos, ibSphere.r, enPos, enR)) {
-	//			VECTOR vDir = VSub(enPos, pPos);
-	//			vDir = VNorm(vDir);
-	//			enemy->SetKnockBackAndDamage(vDir, ibPower);
-	//		}
-	//	}
-	//}
-
-
-
-
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_START)) {
-		//_enemyPool->Init();
-		//_player->SetDamage();
 		ModeServer::GetInstance()->Add(NEW ModePause(), 10, "Pause");
 	}
 
-	if (XInput::GetInstance()->GetKey(XINPUT_BUTTON_Y)) {
-		if (nowParcent > 0) {
-			nowParcent -= 1.0f / 120 * 100;
-		}
-	}
-	else {
-		if (nowParcent < 100) {
-			nowParcent += 1.0f / 120 * 100;
-		}
-	}
-
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_BACK)) {
-		_drawDebug = !_drawDebug;
-		//VECTOR pPos = _player->GetPosition();
-		//for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
-		//	
-		//	VECTOR hPos = (*itr)->GetPos();
-		//	VECTOR tmpDir = VSub(hPos, pPos);
-		//	tmpDir.y = 0.0f;
-		//	(*itr)->SetBlast(tmpDir);
-		//}
+		//_drawDebug = !_drawDebug;
 	}
 
 	if (_player->GetHP() <= 0) {
@@ -581,15 +489,6 @@ bool ModeGame::Render() {
 	// ライト設定
 	SetUseLighting(TRUE);
 
-	// 0,0,0を中心に線を引く
-	//{
-	//	float linelength = 1000.f;
-	//	VECTOR v = { 0, 0, 0 };
-	//	DrawLine3D(VAdd(v, VGet(-linelength, 0, 0)), VAdd(v, VGet(linelength, 0, 0)), GetColor(255, 0, 0));
-	//	DrawLine3D(VAdd(v, VGet(0, -linelength, 0)), VAdd(v, VGet(0, linelength, 0)), GetColor(0, 255, 0));
-	//	DrawLine3D(VAdd(v, VGet(0, 0, -linelength)), VAdd(v, VGet(0, 0, linelength)), GetColor(0, 0, 255));
-	//}
-
 	//------------------------------------
 	// シャドウマップの設定　
 	// shadowCount 0 シャドウマップに描画 1 モデルの描画
@@ -618,11 +517,6 @@ bool ModeGame::Render() {
 
 		_player->Render();
 		_enemyPool->Render();
-		//_chain->DrawDebugInfo();
-
-		
-		//}
-
 
 		for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
 			(*itr)->Render();
@@ -671,12 +565,6 @@ bool ModeGame::Render() {
 			_gaugeUI[0]->Draw(_gaugeHandle[3]);
 		}
 	}
-
-
-	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-	//for (auto itr = _buildingBase.begin(); itr != _buildingBase.end(); ++itr) {
-	//	(*itr)->DrawDebugInfo();
-	//}
 
 	return true;
 }
