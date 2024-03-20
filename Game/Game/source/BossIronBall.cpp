@@ -9,7 +9,7 @@ namespace {
 	constexpr float SEARCH_RANGE[2] = { 2000.0f, 3000.0f };
 
 	// --------- 
-	
+
 	// 待機状態
 	// ジャンプ移動を行うフレーム数
 	constexpr int IDLE_CNT_MAX = 30;
@@ -66,7 +66,7 @@ namespace {
 
 	// ハードノックバック
 	// 杭に到達するまでのフレーム数
-	constexpr int HK_REACH_STAKE_CNT = 60;
+	constexpr int HK_REACH_STAKE_CNT = 45;
 	// 杭にあたり跳ね返りを行うフレーム数
 	constexpr int HK_BOUNCE_CNT = 60;
 	// 跳ね返り後の硬直時間
@@ -167,7 +167,7 @@ void BossIronBall::Init(VECTOR* stakePos)
 
 void BossIronBall::Process()
 {
-	if (CheckHitKey(KEY_INPUT_Z)  != 0){
+	if (CheckHitKey(KEY_INPUT_Z) != 0) {
 		SetRotation();
 	}
 
@@ -191,6 +191,9 @@ void BossIronBall::Process()
 	case BossIronBall::IB_STATE::KNOCK_BACK:
 		KnockBackProcess();
 		break;
+	case BossIronBall::IB_STATE::HARD_KNOCK_BACK:
+		HardKnockBackProcess();
+		break;
 	}
 
 	//_ibPos = _chainPos[CHAIN_MAX - 1];
@@ -206,7 +209,7 @@ void BossIronBall::Process()
 	}
 	else if (1 == CheckHitKey(KEY_INPUT_DOWN)) {
 		debugFrame -= 1;
-		if(debugFrame < 1) debugFrame = 1;
+		if (debugFrame < 1) debugFrame = 1;
 	}
 
 	if (1 == CheckHitKey(KEY_INPUT_RIGHT)) {
@@ -288,7 +291,7 @@ void BossIronBall::IdleProcess()
 {
 	switch (_phase)
 	{
-	case 0 :
+	case 0:
 		_ibPos = VAdd(_ibPos, VScale(_ibMoveDir, IDLE_MOVE_SPEED));
 		_ibPos.y = sinf(_phaseCnt / 30.0f * DX_PI) * 100.0f + _ibSphereCol.r;
 
@@ -489,7 +492,7 @@ void BossIronBall::RotationProcess()
 		_phaseCnt++;
 		if (_phaseCnt > RU_REACH_STAKE_CNT) {
 			_rotRadius = RO_ROTAION_RADIUS_MIN;
-			
+
 			_phaseCnt = 0;
 			_phase++;
 		}
@@ -513,7 +516,7 @@ void BossIronBall::RotationProcess()
 		break;
 	case 3: // 減速
 		_rotAngularVelocity = Easing::Linear(_phaseCnt, RO_ANGULAR_VELOCITY_MAX, 0.0f, RO_DECELERATION_CNT_MAX);
-		
+
 		_phaseCnt++;
 		if (_phaseCnt > RO_DECELERATION_CNT_MAX) {
 			ResetPhase();
@@ -600,26 +603,22 @@ void BossIronBall::SetKnockBack(VECTOR vDir, float speed)
 {
 	_isInvincible = true;
 	_isKnockBack = true;
-	//if (_ibState != IB_STATE::STIFFEN) {
+	if (_ibState != IB_STATE::STIFFEN) {
 		_ibState = IB_STATE::KNOCK_BACK;
 		_knockBackDir = VNorm(vDir);
 		_knockBackSpeed = speed;
 		_knockBackCnt = 30;
 		_gravity = 80.0f;
-	//}
-	//else {
-	//	ResetPhase();
-	//	_ibState = IB_STATE::HARD_KNOCK_BACK;
-	//	
-	//	_posBeforeMoving = _ibPos;
-	//	_targetPos = *_stakePos;
-	//	// 地面（y座標0）を基準とし、鉄球の半径の大きさの分だけy座標をプラスする
-	//	_targetPos.y = _ibSphereCol.r;
+	}
+	else {
+		ResetPhase();
+		_ibState = IB_STATE::HARD_KNOCK_BACK;
 
-	//	_ibMoveDir = VSub(_targetPos, _posBeforeMoving);
-	//	_ibMoveDir.y = 0.0f;
-	//	_ibMoveDir = VNorm(_ibMoveDir);
-	//}
+		_posBeforeMoving = _ibPos;
+		_targetPos = *_stakePos;
+		// 地面（y座標0）を基準とし、鉄球の半径の大きさの分だけy座標をプラスする
+		_targetPos.y = _ibSphereCol.r;
+	}
 }
 
 void BossIronBall::DrawDebugInfo()
@@ -636,7 +635,7 @@ void BossIronBall::DrawDebugInfo()
 	int y = 500;
 	int line = 0;
 	DrawBox(x, y, x + 300, y + 500, GetColor(0, 0, 0), TRUE);
-	std::array<std::string, 6> stateStr = { "IDLE", "STIFFEN", "ATTACK_RUSH", "ATTACK_DROP", "ATTACK_ROTATION", "KnockBack"};
+	std::array<std::string, 7> stateStr = { "IDLE", "STIFFEN", "ATTACK_RUSH", "ATTACK_DROP", "ATTACK_ROTATION", "KnockBack", "HardKnockBack"};
 	DrawFormatString(x, y + 20 * line, COLOR_WHITE, "State:%s", stateStr[static_cast<int>(_ibState)].c_str()); line++;
 	DrawFormatString(x, y + 20 * line, COLOR_WHITE, "pos: x %3.2f, y %3.2f, z %3.2f", _ibPos.x, _ibPos.y, _ibPos.z); line++;
 	DrawFormatString(x, y + 20 * line, COLOR_WHITE, "_phase: %d, _phaseCnt: %d", _phase, _phaseCnt); line++;
@@ -678,16 +677,50 @@ void BossIronBall::HardKnockBackProcess()
 	switch (_phase)
 	{
 	case 0: // 杭に到達するまで
-		VECTOR v = VGet(0.0f, 0.0f, 0.0f);
-		v.x = Easing::Linear(_phaseCnt, _posBeforeMoving.x, _targetPos.x, HK_REACH_STAKE_CNT);
-		v.y = _ibSphereCol.r + 500.0f * sinf(DX_PI_F * (_phaseCnt / static_cast<float>(HK_REACH_STAKE_CNT)));
-		v.z = Easing::Linear(_phaseCnt, _posBeforeMoving.z, _targetPos.z, HK_REACH_STAKE_CNT);
+		// 杭に当たったら次のフェーズへ
+		if (_isHitStake) {
+			VECTOR vDir = VSub(_ibPos, *_stakePos);
+			vDir.y = 0.0f;
+			_ibMoveDir = VNorm(vDir);
+			_posBeforeMoving = _ibPos;
 
-		_ibPos = VAdd(_ibPos, VScale(_knockBackDir, 60.0f));
-		_phaseCnt++;
-		if (_phaseCnt > HK_REACH_STAKE_CNT) {
 			_phaseCnt = 0;
 			_phase++;
+		}
+		VECTOR v = VGet(0.0f, 0.0f, 0.0f);
+		v.x = Easing::Linear(_phaseCnt, _posBeforeMoving.x, _targetPos.x, HK_REACH_STAKE_CNT);
+		v.y = _ibSphereCol.r + 800.0f * sinf(DX_PI_F * (_phaseCnt / static_cast<float>(HK_REACH_STAKE_CNT)));
+		v.z = Easing::Linear(_phaseCnt, _posBeforeMoving.z, _targetPos.z, HK_REACH_STAKE_CNT);
+		_ibPos = v;
+
+		_phaseCnt++;
+		if (_phaseCnt > HK_REACH_STAKE_CNT) {
+			VECTOR vDir = VSub(_ibPos, *_stakePos);
+			vDir.y = 0.0f;
+			_ibMoveDir = VNorm(vDir);
+			_posBeforeMoving = _ibPos;
+
+			_phaseCnt = 0;
+			_phase++;
+		}
+		break;
+	case 1: // 跳ね返り
+		_ibPos = VAdd(_ibPos, VScale(_ibMoveDir, 100.0f));
+		{
+			float y = _posBeforeMoving.y + 500.0f * sinf(DX_PI_F * (_phaseCnt / static_cast<float>(HK_BOUNCE_CNT)));
+			_ibPos.y = y;
+		}
+		_phaseCnt++;
+		if (_phaseCnt > HK_BOUNCE_CNT) {
+			ResetPhase();
+			SetStiffen(HK_STIFFEN_CNT);
+		}
+		break;
+	case 2: // 硬直
+		_ibStiffenCnt--;
+		if (_ibStiffenCnt < 0) {
+			_ibStiffenCnt = 0;
+			SetIdle();
 		}
 		break;
 	}
