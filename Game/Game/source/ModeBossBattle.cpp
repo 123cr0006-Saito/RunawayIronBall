@@ -19,8 +19,8 @@ bool ModeBossBattle::Initialize() {
 
 	int resolution = 8192;
 	_shadowHandle = MakeShadowMap(resolution, resolution);
-	_skySphere = ResourceServer::Load("SkySpehe", "res/SkySphere/Skyspehre.mv1");
-	_stage = ResourceServer::Load("BossStage", "res/BossStage/Stage_Boss.mv1");
+	_skySphere = ResourceServer::MV1LoadModel("SkySpehe", "res/SkySphere/Skyspehre.mv1");
+	_stage = ResourceServer::MV1LoadModel("BossStage", "res/BossStage/Stage_Boss.mv1");
 	MV1SetPosition(_skySphere, VGet(0, 0, 0));
 	MV1SetScale(_skySphere, VScale(VGet(1, 1, 1), 0.5f));
 	MV1SetPosition(_stage, VGet(0, -5000.0f, 0));
