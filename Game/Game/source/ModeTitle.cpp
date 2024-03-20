@@ -50,8 +50,6 @@ bool ModeTitle::Initialize() {
 	 std::string voiceNum[1] = {"IB_Title"};
 	 global._soundServer->DirectPlay(voiceNum[0]);
 
-	 _bossHp = NEW UIBossHp(VGet(300, 300, 0));
-
 	return true;
 }
 
@@ -83,11 +81,11 @@ void ModeTitle::UpdateSelectItems(){
 	int count = 0;
 
 	//ƒ‚[ƒh‘I‘ð‚ÌØ‚è‘Ö‚¦
-	if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP) && _input->GetTrg(XINPUT_BUTTON_STICK_UP)) {
+	if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP) || _input->GetTrg(XINPUT_BUTTON_STICK_UP)) {
 		count--;
 		global._soundServer->DirectPlay("SE_Select");
 	}
-	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN) && _input->GetTrg(XINPUT_BUTTON_STICK_DOWN)) {
+	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN) || _input->GetTrg(XINPUT_BUTTON_STICK_DOWN)) {
 		count++;
 		global._soundServer->DirectPlay("SE_Select");
 	}
@@ -183,19 +181,6 @@ bool ModeTitle::Process() {
 		UpdateSelectToGameStart();
 	}
 
-	if(XInput::GetInstance()->GetKey(XINPUT_BUTTON_DPAD_LEFT)){
-		if (hp > 0)hp -= 5;
-	}
-	if (XInput::GetInstance()->GetKey(XINPUT_BUTTON_DPAD_RIGHT)) {
-		if(hp < 1000)hp += 5;
-	}
-
-	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_RIGHT_SHOULDER)) {
-		if (hp < 1000)hp -= 500;
-	}
-
-	_bossHp->Process(hp, 1000);
-
 	return true;
 }
 
@@ -207,7 +192,6 @@ bool ModeTitle::Render() {
 	else {
 		DrawCrackedScreen();
 	}
-	clsDx();
 
 	return true;
 }

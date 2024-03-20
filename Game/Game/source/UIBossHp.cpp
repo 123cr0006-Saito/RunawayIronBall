@@ -4,8 +4,8 @@ const unsigned short UIBossHp::vertex[6]{ 0,1,2,2,1,3 };
 
 UIBossHp::UIBossHp(VECTOR pos) : UIBase(pos){
 	_handle = new int[2];
-	std::string path = "res/UI/BossGauge/";
-	std::string name[2] = { "UI_EXP_Gauge_Black","UI_EXP_Gauge_Red" };
+	std::string path = "res/UI/Boss/";
+	std::string name[2] = { "UI_Boss_Hp_Frame","gauge" };
 	for (int i = 0; i < 2; i++) {
 		_handle[i] = ResourceServer::Load(name[i], path + name[i] + ".png");
 	}
@@ -15,8 +15,8 @@ UIBossHp::UIBossHp(VECTOR pos) : UIBase(pos){
 	_nextRatio = 0.0f;
 
 	// 下にあるフレームからゲージずれる差分
-	int flontHandleSizeX = 136;
-	int flontHandleSizeY = 37;
+	int flontHandleSizeX = 25;
+	int flontHandleSizeY = 165;
 
 	GetGraphSize(_handle[1], &flontHandleX, &flontHandleY);
 
@@ -45,7 +45,7 @@ UIBossHp::~UIBossHp(){
 void UIBossHp::SetRatio(int nowHp,int maxHp){
 	static int oldHp;
 	
-	int easingTime = 30.0f / 60.0f * 1000;
+	int easingTime = 60.0f / 60.0f * 1000;
 	int nowTime = GetNowCount() - _currentTime;
 
 	if (oldHp != nowHp) {
@@ -69,8 +69,8 @@ bool UIBossHp::Process(int nowHp, int maxHp){
 	SetRatio(nowHp,maxHp);
 
 	for (int i = 0; i < 2; i++) {
-		_vertex[i * 2].pos.x = _vertex[1].pos.x - flontHandleX * (1 - _ratio);
-		_vertex[i * 2].u = _ratio;
+		_vertex[i * 2].pos.x = _vertex[1].pos.x - flontHandleX * ( _ratio);
+		_vertex[i * 2].u = 1-_ratio;
 	}
 
 	return true;

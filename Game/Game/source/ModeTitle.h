@@ -1,7 +1,6 @@
 #pragma once
 #include "appframe.h"
 #include "ModeScenario.h"
-#include "UIBossHp.h"
 
 class ModeTitle : public ModeBase
 {
@@ -37,9 +36,5 @@ protected:
 	bool _IsBreak;//割れる処理が始まったかどうか
 	VECTOR* _MoveVec;//移動ベクトル
 	VECTOR* _rotVec;//回転ベクトル radian値
-
-	UIBossHp* _bossHp;
-
-	int hp = 1000;
 
 }; 
