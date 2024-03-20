@@ -76,18 +76,20 @@ void ModeClear::AnimProcess(){
 };
 
 void ModeClear::Valuation(){
-	if(TimeLimit::GetInstance() != nullptr){
-		TimeLimit* time = TimeLimit::GetInstance();
-		_valuationTime =time->GetElapsedTime();
-		int startTime = time->GetStartTime ();
-		int valuationCount = 3; // 0 s 1 a 2 b 3 c
-		float valuationPercentage[3] = {7.5f,5.0f,3.0f};
-		for(int i = 0; i < 3; i++){
-			int Parcentage = startTime / 10 * valuationPercentage[i];
-		   if(_valuationTime <= Parcentage)valuationCount--;
-		}
-		_valuation = valuationCount;
-	}
+	//if(TimeLimit::GetInstance() != nullptr){
+	//	TimeLimit* time = TimeLimit::GetInstance();
+	//	_valuationTime =time->GetElapsedTime();
+	//	int startTime = time->GetStartTime ();
+	//	int valuationCount = 3; // 0 s 1 a 2 b 3 c
+	//	float valuationPercentage[3] = {7.5f,5.0f,3.0f};
+	//	for(int i = 0; i < 3; i++){
+	//		int Parcentage = startTime / 10 * valuationPercentage[i];
+	//	   if(_valuationTime <= Parcentage)valuationCount--;
+	//	}
+	//	_valuation = valuationCount;
+	//}
+	_valuation = 0;
+	_valuationTime = 0;
 };
 
 void ModeClear::ValuationProcess(){
@@ -167,7 +169,7 @@ bool ModeClear::Render() {
 		y += handleY/2.0f;// ”Žš‚ÌŠÔŠu
 		loopCount++;// ‰½Œ…–Ú‚©”‚¦‚é
 
-		if (time == 0) {
+		if (loopCount == 4) {
 			break;
 		}
 
