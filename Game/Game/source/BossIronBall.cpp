@@ -620,7 +620,12 @@ void BossIronBall::KnockBackProcess()
 		if (_knockBackCnt < 0) {
 			_knockBackCnt = 0;
 			_isKnockBack = false;
-			SetStiffen(30);
+			if (_isStakeBroken) {
+				SetStiffen(30);
+			}
+			else {
+				CheckState();
+			}
 		}
 	}
 }
