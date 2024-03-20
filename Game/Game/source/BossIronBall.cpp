@@ -38,12 +38,18 @@ namespace {
 	// 地面に着地後の硬直時間
 	constexpr int DR_STIFFEN_CNT = 60;
 
-
+	// 回転攻撃
 	// 1フレームあたりの回転角
-	constexpr float ROTATION_ANGULAR_VELOCITY_MIN = (2.0f * DX_PI) / 90.0f; // 60フレームで一回転
-	constexpr float ROTATION_ANGULAR_VELOCITY_MAX = (2.0f * DX_PI) / 20.0f; // 20フレームで一回転
-
-	constexpr int ROTATION_ACCELERATION_CNT_MAX = 180;
+	// 最小値
+	constexpr float RO_ANGULAR_VELOCITY_MIN = (2.0f * DX_PI) / 90.0f; // 60フレームで一回転
+	// 最大値
+	constexpr float RO_ANGULAR_VELOCITY_MAX = (2.0f * DX_PI) / 20.0f; // 20フレームで一回転
+	// 最大速度に到達するまでのフレーム数
+	constexpr int RO_ACCELERATION_CNT_MAX = 180;
+	// 最大速度を維持するフレーム数
+	constexpr int RO_MAINTAIN_MAXSPEED_CNT = 210;
+	// 最大速度から、速度0まで減速しきるまでのフレーム数
+	constexpr int RO_DECELERATION_CNT_MAX = 90;
 
 	// 仮
 	constexpr float SCALE = 12.8f;
@@ -435,7 +441,7 @@ void BossIronBall::RotationProcess()
 void BossIronBall::RotationAcceleration()
 {
 	if (_activeRotationAcceleration) {
-		_rotAngularVelocity = Easing::Linear(_rotationAccelerationCnt, ROTATION_ANGULAR_VELOCITY_MIN, ROTATION_ANGULAR_VELOCITY_MAX, ROTATION_ACCELERATION_CNT_MAX);
+		_rotAngularVelocity = Easing::Linear(_rotationAccelerationCnt, RO_ANGULAR_VELOCITY_MIN, RO_ANGULAR_VELOCITY_MAX, RO_ACCELERATION_CNT_MAX);
 
 
 		//_rotAngularVelocity = 2.0f * DX_PI / debugRotFrame;
@@ -449,8 +455,8 @@ void BossIronBall::RotationAcceleration()
 
 
 		_rotationAccelerationCnt++;
-		if (_rotationAccelerationCnt > ROTATION_ACCELERATION_CNT_MAX) {
-			_rotationAccelerationCnt = ROTATION_ACCELERATION_CNT_MAX;
+		if (_rotationAccelerationCnt > RO_ACCELERATION_CNT_MAX) {
+			_rotationAccelerationCnt = RO_ACCELERATION_CNT_MAX;
 		}
 	}
 }
@@ -459,7 +465,7 @@ void BossIronBall::SetRotation()
 {
 	_ibState = IB_STATE::ATTACK_ROTATION;
 	_rotationAccelerationCnt = 0;
-	_rotAngularVelocity = ROTATION_ANGULAR_VELOCITY_MIN;
+	_rotAngularVelocity = RO_ANGULAR_VELOCITY_MIN;
 	_rotAngle = 0.0f;
 	_activeRotationAcceleration = true;
 }
