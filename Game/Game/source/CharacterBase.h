@@ -20,7 +20,8 @@ public:
 	void SetPos(VECTOR pos) { this->_pos = pos; };
 	VECTOR GetPosition() { return _pos; };
 	VECTOR* GetPositionPtr() { return &_pos; };
-	VECTOR*  GetForwardDir() { return &_forwardDir; };
+	VECTOR GetForwardDir() { return _forwardDir; };
+	VECTOR*  GetForwardDirPtr() { return &_forwardDir; };
 protected:
 	int _modelHandle;
 	VECTOR _pos;

@@ -19,6 +19,7 @@ protected:
 
 	float _cameraDirX;//カメラのＸ軸回転行列で使用する変数
 	float _cameraDirY;//カメラのＹ軸回転行列で使用する変数
+	XInput::STICK _stick;//コントローラーのスティックの入力を受け付けるための変数
 
 	VECTOR _pointDistance;//注視点からの距離
 	int _currentTime;//現在の時間

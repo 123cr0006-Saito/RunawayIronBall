@@ -14,7 +14,6 @@ public:
 
 	void SetCameraDistance();
 	bool ZoomProcess();
-
 	void SetForwardCamera();
 	void MoveProcess();//ƒJƒƒ‰‚ÌˆÚ“®‚ğs‚¤ŠÖ”
 	

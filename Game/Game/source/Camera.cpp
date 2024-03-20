@@ -51,7 +51,10 @@ Camera::~Camera() {
 };
 
 bool Camera::Process(VECTOR pos, int map) {
+	// 前フレームのX軸回転の値を保存
 	float oldDirX = _cameraDirX;
+	// スティックの方向を取得
+	_stick = _input->GetAdjustedStick_L();
 	//入力から得た値で移動値を返す関数
 	auto move_speed_process = [](float pos, float pos_max, float max_speed) {return pos * max_speed / pos_max; };
 
@@ -85,6 +88,7 @@ bool Camera::Process(VECTOR pos, int map) {
 	else if (_cameraDirX <= -1.39491415f) {
 		_cameraDirX = -1.39491415f;
 	}
+
 	if (_input->GetTrg(XINPUT_BUTTON_LEFT_SHOULDER)) {
 		SetForwardCamera();
 	}
@@ -92,8 +96,6 @@ bool Camera::Process(VECTOR pos, int map) {
 	// ZoomFlagが立っていればzoomのprocessを回す
 	ZoomProcess();
 	MoveProcess();
-
-
 
 	//カメラの位置を計算
 	MATRIX origin = MGetIdent();
@@ -162,17 +164,15 @@ bool Camera::ZoomProcess() {
 	return true;
 };
 
-void Camera::SetForwardCamera(){
-	if(!_IsForwardCamera){
-	    _IsForwardCamera = true;
-	    _forwardCount = 0;
-	    _startDirY = _cameraDirY;
-	    
-	    VECTOR dir = VGet(_input->GetLx(), _input->GetLy(), 0);
-	    dir = VNorm(dir);
-	    float angle = atan2(dir.x, dir.y);
-	  
-	    _endDirY = -(angle + Math::DegToRad(90));
+void Camera::SetForwardCamera() {
+	VECTOR dir = VGet(_stick.x, 0, _stick.y);
+	if (!_IsForwardCamera && VSquareSize(dir) != 0) {
+		_IsForwardCamera = true;
+		_forwardCount = 0;
+		_startDirY = _cameraDirY;
+		dir = VTransform(dir, MGetRotY(_cameraDirY));
+		dir = VNorm(dir);
+		_endDirY = atan2(dir.x, dir.z);
 	}
 };
 

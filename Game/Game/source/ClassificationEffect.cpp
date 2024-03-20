@@ -71,7 +71,7 @@ void ClassificationEffect::SetClassification(CommandParam param) {
 	else if (param.first == Play_Effekseer_PC) {
 		// エフェクシア プレイヤー中心
 		VECTOR* vec = Player::GetInstance()->GetPositionPtr();
-		VECTOR* dir = Player::GetInstance()->GetForwardDir();
+		VECTOR* dir = Player::GetInstance()->GetForwardDirPtr();
 		float height = Player::GetInstance()->GetCollision().up_pos.y / 2.0f; // 高さの半分を割り出す
 		CreateEffeckseer(param.second, vec,height,*dir);
 	}
@@ -91,7 +91,7 @@ void ClassificationEffect::SetClassification(CommandParam param) {
 		int handle = ResourceServer::SearchSingle(_commandList[effectName].first.c_str(), ResourceServer::TYPE::Efk);
 		if (handle != -1) {
 			VECTOR* pos = Player::GetInstance()->GetPositionPtr();
-			VECTOR* dir = Player::GetInstance()->GetForwardDir();
+			VECTOR* dir = Player::GetInstance()->GetForwardDirPtr();
 			float height = Player::GetInstance()->GetCollision().up_pos.y / 2.0f; // 高さの半分を割り出す
 			EffekseerRotation* effect = NEW EffekseerRotation(handle, pos, _commandList[effectName].second, dir, height);
 			EffectManeger::GetInstance()->LoadEffect(effect);
