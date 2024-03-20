@@ -67,6 +67,7 @@ void Boss::Render()
 
 void Boss::CheckHitBossAndStake()
 {
+	if(_ironBall->GetUseCollision() == false) { return; }
 	_ironBall->UpdateIBCollision();
 	Sphere ibCol = _ironBall->GetIBCollision();
 	VECTOR shortestPos = VGet(0.0f, 0.0f, 0.0f);
@@ -80,7 +81,7 @@ void Boss::CheckHitBossAndStake()
 		_ironBall->SetPosition(vMove);
 		_ironBall->SetHitStake(true);
 
-		if (_ironBall->GetKnockBack()) {
+		if (_ironBall->CheckKnockBack() && _ironBall->CheckHardKnockBack() == false) {
 			VECTOR vDir = VSub(ibCol.centerPos, _stakePos);
 			vDir.y = 0.0f;
 			_ironBall->SetKnockBack(vDir, 30.0f);

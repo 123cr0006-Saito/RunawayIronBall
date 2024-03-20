@@ -68,7 +68,9 @@ namespace {
 	// 杭に到達するまでのフレーム数
 	constexpr int HK_REACH_STAKE_CNT = 45;
 	// 杭にあたり跳ね返りを行うフレーム数
-	constexpr int HK_BOUNCE_CNT = 60;
+	constexpr int HK_BOUNCE_CNT = 45;
+	// 跳ね返り距離
+	constexpr float HK_BOUNCE_DISTANCE = 2000.0f;
 	// 跳ね返り後の硬直時間
 	constexpr int HK_STIFFEN_CNT = 60;
 
@@ -85,6 +87,7 @@ BossIronBall::BossIronBall()
 	_ibSphereCol.centerPos = _ibPos;
 	_ibSphereCol.r = 0.0f;
 	_isInvincible = false;
+	_useCollision = true;
 
 	_ibState = IB_STATE::IDLE;
 
@@ -110,6 +113,7 @@ BossIronBall::BossIronBall()
 
 	_isKnockBack = false;
 	_knockBackDir = VGet(0.0f, 0.0f, -1.0f);
+	_knockBackSpeed = 0.0f;
 	_knockBackCnt = 0;
 	_gravity = 0.0f;
 
@@ -553,6 +557,17 @@ void BossIronBall::SetRotation()
 }
 
 
+void BossIronBall::GravityProcess()
+{
+	_ibPos.y += _gravity;
+	if (_ibPos.y - _ibSphereCol.r < 0.0f) {
+		_gravity = 40.0f;
+	}
+	else {
+		_gravity -= 6.0f;
+	}
+}
+
 void BossIronBall::ChainProcess()
 {
 	_chainPos[BOSS_CHAIN_MAX - 1] = _ibPos;
@@ -651,13 +666,7 @@ void BossIronBall::KnockBackProcess()
 {
 	if (_isKnockBack) {
 		_ibPos = VAdd(_ibPos, VScale(_knockBackDir, _knockBackSpeed));
-		_ibPos.y += _gravity;
-		if (_ibPos.y - _ibSphereCol.r < 0.0f) {
-			_gravity = 40.0f;
-		}
-		else {
-			_gravity -= 6.0f;
-		}
+		GravityProcess();
 		_knockBackCnt--;
 		if (_knockBackCnt < 0) {
 			_knockBackCnt = 0;
@@ -679,10 +688,15 @@ void BossIronBall::HardKnockBackProcess()
 	case 0: // 杭に到達するまで
 		// 杭に当たったら次のフェーズへ
 		if (_isHitStake) {
-			VECTOR vDir = VSub(_ibPos, *_stakePos);
-			vDir.y = 0.0f;
-			_ibMoveDir = VNorm(vDir);
+			_useCollision = false;
 			_posBeforeMoving = _ibPos;
+
+			VECTOR vDir = VGet(0.0f, 0.0f, -1.0f);
+			int angle = rand() % 360;
+			vDir = VTransform(vDir, MGetRotY(angle));
+			VECTOR vBase = *_stakePos;
+			vBase.y = _ibSphereCol.r;
+			_targetPos = VAdd(vBase, VScale(vDir, HK_BOUNCE_DISTANCE));
 
 			_phaseCnt = 0;
 			_phase++;
@@ -695,31 +709,40 @@ void BossIronBall::HardKnockBackProcess()
 
 		_phaseCnt++;
 		if (_phaseCnt > HK_REACH_STAKE_CNT) {
-			VECTOR vDir = VSub(_ibPos, *_stakePos);
-			vDir.y = 0.0f;
-			_ibMoveDir = VNorm(vDir);
+			_useCollision = false;
 			_posBeforeMoving = _ibPos;
+
+			VECTOR vDir = VGet(0.0f, 0.0f, -1.0f);
+			int angle = rand() % 360;
+			vDir = VTransform(vDir, MGetRotY(angle));
+			VECTOR vBase = *_stakePos;
+			vBase.y = _ibSphereCol.r;
+			_targetPos = VAdd(vBase, VScale(vDir, HK_BOUNCE_DISTANCE));
 
 			_phaseCnt = 0;
 			_phase++;
 		}
 		break;
 	case 1: // 跳ね返り
-		_ibPos = VAdd(_ibPos, VScale(_ibMoveDir, 100.0f));
 		{
-			float y = _posBeforeMoving.y + 500.0f * sinf(DX_PI_F * (_phaseCnt / static_cast<float>(HK_BOUNCE_CNT)));
-			_ibPos.y = y;
+			VECTOR v = VGet(0.0f, 0.0f, 0.0f);
+			v.x = Easing::Linear(_phaseCnt, _posBeforeMoving.x, _targetPos.x, HK_BOUNCE_CNT);
+			v.y = _posBeforeMoving.y + 800.0f * sinf(DX_PI_F * (_phaseCnt / static_cast<float>(HK_BOUNCE_CNT)));
+			v.z = Easing::Linear(_phaseCnt, _posBeforeMoving.z, _targetPos.z, HK_BOUNCE_CNT);
+			_ibPos = v;
 		}
 		_phaseCnt++;
 		if (_phaseCnt > HK_BOUNCE_CNT) {
-			ResetPhase();
-			SetStiffen(HK_STIFFEN_CNT);
+			_useCollision = true;
+			_phaseCnt = 0;
+			_phase++;
 		}
 		break;
 	case 2: // 硬直
-		_ibStiffenCnt--;
-		if (_ibStiffenCnt < 0) {
-			_ibStiffenCnt = 0;
+		_phaseCnt++;
+		if (_phaseCnt > HK_STIFFEN_CNT) {
+			_isKnockBack = false;
+			ResetPhase();
 			SetIdle();
 		}
 		break;

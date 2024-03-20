@@ -22,6 +22,7 @@ public:
 	Sphere GetIBCollision() { return _ibSphereCol; }
 
 	bool GetIsInvincible() { return _isInvincible; }
+	bool GetUseCollision() { return _useCollision; }
 
 	bool CheckHardKnockBack() { return _ibState == IB_STATE::HARD_KNOCK_BACK; }
 
@@ -34,7 +35,7 @@ public:
 	int CheckPlayerInSearchRange();
 
 	void SetKnockBack(VECTOR vDir, float speed);
-	bool GetKnockBack() { return _isKnockBack; }
+	bool CheckKnockBack() { return _isKnockBack; }
 
 	// デバッグ情報の表示
 	void DrawDebugInfo();
@@ -73,6 +74,9 @@ private:
 	// ハードノックバック処理
 	void HardKnockBackProcess();
 
+	// 
+	void GravityProcess();
+
 	void ChainProcess();
 
 private:
@@ -84,6 +88,8 @@ private:
 	Sphere _ibSphereCol;
 	// 無敵状態かどうか
 	bool _isInvincible;
+	// 当たり判定を行うかどうか
+	bool _useCollision;
 
 	enum class IB_STATE {
 		IDLE,							// 待機

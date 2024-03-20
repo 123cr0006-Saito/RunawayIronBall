@@ -3,6 +3,10 @@
 #include "BossIronBall.h"
 #include "Player.h"
 
+namespace {
+	// 杭の最大HP
+	constexpr int STAKE_MAX_HP = 100;
+}
 class Boss
 {
 public:
@@ -32,8 +36,11 @@ public:
 			_ironBall->SetISStakeBroken(true);
 		}
 	}
+
 	// 杭のHPを取得
 	int GetStakeHp() { return _stakeHp; }
+	// 杭の最大HPを取得
+	int GetStakeMaxHp() { return STAKE_MAX_HP; }
 
 	// デバッグ情報の表示
 	void DrawDebugInfo();
