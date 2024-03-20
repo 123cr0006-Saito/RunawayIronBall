@@ -110,7 +110,7 @@ Player::Player()
 	_nowLevel = 0;
 	_maxLevel = 0;
 	_power = 0;
-	_powerAndScale.clear();
+
 	_nextLevel.clear();
 	_animManager = nullptr;
 	_frameData = nullptr;
@@ -238,16 +238,14 @@ void Player::SetBone() {
 	_bone.push_back(NEW bone(&_modelHandle, Ahoge, Ahoge.size() - 2, "Data/BoneParam/Ahoge.json"));
 };
 
-void Player::SetNextExp(std::string FileName) {
-	myJson json(FileName);
-	_maxLevel = json._size - 1;
-	for(auto& expList : json._json) {
-		int nowLevel = 0;
-		int exp = 0;
-		expList.at("Level").get_to(nowLevel);
-		expList.at("Exp").get_to(exp);
-		_nextLevel[nowLevel] = exp;
+bool Player::HealHp(){
+	if(_hp < HP_MAX){
+		_hp++;
+		global._soundServer->DirectPlay("SE_Heal");
+		global._soundServer->DirectPlay("PL_Heal");
+		return true;
 	}
+	return false;
 };
 
 bool Player::UpdateExp() {
@@ -338,8 +336,8 @@ bool Player::Init(int modelHandle, VECTOR pos)
 
 	_nowExp = 0;
 	_nowLevel = 0;
-	SetNextExp("res/JsonFile/ExpList.json");
-	SetPowerScale("res/JsonFile/IronState.json");
+
+	SetLevelParam("res/JsonFile/IronState.json");
 	UpdateLevel();
 
 
@@ -465,10 +463,10 @@ bool Player::Process(float camAngleY)
 
 	// スタミナの更新
 	if (_isRecoveringStamina) {
-		_staminaRecoverySpeed = STAMINA_MAX / STANIMA_RECOVERY_TIME;
+		_staminaRecoverySpeed = _staminaMax / STANIMA_RECOVERY_TIME;
 		_stamina += _staminaRecoverySpeed;
-		if (_stamina > STAMINA_MAX) {
-			_stamina = STAMINA_MAX;
+		if (_stamina > _staminaMax) {
+			_stamina = _staminaMax;
 			_isTired = false;
 			//_animStatus = ANIM_STATE::IDLE;
 		}
@@ -622,27 +620,34 @@ void Player::UpdateCollision()
 	_capsuleCollision.Update();
 }
 
-void Player::SetPowerScale(std::string FileName)
+void Player::SetLevelParam(std::string FileName)
 {
 	myJson json(FileName);
+	_maxLevel = json._size - 1;
 	int level = 0;
-	int power = 0;
-	float scale = 0;
+	int exp = 0;
+	LevelData data;
 	for (auto& list : json._json) {
+		// レベルと経験値を取得
 		list.at("Level").get_to(level);
-		list.at("Power").get_to(power);
-		list.at("Magnification").get_to(scale);
-		_powerAndScale[level] = std::make_pair(power, scale);
+		list.at("Exp").get_to(exp);
+		_nextLevel[level] = exp;
+		// 攻撃力と拡大率・スタミナを取得
+		list.at("Power").get_to(data.power);
+		list.at("Magnification").get_to(data.magnification);
+		list.at("Stamina").get_to(data.stamina);
+		_levelParam[level] = data;
 	}
 }
 
 bool Player::UpdateLevel()
 {
-	_power = _powerAndScale[_nowLevel].first;
-	_ironBall->UpdateLevel(_powerAndScale[_nowLevel].second);
+	_power = _levelParam[_nowLevel].power;
+	_ironBall->UpdateLevel(_levelParam[_nowLevel].magnification);
+	_staminaMax =  _levelParam[_nowLevel].stamina;
 	if (_nowLevel > 0) {
 		// レベルアップエフェクト
-		float size = 5.0f * _powerAndScale[_nowLevel].second;
+		float size = 5.0f * _levelParam[_nowLevel].magnification;
 		VECTOR* pos = GetIBPosPtr();
 		int effectHandle = ResourceServer::Load("FX_3D_Level_Up", "res/Effekseer/FX_3D_Level_Up/FX_3D_Level_Up.efkefc");
 		EffekseerPosSynchro* effect = new EffekseerPosSynchro(effectHandle, pos, size);
