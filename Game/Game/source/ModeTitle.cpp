@@ -81,11 +81,11 @@ void ModeTitle::UpdateSelectItems(){
 	int count = 0;
 
 	//ƒ‚[ƒh‘I‘ð‚ÌØ‚è‘Ö‚¦
-	if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP)) {
+	if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP) || _input->GetTrg(XINPUT_BUTTON_STICK_UP)) {
 		count--;
 		global._soundServer->DirectPlay("SE_Select");
 	}
-	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN)) {
+	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN) || _input->GetTrg(XINPUT_BUTTON_STICK_DOWN)) {
 		count++;
 		global._soundServer->DirectPlay("SE_Select");
 	}
@@ -192,7 +192,6 @@ bool ModeTitle::Render() {
 	else {
 		DrawCrackedScreen();
 	}
-	clsDx();
 
 	return true;
 }
