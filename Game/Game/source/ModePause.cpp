@@ -121,11 +121,11 @@ bool ModePause::Process() {
 		SelectGameEnd();
 		break;
 	}
-
+	// 音量の設定
+	global._soundServer->SetSeVolume(_seVolum);
+	global._soundServer->SetBgmVolume(_bgmVolum);
 	//オプションの終了
 	if (_input->GetTrg(XINPUT_BUTTON_START)) {
-		global._soundServer->SetSeVolume(_seVolum);
-		global._soundServer->SetBgmVolume(_bgmVolum);
 		ModeServer::GetInstance()->Del(this);
 	}
 	return true;
