@@ -57,9 +57,8 @@ void UIExpPoint::SetRatio() {
 
 	int nowExp = _player->GetNowExp();
 	int nextExp = _player->GetNextExp();
-
+	int nowLevel = _player->GetNowLevel();
 	if (nowExp != oldExp) {
-		int nowLevel = _player->GetNowLevel();
 		_nextRatio = (float)nowExp / nextExp;
 		if (nowLevel != oldLevel) {
 			_nextRatio = 1 + _nextRatio;
@@ -75,6 +74,10 @@ void UIExpPoint::SetRatio() {
 			_nextRatio -= 1.0f;
 		}
 		_ratio = Easing::OutSine(nowTime, _nowRatio, _nextRatio, easingTime);
+	}
+
+	if(nowLevel >= _levelMax){
+		_ratio = 0.0f;
 	}
 
 	oldExp = nowExp;

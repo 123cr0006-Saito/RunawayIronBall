@@ -24,11 +24,11 @@ bool ModeInstructions::Process() {
 	ModeServer::GetInstance()->PauseProcessUnderLayer();
 	int count = 0;
 	//‘I‘ð€–Ú‚ÌˆÚ“®
-	if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN) ) {
+	if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN) && _input->GetTrg(XINPUT_BUTTON_STICK_DOWN)) {
 		count++;
 		global._soundServer->DirectPlay("SE_Select");
 	}
-	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP)) {
+	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP) && _input->GetTrg(XINPUT_BUTTON_STICK_UP)) {
 		count--;
 		global._soundServer->DirectPlay("SE_Select");
 	}

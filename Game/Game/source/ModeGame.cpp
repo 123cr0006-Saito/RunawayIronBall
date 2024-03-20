@@ -296,7 +296,7 @@ bool ModeGame::LoadStage(std::string fileName) {
 	VECTOR pos;
 	loadObject.at(0).at("translate").at("x").get_to(pos.x);
 	loadObject.at(0).at("translate").at("y").get_to(pos.z);
-	loadObject.at(0).at("translate").at("z").get_to(pos.y);
+	pos.y = 0;
 	 pos.x *= -1;
 	_player->SetPos(pos);
 

@@ -230,6 +230,7 @@
     <ClCompile Include="source\UITimeLimit.cpp" />
     <ClCompile Include="source\Suppression.cpp" />
     <ClCompile Include="source\TargetZoomCamera.cpp" />
+    <ClCompile Include="source\UIBossHp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\ModeMovie.h" />
@@ -243,6 +244,7 @@
     <ClInclude Include="source\RotationCamera.h" />
     <ClInclude Include="source\CameraBase.h" />
     <ClCompile Include="source\UnbreakableObject.cpp" />
+    <ClInclude Include="source\UIBossHp.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Heart.h" />
