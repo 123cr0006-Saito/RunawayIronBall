@@ -21,6 +21,8 @@ public:
 	void UpdateIBCollision();
 	Sphere GetIBCollision() { return _ibSphereCol; }
 
+	bool GetIsInvincible() { return _isInvincible; }
+
 	void SetHitStake(bool isHit) { _isHitStake = isHit; }
 	bool GetHitStake() { return _isHitStake; }
 
@@ -30,6 +32,7 @@ public:
 	int CheckPlayerInSearchRange();
 
 	void SetKnockBack(VECTOR vDir = VGet(0.0f, 0.0f, -1.0f)) {
+		_isInvincible = true;
 		_isKnockBack = true;
 		_ibState = IB_STATE::KNOCK_BACK;
 		_knockBackDir = VNorm(vDir);
@@ -54,7 +57,7 @@ private:
 
 	// d’¼ó‘Ô‚Ìˆ—
 	void StiffenProcess();
-	void SetStiffen(int cnt) { _ibState = IB_STATE::STIFFEN; _ibStiffenCnt = cnt; }
+	void SetStiffen(int cnt);
 
 
 	// “ËiUŒ‚
@@ -81,6 +84,8 @@ private:
 	VECTOR _ibPos;
 	// “S‹…‚Ì“–‚½‚è”»’è
 	Sphere _ibSphereCol;
+	// –³“Gó‘Ô‚©‚Ç‚¤‚©
+	bool _isInvincible;
 
 	enum class IB_STATE {
 		IDLE,							// ‘Ò‹@

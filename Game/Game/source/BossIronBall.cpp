@@ -76,6 +76,8 @@ BossIronBall::BossIronBall()
 	_ibPos = VGet(0.0f, 0.0f, 0.0f);
 	_ibSphereCol.centerPos = _ibPos;
 	_ibSphereCol.r = 0.0f;
+	_isInvincible = false;
+
 	_ibState = IB_STATE::IDLE;
 
 	_phase = 0;
@@ -309,6 +311,8 @@ void BossIronBall::IdleProcess()
 void BossIronBall::SetIdle()
 {
 	ResetPhase();
+	_isInvincible = false;
+
 	_ibState = IB_STATE::IDLE;
 	_ibIdleCnt = 0;
 	// -100 ~ 100‚Ì”ÍˆÍ‚Åƒ‰ƒ“ƒ_ƒ€‚ÉˆÚ“®•ûŒü‚ðŒˆ’è
@@ -325,6 +329,13 @@ void BossIronBall::StiffenProcess()
 		_ibStiffenCnt = 0;
 		SetIdle();
 	}
+}
+
+void BossIronBall::SetStiffen(int cnt)
+{
+	_ibState = IB_STATE::STIFFEN;
+	_ibStiffenCnt = cnt;
+	_isInvincible = false;
 }
 
 void BossIronBall::RushProcess()
@@ -376,7 +387,9 @@ void BossIronBall::RushProcess()
 void BossIronBall::SetRush()
 {
 	ResetPhase();
+	_isInvincible = true;
 
+	_ibState = IB_STATE::ATTACK_RUSH;
 	_reachedStake = false;
 	_posBeforeMoving = _ibPos;
 	_targetPos = *_stakePos;
@@ -427,7 +440,9 @@ void BossIronBall::DropProcess()
 void BossIronBall::SetDrop()
 {
 	ResetPhase();
+	_isInvincible = true;
 
+	_ibState = IB_STATE::ATTACK_DROP;
 	_posBeforeMoving = _ibPos;
 	_targetPos = _player->GetPosition();
 	_targetPos.y = _ibSphereCol.r;
@@ -505,6 +520,7 @@ void BossIronBall::RotationProcess()
 void BossIronBall::SetRotation()
 {
 	ResetPhase();
+	_isInvincible = true;
 
 	_ibState = IB_STATE::ATTACK_ROTATION;
 
@@ -571,7 +587,8 @@ int BossIronBall::CheckPlayerInSearchRange()
 
 void BossIronBall::DrawDebugInfo()
 {
-	_ibSphereCol.Render(COLOR_GREEN);
+	auto color = _isInvincible ? COLOR_WHITE : COLOR_RED;
+	_ibSphereCol.Render(color);
 
 	for (int i = 0; i < 1; i++) {
 		Sphere s = { *_stakePos, SEARCH_RANGE[i] };

@@ -18,7 +18,7 @@ public:
 
 	Capsule GetStakeCollision() { return _stakeCapsuleCol; }
 	Sphere GetIBCollision() { return _ironBall->GetIBCollision(); }
-
+	bool GetIBInvincible() { return _ironBall->GetIsInvincible(); }
 
 	void CheckHitBossAndStake();
 

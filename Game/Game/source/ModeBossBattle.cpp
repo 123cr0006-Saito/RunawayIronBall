@@ -147,18 +147,23 @@ bool ModeBossBattle::Process() {
 		_player->SetPos(vMove);
 	}
 
-	bool enabledIBAttackCollision = _player->GetEnabledIBAttackCollision();
-	if (enabledIBAttackCollision) {
-
+	// プレイヤーの攻撃判定が有効なら
+	if (_player->GetEnabledIBAttackCollision()) {
 		Sphere pIBCol = _player->GetIBCollision();
-		Sphere bIBCol = _boss->GetIBCollision();
-		if (Collision3D::SphereCol(pIBCol, bIBCol)) {
-			VECTOR vDir = VSub(bIBCol.centerPos, pCol.down_pos);
-			vDir.y = 0.0f;
-			vDir = VNorm(vDir);
-			_boss->SetKnockBack(vDir);
+
+		// ボスが無敵状態でなければ
+		if (_boss->GetIBInvincible() == false) {
+			Sphere bIBCol = _boss->GetIBCollision();
+			// プレイヤー鉄球とボス鉄球の当たり判定
+			if (Collision3D::SphereCol(pIBCol, bIBCol)) {
+				VECTOR vDir = VSub(bIBCol.centerPos, pCol.down_pos);
+				vDir.y = 0.0f;
+				vDir = VNorm(vDir);
+				_boss->SetKnockBack(vDir);
+			}
 		}
 
+		// プレイヤー鉄球とボス杭の当たり判定
 		if (Collision3D::SphereCapsuleCol(pIBCol, bSCol)) {
 			_boss->SetDamageStake(3);
 		}
