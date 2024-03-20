@@ -56,6 +56,9 @@ void UIBossHp::SetRatio(int nowHp,int maxHp){
 
 	if (nowTime <= easingTime) {
 		_ratio = Easing::OutSine(nowTime, _nowRatio, _nextRatio, easingTime);
+		if(_ratio < 0){
+			_ratio = 0;
+		}
 	}
 
 	oldHp = nowHp;

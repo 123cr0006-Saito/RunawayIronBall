@@ -190,6 +190,10 @@ bool ModeTitle::Process() {
 		if(hp < 1000)hp += 5;
 	}
 
+	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_RIGHT_SHOULDER)) {
+		if (hp < 1000)hp -= 500;
+	}
+
 	_bossHp->Process(hp, 1000);
 
 	return true;
