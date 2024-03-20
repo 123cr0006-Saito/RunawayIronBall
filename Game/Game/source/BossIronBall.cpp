@@ -8,17 +8,18 @@ namespace {
 
 	constexpr float SEARCH_RANGE[2] = { 2000.0f, 3000.0f };
 
-	constexpr float ROTAION_RADIUS_MAX = 1000.0f;
-
+	// --------- 
+	
 	// 待機状態
-	// 小ジャンプの間隔フレーム数（120 ~ 180）
+	// ジャンプ移動を行うフレーム数
+	constexpr int IDLE_CNT_MAX = 30;
+	// 1フレームあたりの移動量
+	constexpr float IDLE_MOVE_SPEED = 180.0f / IDLE_CNT_MAX; // 30フレームで1.8m移動
+	// 小ジャンプ後に次の行動に移るまでのフレーム数（120 ~ 180）
 	// 基準値 
 	constexpr int IDLE_INTERVAL_BASE = 120;
 	// 乱数で追加されるフレーム数の最大値
 	constexpr int IDLE_INTERVAL_ADD_MAX = 60;
-
-	constexpr int IDLE_CNT_MAX = 30;
-	constexpr float IDLE_MOVE_SPEED = 180.0f / IDLE_CNT_MAX; // 30フレームで1.8m移動
 
 	// 突進攻撃
 	// 杭の付近に到達するまでのフレーム数
@@ -39,17 +40,31 @@ namespace {
 	constexpr int DR_STIFFEN_CNT = 60;
 
 	// 回転攻撃
-	// 1フレームあたりの回転角
-	// 最小値
-	constexpr float RO_ANGULAR_VELOCITY_MIN = (2.0f * DX_PI) / 90.0f; // 60フレームで一回転
-	// 最大値
+	// 回転開始前に杭の付近に到達するまでのフレーム数
+	constexpr int RO_REACH_STAKE_CNT = 60;
+	// 回転方向
+	constexpr float RO_ROTATION_DIR = -1.0f; // 反時計回り
+	// 1フレームあたりの回転角	最小値
+	constexpr float RO_ANGULAR_VELOCITY_MIN = (2.0f * DX_PI) / 90.0f; // 90フレームで一回転
+	// 1フレームあたりの回転角	最大値
 	constexpr float RO_ANGULAR_VELOCITY_MAX = (2.0f * DX_PI) / 20.0f; // 20フレームで一回転
+	// 回転半径の最小値
+	constexpr float RO_ROTAION_RADIUS_MIN = 500.0f;
+	// 回転半径の最大値
+	constexpr float RO_ROTAION_RADIUS_MAX = 2800.0f;
+
 	// 最大速度に到達するまでのフレーム数
 	constexpr int RO_ACCELERATION_CNT_MAX = 180;
 	// 最大速度を維持するフレーム数
 	constexpr int RO_MAINTAIN_MAXSPEED_CNT = 210;
 	// 最大速度から、速度0まで減速しきるまでのフレーム数
 	constexpr int RO_DECELERATION_CNT_MAX = 90;
+	// 回転攻撃後の硬直時間
+	constexpr int RO_STIFFEN_CNT = 300;
+
+
+
+	// ---------
 
 	// 仮
 	constexpr float SCALE = 12.8f;
@@ -70,6 +85,7 @@ BossIronBall::BossIronBall()
 	_targetPos = VGet(0.0f, 0.0f, 0.0f);
 
 	_isHitStake = false;
+	_reachedStake = false;
 
 	_ibIdleCnt = 0;
 	_ibMoveDir = VGet(0.0f, 0.0f, 0.0f);
@@ -77,11 +93,10 @@ BossIronBall::BossIronBall()
 
 	_ibStiffenCnt = 0;
 
-
-	_activeRotationAcceleration = false;
-	_rotationAccelerationCnt = 0;
+	_rotBaseDir = VGet(0.0f, 0.0f, 0.0f);
 	_rotAngularVelocity = 0.0f;
 	_rotAngle = 0.0f;
+	_rotRadius = 0.0f;
 
 	_isKnockBack = false;
 	_knockBackDir = VGet(0.0f, 0.0f, -1.0f);
@@ -140,7 +155,7 @@ void BossIronBall::Init(VECTOR* stakePos)
 	_mStakePosInv = MInverse(_mStakePos);
 
 
-	_rotAngle = -1.0f;
+	_rotAngle = 0.0f;
 
 
 	_player = Player::GetInstance();
@@ -148,6 +163,10 @@ void BossIronBall::Init(VECTOR* stakePos)
 
 void BossIronBall::Process()
 {
+	if (CheckHitKey(KEY_INPUT_Z)  != 0){
+		SetRotation();
+	}
+
 	switch (_ibState)
 	{
 	case BossIronBall::IB_STATE::IDLE:
@@ -163,8 +182,6 @@ void BossIronBall::Process()
 		DropProcess();
 		break;
 	case BossIronBall::IB_STATE::ATTACK_ROTATION:
-		_activeRotationAcceleration = true;
-		RotationAcceleration();
 		RotationProcess();
 		break;
 	case BossIronBall::IB_STATE::KNOCK_BACK:
@@ -226,7 +243,7 @@ void BossIronBall::CheckState()
 	if (!_isStakeBroken) {
 		searchRangeIndex = CheckPlayerInSearchRange();
 		if (searchRangeIndex == -1) {
-			_ibState = IB_STATE::IDLE;
+			_ibState = IB_STATE::ATTACK_RUSH;
 		}
 		else if (searchRangeIndex == 0) {
 			_ibState = IB_STATE::ATTACK_DROP;
@@ -315,21 +332,17 @@ void BossIronBall::RushProcess()
 	switch (_phase)
 	{
 	case 0: 			// 杭の付近へ移動
+		// 杭に当たったら次のフェーズへ
 		if (_isHitStake) {
-			_phase++;
-			_phaseCnt = 0;
-			VECTOR vDir = VSub(_player->GetPosition(), _ibPos);
-			vDir.y = 0.0f;
-			vDir = VNorm(vDir);
-			_ibMoveDir = vDir;
-			_isHitStake = false;
-			break;
+			_reachedStake = true;
 		}
-		VECTOR v = VGet(0.0f, 0.0f, 0.0f);
-		v.x = Easing::Linear(_phaseCnt, _posBeforeMoving.x, _targetPos.x, RU_REACH_STAKE_CNT);
-		v.y = _ibSphereCol.r +  500.0f * sinf(DX_PI_F * (_phaseCnt / static_cast<float>(RU_REACH_STAKE_CNT)));
-		v.z = Easing::Linear(_phaseCnt, _posBeforeMoving.z, _targetPos.z, RU_REACH_STAKE_CNT);
-		_ibPos = v;
+		if (!_reachedStake) {
+			VECTOR v = VGet(0.0f, 0.0f, 0.0f);
+			v.x = Easing::Linear(_phaseCnt, _posBeforeMoving.x, _targetPos.x, RU_REACH_STAKE_CNT);
+			v.y = _ibSphereCol.r + 500.0f * sinf(DX_PI_F * (_phaseCnt / static_cast<float>(RU_REACH_STAKE_CNT)));
+			v.z = Easing::Linear(_phaseCnt, _posBeforeMoving.z, _targetPos.z, RU_REACH_STAKE_CNT);
+			_ibPos = v;
+		}
 		_phaseCnt++;
 		if (_phaseCnt > RU_REACH_STAKE_CNT) {
 
@@ -364,8 +377,10 @@ void BossIronBall::SetRush()
 {
 	ResetPhase();
 
+	_reachedStake = false;
 	_posBeforeMoving = _ibPos;
 	_targetPos = *_stakePos;
+	// 地面（y座標0）を基準とし、鉄球の半径の大きさの分だけy座標をプラスする
 	_targetPos.y = _ibSphereCol.r;
 }
 
@@ -420,54 +435,92 @@ void BossIronBall::SetDrop()
 
 void BossIronBall::RotationProcess()
 {
-	static float rotDir = -1.0f;
-	float angle = _rotAngle * rotDir;
-	MATRIX mR = MGetRotY(angle);
-
-	MATRIX m = MMult(_mStakePosInv, mR);
-	m = MMult(m, _mStakePos);
-	_ibPos = VTransform(VGet(0.0f, 0.0f, -ROTAION_RADIUS_MAX), m);
-
-
-
-
-	MV1SetRotationXYZ(_ibModelHandle, VGet(0.0f, angle, 0.0f));
-
-
-
-	_rotAngle += _rotAngularVelocity;
-}
-
-void BossIronBall::RotationAcceleration()
-{
-	if (_activeRotationAcceleration) {
-		_rotAngularVelocity = Easing::Linear(_rotationAccelerationCnt, RO_ANGULAR_VELOCITY_MIN, RO_ANGULAR_VELOCITY_MAX, RO_ACCELERATION_CNT_MAX);
-
-
-		//_rotAngularVelocity = 2.0f * DX_PI / debugRotFrame;
-		//
-		//if (1 == CheckHitKey(KEY_INPUT_UP)) {
-		//	debugRotFrame += 0.1f;
-		//}
-		//else if (1 == CheckHitKey(KEY_INPUT_DOWN)) {
-		//	debugRotFrame -= 0.1f;
-		//}
-
-
-		_rotationAccelerationCnt++;
-		if (_rotationAccelerationCnt > RO_ACCELERATION_CNT_MAX) {
-			_rotationAccelerationCnt = RO_ACCELERATION_CNT_MAX;
-		}
+	if (_phase != 0) {
+		// 回転処理
+		float angle = _rotAngle * RO_ROTATION_DIR;
+		VECTOR v = VScale(_rotBaseDir, _rotRadius);
+		v.y = _ibSphereCol.r;
+		MATRIX mR = MGetRotY(angle);
+		MATRIX m = MMult(_mStakePosInv, mR); // 杭の座標を中心に回転する
+		m = MMult(m, _mStakePos);
+		_ibPos = VTransform(v, m);
+		MV1SetRotationXYZ(_ibModelHandle, VGet(0.0f, angle, 0.0f));
 	}
+
+	// 回転速度の更新処理
+	switch (_phase)
+	{
+	case 0: // 杭の付近まで戻る
+		if (_isHitStake) {
+			_reachedStake = true;
+		}
+		if (!_reachedStake) {
+			VECTOR v = VGet(0.0f, 0.0f, 0.0f);
+			v.x = Easing::Linear(_phaseCnt, _posBeforeMoving.x, _targetPos.x, RO_REACH_STAKE_CNT);
+			v.y = _ibSphereCol.r + 500.0f * sinf(DX_PI_F * (_phaseCnt / static_cast<float>(RO_REACH_STAKE_CNT)));
+			v.z = Easing::Linear(_phaseCnt, _posBeforeMoving.z, _targetPos.z, RO_REACH_STAKE_CNT);
+			_ibPos = v;
+		}
+		_phaseCnt++;
+		if (_phaseCnt > RU_REACH_STAKE_CNT) {
+			_rotRadius = RO_ROTAION_RADIUS_MIN;
+			
+			_phaseCnt = 0;
+			_phase++;
+		}
+		break;
+	case 1: // 加速
+		_rotAngularVelocity = Easing::Linear(_phaseCnt, RO_ANGULAR_VELOCITY_MIN, RO_ANGULAR_VELOCITY_MAX, RO_ACCELERATION_CNT_MAX);
+		_rotRadius = Easing::Linear(_phaseCnt, RO_ROTAION_RADIUS_MIN, RO_ROTAION_RADIUS_MAX, RO_ACCELERATION_CNT_MAX);
+
+		_phaseCnt++;
+		if (_phaseCnt > RO_ACCELERATION_CNT_MAX) {
+			_phaseCnt = 0;
+			_phase++;
+		}
+		break;
+	case 2: // 最大速度維持
+		_phaseCnt++;
+		if (_phaseCnt > RO_MAINTAIN_MAXSPEED_CNT) {
+			_phaseCnt = 0;
+			_phase++;
+		}
+		break;
+	case 3: // 減速
+		_rotAngularVelocity = Easing::Linear(_phaseCnt, RO_ANGULAR_VELOCITY_MAX, 0.0f, RO_DECELERATION_CNT_MAX);
+		
+		_phaseCnt++;
+		if (_phaseCnt > RO_DECELERATION_CNT_MAX) {
+			ResetPhase();
+			SetStiffen(RO_STIFFEN_CNT);
+			return;
+		}
+		break;
+	}
+
+	// 次のフレームでの回転角度を更新
+	_rotAngle += _rotAngularVelocity;
 }
 
 void BossIronBall::SetRotation()
 {
+	ResetPhase();
+
 	_ibState = IB_STATE::ATTACK_ROTATION;
-	_rotationAccelerationCnt = 0;
-	_rotAngularVelocity = RO_ANGULAR_VELOCITY_MIN;
-	_rotAngle = 0.0f;
-	_activeRotationAcceleration = true;
+
+	_reachedStake = false;
+	_posBeforeMoving = _ibPos;
+
+	_rotBaseDir = VSub(_ibPos, *_stakePos);
+	_rotBaseDir.y = 0.0f;
+	_rotBaseDir = VNorm(_rotBaseDir);
+
+	_targetPos = VGet(_stakePos->x, _ibSphereCol.r, _stakePos->z);
+	_targetPos = VAdd(_targetPos, VScale(_rotBaseDir, RO_ROTAION_RADIUS_MIN));
+
+	_rotAngularVelocity = 0;
+	_rotAngle = RO_ANGULAR_VELOCITY_MIN;
+	_rotRadius = 0.0f;
 }
 
 void BossIronBall::ChainProcess()
@@ -520,7 +573,7 @@ void BossIronBall::DrawDebugInfo()
 {
 	_ibSphereCol.Render(COLOR_GREEN);
 
-	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i < 1; i++) {
 		Sphere s = { *_stakePos, SEARCH_RANGE[i] };
 		s.Render(COLOR_RED);
 	}

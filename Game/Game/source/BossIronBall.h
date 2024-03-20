@@ -67,7 +67,6 @@ private:
 
 	// 回転攻撃
 	void RotationProcess();
-	void RotationAcceleration();
 	void SetRotation();
 
 	// ノックバック処理
@@ -100,6 +99,7 @@ private:
 	VECTOR _targetPos;
 
 	bool _isHitStake;
+	bool _reachedStake;
 
 	//
 	int _ibIdleCnt;
@@ -109,11 +109,16 @@ private:
 
 
 
-	// 
-	bool _activeRotationAcceleration;
-	int _rotationAccelerationCnt;
+	// 回転攻撃
+	//  基準方向ベクトル
+	VECTOR _rotBaseDir;
+	// 角速度
 	float _rotAngularVelocity;
+	// _rotBaseDirを基準とした回転角度
 	float _rotAngle;
+	// 回転の半径
+	float _rotRadius;
+
 
 	// ノックバック状態かどうか
 	bool _isKnockBack;
