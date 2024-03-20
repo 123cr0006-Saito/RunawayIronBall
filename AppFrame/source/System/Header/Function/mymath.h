@@ -43,4 +43,7 @@ public:
 	// 2つのベクトルのなす角を計算する
 	// 戻り値: 角度(radian) 
 	static float CalcVectorAngle(VECTOR v1, VECTOR v2);
+
+	// 3Dモデルを引数vForwardの方向が正面になるように回転させる
+	static void SetModelForward_RotationY(int modelHandle, VECTOR vForward);
 };

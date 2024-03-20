@@ -36,13 +36,7 @@
     <ClCompile Include="source\CFile\CFile.cpp">
       <Filter>CFile</Filter>
     </ClCompile>
-    <ClCompile Include="source\System\Source\Sound\FadeSound.cpp">
-      <Filter>System\Source</Filter>
-    </ClCompile>
     <ClCompile Include="source\System\Source\Input\XInput.cpp">
-      <Filter>System\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="source\System\Source\Sound\music.cpp">
       <Filter>System\Source</Filter>
     </ClCompile>
     <ClCompile Include="source\System\Source\Function\mydraw.cpp">
@@ -61,6 +55,12 @@
     <ClCompile Include="source\System\Source\Resource\ResourceServer.cpp" />
     <ClCompile Include="source\Application\Global.cpp" />
     <ClCompile Include="source\System\Source\Function\mymath.cpp" />
+    <ClCompile Include="source\System\Source\Function\Timer.cpp" />
+    <ClCompile Include="source\System\Source\Function\DrawGauge.cpp" />
+    <ClCompile Include="source\System\Source\Collision\MyStructure.cpp" />
+    <ClCompile Include="source\System\Source\Function\Vibration.cpp" />
+    <ClCompile Include="source\System\Source\Sound\SoundItem.cpp" />
+    <ClCompile Include="source\System\Source\Sound\SoundServer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Application\ApplicationBase.h">
@@ -87,12 +87,6 @@
     <ClInclude Include="source\System\Header\Input\XInput.h">
       <Filter>System\Header</Filter>
     </ClInclude>
-    <ClInclude Include="source\System\Header\Sound\music.h">
-      <Filter>System\Header</Filter>
-    </ClInclude>
-    <ClInclude Include="source\System\Header\Sound\FadeSound.h">
-      <Filter>System\Header</Filter>
-    </ClInclude>
     <ClInclude Include="source\appframe.h" />
     <ClInclude Include="source\System\Header\Function\Fps.h">
       <Filter>System\Header</Filter>
@@ -105,5 +99,11 @@
     <ClInclude Include="source\System\Header\Resource\ResourceServer.h" />
     <ClInclude Include="source\Application\Global.h" />
     <ClInclude Include="source\System\Header\Function\mymath.h" />
+    <ClInclude Include="source\System\Header\Function\Timer.h" />
+    <ClInclude Include="source\System\Header\Function\Vector3D.h" />
+    <ClInclude Include="source\System\Header\Function\DrawGauge.h" />
+    <ClInclude Include="source\System\Header\Function\Vibration.h" />
+    <ClInclude Include="source\System\Header\Sound\SoundItem.h" />
+    <ClInclude Include="source\System\Header\Sound\SoundServer.h" />
   </ItemGroup>
 </Project>

@@ -12,6 +12,8 @@
 namespace Effekseer
 {
 
+void LoadGradient(Gradient& gradient, uint8_t*& pos, int32_t version);
+
 /**
 	@brief
 	\~English	How to treat an uv of texture type for ribbon and track
@@ -85,6 +87,7 @@ class SpriteRenderer : public ReferenceObject
 public:
 	struct NodeParameter
 	{
+		float LocalTime;
 		Effect* EffectPointer;
 		bool ZTest;
 		bool ZWrite;
@@ -189,6 +192,7 @@ class RibbonRenderer : public ReferenceObject
 public:
 	struct NodeParameter
 	{
+		float LocalTime;
 		Effect* EffectPointer;
 		bool ZTest;
 		bool ZWrite;
@@ -301,6 +305,7 @@ class RingRenderer : public ReferenceObject
 public:
 	struct NodeParameter
 	{
+		float LocalTime;
 		Effect* EffectPointer;
 		bool ZTest;
 		bool ZWrite;
@@ -408,6 +413,7 @@ class ModelRenderer : public ReferenceObject
 public:
 	struct NodeParameter
 	{
+		float LocalTime;
 		Effect* EffectPointer;
 		bool ZTest;
 		bool ZWrite;
@@ -506,15 +512,12 @@ namespace Effekseer
 
 struct NodeRendererTextureUVTypeParameter;
 
-//----------------------------------------------------------------------------------
-//
-//----------------------------------------------------------------------------------
-
 class TrackRenderer : public ReferenceObject
 {
 public:
 	struct NodeParameter
 	{
+		float LocalTime;
 		Effect* EffectPointer;
 		bool ZTest;
 		bool ZWrite;
@@ -532,6 +535,8 @@ public:
 		MaterialRenderData* MaterialRenderDataPtr = nullptr;
 
 		bool EnableViewOffset = false;
+
+		TrailSmoothingType SmoothingType = TrailSmoothingType::Off;
 
 		RefPtr<RenderingUserData> UserData;
 	};
@@ -770,6 +775,15 @@ public:
 	*/
 	virtual void Unload(TextureRef data)
 	{
+	}
+};
+
+class TextureLoaderHelper
+{
+public:
+	static bool GetIsMipmapEnabled(const std::u16string& path)
+	{
+		return path.find(u"_NoMip") == std::u16string::npos;
 	}
 };
 
@@ -1442,11 +1456,10 @@ namespace Effekseer
 class CurveLoader : public ReferenceObject
 {
 private:
-	::Effekseer::DefaultFileInterface defaultFileInterface_;
-	::Effekseer::FileInterface* fileInterface_ = nullptr;
+	::Effekseer::FileInterfaceRef fileInterface_ = nullptr;
 
 public:
-	CurveLoader(::Effekseer::FileInterface* fileInterface = nullptr);
+	CurveLoader(::Effekseer::FileInterfaceRef fileInterface = nullptr);
 
 	virtual ~CurveLoader() = default;
 

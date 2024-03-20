@@ -18,8 +18,6 @@ ModeBase::ModeBase() {
 	SetCallPerFrame(1);
 	SetCallOfCount(1);
 
-	input = new XInput(PAYER_1);
-	fps = new Fps();
 	
 	//effect = 
 }
@@ -46,8 +44,7 @@ bool	ModeBase::Terminate() {
 // --------------------------------------------------------------------------
 bool	ModeBase::Process()
 {
-	fps->WaitFps();
-	input->Input();
+	global._soundServer->Update();
 	return	true;
 }
 

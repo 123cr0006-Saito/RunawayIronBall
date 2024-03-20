@@ -1,7 +1,13 @@
 #include "../../Header/Input/XInput.h"
+#include "../../Header/Function/mymath.h"
+
+XInput* XInput::_instance = NULL;
+
 XInput::XInput(int number) {
+	_instance = this;
+
 	pad_num = number;
-	for (int i = 0; i < PAD_BUTTON_MAX; i++) {
+	for (int i = 0; i < DXINPUT_BUTTON_MAX; i++) {
 		_trg[i] = 0;
 		_rel[i] = 0;
 		_input.Buttons[i] = 0;
@@ -13,14 +19,14 @@ bool XInput::Input() {
 	// キーの入力、トリガ入力、リリース入力を得る
 	unsigned char keyold[PAD_BUTTON_MAX];
 
-	for (int i = 0; i < PAD_BUTTON_MAX; i++) {
+	for (int i = 0; i < DXINPUT_BUTTON_MAX; i++) {
 		keyold[i] = _input.Buttons[i];
 	}
 
 	// 入力状態を取得
 	GetJoypadXInputState(pad_num, &_input);
 
-	for (int i = 0; i < PAD_BUTTON_MAX; i++) {
+	for (int i = 0; i < DXINPUT_BUTTON_MAX; i++) {
 		// トリガ入力の取得
 		_trg[i] = (_input.Buttons[i] ^ keyold[i]) & _input.Buttons[i];
 		// リリース入力の取得
@@ -41,17 +47,56 @@ bool XInput::Input() {
 	// リリース入力の取得
 	_rel[XINPUT_BUTTON_RT] = (triggerButton ^ keyold[XINPUT_BUTTON_RT]) & ~triggerButton;
 
+	// 上スティック
+	unsigned char stickInput = std::signbit(static_cast<float>(_input.ThumbLY)) ? 0 : 1;
+	stickInput = _input.ThumbLY == 0 ? 0 : 1 & stickInput;
+	
+	// トリガ入力の取得
+	_trg[XINPUT_BUTTON_STICK_UP] = (stickInput ^ keyold[XINPUT_BUTTON_RT]) & stickInput;
+	// リリース入力の取得
+	_rel[XINPUT_BUTTON_STICK_UP] = (stickInput ^ keyold[XINPUT_BUTTON_RT]) & ~stickInput;
+
+	// 下スティック
+	stickInput = std::signbit(static_cast<float>(_input.ThumbLY)) ? 1 : 0;
+	stickInput = _input.ThumbLY == 0 ? 0 : 1 & stickInput;
+	// トリガ入力の取得
+	_trg[XINPUT_BUTTON_STICK_DOWN] = (stickInput ^ keyold[XINPUT_BUTTON_RT]) & stickInput;
+	// リリース入力の取得
+	_rel[XINPUT_BUTTON_STICK_DOWN] = (stickInput ^ keyold[XINPUT_BUTTON_RT]) & ~stickInput;
+
+	// 左スティック
+	stickInput = std::signbit(static_cast<float>(_input.ThumbLX)) ? 1 : 0;
+	stickInput = _input.ThumbLX == 0 ? 0 : 1 & stickInput;
+	// トリガ入力の取得
+	_trg[XINPUT_BUTTON_STICK_LEFT] = (stickInput ^ keyold[XINPUT_BUTTON_RT]) & stickInput;
+	// リリース入力の取得
+	_rel[XINPUT_BUTTON_STICK_LEFT] = (stickInput ^ keyold[XINPUT_BUTTON_RT]) & ~stickInput;
+
+	// 右スティック
+	stickInput = std::signbit(static_cast<float>(_input.ThumbLX)) ? 0 : 1;
+	stickInput = _input.ThumbLX == 0 ? 0 : 1 & stickInput;
+	// トリガ入力の取得
+	_trg[XINPUT_BUTTON_STICK_RIGHT] = (stickInput ^ keyold[XINPUT_BUTTON_RT]) & stickInput;
+	// リリース入力の取得
+	_rel[XINPUT_BUTTON_STICK_RIGHT] = (stickInput ^ keyold[XINPUT_BUTTON_RT]) & ~stickInput;
+
 	// スティック入力値が5%以下なら入力をカットする（デッドゾーン設定）
 	_input.ThumbLX = abs(_input.ThumbLX) > SHRT_MAX * 0.05f ? _input.ThumbLX : 0;
 	_input.ThumbLY = abs(_input.ThumbLY) > SHRT_MAX * 0.05f ? _input.ThumbLY : 0;
 	_input.ThumbRX = abs(_input.ThumbRX) > SHRT_MAX * 0.05f ? _input.ThumbRX : 0;
 	_input.ThumbRY = abs(_input.ThumbRY) > SHRT_MAX * 0.05f ? _input.ThumbRY : 0;
 
-	// スティック入力の値を「-1 ~ 1」に変換する
-	_lStick.x = (float)_input.ThumbLX / (float)SHRT_MAX;
-	_lStick.y = (float)_input.ThumbLY / (float)SHRT_MAX;
-	_rStick.x = (float)_input.ThumbRX / (float)SHRT_MAX;
-	_rStick.y = (float)_input.ThumbRY / (float)SHRT_MAX;
+	// スティック入力の値を「-1.0f ~ 1.0f」に変換する
+	_adjustedLStick.x = (float)_input.ThumbLX / (float)SHRT_MAX;
+	_adjustedLStick.y = (float)_input.ThumbLY / (float)SHRT_MAX;
+	_adjustedRStick.x = (float)_input.ThumbRX / (float)SHRT_MAX;
+	_adjustedRStick.y = (float)_input.ThumbRY / (float)SHRT_MAX;
+
+	// 誤差によって範囲を超えた場合にクランプをする
+	_adjustedLStick.x = Math::Clamp(-1.0f, 1.0f, _adjustedLStick.x);
+	_adjustedLStick.y = Math::Clamp(-1.0f, 1.0f, _adjustedLStick.y);
+	_adjustedRStick.x = Math::Clamp(-1.0f, 1.0f, _adjustedRStick.x);
+	_adjustedRStick.y = Math::Clamp(-1.0f, 1.0f, _adjustedRStick.y);
 
 	return true;
 };
