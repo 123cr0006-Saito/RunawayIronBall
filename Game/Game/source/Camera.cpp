@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include "Player.h"
 Camera::Camera(VECTOR InitPos) : CameraBase() {
 
 	SetCameraNearFar(20.0f, 30000.0f);
@@ -55,11 +56,13 @@ bool Camera::Process(VECTOR pos, int map) {
 	auto move_speed_process = [](float pos, float pos_max, float max_speed) {return pos * max_speed / pos_max; };
 
 	//32768はshort型の最大値 移動速度の最大は0.02
-	if (_input->GetRx() != 0) {
-		_cameraDirY += move_speed_process(_input->GetRx(), 32768, 0.02) * _reverseY;
-	}
-	if (_input->GetRy() != 0) {
-		_cameraDirX += move_speed_process(_input->GetRy(), 32768, 0.02) * _reverseX;
+	if (!_IsForwardCamera) {
+	    if (_input->GetRx() != 0) {
+	    	_cameraDirY += move_speed_process(_input->GetRx(), 32768, 0.02) * _reverseY;
+	    }
+	    if (_input->GetRy() != 0) {
+	    	_cameraDirX += move_speed_process(_input->GetRy(), 32768, 0.02) * _reverseX;
+	    }
 	}
 
 	//RB入力でカメラの距離を変更
@@ -82,9 +85,15 @@ bool Camera::Process(VECTOR pos, int map) {
 	else if (_cameraDirX <= -1.39491415f) {
 		_cameraDirX = -1.39491415f;
 	}
+	if (_input->GetTrg(XINPUT_BUTTON_LEFT_SHOULDER)) {
+		SetForwardCamera();
+	}
 
 	// ZoomFlagが立っていればzoomのprocessを回す
 	ZoomProcess();
+	MoveProcess();
+
+
 
 	//カメラの位置を計算
 	MATRIX origin = MGetIdent();
@@ -154,13 +163,28 @@ bool Camera::ZoomProcess() {
 };
 
 void Camera::SetForwardCamera(){
-	_IsForwardCamera = true;
-	_forwardCount = 0;
-	_startDirY = _cameraDirY;
-	_endDirY = 0.0f;
-	XInput::STICK stick = _input->GetAdjustedStick_L();
+	if(!_IsForwardCamera){
+	    _IsForwardCamera = true;
+	    _forwardCount = 0;
+	    _startDirY = _cameraDirY;
+	    
+	    VECTOR dir = VGet(_input->GetLx(), _input->GetLy(), 0);
+	    dir = VNorm(dir);
+	    float angle = atan2(dir.x, dir.y);
+	  
+	    _endDirY = -(angle + Math::DegToRad(90));
+	}
 };
 
 void Camera::MoveProcess(){
-
+	if (_IsForwardCamera) {
+		float moveTime = 5.0f;// 5フレームで移動
+		_forwardCount++;
+		// 移動
+		_cameraDirY = Easing::InQuad(_forwardCount, _startDirY, _endDirY, moveTime);
+		// 終了
+		if (_forwardCount >= 5) {
+			_IsForwardCamera = false;
+		}
+	}
 };
