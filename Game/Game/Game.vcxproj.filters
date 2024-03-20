@@ -91,6 +91,7 @@
     <ClCompile Include="source\EffectManeger.cpp" />
     <ClCompile Include="source\Suppression.cpp" />
     <ClCompile Include="source\ModeBossBattle.cpp" />
+    <ClCompile Include="source\UIBossHp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\IronBall.cpp" />
@@ -395,6 +396,7 @@
     <ClInclude Include="source\ModeBossBattle.h">
       <Filter>Mode</Filter>
     </ClInclude>
+    <ClInclude Include="source\UIBossHp.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CharacterBase.h">

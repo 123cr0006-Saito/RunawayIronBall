@@ -85,11 +85,11 @@ bool ModePause::Process() {
 	int count = 0;
 
 	//選択項目の切り替え
-	if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP)) {
+	if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP) || _input->GetTrg(XINPUT_BUTTON_STICK_UP)) {
 		count--;
 		global._soundServer->DirectPlay("SE_Select");
 	}
-	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN)) {
+	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN) || _input->GetTrg(XINPUT_BUTTON_STICK_DOWN)) {
 		count++;
 		global._soundServer->DirectPlay("SE_Select");
 	}
@@ -121,11 +121,11 @@ bool ModePause::Process() {
 		SelectGameEnd();
 		break;
 	}
-
+	// 音量の設定
+	global._soundServer->SetSeVolume(_seVolum);
+	global._soundServer->SetBgmVolume(_bgmVolum);
 	//オプションの終了
 	if (_input->GetTrg(XINPUT_BUTTON_START)) {
-		global._soundServer->SetSeVolume(_seVolum);
-		global._soundServer->SetBgmVolume(_bgmVolum);
 		ModeServer::GetInstance()->Del(this);
 	}
 	return true;

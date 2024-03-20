@@ -43,6 +43,8 @@ class ModeGame : public ModeBase
 	struct ObjectParam {
 		std::string _name;
 		VECTOR _size;
+		int _hp;
+		int _exp;
 		int isBreak;
 	};
 

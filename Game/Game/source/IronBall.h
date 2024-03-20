@@ -114,7 +114,5 @@ private:
 
 	int _playerModelHandle;
 
-	//-------------------
-	// 齋藤が作成した変数です。
-	std::map<int, std::pair<int, float>> _powerAndScale;//攻撃力と拡大率を格納したコンテナです。
+
 };

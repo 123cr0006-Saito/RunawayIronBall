@@ -52,11 +52,11 @@ void ModeGameOver::SelectProcess(){
 	if (_selectEnd) return ; // 選択が終わっっているので処理を終了
 
 	//選択項目の切り替え
-	if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP)) {
+	if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP) || _input->GetTrg(XINPUT_BUTTON_STICK_UP)) {
 		_selectItem = 1 - _selectItem;
 		global._soundServer->DirectPlay("SE_Select");
 	}
-	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN)) {
+	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN) || _input->GetTrg(XINPUT_BUTTON_STICK_DOWN)) {
 		_selectItem = 1 - _selectItem;
 		global._soundServer->DirectPlay("SE_Select");
 	}
