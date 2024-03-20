@@ -28,6 +28,8 @@ namespace {
 	constexpr int RU_CHARGE_CNT = 60;
 	// “Ëi‚ğs‚¤ƒtƒŒ[ƒ€”
 	constexpr int RU_ATTACK_CNT = 60;
+	// “Ëi‚Å‚ÌˆÚ“®‹——£
+	constexpr float RU_MOVE_DISTANCE = 3500.0f;
 	// “ËiŒã‚Ìd’¼ŠÔ
 	constexpr int RU_STIFFEN_CNT = 120;
 
@@ -62,7 +64,13 @@ namespace {
 	// ‰ñ“]UŒ‚Œã‚Ìd’¼ŠÔ
 	constexpr int RO_STIFFEN_CNT = 300;
 
-
+	// ƒn[ƒhƒmƒbƒNƒoƒbƒN
+	// Y‚É“’B‚·‚é‚Ü‚Å‚ÌƒtƒŒ[ƒ€”
+	constexpr int HK_REACH_STAKE_CNT = 60;
+	// Y‚É‚ ‚½‚è’µ‚Ë•Ô‚è‚ğs‚¤ƒtƒŒ[ƒ€”
+	constexpr int HK_BOUNCE_CNT = 60;
+	// ’µ‚Ë•Ô‚èŒã‚Ìd’¼ŠÔ
+	constexpr int HK_STIFFEN_CNT = 60;
 
 	// ---------
 
@@ -356,6 +364,9 @@ void BossIronBall::RushProcess()
 			vDir = VNorm(vDir);
 			_ibMoveDir = vDir;
 
+			_posBeforeMoving = _ibPos;
+			_targetPos = VScale(_ibMoveDir, RU_MOVE_DISTANCE);
+
 			_phaseCnt = 0;
 			_phase++;
 		}
@@ -368,7 +379,12 @@ void BossIronBall::RushProcess()
 		}
 		break;
 	case 2:			// “Ëi
-		_ibPos = VAdd(_ibPos, VScale(_ibMoveDir, 60.0f));
+		VECTOR v = VGet(0.0f, 0.0f, 0.0f);
+		v.x = Easing::Linear(_phaseCnt, _posBeforeMoving.x, _targetPos.x, RU_ATTACK_CNT);
+		v.y = _ibSphereCol.r;
+		v.z = Easing::Linear(_phaseCnt, _posBeforeMoving.z, _targetPos.z, RU_ATTACK_CNT);
+		_ibPos = v;
+
 		_phaseCnt++;
 		if (_phaseCnt > RU_ATTACK_CNT) {
 			ResetPhase();
@@ -533,6 +549,7 @@ void BossIronBall::SetRotation()
 	_rotRadius = 0.0f;
 }
 
+
 void BossIronBall::ChainProcess()
 {
 	_chainPos[BOSS_CHAIN_MAX - 1] = _ibPos;
@@ -596,7 +613,7 @@ void BossIronBall::SetKnockBack(VECTOR vDir, float speed)
 	//	
 	//	_posBeforeMoving = _ibPos;
 	//	_targetPos = *_stakePos;
-	//	// ï¿½nï¿½Êiyï¿½ï¿½ï¿½W0ï¿½jï¿½ï¿½î€ï¿½Æ‚ï¿½ï¿½Aï¿½Sï¿½ï¿½ï¿½Ì”ï¿½ï¿½aï¿½Ì‘å‚«ï¿½ï¿½ï¿½Ì•ï¿½ï¿½ï¿½ï¿½ï¿½yï¿½ï¿½ï¿½Wï¿½ï¿½vï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½ï¿½
+	//	// ’n–ÊiyÀ•W0j‚ğŠî€‚Æ‚µA“S‹…‚Ì”¼Œa‚Ì‘å‚«‚³‚Ì•ª‚¾‚¯yÀ•W‚ğƒvƒ‰ƒX‚·‚é
 	//	_targetPos.y = _ibSphereCol.r;
 
 	//	_ibMoveDir = VSub(_targetPos, _posBeforeMoving);
@@ -660,7 +677,7 @@ void BossIronBall::HardKnockBackProcess()
 {
 	switch (_phase)
 	{
-	case 0: // ï¿½Yï¿½É“ï¿½ï¿½Bï¿½ï¿½ï¿½ï¿½Ü‚ï¿½
+	case 0: // Y‚É“’B‚·‚é‚Ü‚Å
 		VECTOR v = VGet(0.0f, 0.0f, 0.0f);
 		v.x = Easing::Linear(_phaseCnt, _posBeforeMoving.x, _targetPos.x, HK_REACH_STAKE_CNT);
 		v.y = _ibSphereCol.r + 500.0f * sinf(DX_PI_F * (_phaseCnt / static_cast<float>(HK_REACH_STAKE_CNT)));
