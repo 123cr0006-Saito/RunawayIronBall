@@ -14,6 +14,9 @@ ModeClear::ModeClear() {
 	_currentTime = 0;
 	_valuation = 0;
 	_valuationTime = 0;
+	_nowValuationTime = 0;
+	_valuationSize = 0.0f;
+	_IsStaging = false;
 };
 
 ModeClear::ModeClear(ModeGame* mode){
@@ -27,6 +30,9 @@ ModeClear::ModeClear(ModeGame* mode){
 	_currentTime = 0;
 	_valuation = 0;
 	_valuationTime = 0;
+	_nowValuationTime = 0;
+	_valuationSize = 0.0f;
+	_IsStaging = false;
 };
 
 bool ModeClear::Initialize(){
@@ -71,48 +77,67 @@ void ModeClear::AnimProcess(){
 		// アニメーション終了時現在の時間を取得
 		if(_frameCount == _maxCount){
 			_currentTime = GetNowCount();
+			_IsStaging = true;
 		}
 	}
+};
+
+void ModeClear::StagingProcess(){
+
 };
 
 void ModeClear::Valuation(){
-	if(TimeLimit::GetInstance() != nullptr){
-		TimeLimit* time = TimeLimit::GetInstance();
-		_valuationTime =time->GetElapsedTime();
-		int startTime = time->GetStartTime ();
-		int valuationCount = 3; // 0 s 1 a 2 b 3 c
-		float valuationPercentage[3] = {7.5f,5.0f,3.0f};
-		for(int i = 0; i < 3; i++){
-			int Parcentage = startTime / 10 * valuationPercentage[i];
-		   if(_valuationTime <= Parcentage)valuationCount--;
-		}
-		_valuation = valuationCount;
-	}
+	//if(TimeLimit::GetInstance() != nullptr){
+	//	TimeLimit* time = TimeLimit::GetInstance();
+	//	_valuationTime =time->GetElapsedTime();
+	//	int startTime = time->GetStartTime ();
+	//	int valuationCount = 3; // 0 s 1 a 2 b 3 c
+	//	float valuationPercentage[3] = {10.0f,7.5f,5.0f,3.0f};
+	//	for(int i = 0; i < 3; i++){
+	//		int Parcentage = startTime / 10 * valuationPercentage[i];
+	//	   if(_valuationTime <= Parcentage)valuationCount--;
+	//	}
+	//	_valuation = valuationCount;
+	//}
+	_valuation = 0;
+	_valuationTime = 1000;
 };
 
 void ModeClear::ValuationProcess(){
-	if (_frameCount >= _maxCount) {
-		int endTime = 2 * 1000;
-		int nowTime = GetNowCount() - _currentTime;
-		// アルファ値の変化
-		if(nowTime > endTime){
-			nowTime = endTime;
-		}
-		_alphaValue = Easing::Linear(nowTime,0, 255, endTime);
+	if (!_IsStaging)return;
+		int stagingTime = GetNowCount() - _currentTime;
 
-	   if (_alphaValue >= 255 && input->GetTrg(XINPUT_BUTTON_A)) {
-		   ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000,this), 100, "Fade");
-		   if (_modeGame != nullptr && _modeGame->GetStageNum() < 4) {
-			   _modeGame->NewStage();
-		   }
-		   else {
-			   ClearDrawScreen();
-			   ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario04.csv",3), 100, "Title");
-			   ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000, this,true), 100, "Fade");
-			   ModeServer::GetInstance()->Del(_modeGame);
-		   }
-	   }
-	}
+		auto Easing = [](int time, float start, float end, int duration) {
+			if (time > 0) {
+				if (time > duration) {
+					time = duration;
+				}
+				return Easing::Linear(time, start, end, duration);
+			}
+		};
+
+		// Timeアルファ値処理
+		int timeAlphaEndTime = 1 * 1000;
+		int timeAlphaTime = stagingTime;
+		 _alphaValue = Easing(timeAlphaTime, 0, 255, timeAlphaEndTime);
+        
+		stagingTime -= timeAlphaEndTime;
+
+		// 評価の時間変化
+		int valuationEndTime = 3 * 1000;
+		int valuationTime = stagingTime;
+		 _nowValuationTime = Easing(valuationTime,0, _valuationTime, valuationEndTime);
+        
+		stagingTime -= valuationEndTime;
+
+		// 0.5秒後に評価のサイズを変化
+		stagingTime -= 500;
+
+		// 評価の変化
+		int valuationSizeEndTime = 0.5 * 1000;
+		int valuationSizeTime = stagingTime;
+		_valuationSize = Easing(valuationSizeTime, 1.50f, 1.0f, valuationSizeEndTime);
+
 };
 
 bool ModeClear::Process(){
@@ -124,6 +149,19 @@ bool ModeClear::Process(){
 	AnimProcess();
 	ValuationProcess();
 
+	if (_alphaValue >= 255 && input->GetTrg(XINPUT_BUTTON_A)) {
+		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000, this), 100, "Fade");
+		if (_modeGame != nullptr && _modeGame->GetStageNum() < 4) {
+			_modeGame->NewStage();
+		}
+		else {
+			ClearDrawScreen();
+			ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario04.csv", 3), 100, "Title");
+			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000, this, true), 100, "Fade");
+			ModeServer::GetInstance()->Del(_modeGame);
+		}
+	}
+
 	return true;
 };
 
@@ -133,16 +171,19 @@ bool ModeClear::Render() {
 	DrawGraph(0, 0, _handle["BackGround"], FALSE);
 	// モデルの描画
 	MV1DrawModel(_model);
+
+	int handleX, handleY, screenX, screenY, screenDepth;
+	GetScreenState(&screenX, &screenY, &screenDepth);
+
 	// 透過色
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, _alphaValue);
-	int handleX,handleY,screenX,screenY,screenDepth;
-	GetGraphSize(_valuationHandle[_valuation],&handleX,&handleY);
-	GetScreenState(&screenX,&screenY,&screenDepth);
-	// 評価の表示
-	DrawGraph(1100,300, _valuationHandle[_valuation],true);
+
+	// timeハンドルの描画
+	GetGraphSize(_handle["Time"], &handleX, &handleY);
+	DrawGraph(1350, 100, _handle["Time"], true);
 
 	// 時間の表示
-	int time = _valuationTime;
+	int time = static_cast<int>(_nowValuationTime);
 	int loopCount = 0;
 	int x = 1800, y = 150;
 	while (1) {
@@ -150,7 +191,7 @@ bool ModeClear::Render() {
 		if (loopCount == 2) {
 			// コロンを描画
 			GetGraphSize(_handle["Colon"], &handleX, &handleY);
-			DrawRotaGraph(x + handleX + 40 + handleX/2, y + 10 + handleY / 2.0f ,1.0f,-30*DX_PI/180.0f ,_handle["Colon"], true);
+			DrawRotaGraph(x + handleX - 40 + handleX/2, y + 10 + handleY / 2.0f ,1.0f,-30*DX_PI/180.0f ,_handle["Colon"], true);
 			x -= handleX + 20;// 数字の間隔
 			y += handleY / 2.0f;// 数字の間隔
 		}
@@ -161,20 +202,21 @@ bool ModeClear::Render() {
 		DrawRotaGraph(x+ handleX/2, y + handleY / 2,1.0f,-30*DX_PI/180.0f, _timeHandle[num], true);
 		time /= 10;
 
-	
-
 		x -= handleX + 10;// 数字の間隔
 		y += handleY/2.0f;// 数字の間隔
 		loopCount++;// 何桁目か数える
 
-		if (time == 0) {
+		if (loopCount == 4) {
 			break;
 		}
 
 	}
-	// timeハンドルの描画
-	GetGraphSize(_handle["Time"], &handleX, &handleY);
-	DrawGraph(1350,100,_handle["Time"],true);
+	// 透過色終了
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, _alphaValue);
+
+	// 評価の表示
+	GetGraphSize(_valuationHandle[_valuation], &handleX, &handleY);
+	DrawRotaGraph(1100 + handleX/2, 300 + handleY/2, _valuationSize, 0.0f, _valuationHandle[_valuation], true);
+
 	return true;
 };

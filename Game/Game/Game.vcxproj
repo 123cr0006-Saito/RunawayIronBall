@@ -155,6 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\AnimationChain.cpp" />
     <ClCompile Include="source\ModeMovie.cpp" />
     <ClCompile Include="source\Fog.cpp" />
     <ClCompile Include="source\ModeBossBattle.cpp" />
@@ -233,6 +234,7 @@
     <ClCompile Include="source\UIBossHp.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\AnimationChain.h" />
     <ClInclude Include="source\ModeMovie.h" />
     <ClInclude Include="source\Fog.h" />
     <ClInclude Include="source\ModeBossBattle.h" />
