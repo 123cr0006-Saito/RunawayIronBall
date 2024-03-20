@@ -17,7 +17,7 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance) {
 	ModeServer::GetInstance()->Add(NEW ModeTitle(), 1, "Title");
 	//ModeServer::GetInstance()->Add(NEW ModeGameOver(), 1, "Title");
 	//ModeServer::GetInstance()->Add(NEW ModeClear(), 1, "Clear");
-	//ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario01.csv"), 2, "Scenario");
+	//ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario01.csv",1), 2, "Scenario");
 	//ModeServer::GetInstance()->Add(NEW ModeGame(), 1, "Game");
 	//ModeServer::GetInstance()->Add(NEW ModeBossBattle(), 1, "BossBattle");
 	
@@ -51,7 +51,7 @@ bool ApplicationMain::Process() {
 
 bool ApplicationMain::Render() {
 	base::Render();
-	_fpsController->DrawFps(0, 0);
+	//_fpsController->DrawFps(0, 0);
 	return true;
 }
 

@@ -32,6 +32,9 @@ namespace {
 	// 「スティック入力ベクトルの大きさ」がこの値を超えたら「走り」状態になる
 	constexpr float MOVE_RUN_THRESHOLD = 0.6f;
 
+	// 回転攻撃のカウント
+	// このフレーム数以上の間、ボタンを押し続けると回転攻撃が発動する
+	constexpr int ROTAION_SWING_CNT_MAX = 45;
 
 	// スタミナの最大値
 	constexpr float STAMINA_MAX = 480.0f;
@@ -59,7 +62,7 @@ namespace {
 Player::Player()
 {
 	_input = nullptr;
-	_stickDir = VGet(0.0f, 0.0f, -1.0f);
+	_inputWorldDir = VGet(0.0f, 0.0f, -1.0f);
 
 	_hp = 0;
 	_isInvincible = false;
@@ -263,7 +266,7 @@ bool Player::Init(int modelHandle, VECTOR pos)
 	CharacterBase::Init(modelHandle, pos);
 
 	_input = XInput::GetInstance();
-	_stickDir = VGet(0.0f, 0.0f, -1.0f);
+	_inputWorldDir = VGet(0.0f, 0.0f, -1.0f);
 
 	_hp = HP_MAX;
 	_isInvincible = false;
@@ -406,7 +409,7 @@ bool Player::Process(float camAngleY)
 
 				_pos = VAdd(_pos, VScale(vMoveDir, _moveSpeed));
 
-				_stickDir = vMoveDir;
+				_inputWorldDir = vMoveDir;
 				_isMoved = true;
 			}
 		}
@@ -480,7 +483,7 @@ bool Player::Process(float camAngleY)
 			_isTired = true;
 			_isRotationSwinging = false;
 			_rotationCnt = 0;
-			_forwardDir = _stickDir;
+			_forwardDir = _inputWorldDir;
 			_animStatus = ANIM_STATE::HORISONTAL_SWING_03;
 		}
 	}
@@ -491,26 +494,32 @@ bool Player::Process(float camAngleY)
 			_isRecoveringStamina = true;
 		}
 	}
-	//if(!_isAttackState ){
-	//	_isRecoveringStamina = false;
-	//}
 
 	// 攻撃状態の更新
 	if (_isTired == false && _animStatus != ANIM_STATE::AVOIDANCE && _animStatus != ANIM_STATE::HIT) {
-		// 回転攻撃
-		if (_rotationCnt > 90) {
+		// 回転攻撃が発生するかどうかの判定
+		if (_rotationCnt > ROTAION_SWING_CNT_MAX) {
 			if (!_isRotationSwinging) {
 				_animStatus = ANIM_STATE::TO_ROTATION_SWING;
 			}
 		}
-		// 通常攻撃
-		else if (_input->GetRel(XINPUT_BUTTON_X) != 0) {
-			_playNextComboAnim = true;
-			if (!_isAttackState) {
-				_animStatus = ANIM_STATE::HORISONTAL_SWING_01;
+		// コンボ攻撃1段目の入力
+		else if (!_isAttackState) {
+			if (_input->GetRel(XINPUT_BUTTON_X) != 0) { // リリース入力
+				_playNextComboAnim = true;
+				if (!_isAttackState) {
+					_animStatus = ANIM_STATE::HORISONTAL_SWING_01;
+				}
+			}
+		}
+		// コンボ攻撃2段目・3段目の入力
+		else if (_animStatus == ANIM_STATE::HORISONTAL_SWING_01 || _animStatus == ANIM_STATE::HORISONTAL_SWING_02) {
+			if (_input->GetTrg(XINPUT_BUTTON_X) != 0) { // トリガ入力
+				_playNextComboAnim = true;
 			}
 		}
 
+		// 回転攻撃の入力
 		if (_input->GetKey(XINPUT_BUTTON_X) != 0) {
 			_rotationCnt++;
 		}
@@ -520,9 +529,13 @@ bool Player::Process(float camAngleY)
 				_animStatus = ANIM_STATE::HORISONTAL_SWING_03;
 
 				// モデルの正面方向を更新する
-				_forwardDir = _stickDir;
+				_forwardDir = _inputWorldDir;
 			}
 		}
+	}
+
+	if (!_isRotationSwinging && _isAttackState) {
+		_rotationCnt = 0;
 	}
 
 	if (!_isTired && _canMotionCancel) {
@@ -531,7 +544,7 @@ bool Player::Process(float camAngleY)
 			if (!_isSwinging || _isRotationSwinging) {
 				_animStatus = ANIM_STATE::AVOIDANCE;
 				// モデルの正面方向を更新する
-				_forwardDir = _stickDir;
+				_forwardDir = _inputWorldDir;
 				_rotationCnt = 0;
 				_idleFightingRemainingCnt = 240;
 
@@ -763,12 +776,13 @@ void Player::DrawDebugInfo()
 
 	DrawCapsule3D(_capsuleCollision.up_pos, _capsuleCollision.down_pos, _capsuleCollision.r, 16, COLOR_RED, COLOR_RED, false);
 
-	//int x = 0;
-	//int y = 100;
-	//int line = 0;
+	int x = 0;
+	int y = 500;
+	int line = 0;
 	//DrawFormatString(x, y + line * 16, COLOR_RED, "HP:%d", _hp); line++;
 	//DrawFormatString(x, y + line * 16, COLOR_RED, "isInvincible:%d", _isInvincible); line++;
 	//DrawFormatString(x, y + line * 16, COLOR_RED, "invincibleCnt:%d", _invincibleRemainingCnt); line++;
+	DrawFormatString(x, y + line * 16, COLOR_RED, "_rotationCnt:%d", _rotationCnt); line++;
 
 	//DrawFormatString(x, y + line * 16, COLOR_RED, "ANIM:%d", _animStatus); line++;
 	//DrawCapsule3D(_capsuleCollision._startPos, _capsuleCollision._endPos, _capsuleCollision._r, 16, COLOR_RED, COLOR_RED, false);

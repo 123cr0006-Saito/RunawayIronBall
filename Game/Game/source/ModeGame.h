@@ -63,6 +63,8 @@ public:
 	void NewStage();// ステージの初期化
 	void CreateTutorial();// チュートリアルの作成
 
+	int GetStageNum() { return _stageNum; };
+
 
 	//デバッグ用
 	std::vector<OBJECTDATA> LoadJsonObject(const myJson& json, std::string loadName);//引数 読み込みたいオブジェクトの名前
@@ -94,7 +96,6 @@ protected:
 	int _tile;
 	int _mountain;
 
-	int _effectSheet[30];
 	Gate* _gate;
 	int _stageNum;
 	ClassificationEffect* _classificationEffect;
@@ -114,6 +115,4 @@ protected:
 
 	// ステージ読み込み用変数
 	bool IsTutorial;
-	bool IsLoading;
-	std::thread* LoadFunctionThread;
 };

@@ -1,6 +1,8 @@
 #include "AppFrame.h"
 #include "ModeClear.h"
+#include "ModeScenario.h"
 #include "ModeFadeComeBack.h"
+
 ModeClear::ModeClear() {
 	_modeGame = nullptr;
 	input = nullptr;
@@ -42,7 +44,7 @@ bool ModeClear::Initialize(){
 	ResourceServer::LoadMultGraph("C_Time","res/ModeResult/Time/UI_Valuation_Time",".png",10,_timeHandle);
 	SetCameraNearFar(20.0f, 30000.0f);
 	MV1SetPosition(_model, VGet(0, 0, 0));
-
+	global._soundServer->DirectPlay("Result");
 	Valuation();
 
 	return true;
@@ -100,8 +102,14 @@ void ModeClear::ValuationProcess(){
 
 	   if (_alphaValue >= 255 && input->GetTrg(XINPUT_BUTTON_A)) {
 		   ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000,this), 100, "Fade");
-		   if (_modeGame != nullptr ) {
+		   if (_modeGame != nullptr && _modeGame->GetStageNum() < 4) {
 			   _modeGame->NewStage();
+		   }
+		   else {
+			   ClearDrawScreen();
+			   ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario04.csv",3), 100, "Title");
+			   ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000, this,true), 100, "Fade");
+			   ModeServer::GetInstance()->Del(_modeGame);
 		   }
 	   }
 	}

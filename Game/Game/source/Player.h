@@ -55,6 +55,7 @@ public:
 
 
 	int GetHP() { return _hp; }
+	void MaxHeal() { _hp = 4; }
 	bool GetIsInvincible() { return _isInvincible; }
 	// 無敵状態の更新
 	void ChangeIsInvincible(bool b, int frame);
@@ -119,13 +120,13 @@ public:
 
 	void DrawDebugInfo();
 
-	VECTOR GetStickDir() { return _stickDir; }
+	VECTOR GetInputWorld() { return _inputWorldDir; }
 private:
 	// 入力情報
 	XInput* _input;
-	// Lスティックの入力方向
+	// Lスティックの入力方向をカメラの回転を考慮してワールド上の方向に変換する
 	// Lスティック入力があった場合に更新する
-	VECTOR _stickDir;
+	VECTOR _inputWorldDir;
 
 	/* ステータス関連 */
 	// HP
