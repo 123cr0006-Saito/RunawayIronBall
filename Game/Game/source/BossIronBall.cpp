@@ -120,13 +120,7 @@ BossIronBall::BossIronBall()
 
 BossIronBall::~BossIronBall()
 {
-	ResourceServer::MV1DeleteModel("Bossnake", _ibModelHandle);
-	_ibModelHandle = -1;
-	ResourceServer::MV1DeleteModel("Chain", _chainModelHandle);
-	_chainModelHandle = -1;
-
 	_stakePos = nullptr;
-
 	_player = nullptr;
 }
 

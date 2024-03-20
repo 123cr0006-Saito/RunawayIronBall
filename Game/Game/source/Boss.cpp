@@ -20,9 +20,6 @@ Boss::Boss()
 
 Boss::~Boss()
 {
-	ResourceServer::MV1DeleteModel("Stake", _stakeModelHandle);
-	_stakeModelHandle = -1;
-
 	delete _ironBall;
 	_ironBall = nullptr;
 

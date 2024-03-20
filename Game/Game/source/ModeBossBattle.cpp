@@ -110,12 +110,6 @@ bool ModeBossBattle::Terminate() {
 		delete _gaugeUI[i];
 	}
 
-	
-	ResourceServer::MV1DeleteModel("SkySpehe", _skySphere);
-	_skySphere = -1;
-	ResourceServer::MV1DeleteModel("BossStage", _stage);
-	_stage = -1;	
-
 	return true;
 }
 
