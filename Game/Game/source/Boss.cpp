@@ -81,8 +81,9 @@ void Boss::CheckHitBossAndStake()
 		_ironBall->SetHitStake(true);
 
 		if (_ironBall->GetKnockBack()) {
+			VECTOR vDir = VSub(ibCol.centerPos, _stakePos);
 			vDir.y = 0.0f;
-			_ironBall->SetKnockBack(vDir);
+			_ironBall->SetKnockBack(vDir, 30.0f);
 
 			SetDamageStake(20);
 		}

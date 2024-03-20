@@ -579,6 +579,32 @@ int BossIronBall::CheckPlayerInSearchRange()
 	return rangeIndex;
 }
 
+void BossIronBall::SetKnockBack(VECTOR vDir, float speed)
+{
+	_isInvincible = true;
+	_isKnockBack = true;
+	//if (_ibState != IB_STATE::STIFFEN) {
+		_ibState = IB_STATE::KNOCK_BACK;
+		_knockBackDir = VNorm(vDir);
+		_knockBackSpeed = speed;
+		_knockBackCnt = 30;
+		_gravity = 80.0f;
+	//}
+	//else {
+	//	ResetPhase();
+	//	_ibState = IB_STATE::HARD_KNOCK_BACK;
+	//	
+	//	_posBeforeMoving = _ibPos;
+	//	_targetPos = *_stakePos;
+	//	// �n�ʁiy���W0�j���Ƃ��A�S���̔��a�̑傫���̕�����y���W��v���X����
+	//	_targetPos.y = _ibSphereCol.r;
+
+	//	_ibMoveDir = VSub(_targetPos, _posBeforeMoving);
+	//	_ibMoveDir.y = 0.0f;
+	//	_ibMoveDir = VNorm(_ibMoveDir);
+	//}
+}
+
 void BossIronBall::DrawDebugInfo()
 {
 	auto color = _isInvincible ? COLOR_WHITE : COLOR_RED;
@@ -608,7 +634,7 @@ void BossIronBall::DrawDebugInfo()
 void BossIronBall::KnockBackProcess()
 {
 	if (_isKnockBack) {
-		_ibPos = VAdd(_ibPos, VScale(_knockBackDir, 12.0f));
+		_ibPos = VAdd(_ibPos, VScale(_knockBackDir, _knockBackSpeed));
 		_ibPos.y += _gravity;
 		if (_ibPos.y - _ibSphereCol.r < 0.0f) {
 			_gravity = 40.0f;
@@ -624,8 +650,28 @@ void BossIronBall::KnockBackProcess()
 				SetStiffen(30);
 			}
 			else {
-				CheckState();
+				SetStiffen(10);
 			}
 		}
+	}
+}
+
+void BossIronBall::HardKnockBackProcess()
+{
+	switch (_phase)
+	{
+	case 0: // �Y�ɓ��B����܂�
+		VECTOR v = VGet(0.0f, 0.0f, 0.0f);
+		v.x = Easing::Linear(_phaseCnt, _posBeforeMoving.x, _targetPos.x, HK_REACH_STAKE_CNT);
+		v.y = _ibSphereCol.r + 500.0f * sinf(DX_PI_F * (_phaseCnt / static_cast<float>(HK_REACH_STAKE_CNT)));
+		v.z = Easing::Linear(_phaseCnt, _posBeforeMoving.z, _targetPos.z, HK_REACH_STAKE_CNT);
+
+		_ibPos = VAdd(_ibPos, VScale(_knockBackDir, 60.0f));
+		_phaseCnt++;
+		if (_phaseCnt > HK_REACH_STAKE_CNT) {
+			_phaseCnt = 0;
+			_phase++;
+		}
+		break;
 	}
 }

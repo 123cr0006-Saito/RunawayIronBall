@@ -152,8 +152,7 @@ bool ModeBossBattle::Process() {
 			if (Collision3D::SphereCol(pIBCol, bIBCol)) {
 				VECTOR vDir = VSub(bIBCol.centerPos, pCol.down_pos);
 				vDir.y = 0.0f;
-				vDir = VNorm(vDir);
-				_boss->SetKnockBack(vDir);
+				_boss->SetKnockBack(vDir, 12.0f);
 			}
 		}
 

@@ -22,7 +22,7 @@ public:
 
 	void CheckHitBossAndStake();
 
-	void SetKnockBack(VECTOR vDir = VGet(0.0f, 0.0f, -1.0f)) { _ironBall->SetKnockBack(vDir); }
+	void SetKnockBack(VECTOR vDir, float speed) { _ironBall->SetKnockBack(vDir, speed); }
 	// Y‚ÌHP‚ğŒ¸‚ç‚·
 	void SetDamageStake(int damage) {
 		_stakeHp -= damage;

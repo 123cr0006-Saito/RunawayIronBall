@@ -23,6 +23,8 @@ public:
 
 	bool GetIsInvincible() { return _isInvincible; }
 
+	bool CheckHardKnockBack() { return _ibState == IB_STATE::HARD_KNOCK_BACK; }
+
 	void SetHitStake(bool isHit) { _isHitStake = isHit; }
 	bool GetHitStake() { return _isHitStake; }
 
@@ -31,14 +33,7 @@ public:
 
 	int CheckPlayerInSearchRange();
 
-	void SetKnockBack(VECTOR vDir = VGet(0.0f, 0.0f, -1.0f)) {
-		_isInvincible = true;
-		_isKnockBack = true;
-		_ibState = IB_STATE::KNOCK_BACK;
-		_knockBackDir = VNorm(vDir);
-		_knockBackCnt = 30;
-		_gravity = 80.0f;
-	}
+	void SetKnockBack(VECTOR vDir, float speed);
 	bool GetKnockBack() { return _isKnockBack; }
 
 	// デバッグ情報の表示
@@ -75,6 +70,9 @@ private:
 	// ノックバック処理
 	void KnockBackProcess();
 
+	// ハードノックバック処理
+	void HardKnockBackProcess();
+
 	void ChainProcess();
 
 private:
@@ -94,6 +92,7 @@ private:
 		ATTACK_DROP,			// 落下攻撃
 		ATTACK_ROTATION,	// 回転攻撃
 		KNOCK_BACK,			// ノックバック
+		HARD_KNOCK_BACK,	// ハードノックバック（硬直時にプレイヤーの攻撃が当たった場合の状態, 杭まで直接飛んでいく）
 	} _ibState;
 
 	// 各ステート内でのフェーズ番号
@@ -129,6 +128,8 @@ private:
 	bool _isKnockBack;
 	// ノックバック方向
 	VECTOR _knockBackDir;
+	// ノックバック速度
+	float _knockBackSpeed;
 	// ノックバックを行うの残りフレーム数
 	int _knockBackCnt;
 
