@@ -68,6 +68,10 @@ namespace {
 	// 回転攻撃後の硬直時間
 	constexpr int RO_STIFFEN_CNT = 300;
 
+	// ノックバック
+	// ガラス状態でのノックバック速度倍率
+	constexpr float KB_SPEED_RATE_GLASS = 3.0f;
+
 	// ハードノックバック
 	// 杭に到達するまでのフレーム数
 	constexpr int HK_REACH_STAKE_CNT = 45;
@@ -790,6 +794,7 @@ void BossIronBall::SetKnockBack(VECTOR vDir, float speed)
 		_ibState = IB_STATE::KNOCK_BACK;
 		_knockBackDir = VNorm(vDir);
 		_knockBackSpeed = speed;
+		if (_isGlass) _knockBackSpeed *= KB_SPEED_RATE_GLASS;
 		_knockBackCnt = 30;
 		_gravity = 80.0f;
 	}
