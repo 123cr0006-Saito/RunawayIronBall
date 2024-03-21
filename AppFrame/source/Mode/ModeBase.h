@@ -2,6 +2,8 @@
 #include "../System/Header/Input/XInput.h"
 #include "../System/Header/Function/Fps.h"
 #include "../System/Header/Effect/Effect.h"
+#include "../Application/Global.h"
+
 #include <math.h>
 #include <string>
 class ModeServer;
@@ -28,7 +30,6 @@ public:
 	int GetCallPerFrame() { return _callPerFrame; }
 	int GetCallOfCount() { return _callOfCount; }
 
-	XInput* GetInputAdd() { return input; }
 
 
 private:
@@ -54,8 +55,6 @@ private:
 	int		_callPerFrame, _callPerFrame_cnt;
 	int		_callOfCount;
 	//Input
-	XInput* input;
-	Fps* fps;
 	Effect* effect;
 };
 

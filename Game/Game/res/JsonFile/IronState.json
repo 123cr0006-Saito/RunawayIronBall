@@ -1,0 +1,72 @@
+[
+	{
+		"Level": 0,
+		"Power": 70,
+		"Magnification": 1,
+		"Stamina": 480,
+		"Exp": 400
+	},
+	{
+		"Level": 1,
+		"Power": 130,
+		"Magnification": 1.25,
+		"Stamina": 520,
+		"Exp": 800
+	},
+	{
+		"Level": 2,
+		"Power": 160,
+		"Magnification": 1.4,
+		"Stamina": 560,
+		"Exp": 1200
+	},
+	{
+		"Level": 3,
+		"Power": 180,
+		"Magnification": 1.65,
+		"Stamina": 580,
+		"Exp": 1600
+	},
+	{
+		"Level": 4,
+		"Power": 200,
+		"Magnification": 2,
+		"Stamina": 600,
+		"Exp": 2000
+	},
+	{
+		"Level": 5,
+		"Power": 250,
+		"Magnification": 2.15,
+		"Stamina": 650,
+		"Exp": 2300
+	},
+	{
+		"Level": 6,
+		"Power": 350,
+		"Magnification": 2.35,
+		"Stamina": 700,
+		"Exp": 2800
+	},
+	{
+		"Level": 7,
+		"Power": 500,
+		"Magnification": 2.6,
+		"Stamina": 750,
+		"Exp": 3300
+	},
+	{
+		"Level": 8,
+		"Power": 750,
+		"Magnification": 3.3,
+		"Stamina": 800,
+		"Exp": 3700
+	},
+	{
+		"Level": 9,
+		"Power": 1000,
+		"Magnification": 4,
+		"Stamina": 900,
+		"Exp": 4000
+	}
+]

@@ -1,5 +1,6 @@
 #pragma once
 #include "dxlib.h"
+#include <vector>
 
 // 円周率
 #define	PI				(3.141592653589793)
@@ -40,12 +41,60 @@ struct TWOLINE_SHORT {
 	float length = 0.0f;
 };
 
-struct OBB {
-	VECTOR pos = VGet(0, 0, 0);
-	VECTOR Misalignment = VGet(0, 0, 0);//モデルのずれ修正用
-	VECTOR dir_vec[3] = { VGet(0,0,0),VGet(0,0,0),VGet(0,0,0) };//xv,yv,zv
-	float direction[3] = { 0,0,0 };//0:x 1:y 2:z
-	float length[3] = {0.0f,0.0f,0.0f}; //0:w 1:h 3:d
+//struct OBB {
+//	VECTOR pos = VGet(0, 0, 0);
+//	VECTOR dir_vec[3] = { VGet(0,0,0),VGet(0,0,0),VGet(0,0,0) };//xv,yv,zv
+//	float length[3] = {0.0f,0.0f,0.0f}; //0:w 1:h 3:d
+//};
+
+class Sphere
+{
+public:
+	Sphere() {
+		centerPos = VGet(0.0f, 0.0f, 0.0f);
+		r = 0.0f;
+	}
+	Sphere(VECTOR pos, float r) {
+		centerPos = pos;
+		this->r = r;
+	}
+
+	// 描画処理
+	void Render(unsigned int color);
+
+	VECTOR centerPos;
+	float r;
+};
+
+class OBB
+{
+public:
+	OBB() {
+		pos = VGet(0.0f, 0.0f, 0.0f);
+
+		// 初期状態ではワールドの軸と平行な状態にする（AABB）
+		dir_vec[0] = VGet(1.0f, 0.0f, 0.0f);
+		dir_vec[1] = VGet(0.0f, 1.0f, 0.0f);
+		dir_vec[2] = VGet(0.0f, 0.0f, 1.0f);
+
+		for (int i = 0; i < 3; ++i) {			
+			length[i] = 0.0f;
+		}
+	}
+
+	// 回転処理
+	// x軸->y軸->z軸の順番で, 各軸を回転させる
+	void Rotate(VECTOR vRot);
+
+	// 頂点座標の取得
+	void GetVertexPos(std::vector<VECTOR>& vertexPosList);
+
+	// 描画処理
+	void Render(unsigned int color);
+
+	VECTOR pos;
+	VECTOR dir_vec[3];//xv,yv,zv
+	float length[3]; //0:w 1:h 3:d
 };
 
 class Capsule {
@@ -64,6 +113,9 @@ public:
 	void Update() {
 		up_pos = VAdd(down_pos,VGet(0,up,0));
 	};
+
+	// 描画処理
+	void Render(unsigned int color);
 
 	VECTOR up_pos = VGet(0, 0, 0);
 	VECTOR down_pos = VGet(0, 0, 0);

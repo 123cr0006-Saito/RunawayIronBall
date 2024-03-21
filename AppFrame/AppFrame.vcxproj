@@ -159,6 +159,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\System\Source\Function\Vibration.cpp" />
+    <ClCompile Include="source\System\Source\Collision\MyStructure.cpp" />
+    <ClCompile Include="source\System\Source\Function\DrawGauge.cpp" />
     <ClCompile Include="source\System\Source\Function\mymath.cpp" />
     <ClCompile Include="source\Application\Global.cpp" />
     <ClCompile Include="source\System\Source\Effect\Effect.cpp" />
@@ -170,15 +173,17 @@
     <ClCompile Include="source\Mode\ModeBase.cpp" />
     <ClCompile Include="source\Mode\ModeServer.cpp" />
     <ClCompile Include="source\System\Source\Collision\2DCollision.cpp" />
+    <ClCompile Include="source\System\Source\Function\Timer.cpp" />
     <ClCompile Include="source\System\Source\Resource\ResourceServer.cpp" />
-    <ClCompile Include="source\System\Source\Sound\FadeSound.cpp" />
     <ClCompile Include="source\System\Source\Function\Fps.cpp" />
     <ClCompile Include="source\System\Source\Input\XInput.cpp" />
-    <ClCompile Include="source\System\Source\Sound\music.cpp" />
     <ClCompile Include="source\System\Source\Function\mydraw.cpp" />
     <ClCompile Include="source\System\Source\Function\Easing.cpp" />
+    <ClCompile Include="source\System\Source\Sound\SoundItem.cpp" />
+    <ClCompile Include="source\System\Source\Sound\SoundServer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\System\Header\Function\DrawGauge.h" />
     <ClInclude Include="source\System\Header\Function\mymath.h" />
     <ClInclude Include="source\Application\Global.h" />
     <ClInclude Include="source\System\Header\Effect\Effect.h" />
@@ -192,13 +197,16 @@
     <ClInclude Include="source\Mode\ModeServer.h" />
     <ClInclude Include="source\System\Header\Collision\2DCollision.h" />
     <ClInclude Include="source\System\Header\Collision\MyStructure.h" />
-    <ClInclude Include="source\System\Header\Resource\ResourceServer.h" />
-    <ClInclude Include="source\System\Header\Sound\FadeSound.h" />
-    <ClInclude Include="source\System\Header\Function\Fps.h" />
+    <ClInclude Include="source\System\Header\Function\Timer.h" />
+    <ClInclude Include="source\System\Header\Function\Vector3D.h" />
+    <ClInclude Include="source\System\Header\Function\Vibration.h" />
     <ClInclude Include="source\System\Header\Input\XInput.h" />
-    <ClInclude Include="source\System\Header\Sound\music.h" />
+    <ClInclude Include="source\System\Header\Resource\ResourceServer.h" />
+    <ClInclude Include="source\System\Header\Function\Fps.h" />
     <ClInclude Include="source\System\Header\Function\mydraw.h" />
     <ClInclude Include="source\System\Header\Function\Easing.h" />
+    <ClInclude Include="source\System\Header\Sound\SoundItem.h" />
+    <ClInclude Include="source\System\Header\Sound\SoundServer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,0 +1,8 @@
+diff a/AppFrame/AppFrame.vcxproj b/AppFrame/AppFrame.vcxproj	(rejected hunks)
+@@ -159,6 +159,7 @@
+     </Link>
+   </ItemDefinitionGroup>
+   <ItemGroup>
+     <ClCompile Include="source\System\Source\Function\mymath.cpp" />
+     <ClCompile Include="source\Application\Global.cpp" />
+     <ClCompile Include="source\System\Source\Effect\Effect.cpp" />
