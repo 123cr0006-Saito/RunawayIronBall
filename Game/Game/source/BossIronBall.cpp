@@ -88,6 +88,9 @@ BossIronBall::BossIronBall()
 	_ibSphereCol.r = 0.0f;
 	_isInvincible = false;
 	_useCollision = true;
+	_isEnhanced = false;
+	_changeEnhanced = false;
+	_enhancedAttackCnt = 0;
 
 	_ibState = IB_STATE::IDLE;
 
@@ -179,9 +182,11 @@ void BossIronBall::Process()
 	{
 	case BossIronBall::IB_STATE::IDLE:
 		IdleProcess();
+		CheckChangeEnhanced();
 		break;
 	case BossIronBall::IB_STATE::STIFFEN:
 		StiffenProcess();
+		CheckChangeEnhanced();
 		break;
 	case BossIronBall::IB_STATE::ATTACK_RUSH:
 		RushProcess();
@@ -598,6 +603,16 @@ void BossIronBall::ChainProcess()
 		_chainPos[i - 1].x += offsetX;
 		_chainPos[i - 1].y += offsetY;
 		_chainPos[i - 1].z += offsetZ;
+	}
+}
+
+// ������ԂɈڍs����
+// ������ԂɑJ�ڂ��\�ȃ^�C�~���O�ɌĂяo���A���߂�_changeEnhanced��true�ɂȂ����Ƃ��ɋ�����ԂɈڍs����i���̏ꍇ��_isEnhanced�͕K��false�j
+void BossIronBall::CheckChangeEnhanced()
+{
+	if (_changeEnhanced && !_isEnhanced) {
+		_isEnhanced = true;
+		SetRotation();
 	}
 }
 

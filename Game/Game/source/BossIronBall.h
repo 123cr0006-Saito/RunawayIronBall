@@ -24,6 +24,10 @@ public:
 	bool GetIsInvincible() { return _isInvincible; }
 	bool GetUseCollision() { return _useCollision; }
 
+	bool GetIsEnhanced() { return _isEnhanced; }
+	void SetEnhanced() { _changeEnhanced = true; }
+
+
 	bool CheckHardKnockBack() { return _ibState == IB_STATE::HARD_KNOCK_BACK; }
 
 	void SetHitStake(bool isHit) { _isHitStake = isHit; }
@@ -43,6 +47,9 @@ public:
 
 private:
 	void CheckState();
+	// 強化状態に移行する
+	// 強化状態に遷移が可能なタイミングに呼び出し、初めて_changeEnhancedがtrueになったときに強化状態に移行する（この場合は_isEnhancedは必ずfalse）
+	void CheckChangeEnhanced();
 
 	void ResetPhase();
 
@@ -90,6 +97,14 @@ private:
 	bool _isInvincible;
 	// 当たり判定を行うかどうか
 	bool _useCollision;
+	// 強化状態かどうか
+	bool _isEnhanced;
+	// 強化状態に切り替えるかどうか
+	// 杭のHPが半分以下になったときにtrueにする
+	// 一度trueになったらfalseには戻らない
+	bool _changeEnhanced;
+	// 強化状態での攻撃の回数
+	int _enhancedAttackCnt;
 
 	enum class IB_STATE {
 		IDLE,							// 待機
