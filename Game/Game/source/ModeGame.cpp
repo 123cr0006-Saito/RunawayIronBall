@@ -15,14 +15,12 @@ bool ModeGame::Initialize() {
 	_collisionManager->Init();
 
 	_gate = nullptr;
-	_stageNum = 2;
-	IsLoading = true;
+	_stageNum = 1;
 	IsTutorial = false;
-	LoadFunctionThread = nullptr;
 
 	_light = NEW Light("LightData");
 	_timeLimit = NEW TimeLimit();
-	SetTime();
+
 	
 	int resolution = 8192;
 	_shadowHandle = MakeShadowMap(resolution, resolution);
@@ -43,25 +41,6 @@ bool ModeGame::Initialize() {
 	_classificationEffect = NEW ClassificationEffect();
 	_effectManeger = NEW EffectManeger();
 
-
-	{
-		ResourceServer::LoadDivGraph("Gate", "res/TemporaryMaterials/FX_Hole_2D00_sheet.png", 43, 16, 3, 1200, 1200);
-		ResourceServer::Load("Player", "res/Character/cg_player_girl/Cg_Player_Girl.mv1");
-		ResourceServer::Load("IronBall", "res/Character/Cg_Iron_Ball/Cg_Iron_Ball.mv1");
-		ResourceServer::Load("Chain", "res/Chain/Cg_Chain.mv1");
-		ResourceServer::Load("GirlTexWhite", "res/Character/cg_player_girl/FlickerTexture.png");
-
-		ResourceServer::Load("FX_3D_Level_Up", "res/Effekseer/FX_3D_Level_Up/FX_3D_Level_Up.efkefc");
-		ResourceServer::Load("Stanp", "res/Effekseer/Attack/HorizontalThird.efkefc");
-		ResourceServer::Load("Rotation", "res/Effekseer/FX_3D_Rotate_2/FX_3D_Rotate.efkefc");
-		ResourceServer::Load("SlashR", "res/Effekseer/Slash/SlashRight.efkefc");
-		ResourceServer::Load("SlashL", "res/Effekseer/Slash/SlashLeft.efkefc");
-		ResourceServer::LoadMultGraph("split", "res/TemporaryMaterials/split/test", ".png", 30, _effectSheet);
-		ResourceServer::LoadDivGraph("Dust", "res/TemporaryMaterials/FX_Dust_2D.png", 44, 20, 3, 1000, 1000);
-		ResourceServer::LoadEffekseerEffect("Stanp", "res/Effekseer/Attack/HorizontalThird.efkefc");
-		ResourceServer::LoadMultGraph("Tutorial", "res/Tutorial/Tutorial", ".png", 5);
-	}
-
 	_suppression = NEW Suppression();
 
 	_enemyPool = NEW EnemyPool("res/JsonFile/EnemyData.json");
@@ -78,8 +57,9 @@ bool ModeGame::Initialize() {
 	ResourceServer::LoadMultGraph("Heart", "res/UI/Heart/UI_Heart", ".png", 3, heartHandle);
 	ui[0] = NEW UIHeart(VGet(120, 20, 0), 3, heartHandle, 2);
 	ui[1] = NEW UIExpPoint(VGet(100, 150, 0));
-	ResourceServer::LoadMultGraph("Suppressiongauge", "res/UI/SuppressionGauge/SuppressionGauge", ".png", 3, heartHandle);
-	ui[2] = NEW UISuppressionGauge(VGet(700, 100, 0), 3, heartHandle);
+	int suppressionHandle[3];
+	ResourceServer::LoadMultGraph("SuppressionGauge", "res/UI/SuppressionGauge/SuppressionGauge", ".png", 3, suppressionHandle);
+	ui[2] = NEW UISuppressionGauge(VGet(700, 100, 0), 3, suppressionHandle);
 	ui[3] = NEW UITimeLimit(VGet(1600, 100, 0));
 	_gaugeUI[0] = NEW DrawGauge(0, 3, size, true);
 	_gaugeUI[1] = NEW DrawGauge(0, 3, size, true);
@@ -89,7 +69,8 @@ bool ModeGame::Initialize() {
 	_gaugeHandle[3] = ResourceServer::LoadGraph("Stamina04", ("res/UI/Stamina/UI_Stamina_04.png"));
 	_sVib = NEW ScreenVibration();
 
-	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(_stageNum), 50, "RotCamera");
+	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(_stageNum), 10, "RotCamera");
+	SetTime();
 	return true;
 }
 
@@ -107,11 +88,6 @@ bool ModeGame::Terminate() {
 	delete _timeLimit;
 	delete _floor;
 	delete _fog;
-
-	if (LoadFunctionThread != nullptr) {
-		LoadFunctionThread->detach();
-		delete LoadFunctionThread; LoadFunctionThread = nullptr;
-	}
 
 	if (_gate != nullptr) {
 		delete _gate;
@@ -224,8 +200,11 @@ bool ModeGame::LoadObjectParam(std::string fileName) {
 			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &y); // obbのYサイズを取得
 			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &z); // obbのZサイズを取得
 			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &objectParam.isBreak); // 破壊可能化
+			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &objectParam._hp); // 耐久力
+			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &objectParam._exp); // 獲得経験値
 			c += SkipSpace(&p[c], &p[size]); // 空白やコントロールコードをスキップする
 			objectParam._size = VGet(x, y, z);
+
 
 			_objectParam.push_back(objectParam);
 		}
@@ -300,7 +279,7 @@ bool ModeGame::LoadStage(std::string fileName) {
 			if ((*itr).isBreak == 1) {
 				// 壊れるオブジェクト
 				House* building = NEW House();
-				building->Init(objHandle, nameList,object._pos, object._rotate, object._scale, (*itr)._size);
+				building->Init(objHandle, nameList,object._pos, object._rotate, object._scale, (*itr)._size,(*itr)._hp, (*itr)._exp);
 				_house.push_back(building);
 			}
 			else {
@@ -317,7 +296,7 @@ bool ModeGame::LoadStage(std::string fileName) {
 	VECTOR pos;
 	loadObject.at(0).at("translate").at("x").get_to(pos.x);
 	loadObject.at(0).at("translate").at("y").get_to(pos.z);
-	loadObject.at(0).at("translate").at("z").get_to(pos.y);
+	pos.y = 0;
 	 pos.x *= -1;
 	_player->SetPos(pos);
 
@@ -326,21 +305,12 @@ bool ModeGame::LoadStage(std::string fileName) {
 
 bool ModeGame::StageMutation() {
 	// ロード開始
-	IsLoading = false;
 	// 中身がいらないものはdeleteする
 	DeleteObject();
 	// オブジェクトのデータの読み込み ファイル名は 1 から始まるので +1 する
 	std::string fileName = "Data/ObjectList/Stage_0" + std::to_string(_stageNum) + ".json";
 	LoadStage(fileName);
 	// ロード終了
-
-	IsLoading = true;
-
-	// ロードスレッドを終了
-	if (LoadFunctionThread != nullptr) {
-		LoadFunctionThread->detach();
-		delete LoadFunctionThread; LoadFunctionThread = nullptr;
-	}
 	return true;
 }
 
@@ -350,8 +320,10 @@ bool ModeGame::Process() {
 	ModeServer::GetInstance()->PauseProcessUnderLayer();
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_LEFT_THUMB) ) {
-		_stageNum++;
-		NewStage();
+		if(_stageNum < 3){
+		   _stageNum++;
+		   NewStage();
+		}
 	}
 
 	bool enabledIBAttackCollision = _player->GetEnabledIBAttackCollision();
@@ -368,8 +340,6 @@ bool ModeGame::Process() {
 		ui[i]->Process();
 	}
 
-
-
 	for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
 		(*itr)->Process();
 	}
@@ -377,7 +347,6 @@ bool ModeGame::Process() {
 	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
 		(*itr)->Process();
 	}
-
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_START)) {
 		ModeServer::GetInstance()->Add(NEW ModePause(), 10, "Pause");
@@ -468,7 +437,6 @@ void ModeGame::CreateTutorial() {
 };
 
 bool ModeGame::Render() {
-	if (LoadFunctionThread)return true;
 
 	SetUseZBuffer3D(TRUE);
 	SetWriteZBuffer3D(TRUE);

@@ -1,9 +1,8 @@
-
 #include "AppFrame.h"
 #include "ApplicationMain.h"
 #include "ModeTitle.h"
 #include "ModeGame.h"
-#include "ModeTest.h"
+#include "ModeLoading.h"
 #include "ModePause.h"
 #include "math.h"
 
@@ -22,7 +21,7 @@ bool ModeTitle::Initialize() {
 
 	_IsGameStart = false;
 	//Š„‚ê‚éˆ—‚Ì‰Šú‰»
-	 _modelHandle = ResourceServer::MV1LoadModel("Board",_T("res/TemporaryMaterials/board.mv1"));
+	 _modelHandle = ResourceServer::MV1LoadModel("Board", "res/ModeTitle/board.mv1");
 	 _currentTime = 0;
 	 _IsBreak = false;
 	 _frameSize = MV1GetFrameNum(_modelHandle);
@@ -65,8 +64,7 @@ bool ModeTitle::Terminate() {
 
 void ModeTitle::SelectGameStart() {
 	ModeServer::GetInstance()->Del(this);
-	ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario01.csv",1), 100, "Scenario");
-	ModeServer::GetInstance()->Add(NEW ModeGame(), 1, "Game");
+	ModeServer::GetInstance()->Add(NEW ModeLoading(),100,"Loading");
 };
 
 void ModeTitle::SelectOption() {
@@ -83,11 +81,11 @@ void ModeTitle::UpdateSelectItems(){
 	int count = 0;
 
 	//ƒ‚[ƒh‘I‘ð‚ÌØ‚è‘Ö‚¦
-	if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP)) {
+	if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP) || _input->GetTrg(XINPUT_BUTTON_STICK_UP)) {
 		count--;
 		global._soundServer->DirectPlay("SE_Select");
 	}
-	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN)) {
+	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN) || _input->GetTrg(XINPUT_BUTTON_STICK_DOWN)) {
 		count++;
 		global._soundServer->DirectPlay("SE_Select");
 	}
@@ -194,7 +192,6 @@ bool ModeTitle::Render() {
 	else {
 		DrawCrackedScreen();
 	}
-	clsDx();
 
 	return true;
 }

@@ -43,6 +43,8 @@ class ModeGame : public ModeBase
 	struct ObjectParam {
 		std::string _name;
 		VECTOR _size;
+		int _hp;
+		int _exp;
 		int isBreak;
 	};
 
@@ -96,7 +98,6 @@ protected:
 	int _tile;
 	int _mountain;
 
-	int _effectSheet[30];
 	Gate* _gate;
 	int _stageNum;
 	ClassificationEffect* _classificationEffect;
@@ -116,6 +117,4 @@ protected:
 
 	// ステージ読み込み用変数
 	bool IsTutorial;
-	bool IsLoading;
-	std::thread* LoadFunctionThread;
 };

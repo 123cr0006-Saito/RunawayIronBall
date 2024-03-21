@@ -260,6 +260,7 @@ bool EnemyBase::ModeDead() {
 	_knockBackSpeedFrame--;
 	if (_knockBackSpeedFrame <= 0) {
 		_IsUse = false;
+		_collisionManager->ReserveRemovementCell(_cell);
 	}
 	return true;
 };
@@ -295,14 +296,17 @@ void EnemyBase::SetKnockBackAndDamage(VECTOR vDir, float damage) {
 		_hp -= damage;
 		_knockBackDir = vDir;
 		_knockBackSpeedFrame = damage - _weightExp;
-		if (_knockBackSpeedFrame < 0) {
-			_knockBackSpeedFrame = 0;
+		if (_knockBackSpeedFrame < EN_KNOCKBACK_MIN) {
+			_knockBackSpeedFrame = EN_KNOCKBACK_MIN;
+		}
+		else if(_knockBackSpeedFrame > EN_KNOCKBACK_MIN) {
+			_knockBackSpeedFrame = EN_KNOCKBACK_MIN;
 		}
 		_currentTime = GetNowCount();
 		VECTOR effectPos = VAdd(VAdd(_pos, _diffeToCenter), VScale(vDir, -50));
 
 		int effectHandle[30];
-		ResourceServer::LoadMultGraph("split", "res/TemporaryMaterials/split/test", ".png", 30, effectHandle);
+		ResourceServer::LoadMultGraph("HitEffect_Blue", "res/Effect/HitEffect_Blue/HitEffect_Blue", ".png", 30, effectHandle);
 		BoardPolygon* effect = NEW BoardPolygon(effectPos, GetCameraBillboardMatrix(), 200, effectHandle, 30, 0.5f / 60.0f * 1000.0f);
 		EffectManeger::GetInstance()->LoadEffect(effect);
 

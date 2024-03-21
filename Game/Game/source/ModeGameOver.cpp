@@ -15,7 +15,7 @@ bool ModeGameOver::Initialize() {
 	_handle["Retry"] = ResourceServer::LoadGraph("Retry","res/ModeGameOver/UI_Game_Over_Retry.png");
 	_handle["Give"] = ResourceServer::LoadGraph("Give","res/ModeGameOver/UI_Game_Over_Title_Back.png");
 	_selectItem = 0;
-
+	_selectEnd = false;
 	// モデルの読み込み
 	_model = ResourceServer::MV1LoadModel("Player","res/Character/cg_player_girl/Cg_Player_Girl.mv1");
 	MV1SetPosition(_model, VGet(0, 0, 0));
@@ -41,23 +41,28 @@ bool ModeGameOver::Terminate() {
 	return true;
 };
 
-bool ModeGameOver::Process() {
-	base::Process();
-	ModeServer::GetInstance()->SkipProcessUnderLayer();
-	ModeServer::GetInstance()->PauseProcessUnderLayer();
-	ModeServer::GetInstance()->SkipRenderUnderLayer();
+void ModeGameOver::AnimProcess(){
+	MATRIX matrix = MGetRotY(0.02f);
+	_cameraPos = VTransform(_cameraPos, matrix);
+	VECTOR pos = VAdd(_cameraPos, _targetPos);
+	SetCameraPositionAndTarget_UpVecY(pos, _targetPos);
+};
+
+void ModeGameOver::SelectProcess(){
+	if (_selectEnd) return ; // 選択が終わっっているので処理を終了
 
 	//選択項目の切り替え
-	if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP)) {
+	if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP) || _input->GetTrg(XINPUT_BUTTON_STICK_UP)) {
 		_selectItem = 1 - _selectItem;
 		global._soundServer->DirectPlay("SE_Select");
 	}
-	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN)) {
+	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN) || _input->GetTrg(XINPUT_BUTTON_STICK_DOWN)) {
 		_selectItem = 1 - _selectItem;
 		global._soundServer->DirectPlay("SE_Select");
 	}
 
 	if (_input->GetTrg(XINPUT_BUTTON_A)) {
+		_selectEnd = true;
 		global._soundServer->DirectPlay("SE_Press");
 		if (_selectItem == 0) {
 			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(3000, this), 100, "Fade");
@@ -73,10 +78,17 @@ bool ModeGameOver::Process() {
 		}
 	}
 
-	MATRIX matrix = MGetRotY(0.02f);
-	_cameraPos = VTransform(_cameraPos, matrix);
-	VECTOR pos = VAdd(_cameraPos, _targetPos);
-	SetCameraPositionAndTarget_UpVecY(pos, _targetPos);
+};
+
+bool ModeGameOver::Process() {
+	base::Process();
+	ModeServer::GetInstance()->SkipProcessUnderLayer();
+	ModeServer::GetInstance()->PauseProcessUnderLayer();
+	ModeServer::GetInstance()->SkipRenderUnderLayer();
+
+	AnimProcess();
+	SelectProcess();
+
 
 	return true;
 };
