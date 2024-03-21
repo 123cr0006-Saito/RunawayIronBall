@@ -29,3 +29,20 @@ private:
 	char* _data;
 	bool	_success;
 };
+
+
+// char型の文字列に対する操作
+
+// 指定の文字を見つけるまで進める
+int FindString(const char* p, const char find, const void* last);
+// 空白やコントロールコードをスキップする
+int SkipSpace(const char* p, const void* last);
+// ","までの文字列を取得する
+// csv用
+int GetString(const char* p, std::string* out);
+int GetString(const char* p,const char find, std::string* out);
+int GetString(const char* p, const char find, std::string* out,int maxSize);
+// 10進数の整数値を取得する
+int GetDecNum(const char* p, int* answer, int* digits = nullptr);
+// 10進数の浮動小数点数を含めた値を取得する
+int GetFloatNum(const char* p, float* answer);

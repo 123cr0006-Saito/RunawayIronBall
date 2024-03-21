@@ -5,13 +5,12 @@
 bool ModeClear::Initialize(){
 	if (!base::Initialize()) { return false; }
 
-	input = base::GetInputAdd();
-
 	return true;
 };
 
 bool ModeClear::Terminate(){
 	base::Terminate();
+	input = nullptr;
 	return true;
 };
 

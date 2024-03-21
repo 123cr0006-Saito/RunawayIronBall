@@ -9,7 +9,13 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 protected:
+	XInput* _input;
+	std::unordered_map<std::string,int> _handle;
+	int _selectItem;
 
-	XInput* input;
+	int _model;
+	int _modelFrame;
+	VECTOR _targetPos;
+	VECTOR _cameraPos;
 };
 

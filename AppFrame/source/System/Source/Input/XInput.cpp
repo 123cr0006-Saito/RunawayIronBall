@@ -1,5 +1,11 @@
 #include "../../Header/Input/XInput.h"
+#include "../../Header/Function/mymath.h"
+
+XInput* XInput::_instance = NULL;
+
 XInput::XInput(int number) {
+	_instance = this;
+
 	pad_num = number;
 	for (int i = 0; i < PAD_BUTTON_MAX; i++) {
 		_trg[i] = 0;
@@ -47,11 +53,17 @@ bool XInput::Input() {
 	_input.ThumbRX = abs(_input.ThumbRX) > SHRT_MAX * 0.05f ? _input.ThumbRX : 0;
 	_input.ThumbRY = abs(_input.ThumbRY) > SHRT_MAX * 0.05f ? _input.ThumbRY : 0;
 
-	// スティック入力の値を「-1 ~ 1」に変換する
-	_lStick.x = (float)_input.ThumbLX / (float)SHRT_MAX;
-	_lStick.y = (float)_input.ThumbLY / (float)SHRT_MAX;
-	_rStick.x = (float)_input.ThumbRX / (float)SHRT_MAX;
-	_rStick.y = (float)_input.ThumbRY / (float)SHRT_MAX;
+	// スティック入力の値を「-1.0f ~ 1.0f」に変換する
+	_adjustedLStick.x = (float)_input.ThumbLX / (float)SHRT_MAX;
+	_adjustedLStick.y = (float)_input.ThumbLY / (float)SHRT_MAX;
+	_adjustedRStick.x = (float)_input.ThumbRX / (float)SHRT_MAX;
+	_adjustedRStick.y = (float)_input.ThumbRY / (float)SHRT_MAX;
+
+	// 誤差によって範囲を超えた場合にクランプをする
+	_adjustedLStick.x = Math::Clamp(-1.0f, 1.0f, _adjustedLStick.x);
+	_adjustedLStick.y = Math::Clamp(-1.0f, 1.0f, _adjustedLStick.y);
+	_adjustedRStick.x = Math::Clamp(-1.0f, 1.0f, _adjustedRStick.x);
+	_adjustedRStick.y = Math::Clamp(-1.0f, 1.0f, _adjustedRStick.y);
 
 	return true;
 };

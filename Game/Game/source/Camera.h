@@ -1,39 +1,31 @@
 #pragma once
-#include "dxlib.h"
-#include "appframe.h"
-class Camera
+
+#include "CameraBase.h"
+class Camera : public CameraBase
 {
 public:
-	Camera(XInput* input);
+	Camera(VECTOR InitPos);
 	~Camera();
 
-	virtual bool Input();
-	virtual bool Process(VECTOR pos);
-	void SetCamera(float dir, int shaft);
-	bool GetFlag() { return flag; }
+	virtual bool Process(VECTOR pos, int map);
 
-	bool DebugDraw(VECTOR pos);
+	float GetCamX() { return _cameraDirX; }//プレイヤーなどで使うかもしれないためゲッターとして作っておく
+	float GetCamY() { return _cameraDirY; }//プレイヤーなどで使うかもしれないためゲッターとして作っておく
 
-	float GetCamX() { return camera_dir_x; }
-	float GetCamY() { return camera_dir_y; }
-
-
-protected:
-	XInput* input;
-
-	float camera_dir_x = 0.0f;
-	float camera_dir_y = 0.0f;;
+	void SetCameraDistance();
+	bool ZoomProcess();
 	
+protected:
+	static const int CAMERA_ZOOM_MAX = 3;
 
-	float* move_camera;
-	float keep_dir;
-	float next_dir;
-	bool flag;
-	int count;
+	int _reverseX;//カメラ操作の入力によるX方向を決める変数
+	int _reverseY;//カメラ操作の入力によるY方向を決める変数
 
-	VECTOR cam_len;
+	bool _IsZoom;
+	float _startDistance, _endDistance;
 
-	VECTOR cam_gaze_shift;//足元を見るからおなかあたりにずらす
+	int _cameraDistanceCount; // カメラの距離を3段階に分ける
+	float _cameraChangeDistance[CAMERA_ZOOM_MAX];
 
+	VECTOR _gazeShift;//注視点をプレイヤーにしたときに基準点が足元なので腰あたりに移動させるための変数
 };
-
