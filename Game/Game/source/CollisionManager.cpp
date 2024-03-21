@@ -636,7 +636,7 @@ void CollisionManager::CheckHitIbAndBldg(IronBall* ironBall, BuildingBase* build
 			Player* player = static_cast<Player*>(ironBall->GetParentInstance());
 			VECTOR vDir = VSub(bCol.pos, player->GetPosition());
 			building->SetHit(vDir);
-			player->SetExp(50);
+			player->SetExp(building->GetExp());
 			Suppression::GetInstance()->SubSuppression(building->GetSuppression());
 			global._soundServer->DirectPlay(building->GetName() + "_Break");
 		}
@@ -692,7 +692,7 @@ void CollisionManager::CheckHitChAndBldg(IronBall* ironBall, BuildingBase* build
 			Player* player = static_cast<Player*>(ironBall->GetParentInstance());
 			VECTOR vDir = VSub(bCol.pos, player->GetPosition());
 			building->SetHit(vDir);
-			player->SetExp(50);
+			player->SetExp(building->GetExp());
 			global._soundServer->DirectPlay(building->GetName() + "_Break");
 			Suppression::GetInstance()->SubSuppression(building->GetSuppression());
 		}
@@ -746,6 +746,7 @@ void CollisionManager::CheckHit(EnemyBase* enemy, BuildingBase* building)
 		if (enemy->GetEnemyState() == ENEMYTYPE::DEAD) {
 			VECTOR vDir = VSub(bCol.pos, eCol.centerPos);
 			building->SetHit(vDir);
+			Player::GetInstance()->SetExp(building->GetExp());
 			global._soundServer->DirectPlay(building->GetName() + "_Break");
 		}
 		else {
@@ -803,6 +804,7 @@ void CollisionManager::CheckHit(BuildingBase* building, TowerParts* towerParts)
 		if (Collision3D::OBBSphereCol(bCol, tCol)) {
 			VECTOR vDir = VSub(bCol.pos, tCol.centerPos);
 			building->SetHit(vDir);
+			Player::GetInstance()->SetExp(building->GetExp());
 			global._soundServer->DirectPlay(building->GetName() + "_Break");
 			Suppression::GetInstance()->SubSuppression(building->GetSuppression());
 		}
