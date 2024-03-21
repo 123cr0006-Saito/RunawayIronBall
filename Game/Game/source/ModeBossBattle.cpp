@@ -136,10 +136,11 @@ bool ModeBossBattle::Process() {
 
 
 
-	Capsule pCol = _player->GetCollision();
+	
 
 	// 杭が破壊されていない場合に判定を行う
 	if (_boss->GetIsStakeBroken() == false) {
+		Capsule pCol = _player->GetCollision();
 		Capsule bSCol = _boss->GetStakeCollision();
 		bSCol.down_pos.y = 0.0f;
 
@@ -159,6 +160,7 @@ bool ModeBossBattle::Process() {
 	// プレイヤーからボスへの攻撃
 	// プレイヤーの攻撃判定が有効なら
 	if (_player->GetEnabledIBAttackCollision()) {
+		Capsule pCol = _player->GetCollision();
 		Sphere pIBCol = _player->GetIBCollision();
 
 		// ボスが無敵状態でなければ
@@ -205,6 +207,28 @@ bool ModeBossBattle::Process() {
 					_boss->SetDamageStake(3);
 				}
 			}
+		}
+	}
+
+	// ボスからプレイヤーへの攻撃
+	{
+		bool isHit = false;
+		Capsule pCol = _player->GetCollision();
+		Sphere bIBCol = _boss->GetIBCollision();
+
+		// ボス鉄球とプレイヤーの当たり判定
+		if (Collision3D::SphereCapsuleCol(bIBCol, pCol)) {
+			VECTOR vDir = VSub(pCol.down_pos, bIBCol.centerPos);
+			vDir.y = 0.0f;			
+			_player->SetBlastOffPower(vDir, 40.0f);
+			if (_player->GetIsInvincible() == false) {
+				_player->SetDamage();
+			}
+			isHit = true;
+		}
+
+		if (!isHit) {
+
 		}
 	}
 
