@@ -14,7 +14,7 @@ namespace {
 
 	// 移動速度（通常状態）
 	// 最大値
-	constexpr float MOVE_SPEED_MAX = 8.0f;
+	constexpr float MOVE_SPEED_MAX = 16.0f;
 	// 最小値
 	constexpr float MOVE_SPEED_MIN = 1.0f;
 	
