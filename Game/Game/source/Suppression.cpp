@@ -25,8 +25,8 @@ void Suppression::ClearSuppression() {
 };
 
 bool Suppression::GetIsRatio() {
-	// max‚Ì30%ˆÈ‰º‚È‚çtrue
-	if (_nowSuppression <= static_cast<float>(_maxSuppression / 10 * (10 - 7))) {
+	// max‚Ì20%ˆÈ‰º‚È‚çtrue
+	if (_nowSuppression <= static_cast<float>(_maxSuppression / 10 * (10 - 8))) {
 		return true;
 	}
 	return false;

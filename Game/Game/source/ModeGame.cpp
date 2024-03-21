@@ -371,12 +371,12 @@ bool ModeGame::Process() {
 		_drawDebug = !_drawDebug;
 	}
 
-	if (_player->GetHP() <= 0) {
+	if (_player->GetHP() <= 0 || _timeLimit->GetTimeLimit() < 0) {
 		global._soundServer->BgmFadeOut(2000);
 		_gameOverCnt++;	
 		if (!transitionGameOver && _gameOverCnt > 160) {
 			ModeServer::GetInstance()->Add(NEW ModeGameOver(this), 0, "GameOver");
-			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(2500, "GameOver", 50), 100, "Fade");
+			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(2000, "GameOver", 50), 100, "Fade");
 			transitionGameOver = true;
 		}
 	}
