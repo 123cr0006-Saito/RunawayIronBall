@@ -744,7 +744,7 @@ void CollisionManager::CheckHit(EnemyBase* enemy, BuildingBase* building)
 		if (enemy->GetEnemyState() == ENEMYTYPE::DEAD) {
 			VECTOR vDir = VSub(bCol.pos, eCol.centerPos);
 			building->SetHit(vDir);
-			global._soundServer->DirectPlay("OBJ_RockBreak");
+			global._soundServer->DirectPlay(building->GetName() + "_Break");
 		}
 		else {
 			// “G‚Ì‰Ÿ‚µo‚µˆ—
