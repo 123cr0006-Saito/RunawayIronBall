@@ -61,6 +61,12 @@ void Boss::Process()
 	_ironBall->Process();
 	if (!_isStakeBroken) {
 		CheckHitBossAndStake();
+
+		// �Y��HP�������ȉ��ɂȂ����狭����Ԃɂ���
+		if (_stakeHp / static_cast<float>(STAKE_MAX_HP) <= 0.5f) {
+			_ironBall->SetEnhanced();
+		}
+
 		// �Y�̖��G���Ԃ̍X�V
 		if (_isStakeInvincible) {
 			_stakeInvincibleCnt--;
