@@ -161,12 +161,26 @@ bool ModeBossBattle::Process() {
 
 		// ボスが無敵状態でなければ
 		if (_boss->GetIBInvincible() == false) {
+			bool isHit = false;
 			Sphere bIBCol = _boss->GetIBCollision();
+
 			// プレイヤー鉄球とボス鉄球の当たり判定
 			if (Collision3D::SphereCol(pIBCol, bIBCol)) {
 				VECTOR vDir = VSub(bIBCol.centerPos, pCol.down_pos);
 				vDir.y = 0.0f;
 				_boss->SetIBKnockBack(vDir, 12.0f);
+				isHit = true;
+			}
+
+			// プレイヤー鎖とボス鉄球の当たり判定
+			// プレイヤー鉄球が当たっている場合は、判定を行わない
+			if (!isHit) {
+				Capsule pCCol = _player->GetChainCollision();
+				if (Collision3D::SphereCapsuleCol(bIBCol, pCCol)) {
+					VECTOR vDir = VSub(bIBCol.centerPos, pCol.down_pos);
+					vDir.y = 0.0f;
+					_boss->SetIBKnockBack(vDir, 12.0f);
+				}
 			}
 		}
 
