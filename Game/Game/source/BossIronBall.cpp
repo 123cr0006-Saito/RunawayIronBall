@@ -87,6 +87,11 @@ namespace {
 BossIronBall::BossIronBall()
 {
 	_ibModelHandle = -1;
+	for (int i = 0; i < 2; i++) {
+		_ibModelHandleArray[i] = -1;
+	}
+	_isGlass = false;
+
 	_ibPos = VGet(0.0f, 0.0f, 0.0f);
 	_ibModelForwardDir = VGet(0.0f, 0.0f, -1.0f);
 	_ibModelNextForwardDir = VGet(0.0f, 0.0f, -1.0f);
@@ -153,6 +158,8 @@ BossIronBall::~BossIronBall()
 
 void BossIronBall::LoadModel()
 {
+	_ibModelHandleArray[0] = ResourceServer::MV1LoadModel("Bossnake", "res/Enemy/Cg_Enemy_Bossnake/Cg_Enemy_Bossnake.mv1");
+	_ibModelHandleArray[1] = ResourceServer::MV1LoadModel("BossnakeEnhanced", "res/Enemy/Cg_Enemy_Bossnake/Bossnake_Glass.mv1");
 	_ibModelHandle = ResourceServer::MV1LoadModel("Bossnake", "res/Enemy/Cg_Enemy_Bossnake/Cg_Enemy_Bossnake.mv1");
 	_chainModelHandle = ResourceServer::MV1LoadModel("Chain", "res/Chain/Cg_Chain.mv1");
 }
@@ -169,7 +176,10 @@ void BossIronBall::Init(VECTOR* stakePos)
 	_ibPos = _chainPos[BOSS_CHAIN_MAX - 1];
 	_ibSphereCol.centerPos = _ibPos;
 	_ibSphereCol.r = 20.0f * SCALE;
-	MV1SetScale(_ibModelHandle, VScale(VGet(1.0f, 1.0f, 1.0f), SCALE));
+	for (int i = 0; i < 2; i++) {
+		MV1SetScale(_ibModelHandleArray[i], VScale(VGet(1.0f, 1.0f, 1.0f), SCALE));
+	}
+	_ibModelHandle = _ibModelHandleArray[0];
 
 	_ibState = IB_STATE::IDLE;
 
@@ -258,6 +268,18 @@ void BossIronBall::Render()
 
 	MV1SetPosition(_ibModelHandle, _ibPos);
 	MV1DrawModel(_ibModelHandle);
+}
+
+void BossIronBall::ChangeGlass()
+{
+	if (!_isGlass) {
+		_ibModelHandle = _ibModelHandleArray[1];
+		_animIndex = MV1AttachAnim(_ibModelHandle, 0, -1, FALSE);
+		_animTotalTime = MV1GetAttachAnimTotalTime(_ibModelHandle, _animIndex);
+		_playTime = 0.0f;
+
+		_isGlass = true;
+	}
 }
 
 void BossIronBall::UpdateIBCollision()

@@ -121,10 +121,11 @@ void Boss::SetDamageStake(int damage)
 		_isStakeInvincible = true;
 		_stakeInvincibleCnt = STAKE_INVINCIBLE_CNT_MAX;
 		_stakeHp -= damage;
-		if (_stakeHp < 0) {
+		if (_stakeHp <= 0) {
 			_stakeHp = 0;
 			_isStakeBroken = true;
 			_ironBall->SetISStakeBroken(true);
+			_ironBall->ChangeGlass();
 		}
 	}
 }

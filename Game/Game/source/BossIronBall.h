@@ -14,6 +14,8 @@ public:
 	void Process();
 	void Render();
 
+	void ChangeGlass();
+
 	VECTOR GetPosition() { return _ibPos; }
 	void SetPosition(VECTOR pos) { _ibPos = pos; }
 
@@ -97,6 +99,11 @@ private:
 private:
 	// 鉄球のモデルハンドル
 	int _ibModelHandle;
+	// 鉄球のモデルのハンドル配列
+	std::array<int, 2> _ibModelHandleArray;
+	// ガラス化しているかどうか
+	bool _isGlass;
+
 	// 鉄球の座標
 	VECTOR _ibPos;
 	// 鉄球のモデルの向き
