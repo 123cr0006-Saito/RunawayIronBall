@@ -22,6 +22,7 @@ public:
 	VECTOR GetStakePosition() { return _stakePos; }
 
 	void SetIBPosition(VECTOR pos) { _ironBall->SetPosition(pos); }
+	bool GetIsGlass() { return _ironBall->GetIsGlass(); }
 
 	Capsule GetStakeCollision() { return _stakeCapsuleCol; }
 	Sphere GetIBCollision() { return _ironBall->GetIBCollision(); }

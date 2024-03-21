@@ -111,6 +111,7 @@ void Boss::CheckHitBossAndStake()
 			}
 			// 杭にダメージを与える
 			SetDamageStake(20);
+			global._soundServer->DirectPlay("House_Iron_Hit");
 		}
 	}
 }
@@ -126,6 +127,7 @@ void Boss::SetDamageStake(int damage)
 			_isStakeBroken = true;
 			_ironBall->SetISStakeBroken(true);
 			_ironBall->ChangeGlass();
+			global._soundServer->DirectPlay("House_Iron_Break");
 		}
 	}
 }

@@ -492,14 +492,13 @@ void BossIronBall::StiffenProcess()
 
 // 硬直状態に遷移する
 // isInvincible: 無敵状態にするかどうか デフォルトはfalse
-void BossIronBall::SetStiffen(int cnt, bool isInvincible)
+// playSound: SEを再生するかどうか デフォルトはtrue
+void BossIronBall::SetStiffen(int cnt, bool isInvincible, bool playSound)
 {
 	_ibState = IB_STATE::STIFFEN;
 	_ibStiffenCnt = cnt;
 	_isInvincible = isInvincible;
-	if (!_isInvincible) {
-		_playSound = true;
-	}
+	_playSound = playSound;
 }
 
 void BossIronBall::RushProcess()
@@ -900,7 +899,7 @@ void BossIronBall::KnockBackProcess()
 			}
 			else {
 				// 杭が破壊されていない場合は硬直時に無敵化を維持する
-				SetStiffen(10, true);
+				SetStiffen(10, true, false);
 			}
 		}
 	}

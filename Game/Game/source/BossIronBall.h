@@ -15,6 +15,7 @@ public:
 	void Render();
 
 	void ChangeGlass();
+	bool GetIsGlass() { return _isGlass; }
 
 	VECTOR GetPosition() { return _ibPos; }
 	void SetPosition(VECTOR pos) { _ibPos = pos; }
@@ -76,7 +77,7 @@ private:
 	// d’¼ó‘Ô‚Ìˆ—
 	void StiffenProcess();
 	// d’¼ó‘Ô‚É‘JˆÚ‚·‚é
-	void SetStiffen(int cnt, bool isInvincible = false);
+	void SetStiffen(int cnt, bool isInvincible = false, bool playSound = true);
 
 
 	// “ËiUŒ‚

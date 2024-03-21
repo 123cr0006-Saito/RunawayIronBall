@@ -166,6 +166,12 @@ bool ModeBossBattle::Process() {
 				VECTOR vDir = VSub(bIBCol.centerPos, pCol.down_pos);
 				vDir.y = 0.0f;
 				_boss->SetIBKnockBack(vDir, 12.0f);
+				if(_boss->GetIsGlass()){
+					global._soundServer->DirectPlay("SE_BOSS_Glass");
+				}
+				else {
+					global._soundServer->DirectPlay("House_Iron_Hit");
+				}
 				isHit = true;
 			}
 
@@ -177,6 +183,12 @@ bool ModeBossBattle::Process() {
 					VECTOR vDir = VSub(bIBCol.centerPos, pCol.down_pos);
 					vDir.y = 0.0f;
 					_boss->SetIBKnockBack(vDir, 12.0f);
+					if (_boss->GetIsGlass()) {
+						global._soundServer->DirectPlay("SE_BOSS_Glass");
+					}
+					else {
+						global._soundServer->DirectPlay("House_Iron_Hit");
+					}
 				}
 			}
 		}
@@ -189,6 +201,7 @@ bool ModeBossBattle::Process() {
 			// プレイヤー鉄球とボス杭の当たり判定
 			if (Collision3D::SphereCapsuleCol(pIBCol, bSCol)) {
 				_boss->SetDamageStake(3);
+				global._soundServer->DirectPlay("House_Iron_Hit");
 				isHit = true;
 			}
 
@@ -198,6 +211,7 @@ bool ModeBossBattle::Process() {
 				Capsule pCCol = _player->GetChainCollision();
 				if (Collision3D::TwoCapsuleCol(pCCol, bSCol)) {
 					_boss->SetDamageStake(3);
+					global._soundServer->DirectPlay("House_Iron_Hit");
 				}
 			}
 		}
