@@ -57,6 +57,7 @@ public:
 	bool BlastOffProcess();
 	bool Render() override;
 
+	void SetPos(VECTOR pos) override { CharacterBase::SetPos(pos); UpdateCollision(); };
 
 	int GetHP() { return _hp; }
 	void MaxHeal() { _hp = 4; }
@@ -65,12 +66,6 @@ public:
 	void ChangeIsInvincible(bool b, int frame);
 
 	void SetDamage();
-
-
-	// ƒLƒƒƒ‰ƒ‚ƒfƒ‹‚Ì“_–Åˆ—
-	void FlickerProcess();
-
-
 
 	float GetStamina() { return _stamina; }
 	float GetStaminaMax() { return _staminaMax; }
