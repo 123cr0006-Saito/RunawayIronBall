@@ -38,6 +38,9 @@ bool ModeGame::Initialize() {
 	int playerModelHandle = ResourceServer::MV1LoadModel("Player", "res/Character/cg_player_girl/Cg_Player_Girl.mv1");
 	_player = NEW Player();
 	_player->Init(playerModelHandle, VGet(0, 0, 0));
+	_gameOverCnt = 0;
+	transitionGameOver = false;
+
 	_camera = NEW Camera(_player->GetPosition());
 
 
@@ -370,8 +373,12 @@ bool ModeGame::Process() {
 
 	if (_player->GetHP() <= 0) {
 		global._soundServer->BgmFadeOut(2000);
-		ModeServer::GetInstance()->Add(NEW ModeGameOver(this), 0, "GameOver");
-		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(2500, "GameOver", 50), 100, "Fade");
+		_gameOverCnt++;	
+		if (!transitionGameOver && _gameOverCnt > 160) {
+			ModeServer::GetInstance()->Add(NEW ModeGameOver(this), 0, "GameOver");
+			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(2500, "GameOver", 50), 100, "Fade");
+			transitionGameOver = true;
+		}
 	}
 
 	VECTOR box_vec = ConvWorldPosToScreenPos(VAdd(_player->GetPosition(), VGet(0, 170, 0)));
