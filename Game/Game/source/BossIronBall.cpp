@@ -105,7 +105,6 @@ BossIronBall::BossIronBall()
 	_targetPos = VGet(0.0f, 0.0f, 0.0f);
 
 	_isHitStake = false;
-	_reachedStake = false;
 
 	_ibIdleCnt = 0;
 	_ibMoveDir = VGet(0.0f, 0.0f, 0.0f);
@@ -427,7 +426,6 @@ void BossIronBall::SetRush()
 	_isInvincible = true;
 
 	_ibState = IB_STATE::ATTACK_RUSH;
-	_reachedStake = false;
 	_posBeforeMoving = _ibPos;
 
 	_targetPos = VGet(_stakePos->x, _ibSphereCol.r, _stakePos->z);
@@ -521,16 +519,13 @@ void BossIronBall::RotationProcess()
 	switch (_phase)
 	{
 	case 0: // çYÇÃïtãﬂÇ‹Ç≈ñﬂÇÈ
-		if (_isHitStake) {
-			_reachedStake = true;
-		}
-		if (!_reachedStake) {
-			VECTOR v = VGet(0.0f, 0.0f, 0.0f);
-			v.x = Easing::Linear(_phaseCnt, _posBeforeMoving.x, _targetPos.x, RO_REACH_STAKE_CNT);
-			v.y = _ibSphereCol.r + 500.0f * sinf(DX_PI_F * (_phaseCnt / static_cast<float>(RO_REACH_STAKE_CNT)));
-			v.z = Easing::Linear(_phaseCnt, _posBeforeMoving.z, _targetPos.z, RO_REACH_STAKE_CNT);
-			_ibPos = v;
-		}
+
+		VECTOR v = VGet(0.0f, 0.0f, 0.0f);
+		v.x = Easing::Linear(_phaseCnt, _posBeforeMoving.x, _targetPos.x, RO_REACH_STAKE_CNT);
+		v.y = _ibSphereCol.r + 500.0f * sinf(DX_PI_F * (_phaseCnt / static_cast<float>(RO_REACH_STAKE_CNT)));
+		v.z = Easing::Linear(_phaseCnt, _posBeforeMoving.z, _targetPos.z, RO_REACH_STAKE_CNT);
+		_ibPos = v;
+
 		_phaseCnt++;
 		if (_phaseCnt > RU_REACH_STAKE_CNT) {
 			_rotRadius = RO_ROTAION_RADIUS_MIN;
@@ -579,7 +574,6 @@ void BossIronBall::SetRotation()
 
 	_ibState = IB_STATE::ATTACK_ROTATION;
 
-	_reachedStake = false;
 	_posBeforeMoving = _ibPos;
 
 	_rotBaseDir = VSub(_ibPos, *_stakePos);

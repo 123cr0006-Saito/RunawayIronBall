@@ -125,7 +125,6 @@ private:
 	VECTOR _targetPos;
 
 	bool _isHitStake;
-	bool _reachedStake;
 
 	//
 	int _ibIdleCnt;
