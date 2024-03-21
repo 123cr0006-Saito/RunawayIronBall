@@ -26,21 +26,16 @@ public:
 
 	void CheckHitBossAndStake();
 
-	void SetKnockBack(VECTOR vDir, float speed) { _ironBall->SetKnockBack(vDir, speed); }
+	void SetIBKnockBack(VECTOR vDir, float speed) { _ironBall->SetKnockBack(vDir, speed); }
 	// Y‚ÌHP‚ğŒ¸‚ç‚·
-	void SetDamageStake(int damage) {
-		_stakeHp -= damage;
-		if (_stakeHp < 0) { 
-			_stakeHp = 0; 
-			_isStakeBroken = true;
-			_ironBall->SetISStakeBroken(true);
-		}
-	}
+	void SetDamageStake(int damage);
 
 	// Y‚ÌHP‚ğæ“¾
 	int GetStakeHp() { return _stakeHp; }
 	// Y‚ÌÅ‘åHP‚ğæ“¾
 	int GetStakeMaxHp() { return STAKE_MAX_HP; }
+
+	bool GetIsStakeBroken() { return _isStakeBroken; }
 
 	// ƒfƒoƒbƒOî•ñ‚Ì•\¦
 	void DrawDebugInfo();
@@ -54,6 +49,10 @@ private:
 	Capsule _stakeCapsuleCol;
 	// Y‚ÌHP
 	int _stakeHp;
+	// Y‚ª–³“Gó‘Ô‚©‚Ç‚¤‚©
+	bool _isStakeInvincible;
+	// Y‚Ì–³“GŠÔ
+	int _stakeInvincibleCnt;
 	// Y‚ª”j‰ó‚³‚ê‚½‚©‚Ç‚¤‚©
 	bool _isStakeBroken;
 

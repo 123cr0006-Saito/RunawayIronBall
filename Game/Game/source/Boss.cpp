@@ -1,5 +1,10 @@
 #include "Boss.h"
 
+namespace {
+	// �Y�̍ő喳�G����
+	constexpr int STAKE_INVINCIBLE_CNT_MAX = 60;
+}
+
 Boss::Boss()
 {
 	_stakeModelHandle = -1;
@@ -11,6 +16,8 @@ Boss::Boss()
 	_stakeCapsuleCol.up = 0.0f;
 
 	_stakeHp = 0;
+	_isStakeInvincible = false;
+	_stakeInvincibleCnt = 0;
 	_isStakeBroken = false;
 
 	_ironBall = NEW BossIronBall();
@@ -54,6 +61,13 @@ void Boss::Process()
 	_ironBall->Process();
 	if (!_isStakeBroken) {
 		CheckHitBossAndStake();
+		// �Y�̖��G���Ԃ̍X�V
+		if (_isStakeInvincible) {
+			_stakeInvincibleCnt--;
+			if (_stakeInvincibleCnt <= 0) {
+				_isStakeInvincible = false;
+			}
+		}
 	}
 }
 
@@ -87,6 +101,20 @@ void Boss::CheckHitBossAndStake()
 			_ironBall->SetKnockBack(vDir, 30.0f);
 
 			SetDamageStake(20);
+		}
+	}
+}
+
+void Boss::SetDamageStake(int damage)
+{
+	if (!_isStakeInvincible) {
+		_isStakeInvincible = true;
+		_stakeInvincibleCnt = STAKE_INVINCIBLE_CNT_MAX;
+		_stakeHp -= damage;
+		if (_stakeHp < 0) {
+			_stakeHp = 0;
+			_isStakeBroken = true;
+			_ironBall->SetISStakeBroken(true);
 		}
 	}
 }
