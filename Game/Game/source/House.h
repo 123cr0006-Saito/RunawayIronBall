@@ -10,7 +10,7 @@ public:
 	House();
 	~House();
 
-	void Init(int modelHandle,std::string objName, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength) override;
+	void Init(int modelHandle,std::string objName, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength, int hp, int exp);
 	void Process() override;
 
 	void SetHit(VECTOR vDir = VGet(0.0f, 0.0f, -1.0f)) override;
@@ -23,6 +23,8 @@ protected:
 	// ”j‰óˆ—‚Ì—LŒø‰»
 	void ActivateBreakObject(bool activate, VECTOR vDir = VGet(0.0f, 0.0f, 0.0f));
 
+	int _hp;
+	int _exp;
 	// ”j‰óˆ—ƒNƒ‰ƒX
 	BreakObject* _breakObj;
 };

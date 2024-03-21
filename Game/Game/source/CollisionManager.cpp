@@ -785,7 +785,7 @@ void CollisionManager::CheckHit(EnemyBase* enemy, TowerParts* towerParts)
 
 		if (Collision3D::SphereCol(eCol, tCol)) {
 			VECTOR vDir = VSub(tCol.centerPos, eCol.centerPos);
-			enemy->SetKnockBackAndDamage(vDir, 200);
+			enemy->SetKnockBackAndDamage(vDir, 9999);
 			global._soundServer->DirectPlay("SE_Hit01");
 		}
 	}

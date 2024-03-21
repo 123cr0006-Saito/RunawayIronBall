@@ -32,6 +32,9 @@ namespace {
 	// 「スティック入力ベクトルの大きさ」がこの値を超えたら「走り」状態になる
 	constexpr float MOVE_RUN_THRESHOLD = 0.6f;
 
+	// 回転攻撃のカウント
+	// このフレーム数以上の間、ボタンを押し続けると回転攻撃が発動する
+	constexpr int ROTAION_SWING_CNT_MAX = 45;
 
 	// スタミナの最大値
 	constexpr float STAMINA_MAX = 480.0f;
@@ -107,7 +110,7 @@ Player::Player()
 	_nowLevel = 0;
 	_maxLevel = 0;
 	_power = 0;
-	_powerAndScale.clear();
+
 	_nextLevel.clear();
 	_animManager = nullptr;
 	_frameData = nullptr;
@@ -235,16 +238,14 @@ void Player::SetBone() {
 	_bone.push_back(NEW bone(&_modelHandle, Ahoge, Ahoge.size() - 2, "Data/BoneParam/Ahoge.json"));
 };
 
-void Player::SetNextExp(std::string FileName) {
-	myJson json(FileName);
-	_maxLevel = json._size - 1;
-	for(auto& expList : json._json) {
-		int nowLevel = 0;
-		int exp = 0;
-		expList.at("Level").get_to(nowLevel);
-		expList.at("Exp").get_to(exp);
-		_nextLevel[nowLevel] = exp;
+bool Player::HealHp(){
+	if(_hp < HP_MAX){
+		_hp++;
+		global._soundServer->DirectPlay("SE_Heal");
+		global._soundServer->DirectPlay("PL_Heal");
+		return true;
 	}
+	return false;
 };
 
 bool Player::UpdateExp() {
@@ -335,8 +336,8 @@ bool Player::Init(int modelHandle, VECTOR pos)
 
 	_nowExp = 0;
 	_nowLevel = 0;
-	SetNextExp("res/JsonFile/ExpList.json");
-	SetPowerScale("res/JsonFile/IronState.json");
+
+	SetLevelParam("res/JsonFile/IronState.json");
 	UpdateLevel();
 
 
@@ -462,10 +463,10 @@ bool Player::Process(float camAngleY)
 
 	// スタミナの更新
 	if (_isRecoveringStamina) {
-		_staminaRecoverySpeed = STAMINA_MAX / STANIMA_RECOVERY_TIME;
+		_staminaRecoverySpeed = _staminaMax / STANIMA_RECOVERY_TIME;
 		_stamina += _staminaRecoverySpeed;
-		if (_stamina > STAMINA_MAX) {
-			_stamina = STAMINA_MAX;
+		if (_stamina > _staminaMax) {
+			_stamina = _staminaMax;
 			_isTired = false;
 			//_animStatus = ANIM_STATE::IDLE;
 		}
@@ -491,26 +492,32 @@ bool Player::Process(float camAngleY)
 			_isRecoveringStamina = true;
 		}
 	}
-	//if(!_isAttackState ){
-	//	_isRecoveringStamina = false;
-	//}
 
 	// 攻撃状態の更新
 	if (_isTired == false && _animStatus != ANIM_STATE::AVOIDANCE && _animStatus != ANIM_STATE::HIT) {
-		// 回転攻撃
-		if (_rotationCnt > 90) {
+		// 回転攻撃が発生するかどうかの判定
+		if (_rotationCnt > ROTAION_SWING_CNT_MAX) {
 			if (!_isRotationSwinging) {
 				_animStatus = ANIM_STATE::TO_ROTATION_SWING;
 			}
 		}
-		// 通常攻撃
-		else if (_input->GetRel(XINPUT_BUTTON_X) != 0) {
-			_playNextComboAnim = true;
-			if (!_isAttackState) {
-				_animStatus = ANIM_STATE::HORISONTAL_SWING_01;
+		// コンボ攻撃1段目の入力
+		else if (!_isAttackState) {
+			if (_input->GetRel(XINPUT_BUTTON_X) != 0) { // リリース入力
+				_playNextComboAnim = true;
+				if (!_isAttackState) {
+					_animStatus = ANIM_STATE::HORISONTAL_SWING_01;
+				}
+			}
+		}
+		// コンボ攻撃2段目・3段目の入力
+		else if (_animStatus == ANIM_STATE::HORISONTAL_SWING_01 || _animStatus == ANIM_STATE::HORISONTAL_SWING_02) {
+			if (_input->GetTrg(XINPUT_BUTTON_X) != 0) { // トリガ入力
+				_playNextComboAnim = true;
 			}
 		}
 
+		// 回転攻撃の入力
 		if (_input->GetKey(XINPUT_BUTTON_X) != 0) {
 			_rotationCnt++;
 		}
@@ -523,6 +530,10 @@ bool Player::Process(float camAngleY)
 				_forwardDir = _inputWorldDir;
 			}
 		}
+	}
+
+	if (!_isRotationSwinging && _isAttackState) {
+		_rotationCnt = 0;
 	}
 
 	if (!_isTired && _canMotionCancel) {
@@ -609,27 +620,34 @@ void Player::UpdateCollision()
 	_capsuleCollision.Update();
 }
 
-void Player::SetPowerScale(std::string FileName)
+void Player::SetLevelParam(std::string FileName)
 {
 	myJson json(FileName);
+	_maxLevel = json._size - 1;
 	int level = 0;
-	int power = 0;
-	float scale = 0;
+	int exp = 0;
+	LevelData data;
 	for (auto& list : json._json) {
+		// レベルと経験値を取得
 		list.at("Level").get_to(level);
-		list.at("Power").get_to(power);
-		list.at("Magnification").get_to(scale);
-		_powerAndScale[level] = std::make_pair(power, scale);
+		list.at("Exp").get_to(exp);
+		_nextLevel[level] = exp;
+		// 攻撃力と拡大率・スタミナを取得
+		list.at("Power").get_to(data.power);
+		list.at("Magnification").get_to(data.magnification);
+		list.at("Stamina").get_to(data.stamina);
+		_levelParam[level] = data;
 	}
 }
 
 bool Player::UpdateLevel()
 {
-	_power = _powerAndScale[_nowLevel].first;
-	_ironBall->UpdateLevel(_powerAndScale[_nowLevel].second);
+	_power = _levelParam[_nowLevel].power;
+	_ironBall->UpdateLevel(_levelParam[_nowLevel].magnification);
+	_staminaMax =  _levelParam[_nowLevel].stamina;
 	if (_nowLevel > 0) {
 		// レベルアップエフェクト
-		float size = 5.0f * _powerAndScale[_nowLevel].second;
+		float size = 5.0f * _levelParam[_nowLevel].magnification;
 		VECTOR* pos = GetIBPosPtr();
 		int effectHandle = ResourceServer::Load("FX_3D_Level_Up", "res/Effekseer/FX_3D_Level_Up/FX_3D_Level_Up.efkefc");
 		EffekseerPosSynchro* effect = new EffekseerPosSynchro(effectHandle, pos, size);
@@ -763,12 +781,13 @@ void Player::DrawDebugInfo()
 
 	DrawCapsule3D(_capsuleCollision.up_pos, _capsuleCollision.down_pos, _capsuleCollision.r, 16, COLOR_RED, COLOR_RED, false);
 
-	//int x = 0;
-	//int y = 100;
-	//int line = 0;
+	int x = 0;
+	int y = 500;
+	int line = 0;
 	//DrawFormatString(x, y + line * 16, COLOR_RED, "HP:%d", _hp); line++;
 	//DrawFormatString(x, y + line * 16, COLOR_RED, "isInvincible:%d", _isInvincible); line++;
 	//DrawFormatString(x, y + line * 16, COLOR_RED, "invincibleCnt:%d", _invincibleRemainingCnt); line++;
+	DrawFormatString(x, y + line * 16, COLOR_RED, "_rotationCnt:%d", _rotationCnt); line++;
 
 	//DrawFormatString(x, y + line * 16, COLOR_RED, "ANIM:%d", _animStatus); line++;
 	//DrawCapsule3D(_capsuleCollision._startPos, _capsuleCollision._endPos, _capsuleCollision._r, 16, COLOR_RED, COLOR_RED, false);

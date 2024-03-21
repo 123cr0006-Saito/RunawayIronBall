@@ -4,6 +4,11 @@
 #include "ModeZoomCamera.h"
 #include "ModeRotationCamera.h"
 
+namespace {
+	// ステージの半径
+	constexpr float STAGE_RADIUS = 8000.0f / 2.0f;
+}
+
 bool ModeBossBattle::Initialize() {
 	if (!base::Initialize()) { return false; }
 
@@ -19,11 +24,11 @@ bool ModeBossBattle::Initialize() {
 
 	int resolution = 8192;
 	_shadowHandle = MakeShadowMap(resolution, resolution);
-	_skySphere = ResourceServer::Load("SkySpehe", "res/SkySphere/Skyspehre.mv1");
-	_stage = ResourceServer::Load("BossStage", "res/BossStage/Stage_Boss.mv1");
+	_skySphere = ResourceServer::MV1LoadModel("SkySpehe", "res/SkySphere/Skyspehre.mv1");
+	_stage = ResourceServer::MV1LoadModel("BossStage", "res/BossStage/Stage_Boss.mv1");
 	MV1SetPosition(_skySphere, VGet(0, 0, 0));
 	MV1SetScale(_skySphere, VScale(VGet(1, 1, 1), 0.5f));
-	MV1SetPosition(_stage, VGet(0, -5000.0f, 0));
+	MV1SetPosition(_stage, VGet(0, -4995.0f, 0));
 
 	int playerModelHandle = ResourceServer::MV1LoadModel("Player", "res/Character/cg_player_girl/Cg_Player_Girl.mv1");
 	_player = NEW Player();
@@ -35,26 +40,20 @@ bool ModeBossBattle::Initialize() {
 	_boss = NEW Boss();
 	_boss->LoadModel();
 	_boss->Init(VGet(0, 0, 0));
+	_boss->SetStageRadius(STAGE_RADIUS);
 
 	_classificationEffect = NEW ClassificationEffect();
 	_effectManeger = NEW EffectManeger();
 
 
 	{
-		ResourceServer::LoadDivGraph("Gate", "res/TemporaryMaterials/FX_Hole_2D00_sheet.png", 43, 16, 3, 1200, 1200);
-		ResourceServer::Load("Player", "res/Character/cg_player_girl/Cg_Player_Girl.mv1");
-		ResourceServer::Load("IronBall", "res/Character/Cg_Iron_Ball/Cg_Iron_Ball.mv1");
-		ResourceServer::Load("Chain", "res/Chain/Cg_Chain.mv1");
-		ResourceServer::Load("GirlTexWhite", "res/Character/cg_player_girl/FlickerTexture.png");
-
-		ResourceServer::Load("FX_3D_Level_Up", "res/Effekseer/FX_3D_Level_Up/FX_3D_Level_Up.efkefc");
-		ResourceServer::Load("Stanp", "res/Effekseer/Attack/HorizontalThird.efkefc");
-		ResourceServer::Load("Rotation", "res/Effekseer/FX_3D_Rotate_2/FX_3D_Rotate.efkefc");
-		ResourceServer::Load("SlashR", "res/Effekseer/Slash/SlashRight.efkefc");
-		ResourceServer::Load("SlashL", "res/Effekseer/Slash/SlashLeft.efkefc");
-		ResourceServer::LoadMultGraph("split", "res/TemporaryMaterials/split/test", ".png", 30, _effectSheet);
-		ResourceServer::LoadDivGraph("Dust", "res/TemporaryMaterials/FX_Dust_2D.png", 44, 20, 3, 1000, 1000);
-		ResourceServer::LoadEffekseerEffect("Stanp", "res/Effekseer/Attack/HorizontalThird.efkefc");
+		global._soundServer->Add("SE_Boss_Stay", new SoundItemSE("Sound/SE/Enemy/SE_Boss_Stay.wav"));
+		global._soundServer->Add("SE_BOSS_Confusion", new SoundItemSE("Sound/SE/Enemy/SE_BOSS_Confusion.wav"));
+		global._soundServer->Add("SE_BOSS_Rush", new SoundItemSE("Sound/SE/Enemy/SE_BOSS_Rush.wav"));
+		global._soundServer->Add("SE_BOSS_Jump_Attack_01", new SoundItemSE("Sound/SE/Enemy/SE_BOSS_Jump_Attack_01.wav"));
+		global._soundServer->Add("SE_BOSS_Jump_Attack_02", new SoundItemSE("Sound/SE/Enemy/SE_BOSS_Jump_Attack_02.wav"));
+		global._soundServer->Add("SE_BOSS_Rotate", new SoundItemSE("Sound/SE/Enemy/SE_BOSS_Rotate.wav"));
+		global._soundServer->Add("SE_BOSS_Glass", new SoundItemSE("Sound/SE/Enemy/SE_BOSS_Glass.wav"));
 	}
 
 	_suppression = NEW Suppression();
@@ -110,12 +109,6 @@ bool ModeBossBattle::Terminate() {
 		delete _gaugeUI[i];
 	}
 
-	
-	ResourceServer::MV1DeleteModel("SkySpehe", _skySphere);
-	_skySphere = -1;
-	ResourceServer::MV1DeleteModel("BossStage", _stage);
-	_stage = -1;	
-
 	return true;
 }
 
@@ -123,6 +116,10 @@ bool ModeBossBattle::Process() {
 	base::Process();
 	global._timer->TimeElapsed();
 	_sVib->UpdateScreenVibration();
+
+	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_RIGHT_THUMB)) {
+		_boss->SetDamageStake(50);
+	}
 
 	_player->Process(_camera->GetCamY());
 
@@ -132,39 +129,179 @@ bool ModeBossBattle::Process() {
 
 
 
-	Capsule pCol = _player->GetCollision();
-	Capsule bSCol = _boss->GetStakeCollision();
-	bSCol.down_pos.y = 0.0f;
 	
-	VECTOR vSub = VSub(pCol.down_pos, bSCol.down_pos);
-	vSub.y = 0.0f;
-	float squareLength = VSquareSize(vSub);
-	if (squareLength < (bSCol.r + pCol.r) * (bSCol.r + pCol.r)) {
-		VECTOR vDir = vSub;
-		vDir = VNorm(vDir);
-		float extrudeLength = bSCol.r + pCol.r;
-		VECTOR vMove = VAdd(bSCol.down_pos, VScale(vDir, extrudeLength));
+
+	// 杭が破壊されていない場合に判定を行う
+	if (_boss->GetIsStakeBroken() == false) {
+		Capsule pCol = _player->GetCollision();
+		Capsule bSCol = _boss->GetStakeCollision();
+		bSCol.down_pos.y = 0.0f;
+
+		// プレイヤーとボス杭の当たり判定
+		VECTOR vSub = VSub(pCol.down_pos, bSCol.down_pos);
+		vSub.y = 0.0f;
+		float squareLength = VSquareSize(vSub);
+		if (squareLength < (bSCol.r + pCol.r) * (bSCol.r + pCol.r)) {
+			VECTOR vDir = vSub;
+			vDir = VNorm(vDir);
+			float extrudeLength = bSCol.r + pCol.r;
+			VECTOR vMove = VAdd(bSCol.down_pos, VScale(vDir, extrudeLength));
+			_player->SetPos(vMove);
+		}
+	}
+
+	// プレイヤーからボスへの攻撃
+	// プレイヤーの攻撃判定が有効なら
+	if (_player->GetEnabledIBAttackCollision()) {
+		Capsule pCol = _player->GetCollision();
+		Sphere pIBCol = _player->GetIBCollision();
+
+		// ボスが無敵状態でなければ
+		if (_boss->GetIBInvincible() == false) {
+			bool isHit = false;
+			Sphere bIBCol = _boss->GetIBCollision();
+
+			// プレイヤー鉄球とボス鉄球の当たり判定
+			if (Collision3D::SphereCol(pIBCol, bIBCol)) {
+				VECTOR vDir = VSub(bIBCol.centerPos, pCol.down_pos);
+				vDir.y = 0.0f;
+				_boss->SetIBKnockBack(vDir, 12.0f);
+				if(_boss->GetIsGlass()){
+					global._soundServer->DirectPlay("SE_BOSS_Glass");
+				}
+				else {
+					global._soundServer->DirectPlay("House_Iron_Hit");
+				}
+				isHit = true;
+			}
+
+			// プレイヤー鎖とボス鉄球の当たり判定
+			// プレイヤー鉄球が当たっている場合は、判定を行わない
+			if (!isHit) {
+				Capsule pCCol = _player->GetChainCollision();
+				if (Collision3D::SphereCapsuleCol(bIBCol, pCCol)) {
+					VECTOR vDir = VSub(bIBCol.centerPos, pCol.down_pos);
+					vDir.y = 0.0f;
+					_boss->SetIBKnockBack(vDir, 12.0f);
+					if (_boss->GetIsGlass()) {
+						global._soundServer->DirectPlay("SE_BOSS_Glass");
+					}
+					else {
+						global._soundServer->DirectPlay("House_Iron_Hit");
+					}
+				}
+			}
+		}
+
+		// 杭が破壊されていない場合に判定を行う
+		if (_boss->GetIsStakeBroken() == false) {
+			bool isHit = false;
+			Capsule bSCol = _boss->GetStakeCollision();
+
+			// プレイヤー鉄球とボス杭の当たり判定
+			if (Collision3D::SphereCapsuleCol(pIBCol, bSCol)) {
+				_boss->SetDamageStake(3);
+				global._soundServer->DirectPlay("House_Iron_Hit");
+				isHit = true;
+			}
+
+			// プレイヤー鎖とボス杭の当たり判定
+			// プレイヤー鉄球が当たっている場合は、判定を行わない
+			if (!isHit) {
+				Capsule pCCol = _player->GetChainCollision();
+				if (Collision3D::TwoCapsuleCol(pCCol, bSCol)) {
+					_boss->SetDamageStake(3);
+					global._soundServer->DirectPlay("House_Iron_Hit");
+				}
+			}
+		}
+	}
+
+	// ボスからプレイヤーへの攻撃
+	{
+		bool isHit = false;
+		Capsule pCol = _player->GetCollision();
+		Sphere bIBCol = _boss->GetIBCollision();
+		VECTOR bSPos = _boss->GetStakePosition();
+
+		// ボス鉄球とプレイヤーの当たり判定
+		if (Collision3D::SphereCapsuleCol(bIBCol, pCol)) {
+			VECTOR vDir = VGet(0.0f, 0.0f, 0.0f);
+			// 回転攻撃中でなければ、ボス鉄球から見たプレイヤーの方向にはじく
+			if (_boss->GetIsRotationAttack() == false) {
+				vDir = VSub(pCol.down_pos, bIBCol.centerPos);
+			}
+			// 回転攻撃中なら、ボス杭から見たプレイヤーの方向にはじく（ステージの外側にはじく）
+			else {
+				vDir = VSub(pCol.down_pos, bSPos);
+			}
+			// y成分を0にする
+			vDir.y = 0.0f;			
+			_player->SetBlastOffPower(vDir, 40.0f);
+			// 無敵状態でなければダメージを与える
+			if (_player->GetIsInvincible() == false) {
+				_player->SetDamage();
+			}
+			isHit = true;
+		}
+
+		// ボス鎖とプレイヤーの当たり判定
+		// ボス鉄球が当たっている場合は、判定を行わない
+		if (!isHit) {
+			// ボス鎖の当たり判定は回転攻撃中にのみ行う
+			if (_boss->GetIsRotationAttack()) {
+				Capsule bCCol = _boss->GetChainCollision();
+				if (Collision3D::TwoCapsuleCol(bCCol, pCol)) {
+					// ボス杭から見たプレイヤーの方向にはじく（ステージの外側にはじく）
+					VECTOR vDir = VSub(pCol.down_pos, bSPos);
+					vDir.y = 0.0f;
+					_player->SetBlastOffPower(vDir, 40.0f);
+					// 無敵状態でなければダメージを与える
+					if (_player->GetIsInvincible() == false) {
+						_player->SetDamage();
+					}
+				}
+			}
+		}
+	}
+
+
+	// プレイヤーの移動制限
+	VECTOR pPos = _player->GetPosition();
+	pPos.y = 0.0f;
+	float squareLength = VSquareSize(pPos);
+	float moveLength = STAGE_RADIUS - 170.0f;
+	if (squareLength > powf(moveLength, 2)) {
+		VECTOR vDir = VNorm(pPos);
+		VECTOR vMove = VScale(vDir, moveLength);
 		_player->SetPos(vMove);
 	}
 
-	bool enabledIBAttackCollision = _player->GetEnabledIBAttackCollision();
-	if (enabledIBAttackCollision) {
 
-		Sphere pIBCol = _player->GetIBCollision();
+	// ボス鉄球がステージから出ているかを判定
+	// 杭が破壊されている場合に判定をする
+	if (_boss->GetIsStakeBroken()) {
 		Sphere bIBCol = _boss->GetIBCollision();
-		if (Collision3D::SphereCol(pIBCol, bIBCol)) {
-			VECTOR vDir = VSub(bIBCol.centerPos, pCol.down_pos);
-			vDir.y = 0.0f;
-			vDir = VNorm(vDir);
-			_boss->SetKnockBack(vDir);
+
+		VECTOR vDir = VSub(bIBCol.centerPos, VGet(0, 0, 0));
+		vDir.y = 0.0f;
+		float squareLength = VSquareSize(vDir);
+		squareLength -= powf(bIBCol.r + 20.0f, 2);
+
+		if (_boss->GetOnStage()) {
+			if (squareLength > powf(STAGE_RADIUS, 2)) {
+				_boss->SetOnStage(false);
+			}
+		}
+		else {
+			if (squareLength < powf(STAGE_RADIUS, 2)) {
+				VECTOR v = VGet(0, 0, 0);
+				vDir = VNorm(vDir);
+				_boss->SetIBPosition(VAdd(v, VScale(vDir, STAGE_RADIUS + bIBCol.r + 150.0f)));
+			}
 		}
 
-		if (Collision3D::SphereCapsuleCol(pIBCol, bSCol)) {
-			_boss->SetDamageStake(3);
-		}
 	}
-
-
 
 	//for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
 	//	ui[i]->Process();
@@ -305,7 +442,7 @@ bool ModeBossBattle::Render() {
 		_gaugeUI[0]->Draw(_gaugeHandle[3]);
 	}
 
-
+	DrawFormatString(1800, 1000, COLOR_RED, "StakeHP:%d", _boss->GetStakeHp());
 	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	//for (auto itr = _buildingBase.begin(); itr != _buildingBase.end(); ++itr) {
 	//	(*itr)->DrawDebugInfo();

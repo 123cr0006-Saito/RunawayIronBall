@@ -126,7 +126,7 @@ void Chainguard::SetKnockBackAndDamage(VECTOR vDir, float damage) {
 		// 攻撃エフェクト発生
 		VECTOR effectPos = VAdd(VAdd(_pos, _diffeToCenter), VScale(vDir, -50));
 		int effectHandle[30];
-		ResourceServer::LoadMultGraph("split", "res/TemporaryMaterials/split/test", ".png", 30, effectHandle);
+		ResourceServer::LoadMultGraph("HitEffect_Blue", "res/Effect/HitEffect_Blue/HitEffect_Blue", ".png", 30, effectHandle);
 		BoardPolygon* effect = new BoardPolygon(effectPos, GetCameraBillboardMatrix(), 200, effectHandle, 30, 0.5f / 60.0f * 1000.0f);
 		EffectManeger::GetInstance()->LoadEffect(effect);
 		_currentTime = GetNowCount();

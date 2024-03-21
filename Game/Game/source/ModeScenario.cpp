@@ -1,6 +1,7 @@
 #include "ModeScenario.h"
 #include "ModeFadeComeBack.h"
 #include "ModeMovie.h"
+#include "ModeGame.h"
 
 bool ModeScenario::IsLoadHandle = false;
 std::unordered_map<int, int> ModeScenario::_charaHandleMap;
@@ -177,9 +178,25 @@ bool ModeScenario::Terminate(){
 	return true;
 };
 
+void  ModeScenario::ScenarioUniqueProcess(){
+	switch(_scenarioNum){
+	case 1 :
+		global._soundServer->DirectPlay("Stage01");
+		ModeServer::GetInstance()->Add(NEW ModeGame(), 1, "Game");
+		break;
+	case 2:
+		break;
+	case 3:
+		ModeServer::GetInstance()->Add(NEW ModeMovie(), 10, "Movie");
+		break;
+	}
+};
+
 bool ModeScenario::Process(){
 	base::Process();
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
+	ModeServer::GetInstance()->PauseProcessUnderLayer();
+	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
 	// ミリ秒単位での文字の描画
 	float speed = 3.0f / 60.0f * 1000;// ミリ秒単位
@@ -209,16 +226,11 @@ bool ModeScenario::Process(){
 		}
 	}
 
-	// シナリオをすべて描画し終えた
-	if (_nowTextLine >= _scenarioData.size() || _input->GetTrg(XINPUT_BUTTON_START)) {
+	// シナリオをすべて描画し終えた スキップするときは自分より上のレイヤーがないか確認する
+	if (_nowTextLine >= _scenarioData.size() || _input->GetTrg(XINPUT_BUTTON_START) && !ModeServer::GetInstance()->IsAboutLayer(this)) {
 		_nowTextLine = _scenarioData.size()-1;
-		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000,this), 100, "FadeIn");
-		if (_scenarioNum == 4) {
-			ModeServer::GetInstance()->Add(NEW ModeMovie(), 10, "Movie");
-		}
-		else {
-			global._soundServer->DirectPlay("Stage0" + std::to_string(_scenarioNum));
-		}
+		ScenarioUniqueProcess();
+		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000,this), 1000, "Fade");
 	}
 	
 	return true;

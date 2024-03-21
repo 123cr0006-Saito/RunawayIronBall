@@ -35,7 +35,7 @@ public:
 	bool GetEnabledAttackCollision() { return _enabledAttackCollision; }
 	void SetEnabledAttackCollision(bool state) { _enabledAttackCollision = state; }
 
-	Sphere GetIBCollision() { return _ibSphereCollision; }
+	Sphere GetIBCollision() { return _ibAttackSphereCollision; }
 	Capsule GetChainCollision() { return _chainCapsuleCollision; }
 	void UpdateIBCollision();
 	void UpdateChainCollision();
@@ -70,8 +70,10 @@ private:
 	VECTOR _iPos;
 	VECTOR _iForwardDir;
 
-	// “S‹…•”•ª‚Ì“–‚½‚è”»’è
-	Sphere _ibSphereCollision;
+	// “S‹…•”•ª‚Ì“–‚½‚è”»’èŒ`ói’n–Ê‚Æ‚Ì“–‚½‚è”»’è‚Ég‚¤j
+	Sphere _ibBodySphereCollision;
+	// “S‹…•”•ª‚ÌUŒ‚“–‚½‚è”»’è
+	Sphere _ibAttackSphereCollision;
 	// ½•”•ª‚Ì“–‚½‚è”»’è
 	Capsule _chainCapsuleCollision;
 	// ½•”•ª‚Ì“–‚½‚è”»’è‚ğCollisionManager‚É“o˜^‚·‚é‚½‚ß‚ÌCell
@@ -112,7 +114,5 @@ private:
 
 	int _playerModelHandle;
 
-	//-------------------
-	// âV“¡‚ªì¬‚µ‚½•Ï”‚Å‚·B
-	std::map<int, std::pair<int, float>> _powerAndScale;//UŒ‚—Í‚ÆŠg‘å—¦‚ğŠi”[‚µ‚½ƒRƒ“ƒeƒi‚Å‚·B
+
 };
