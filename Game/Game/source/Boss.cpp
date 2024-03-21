@@ -1,7 +1,7 @@
 #include "Boss.h"
 
 namespace {
-	// �Y�̍ő喳�G����
+	// 最大無敵時間
 	constexpr int STAKE_INVINCIBLE_CNT_MAX = 60;
 }
 
@@ -62,12 +62,12 @@ void Boss::Process()
 	if (!_isStakeBroken) {
 		CheckHitBossAndStake();
 
-		// �Y��HP�������ȉ��ɂȂ����狭����Ԃɂ���
+		// HPが半分以下になったら鉄球を強化状態にする
 		if (_stakeHp / static_cast<float>(STAKE_MAX_HP) <= 0.5f) {
 			_ironBall->SetEnhanced();
 		}
 
-		// �Y�̖��G���Ԃ̍X�V
+		// 杭の無敵時間を更新する
 		if (_isStakeInvincible) {
 			_stakeInvincibleCnt--;
 			if (_stakeInvincibleCnt <= 0) {
@@ -101,14 +101,15 @@ void Boss::CheckHitBossAndStake()
 		_ironBall->SetPosition(vMove);
 		_ironBall->SetHitStake(true);
 
-		// �m�b�N�o�b�N��ԂȂ�͂����Ԃ�
+		// 鉄球がノックバック時ならはじき返し処理を行う
 		if (_ironBall->CheckKnockBack()) {
-			// �n�[�h�m�b�N�o�b�N���ɂ�BossIronBall�N���X��ŕʂ̏�����s���̂ŁA�����ł͂͂����Ԃ�������s��Ȃ�
+			// ハードノックバック時にはBossIronBallクラス内で別の処理を行うため、ここでははじき返し処理を行わない
 			if (_ironBall->CheckHardKnockBack() == false) {
 				VECTOR vDir = VSub(ibCol.centerPos, _stakePos);
 				vDir.y = 0.0f;
 				_ironBall->SetKnockBack(vDir, 30.0f);
 			}
+			// 杭にダメージを与える
 			SetDamageStake(20);
 		}
 	}
