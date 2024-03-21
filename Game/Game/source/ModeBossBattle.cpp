@@ -170,12 +170,24 @@ bool ModeBossBattle::Process() {
 			}
 		}
 
+		// 杭が破壊されていない場合に判定を行う
 		if (_boss->GetIsStakeBroken() == false) {
+			bool isHit = false;
 			Capsule bSCol = _boss->GetStakeCollision();
-			bSCol.down_pos.y = 0.0f;
+
 			// プレイヤー鉄球とボス杭の当たり判定
 			if (Collision3D::SphereCapsuleCol(pIBCol, bSCol)) {
 				_boss->SetDamageStake(3);
+				isHit = true;
+			}
+
+			// プレイヤー鎖とボス杭の当たり判定
+			// プレイヤー鉄球が当たっている場合は、判定を行わない
+			if (!isHit) {
+				Capsule pCCol = _player->GetChainCollision();
+				if (Collision3D::TwoCapsuleCol(pCCol, bSCol)) {
+					_boss->SetDamageStake(3);
+				}
 			}
 		}
 	}
