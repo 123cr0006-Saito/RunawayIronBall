@@ -4,6 +4,11 @@
 #include "ModeZoomCamera.h"
 #include "ModeRotationCamera.h"
 
+namespace {
+	// ステージの半径
+	constexpr float STAGE_RADIUS = 7950.0f / 2.0f;
+}
+
 bool ModeBossBattle::Initialize() {
 	if (!base::Initialize()) { return false; }
 
@@ -23,7 +28,7 @@ bool ModeBossBattle::Initialize() {
 	_stage = ResourceServer::MV1LoadModel("BossStage", "res/BossStage/Stage_Boss.mv1");
 	MV1SetPosition(_skySphere, VGet(0, 0, 0));
 	MV1SetScale(_skySphere, VScale(VGet(1, 1, 1), 0.5f));
-	MV1SetPosition(_stage, VGet(0, -5000.0f, 0));
+	MV1SetPosition(_stage, VGet(0, -4995.0f, 0));
 
 	int playerModelHandle = ResourceServer::MV1LoadModel("Player", "res/Character/cg_player_girl/Cg_Player_Girl.mv1");
 	_player = NEW Player();
@@ -118,6 +123,10 @@ bool ModeBossBattle::Process() {
 	global._timer->TimeElapsed();
 	_sVib->UpdateScreenVibration();
 
+	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_RIGHT_THUMB)) {
+		_boss->SetDamageStake(50);
+	}
+
 	_player->Process(_camera->GetCamY());
 
 	_boss->Process();
@@ -171,6 +180,16 @@ bool ModeBossBattle::Process() {
 	}
 
 
+	// プレイヤーの移動制限
+	VECTOR pPos = _player->GetPosition();
+	pPos.y = 0.0f;
+	float squareLength = VSquareSize(pPos);
+	float moveLength = STAGE_RADIUS - 160.0f;
+	if (squareLength > powf(moveLength, 2)) {
+		VECTOR vDir = VNorm(pPos);
+		VECTOR vMove = VScale(vDir, moveLength);
+		_player->SetPos(vMove);
+	}
 
 	//for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
 	//	ui[i]->Process();
@@ -311,7 +330,7 @@ bool ModeBossBattle::Render() {
 		_gaugeUI[0]->Draw(_gaugeHandle[3]);
 	}
 
-
+	DrawFormatString(1800, 1000, COLOR_RED, "StakeHP:%d", _boss->GetStakeHp());
 	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	//for (auto itr = _buildingBase.begin(); itr != _buildingBase.end(); ++itr) {
 	//	(*itr)->DrawDebugInfo();
