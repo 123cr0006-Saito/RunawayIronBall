@@ -18,6 +18,9 @@ public:
 	Timer* _timer;
 	SoundServer* _soundServer;
 	bool exit_count;
+	int _stageNum;
+	int _nowExp; //現在持っている経験値を格納します。
+	int _allExp; //全ての経験値を格納します。
 };
 extern Global global;
 

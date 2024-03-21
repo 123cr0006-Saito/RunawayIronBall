@@ -70,7 +70,7 @@ public:
 	void NewStage();// ステージの初期化
 	void CreateTutorial();// チュートリアルの作成
 
-	int GetStageNum() { return _stageNum; };
+	int GetStageNum() { return global._stageNum; };
 
 
 	//デバッグ用
@@ -86,7 +86,6 @@ protected:
 	UIBase* ui[4];
 	DrawGauge* _gaugeUI[2];
 	int _gaugeHandle[4];// 0フレーム 3ゲージ
-	float nowParcent = 100;
 
 	TimeLimit* _timeLimit;
 
@@ -103,7 +102,6 @@ protected:
 	int _mountain;
 
 	Gate* _gate;
-	int _stageNum;
 	ClassificationEffect* _classificationEffect;
 	EffectManeger* _effectManeger;
 	OBB obb;
