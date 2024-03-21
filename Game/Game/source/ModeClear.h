@@ -1,5 +1,6 @@
 #include "appframe.h"
 #include "ModeGame.h"
+#include "AnimationChain.h"
 class ModeClear : public ModeBase
 {
 	typedef ModeBase base;
@@ -12,8 +13,8 @@ public:
 	virtual bool Render();
 
 	void AnimProcess();
-	void StagingProcess();
 	void ValuationProcess();
+	void AddChain();
 	void Valuation();
 
 protected:
@@ -34,7 +35,10 @@ protected:
 	float _nowValuationTime;
 	int _valuation;
 	bool _IsStaging;
-	int _alphaValue;
+	bool _IsNextStage;
+	float _alphaValue;
 	int _currentTime;
+
+	std::vector<AnimationChain*> _chain;
 };
 

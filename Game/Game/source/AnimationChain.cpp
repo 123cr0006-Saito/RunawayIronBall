@@ -1,12 +1,12 @@
 #include "AnimationChain.h"
 AnimationChain::AnimationChain(VECTOR pos,float angle){
-	_handle = LoadGraph("res/Kusari_Straight.png");
+	_handle = ResourceServer::LoadGraph("UI_Chain","res/UI/Chain/Kusari_Straight.png");
 	_frameCount = 0;
 	_maxCount = 60;
 	_endX = pos.x;
 	_endY = pos.y;
 	_angle = angle * DX_PI / 180;
-	float distance = 5000;
+	float distance = 10000;
 	_startX = pos.x - cos(_angle) * distance;
 	_startY = pos.y - sin(_angle) * distance;
 	_nowX = _startX;
@@ -26,5 +26,5 @@ void AnimationChain::Process(){
 };
 
 void AnimationChain::Draw(){
-	DrawRotaGraph(_nowX, _nowY, 0.5f, _angle, _handle, true);
+	DrawRotaGraph(_nowX, _nowY, 0.8f, _angle, _handle, true);
 };
