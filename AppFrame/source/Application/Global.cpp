@@ -157,6 +157,7 @@ bool Global::SoundLoad() {
 	_soundServer->Add("Stage01", new SoundItemBGM("Sound/BGM/BGM_Stage_01.wav"));
 	_soundServer->Add("Stage02", new SoundItemBGM("Sound/BGM/BGM_Stage_02.wav"));
 	_soundServer->Add("Stage03", new SoundItemBGM("Sound/BGM/BGM_Stage_03.wav"));
+	_soundServer->Add("Stage04", new SoundItemBGM("Sound/BGM/BGM_Stage_Boss.wav"));
 	_soundServer->Add("B_Scenario", new SoundItemBGM("Sound/BGM/BGM_Scenario_01.wav"));
 	_soundServer->Add("Result", new SoundItemBGM("Sound/BGM/BGM_Result.wav"));
 	//SE

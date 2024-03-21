@@ -748,6 +748,7 @@ void CollisionManager::CheckHit(EnemyBase* enemy, BuildingBase* building)
 			building->SetHit(vDir);
 			Player::GetInstance()->SetExp(building->GetExp());
 			global._soundServer->DirectPlay(building->GetName() + "_Break");
+			Suppression::GetInstance()->SubSuppression(building->GetSuppression());
 		}
 		else {
 			// “G‚Ì‰Ÿ‚µo‚µˆ—

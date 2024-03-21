@@ -67,6 +67,7 @@ bool ModeBossBattle::Initialize() {
 	_gaugeHandle[3] = ResourceServer::LoadGraph("Stamina04", ("res/UI/Stamina/UI_Stamina_04.png"));
 	
 	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(4), 10, "RotCamera");
+	global._soundServer->DirectPlay("Stage04");
 	return true;
 }
 

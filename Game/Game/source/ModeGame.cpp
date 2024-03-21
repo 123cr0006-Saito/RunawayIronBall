@@ -402,6 +402,7 @@ bool ModeGame::Process() {
 }
 
 bool ModeGame::GateProcess() {
+
 	if (_suppression->GetIsRatio() ) {
 		if (_gate == nullptr) {
 			VECTOR pos = VGet(0, 300, 0);

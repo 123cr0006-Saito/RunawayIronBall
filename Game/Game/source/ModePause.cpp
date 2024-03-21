@@ -177,6 +177,7 @@ bool ModePause::Process() {
 	}
 	// ‰¹—Ê‚Ìİ’è
 	global._soundServer->SetSeVolume(_seVolum);
+	global._soundServer->SetVoiceVolume(_seVolum);
 	global._soundServer->SetBgmVolume(_bgmVolum);
 	//’¸“_‚ÌXV
 	VertexProcess();
