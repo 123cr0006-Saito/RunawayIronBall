@@ -1,13 +1,14 @@
 #pragma once
 #include "dxlib.h"
 #include "player.h"
+
 class Fog
 {
 	public:
 	Fog();
 	~Fog();
-	void Process();
-	void UpdateIsFog();
+	void Process(int stageNum);
+	void UpdateIsFog(int stageNum);
 protected:
 	Player* _player;
 	bool IsFog;

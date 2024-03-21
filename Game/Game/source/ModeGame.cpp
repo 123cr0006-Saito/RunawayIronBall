@@ -59,8 +59,8 @@ bool ModeGame::Initialize() {
 	ui[1] = NEW UIExpPoint(VGet(100, 150, 0));
 	int suppressionHandle[3];
 	ResourceServer::LoadMultGraph("SuppressionGauge", "res/UI/SuppressionGauge/SuppressionGauge", ".png", 3, suppressionHandle);
-	ui[2] = NEW UISuppressionGauge(VGet(700, 100, 0), 3, suppressionHandle);
-	ui[3] = NEW UITimeLimit(VGet(1600, 100, 0));
+	ui[2] = NEW UISuppressionGauge(VGet(600, 100, 0), 3, suppressionHandle);
+	ui[3] = NEW UITimeLimit(VGet(1450, 30, 0));
 	_gaugeUI[0] = NEW DrawGauge(0, 3, size, true);
 	_gaugeUI[1] = NEW DrawGauge(0, 3, size, true);
 	_gaugeHandle[0] = ResourceServer::LoadGraph("Stamina03", ("res/UI/Stamina/UI_Stamina_03.png"));
@@ -292,13 +292,13 @@ bool ModeGame::LoadStage(std::string fileName) {
 	}
 
 	// プレイヤーの座標指定
-	nlohmann::json loadObject = (*json)._json.at("Player_Start_Position");
-	VECTOR pos;
-	loadObject.at(0).at("translate").at("x").get_to(pos.x);
-	loadObject.at(0).at("translate").at("y").get_to(pos.z);
-	pos.y = 0;
-	 pos.x *= -1;
-	_player->SetPos(pos);
+	//nlohmann::json loadObject = (*json)._json.at("Player_Start_Position");
+	//VECTOR pos;
+	//loadObject.at(0).at("translate").at("x").get_to(pos.x);
+	//loadObject.at(0).at("translate").at("y").get_to(pos.z);
+	//pos.y = 0;
+	// pos.x *= -1;
+	//_player->SetPos(pos);
 
 	return true;
 };
@@ -333,7 +333,17 @@ bool ModeGame::Process() {
 	_player->Process(_camera->GetCamY());
 	_enemyPool->Process(enabledIBAttackCollision);
 	_timeLimit->Process();
-	_fog->Process();
+	_fog->Process(_stageNum);
+
+	// プレイヤーがステージ範囲外に出たら戻す
+	VECTOR playerPos = _player->GetPosition();
+	float stageWidth[3] = {STAGE_ONE_WIDTH,STAGE_TWO_WIDTH,STAGE_THREE_WIDTH};
+	float stageDistance = stageWidth[_stageNum - 1] ;
+	float playerDistance = VSquareSize(playerPos);
+	if(playerDistance > stageDistance * stageDistance){
+	    VECTOR vDir = VNorm(playerPos);
+	    _player->SetPos(VScale(vDir,stageDistance));
+	}
 
 	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
 		ui[i]->Process();
@@ -426,11 +436,6 @@ void ModeGame::CreateTutorial() {
 			ResourceServer::LoadMultGraph("Tutorial", "res/Tutorial/Tutorial", ".png", 5, tutorialHandle);
 			ModeServer::GetInstance()->Add(NEW ModeTutorial(tutorialHandle, 5), 10, "Tutorial");
 		}
-		/*else if (_stageNum == 4) {
-			int tutorialHandle[5];
-			ResourceServer::LoadMultGraph("Tutorial", "res/Tutorial/Tutorial", ".png", 5, tutorialHandle);
-			ModeServer::GetInstance()->Add(NEW ModeTutorial(tutorialHandle, 5), 10, "Tutorial");
-		}*/
 	}
 };
 
