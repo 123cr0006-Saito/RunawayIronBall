@@ -82,6 +82,8 @@ protected:
 
 	Camera* _camera;
 	Player* _player;
+	int _gameOverCnt;
+	bool transitionGameOver;
 
 	UIBase* ui[4];
 	DrawGauge* _gaugeUI[2];
