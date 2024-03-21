@@ -57,6 +57,7 @@ public:
 	bool BlastOffProcess();
 	bool Render() override;
 
+	void SetPos(VECTOR pos) override { CharacterBase::SetPos(pos); UpdateCollision(); };
 
 	int GetHP() { return _hp; }
 	void MaxHeal() { _hp = 4; }
