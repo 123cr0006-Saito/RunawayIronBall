@@ -19,7 +19,7 @@ void CrystarPattern2::InheritanceInit() {
 
 void CrystarPattern2::AnimInit() {
 
-	_roof = NEW CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof","res/Enemy/Crystar/cg_crystar_roof.mv1"), _model);
+	_roof = NEW CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof_Rock","res/Enemy/Cg_Enemy_Crystar_Rock/Cg_Enemy_Roof_Crystar_Rock.mv1"), _model, "joint1");
 
 	//// モーションリストのロード
 	MotionList::Load("Crystarl", "MotionList_Crystarl.csv");
@@ -157,7 +157,7 @@ bool CrystarPattern2::ModeDisCover() {
 bool CrystarPattern2::ModeAttack() {
 	float attackTime = 54.0f / 60.0f * 1000; // 攻撃モーション時間
 	int nowTime = GetNowCount() - _currentTime;//今の状態になってから何秒経ったか？
-	float speed = 2 * -1; //モデルの方向が-z方向なので*-1
+	float speed = 3 * -1; //モデルの方向が-z方向なので*-1
 	if (nowTime > attackTime) { speed *= -1; _animState = ANIMSTATE::HANDBUTT; }
 
 	VECTOR dirvec = Math::MatrixToVector(MGetRotY(_rotation.y), 2);
@@ -187,7 +187,9 @@ bool CrystarPattern2::ModeKnockBack() {
 	float CoolTime = 3.0f * 1000; //硬直時間
 	VECTOR knockBackVecter = VScale(_knockBackDir, _knockBackSpeedFrame);
 	_pos = VAdd(_pos, knockBackVecter);
-	_knockBackSpeedFrame--;
+	if (_knockBackSpeedFrame > 0) {
+		_knockBackSpeedFrame--;
+	}
 	if (_knockBackSpeedFrame <= 0 && nowTime > CoolTime) {
 		_currentTime = GetNowCount();
 		_animState = ANIMSTATE::WALK;

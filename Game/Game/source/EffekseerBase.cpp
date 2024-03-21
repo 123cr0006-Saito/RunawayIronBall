@@ -34,7 +34,9 @@ EffekseerBase::EffekseerBase(int handle, VECTOR* pos, float size, float speed , 
 };
 
 EffekseerBase::~EffekseerBase() {
-	
+	if (IsEffekseer3DEffectPlaying(_playingEffectHandle) != -1) {
+		StopEffekseer3DEffect(_playingEffectHandle);
+	}
 };
 
 bool EffekseerBase::Process() {

@@ -26,6 +26,7 @@ protected:
 
 	int _cameraDistanceCount; // カメラの距離を3段階に分ける
 	float _cameraChangeDistance[CAMERA_ZOOM_MAX];
+	int _zoomCount;;
 
 	VECTOR _gazeShift;//注視点をプレイヤーにしたときに基準点が足元なので腰あたりに移動させるための変数
 };

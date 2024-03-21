@@ -84,9 +84,6 @@
     <ClInclude Include="source\System\Header\Function\mydraw.h">
       <Filter>System\Header</Filter>
     </ClInclude>
-    <ClInclude Include="source\System\Header\Input\XInput.h">
-      <Filter>System\Header</Filter>
-    </ClInclude>
     <ClInclude Include="source\appframe.h" />
     <ClInclude Include="source\System\Header\Function\Fps.h">
       <Filter>System\Header</Filter>
@@ -105,5 +102,6 @@
     <ClInclude Include="source\System\Header\Function\Vibration.h" />
     <ClInclude Include="source\System\Header\Sound\SoundItem.h" />
     <ClInclude Include="source\System\Header\Sound\SoundServer.h" />
+    <ClInclude Include="source\System\Header\Input\XInput.h" />
   </ItemGroup>
 </Project>

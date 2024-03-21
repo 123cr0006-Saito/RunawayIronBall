@@ -1,73 +1,45 @@
 #include "TargetZoomCamera.h"
 
-TargetZoomCamera::TargetZoomCamera() : CameraBase() {
-	_IsEvent= false;
-	_IsReturn = false;
-	_moveTime = 0;
+TargetZoomCamera::TargetZoomCamera(VECTOR target, VECTOR nextPos, VECTOR keepDir, VECTOR nextDir, int time) :CameraBase() {
+	_targetPos = target;
+	_nextPos = nextPos;
 	_keepPos = GetCameraPosition();
-	_targetPos = VGet(0, 0, 0);
-	_keepPos = VGet(0, 0, 0);
-};
-
-TargetZoomCamera::TargetZoomCamera(VECTOR pos, int time, Camera* camera) :CameraBase() {
-	_targetPos = pos;
+	_nextDir = nextDir;
+	_keepDir = keepDir;
 	_moveTime = time;
-	_keepPos = GetCameraPosition();
 	_currentTime = GetNowCount();
-	_IsEvent = true;
-	_IsReturn = false;
+
 };
 
 TargetZoomCamera::~TargetZoomCamera() {
 
 };
 
-bool TargetZoomCamera::UpdateCameraToEvent() {
+bool TargetZoomCamera::Process() {
 	int nowTime = GetNowCount() - _currentTime;
-	VECTOR playerPos = _targetPos;
-
-	//行列の掛け算
-	MATRIX origin = MGetIdent();
-	MATRIX MatrixX = MGetRotX(_cameraDirX);
-	MATRIX MatrixY = MGetRotY(_cameraDirY);
-
-	origin = MMult(origin, MatrixX);
-	origin = MMult(origin, MatrixY);
-
-	//注視点からの距離に行列を変換する
-	VECTOR Vecter = VTransform(_pointDistance, origin);
-
-	Vecter = VAdd(Vecter, _targetPos);
 
 	//注視点の位置に移動
 	VECTOR nowPos;
+	VECTOR nowTarget;
 	if (nowTime > _moveTime) {
 		nowTime = _moveTime;
-		if (_IsReturn) {
-			_IsReturn = _IsEvent = false;
-		}
 	}
-	nowPos.x = Easing::Linear(nowTime, _keepPos.x, Vecter.x, _moveTime);
-	nowPos.y = Easing::Linear(nowTime, _keepPos.y, Vecter.y, _moveTime);
-	nowPos.z = Easing::Linear(nowTime, _keepPos.z, Vecter.z, _moveTime);
+	float deray = 1.0f;
+	float targetEasingTime = nowTime;
+	if (targetEasingTime > nowTime / deray) {
+		targetEasingTime = nowTime / deray;
+	}
+
+	nowTarget.x = Easing::Linear(targetEasingTime, _keepDir.x, _nextDir.x, _moveTime / deray);
+	nowTarget.y = Easing::Linear(targetEasingTime, _keepDir.y, _nextDir.y, _moveTime / deray);
+	nowTarget.z = Easing::Linear(targetEasingTime, _keepDir.z, _nextDir.z, _moveTime / deray);
+
+	nowPos.x = Easing::Linear(nowTime, _keepPos.x, _nextPos.x, _moveTime);
+	nowPos.y = Easing::Linear(nowTime, _keepPos.y, _nextPos.y, _moveTime);
+	nowPos.z = Easing::Linear(nowTime, _keepPos.z, _nextPos.z, _moveTime);
+
+	nowTarget = VAdd(nowPos, nowTarget);
 
 	SetCameraPositionAndTarget_UpVecY(nowPos, _targetPos);
 	return true;
 };
-
-void TargetZoomCamera::SetEventCamera(VECTOR pos, int time) {
-	_targetPos = pos;
-	_moveTime = time;
-	_keepPos = GetCameraPosition();
-	_currentTime = GetNowCount();
-	_IsEvent = true;
-};
-
-void TargetZoomCamera::SetReturnCamera(VECTOR pos) {
-	if (_IsEvent) {
-		_IsReturn = true;
-		_currentTime = GetNowCount();
-		_targetPos = pos;
-		_keepPos = GetCameraPosition();
-	}
-}

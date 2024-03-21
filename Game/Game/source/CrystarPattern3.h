@@ -42,6 +42,6 @@ protected:
 	VECTOR _attackPos;//攻撃時に増える値
 	float _attackDir;//攻撃した時に使用する角度
 
-	CrystarRoof* _roof;
+	CrystarRoof* _roof[2];
 };
 

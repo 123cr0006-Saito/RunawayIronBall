@@ -7,12 +7,12 @@ UIExpPoint::UIExpPoint(VECTOR pos) :
 {
 	_player = Player::GetInstance();
 	_handle = new int[2];
-	std::string path = "res/UI/UIGauge/";
+	std::string path = "res/UI/Gauge/";
 	std::string name[2] = {"UI_EXP_Gauge_Black","UI_EXP_Gauge_Red"};
 	for (int i = 0; i < 2; i++) {
 		_handle[i] = ResourceServer::Load(name[i], path + name[i] + ".png");
 	}
-	ResourceServer::LoadMultGraph("UILevel", "res/UI/UILevel/UI_Level",".png",_levelMax, _levelHandle);
+	ResourceServer::LoadMultGraph("UILevel", "res/UI/Level/UI_Level",".png",_levelMax, _levelHandle);
 
 	_ratio = 0.0f;
 	_nowRatio = 0.0f;
@@ -57,9 +57,8 @@ void UIExpPoint::SetRatio() {
 
 	int nowExp = _player->GetNowExp();
 	int nextExp = _player->GetNextExp();
-
+	int nowLevel = _player->GetNowLevel();
 	if (nowExp != oldExp) {
-		int nowLevel = _player->GetNowLevel();
 		_nextRatio = (float)nowExp / nextExp;
 		if (nowLevel != oldLevel) {
 			_nextRatio = 1 + _nextRatio;
@@ -70,11 +69,15 @@ void UIExpPoint::SetRatio() {
 	}
 
 	if (nowTime <= easingTime) {
-		if (_ratio >= 1.0f) {
+		if (_ratio > 1.0f) {
 			_nowRatio = 0.0f;
 			_nextRatio -= 1.0f;
 		}
 		_ratio = Easing::OutSine(nowTime, _nowRatio, _nextRatio, easingTime);
+	}
+
+	if(nowLevel >= _levelMax){
+		_ratio = 0.0f;
 	}
 
 	oldExp = nowExp;

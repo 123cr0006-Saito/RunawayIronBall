@@ -13,6 +13,8 @@
 class ObjectBase;
 
 #define EN_MOTION_CHANGE 0
+#define EN_KNOCKBACK_MIN    5
+#define EN_KNOCKBACK_MAX 30
 
 //エネミー各種のもとになるクラス
 class EnemyBase : public ObjectBase

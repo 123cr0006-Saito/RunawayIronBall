@@ -11,15 +11,16 @@ BuildingBase::BuildingBase()
 BuildingBase::~BuildingBase()
 {
 	if (_modelHandle != -1) {
-		MV1DeleteModel(_modelHandle);
-		_modelHandle = -1;
+	/*	MV1DeleteModel(_modelHandle);
+		_modelHandle = -1;*/
 	}
 }
 
-void BuildingBase::Init(int modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength)
+void BuildingBase::Init(int modelHandle, std::string objName, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength)
 {
 	// ÉÇÉfÉãÇÃê›íË
 	_modelHandle = modelHandle;
+	_objName = objName;
 	_pos = startPos;
 	MV1SetPosition(_modelHandle, _pos);
 	MV1SetRotationXYZ(_modelHandle, rotation);

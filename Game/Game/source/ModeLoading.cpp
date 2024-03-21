@@ -1,21 +1,20 @@
 #include "ModeLoading.h"
-ModeLoading::ModeLoading(bool* flag) {
-	_chara = nullptr;
-	IsClear = flag;
+#include "ModeScenario.h"
+bool ModeLoading::Initialize(){
 	_chara = new LoadingPlayer();
-
 	// 3Ｄ空間の画面の中心点を移動
 	int sizeX, sizeY, colorBit;
 	GetScreenState(&sizeX, &sizeY, &colorBit);
 	SetCameraScreenCenter(sizeX - 500, sizeY - 150);
-};
-
-bool ModeLoading::Initialize(){
+	global.ResourceLoad();
 	return true;
 };
 
 bool ModeLoading::Terminate(){
-	IsClear = nullptr;
+	// 3Ｄ空間の画面の中心点を移動
+	int sizeX, sizeY, colorBit;
+	GetScreenState(&sizeX, &sizeY, &colorBit);
+	SetCameraScreenCenter(sizeX / 2, sizeY / 2);
 	delete _chara; _chara = nullptr;
 	return true;
 };
@@ -23,16 +22,11 @@ bool ModeLoading::Terminate(){
 bool ModeLoading::Process(){
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->PauseProcessUnderLayer();
-	if ((*IsClear)) {
-		int time = 4 * 1000;
-		ModeServer::GetInstance()->Add(new ModeFade(time,true),1000,"FadeIn");
-		ModeServer::GetInstance()->Del(this);
+	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
-		// 3Ｄ空間の画面の中心点を移動
-		int sizeX, sizeY, colorBit;
-		GetScreenState(&sizeX, &sizeY, &colorBit);
-		SetCameraScreenCenter(sizeX / 2, sizeY / 2);
-
+	if (GetASyncLoadNum() <= 0) {
+		ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario01.csv",	1), 50, "Scenario");
+		ModeServer::GetInstance()->Add(new ModeFadeComeBack(1000,this),1000,"Fade");
 	}
 
 	_chara->Process();

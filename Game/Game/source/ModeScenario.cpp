@@ -1,4 +1,8 @@
 #include "ModeScenario.h"
+#include "ModeFadeComeBack.h"
+#include "ModeMovie.h"
+#include "ModeGame.h"
+#include "ModeBossBattle.h"
 
 bool ModeScenario::IsLoadHandle = false;
 std::unordered_map<int, int> ModeScenario::_charaHandleMap;
@@ -6,8 +10,8 @@ std::unordered_map<int, std::string> ModeScenario::_nameHandleMap;
 std::unordered_map<int, int> ModeScenario::_backGroundHandleMap;
 std::unordered_map<int, int> ModeScenario::_textBoxHandle;
 
-ModeScenario::ModeScenario(std::string scenarioFile) {
-
+ModeScenario::ModeScenario(std::string scenarioFile,int scenarioNum) {
+	_scenarioNum = scenarioNum;
 	LoadOnceHandleData();
 
 	CFile ScenarioFile(scenarioFile);
@@ -45,7 +49,7 @@ bool ModeScenario::LoadOnceHandleData() {
 	if (IsLoadHandle) {return true;}
 
 	// 初回だけ画像ハンドルを読み込む
-	std::string commonPath = "res/Scenario/";
+	std::string commonPath = "res/ModeScenario/";
 
 	// キャラ画像ハンドル
 	{
@@ -154,6 +158,8 @@ bool ModeScenario::Initialize(){
 	_currentTime = GetNowCount();
 	_input = XInput::GetInstance();
 
+	global._soundServer->DirectPlay("B_Scenario");
+
 	GetGraphSize(_charaHandleMap[_scenarioData.at(_nowTextLine).charaHandle], &_handleX, &_handleY);
 	_textFontHandle = CreateFontToHandle("メイリオ", 32, 3, DX_FONTTYPE_ANTIALIASING_EDGE_8X8);
 	_nameFontHandle = CreateFontToHandle("メイリオ", 64, 3, DX_FONTTYPE_ANTIALIASING_EDGE_8X8);
@@ -173,9 +179,27 @@ bool ModeScenario::Terminate(){
 	return true;
 };
 
+void  ModeScenario::ScenarioUniqueProcess(){
+	switch(_scenarioNum){
+	case 1 :
+		global._soundServer->DirectPlay("Stage01");
+		ModeServer::GetInstance()->Add(NEW ModeGame(), 1, "Game");
+		break;
+	case 2:
+		ModeServer::GetInstance()->Del("Game");
+		ModeServer::GetInstance()->Add(NEW ModeBossBattle(), 10, "BossBattle");
+		break;
+	case 3:
+		ModeServer::GetInstance()->Add(NEW ModeMovie(), 10, "Movie");
+		break;
+	}
+};
+
 bool ModeScenario::Process(){
 	base::Process();
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
+	ModeServer::GetInstance()->PauseProcessUnderLayer();
+	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
 	// ミリ秒単位での文字の描画
 	float speed = 3.0f / 60.0f * 1000;// ミリ秒単位
@@ -196,16 +220,20 @@ bool ModeScenario::Process(){
 			_nowTextLine++;
 			_nowTextByte = 0;
 			_currentTime = GetNowCount();
-			std::string voiceName = _scenarioData.at(_nowTextLine).voiceData;
-			if (voiceName != "") {
-				global._soundServer->DirectPlay(voiceName);
+			if (_nowTextLine < _scenarioData.size()) {
+				std::string voiceName = _scenarioData.at(_nowTextLine).voiceData;
+				if (voiceName != "") {
+					global._soundServer->DirectPlay(voiceName);
+				}
 			}
 		}
 	}
 
-	// シナリオをすべて描画し終えた
-	if (_nowTextLine >= _scenarioData.size() || _input->GetTrg(XINPUT_BUTTON_START)) {
-		ModeServer::GetInstance()->Del(this);
+	// シナリオをすべて描画し終えた スキップするときは自分より上のレイヤーがないか確認する
+	if (_nowTextLine >= _scenarioData.size() || _input->GetTrg(XINPUT_BUTTON_START) && !ModeServer::GetInstance()->IsAboutLayer(this)) {
+		_nowTextLine = _scenarioData.size()-1;
+		ScenarioUniqueProcess();
+		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000,this), 1000, "Fade");
 	}
 	
 	return true;

@@ -187,3 +187,11 @@ void SoundServer::Update() {
 	_vDel.clear();
 }
 
+
+void SoundServer::SetBgmVolume(int volume) { 
+	_BgmVolume = volume; 
+	auto bgmList = NowPlayingSearchType(SoundItemBase::TYPE::BGM);
+	for(auto&& bgm : bgmList){
+	   bgm->SetVolume();
+	}
+}
