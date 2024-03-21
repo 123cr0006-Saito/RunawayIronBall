@@ -30,8 +30,10 @@ namespace {
 	constexpr int RU_ATTACK_CNT = 60;
 	// 突進での移動距離
 	constexpr float RU_MOVE_DISTANCE = 3500.0f;
-	// 突進後の硬直時間
+	// 突進後の硬直時間（通常時）
 	constexpr int RU_STIFFEN_CNT = 120;
+	// 突進後の硬直時間（強化時）
+	constexpr int RU_STIFFEN_CNT_ENHANCED = 180;
 
 	// 落下攻撃
 	// 飛び上がってから、最高地点に到達するまでのフレーム数
@@ -402,7 +404,21 @@ void BossIronBall::RushProcess()
 		_phaseCnt++;
 		if (_phaseCnt > RU_ATTACK_CNT) {
 			ResetPhase();
-			SetStiffen(RU_STIFFEN_CNT);
+			// 強化状態の場合は連続攻撃
+			if (_isEnhanced) {
+				_enhancedAttackCnt--;
+				// 連続攻撃回数が残っている場合は再度突進攻撃
+				if (_enhancedAttackCnt > 0) {
+					SetRush();
+				}
+				// 連続攻撃回数がない場合は硬直
+				else {
+					SetStiffen(RU_STIFFEN_CNT_ENHANCED);
+				}
+			}
+			else {
+				SetStiffen(RU_STIFFEN_CNT);
+			}
 		}
 		break;
 	}
