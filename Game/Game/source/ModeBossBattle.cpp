@@ -31,6 +31,7 @@ bool ModeBossBattle::Initialize() {
 	int playerModelHandle = ResourceServer::MV1LoadModel("Player", "res/Character/cg_player_girl/Cg_Player_Girl.mv1");
 	_player = NEW Player();
 	_player->Init(playerModelHandle, VGet(0, 0, -1000));
+	_player->SetLevel(global._allExp);
 	_camera = NEW Camera(_player->GetPosition());
 
 	_boss = NEW Boss();
@@ -57,7 +58,7 @@ bool ModeBossBattle::Initialize() {
 	ResourceServer::LoadMultGraph("Heart", "res/UI/Heart/UI_Heart", ".png", 3, heartHandle);
 	ui[0] = NEW UIHeart(VGet(120, 20, 0), 3, heartHandle, 2);
 	ui[1] = NEW UIExpPoint(VGet(100, 150, 0));
-	_bossHp = NEW UIBossHp(VGet(1200,700,0));
+	_bossHp = NEW UIBossHp(VGet(1000,700,0));
 	_gaugeUI[0] = NEW DrawGauge(0, 3, size, true);
 	_gaugeUI[1] = NEW DrawGauge(0, 3, size, true);
 	_gaugeHandle[0] = ResourceServer::LoadGraph("Stamina03", ("res/UI/Stamina/UI_Stamina_03.png"));

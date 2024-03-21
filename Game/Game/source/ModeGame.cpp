@@ -14,13 +14,16 @@ bool ModeGame::Initialize() {
 	_collisionManager = NEW CollisionManager();
 	_collisionManager->Init();
 
+	// プレイヤー経験値とステージ数の初期化
+	global._allExp = 0;
+	global._nowExp = 0;
+	global._stageNum = 3;
+
 	_gate = nullptr;
-	_stageNum = 1;
 	IsTutorial = false;
 
 	_light = NEW Light("LightData");
 	_timeLimit = NEW TimeLimit();
-
 	
 	int resolution = 8192;
 	_shadowHandle = MakeShadowMap(resolution, resolution);
@@ -49,7 +52,7 @@ bool ModeGame::Initialize() {
 	// オブジェクトのデータの読み込み
 	LoadObjectParam("BuildingtList.csv");
 	// ステージのデータの読み込み
-	std::string fileName = "Data/ObjectList/Stage_0" + std::to_string(_stageNum) + ".json";
+	std::string fileName = "Data/ObjectList/Stage_0" + std::to_string(global._stageNum) + ".json";
 	LoadStage(fileName);
 
 	int size = 100;
@@ -68,7 +71,7 @@ bool ModeGame::Initialize() {
 	_gaugeHandle[2] = ResourceServer::LoadGraph("Stamina01", ("res/UI/Stamina/UI_Stamina_01.png"));
 	_gaugeHandle[3] = ResourceServer::LoadGraph("Stamina04", ("res/UI/Stamina/UI_Stamina_04.png"));
 
-	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(_stageNum), 10, "RotCamera");
+	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(global._stageNum), 10, "RotCamera");
 	SetTime();
 	return true;
 }
@@ -149,7 +152,7 @@ void ModeGame::DeleteObject() {
 
 void ModeGame::SetTime() {
 	int min[3] = { 15,15,15 };
-	_timeLimit->SetTimeLimit(min[_stageNum - 1], 0);
+	_timeLimit->SetTimeLimit(min[global._stageNum - 1], 0);
 };
 
 std::vector<ModeGame::OBJECTDATA> ModeGame::LoadJsonObject(const myJson& json, std::string loadName) {
@@ -216,7 +219,7 @@ bool ModeGame::LoadObjectParam(std::string fileName) {
 
 std::vector<std::string> ModeGame::LoadObjectName(std::string fileName) {
 	std::vector<std::string> nameList;
-	std::string filePath = "Data/LoadStageName/" + fileName + "/"  + fileName + "0" + std::to_string(_stageNum) + ".csv";
+	std::string filePath = "Data/LoadStageName/" + fileName + "/"  + fileName + "0" + std::to_string(global._stageNum) + ".csv";
 	// csvファイルを読み込む
 	CFile file(filePath);
 	// ファイルが開けた場合
@@ -238,9 +241,9 @@ bool ModeGame::LoadStage(std::string fileName) {
 	myJson* json = new myJson(fileName);
 	int j = 0;
 
-	_enemyPool->Create(*json,_stageNum);
+	_enemyPool->Create(*json,global._stageNum);
 
-	_floor->Create(*json, _stageNum);
+	_floor->Create(*json, global._stageNum);
 
 	// タワー
 	std::vector<ModeGame::OBJECTDATA> towerData = LoadJsonObject(*json, "Tower");
@@ -292,13 +295,13 @@ bool ModeGame::LoadStage(std::string fileName) {
 	}
 
 	// プレイヤーの座標指定
-	//nlohmann::json loadObject = (*json)._json.at("Player_Start_Position");
-	//VECTOR pos;
-	//loadObject.at(0).at("translate").at("x").get_to(pos.x);
-	//loadObject.at(0).at("translate").at("y").get_to(pos.z);
-	//pos.y = 0;
-	// pos.x *= -1;
-	//_player->SetPos(pos);
+	nlohmann::json loadObject = (*json)._json.at("Player_Start_Position");
+	VECTOR pos;
+	loadObject.at(0).at("translate").at("x").get_to(pos.x);
+	loadObject.at(0).at("translate").at("y").get_to(pos.z);
+	pos.y = 0;
+	 pos.x *= -1;
+	_player->SetPos(pos);
 
 	return true;
 };
@@ -308,7 +311,7 @@ bool ModeGame::StageMutation() {
 	// 中身がいらないものはdeleteする
 	DeleteObject();
 	// オブジェクトのデータの読み込み ファイル名は 1 から始まるので +1 する
-	std::string fileName = "Data/ObjectList/Stage_0" + std::to_string(_stageNum) + ".json";
+	std::string fileName = "Data/ObjectList/Stage_0" + std::to_string(global._stageNum) + ".json";
 	LoadStage(fileName);
 	// ロード終了
 	return true;
@@ -320,8 +323,8 @@ bool ModeGame::Process() {
 	ModeServer::GetInstance()->PauseProcessUnderLayer();
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_LEFT_THUMB) ) {
-		if(_stageNum < 3){
-		   _stageNum++;
+		if(global._stageNum < 3){
+			global._stageNum++;
 		   NewStage();
 		}
 	}
@@ -333,12 +336,12 @@ bool ModeGame::Process() {
 	_player->Process(_camera->GetCamY());
 	_enemyPool->Process(enabledIBAttackCollision);
 	_timeLimit->Process();
-	_fog->Process(_stageNum);
+	_fog->Process(global._stageNum);
 
 	// プレイヤーがステージ範囲外に出たら戻す
 	VECTOR playerPos = _player->GetPosition();
 	float stageWidth[3] = {STAGE_ONE_WIDTH,STAGE_TWO_WIDTH,STAGE_THREE_WIDTH};
-	float stageDistance = stageWidth[_stageNum - 1] ;
+	float stageDistance = stageWidth[global._stageNum - 1] ;
 	float playerDistance = VSquareSize(playerPos);
 	if(playerDistance > stageDistance * stageDistance){
 	    VECTOR vDir = VNorm(playerPos);
@@ -393,13 +396,14 @@ bool ModeGame::Process() {
 
 
 bool ModeGame::GateProcess() {
+	_suppression->SubSuppression(5);
 	if (_suppression->GetIsRatio() ) {
 		if (_gate == nullptr) {
 			VECTOR pos = VGet(0, 300, 0);
 			int handle[43];
 			ResourceServer::LoadDivGraph("Gate", "res/TemporaryMaterials/FX_Hole_2D00_sheet.png", 43, 16, 3, 1200, 1200, handle);
 			float time = 1.0f / 60.0f * 1000.0f;
-			if (_stageNum == 3) {
+			if (global._stageNum == 3) {
 				pos = VGet(-6787.0f, 300.0f, 7486.0);
 			}
 			_gate = NEW Gate(pos, 300, handle, 43, time, 1000);
@@ -414,7 +418,7 @@ bool ModeGame::GateProcess() {
 
 		// ゴールゲートの当たり判定
 		if (Collision3D::SphereCol(pPos, pR, gPos, gR)) {
-			_stageNum++;
+			global._stageNum++;
 			ModeServer::GetInstance()->Add(NEW ModeClear(this),100,"Clear");	
 		}
 	}
@@ -423,15 +427,15 @@ bool ModeGame::GateProcess() {
 
 void ModeGame::NewStage(){
 	StageMutation();
-	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(_stageNum), 10, "RotCamera");
-	global._soundServer->DirectPlay("Stage0" + std::to_string(_stageNum));
+	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(global._stageNum), 10, "RotCamera");
+	global._soundServer->DirectPlay("Stage0" + std::to_string(global._stageNum));
 	SetTime();
 };
 
 void ModeGame::CreateTutorial() {
 	if (!IsTutorial) {
 		IsTutorial = true;
-		if (_stageNum == 1) {
+		if (global._stageNum == 1) {
 			int tutorialHandle[5];
 			ResourceServer::LoadMultGraph("Tutorial", "res/Tutorial/Tutorial", ".png", 5, tutorialHandle);
 			ModeServer::GetInstance()->Add(NEW ModeTutorial(tutorialHandle, 5), 10, "Tutorial");
@@ -446,7 +450,7 @@ bool ModeGame::Render() {
 	SetUseBackCulling(TRUE);
 
 	MV1DrawModel(_skySphere);
-	if (_stageNum < 3) {
+	if (global._stageNum < 3) {
 		MV1DrawModel(_mountain);
 	}
 	// 描画に使用するシャドウマップを設定

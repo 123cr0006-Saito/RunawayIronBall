@@ -106,7 +106,6 @@ Player::Player()
 
 
 
-	_nowExp = 0;
 	_nowLevel = 0;
 	_maxLevel = 0;
 	_power = 0;
@@ -135,6 +134,7 @@ Player::~Player()
 	}
 	_bone.clear();
 
+	global._allExp += global._nowExp;
 }
 
 // ñ≥ìGèÛë‘ÇÃçXêV
@@ -250,8 +250,9 @@ bool Player::HealHp(){
 
 bool Player::UpdateExp() {
 	if (_nowLevel < _maxLevel) {
-		if (_nowExp >= _nextLevel[_nowLevel]) {
-			_nowExp -= _nextLevel[_nowLevel];
+		if (global._nowExp >= _nextLevel[_nowLevel]) {
+			global._nowExp -= _nextLevel[_nowLevel];
+			global._allExp += _nextLevel[_nowLevel];
 			_nowLevel++;
 			UpdateLevel();
 		}
@@ -334,7 +335,6 @@ bool Player::Init(int modelHandle, VECTOR pos)
 
 	_idleFightingRemainingCnt = 0;
 
-	_nowExp = 0;
 	_nowLevel = 0;
 
 	SetLevelParam("res/JsonFile/IronState.json");
@@ -619,6 +619,21 @@ void Player::UpdateCollision()
 	_capsuleCollision.down_pos = VAdd(_pos, VGet(0, _capsuleCollision.r, 0));
 	_capsuleCollision.Update();
 }
+
+void Player::SetLevel(int allExp){
+	int exp = allExp;
+	while(1){
+		if(exp >= _nextLevel[_nowLevel]){
+			exp -= _nextLevel[_nowLevel];
+			_nowLevel++;
+		}else{
+			break;
+		}
+	}
+	_power = _levelParam[_nowLevel].power;
+	_ironBall->UpdateLevel(_levelParam[_nowLevel].magnification);
+	_staminaMax = _levelParam[_nowLevel].stamina;
+};
 
 void Player::SetLevelParam(std::string FileName)
 {
