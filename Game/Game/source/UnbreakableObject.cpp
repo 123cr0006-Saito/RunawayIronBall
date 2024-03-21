@@ -14,6 +14,9 @@ void UnbreakableObject::Init(int modelHandle, std::string objName, VECTOR startP
 {
 	BuildingBase::Init(modelHandle,  objName, startPos, rotation, scale, obbLength);
 	_canBreak = false;
+	 _hp = 0;
+	 _exp = 0; 
+	 _suppression = 0; 
 }
 
 void UnbreakableObject::Process()

@@ -5,7 +5,14 @@
 #include "ModeFadeComeBack.h"
 
 ModeGameOver::ModeGameOver(ModeGame* mode) {
-	_mode = mode;
+	_modeGame = mode;
+	_modeBossBattle = nullptr;
+};
+
+ModeGameOver::ModeGameOver(ModeBossBattle* mode){
+	_modeGame = nullptr;
+	_modeBossBattle = mode;
+
 };
 
 bool ModeGameOver::Initialize() {
@@ -66,14 +73,17 @@ void ModeGameOver::SelectProcess(){
 		global._soundServer->DirectPlay("SE_Press");
 		if (_selectItem == 0) {
 			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(3000, this), 100, "Fade");
-			if (_mode != nullptr) {
-				_mode->NewStage();
+			if (_modeGame != nullptr) {
+				_modeGame->NewStage();
+				Player::GetInstance()->MaxHeal();
+			}
+			else if(_modeBossBattle != nullptr){
 				Player::GetInstance()->MaxHeal();
 			}
 		}
 		else {
 			ModeServer::GetInstance()->Add(new ModeTitle(), 1, "Title");
-			ModeServer::GetInstance()->Del(_mode);
+			ModeServer::GetInstance()->Del(_modeGame);
 			ModeServer::GetInstance()->Del(this);
 		}
 	}
