@@ -361,11 +361,7 @@ void BossIronBall::RushProcess()
 	switch (_phase)
 	{
 	case 0: 			// 杭の付近へ移動
-		// 杭に当たったら次のフェーズへ
-		if (_isHitStake) {
-			_reachedStake = true;
-		}
-		if (!_reachedStake) {
+		{
 			VECTOR v = VGet(0.0f, 0.0f, 0.0f);
 			v.x = Easing::Linear(_phaseCnt, _posBeforeMoving.x, _targetPos.x, RU_REACH_STAKE_CNT);
 			v.y = _ibSphereCol.r + 500.0f * sinf(DX_PI_F * (_phaseCnt / static_cast<float>(RU_REACH_STAKE_CNT)));
@@ -395,12 +391,13 @@ void BossIronBall::RushProcess()
 		}
 		break;
 	case 2:			// 突進
-		VECTOR v = VGet(0.0f, 0.0f, 0.0f);
-		v.x = Easing::Linear(_phaseCnt, _posBeforeMoving.x, _targetPos.x, RU_ATTACK_CNT);
-		v.y = _ibSphereCol.r;
-		v.z = Easing::Linear(_phaseCnt, _posBeforeMoving.z, _targetPos.z, RU_ATTACK_CNT);
-		_ibPos = v;
-
+		{
+			VECTOR v = VGet(0.0f, 0.0f, 0.0f);
+			v.x = Easing::Linear(_phaseCnt, _posBeforeMoving.x, _targetPos.x, RU_ATTACK_CNT);
+			v.y = _ibSphereCol.r;
+			v.z = Easing::Linear(_phaseCnt, _posBeforeMoving.z, _targetPos.z, RU_ATTACK_CNT);
+			_ibPos = v;
+		}
 		_phaseCnt++;
 		if (_phaseCnt > RU_ATTACK_CNT) {
 			ResetPhase();
@@ -432,9 +429,12 @@ void BossIronBall::SetRush()
 	_ibState = IB_STATE::ATTACK_RUSH;
 	_reachedStake = false;
 	_posBeforeMoving = _ibPos;
-	_targetPos = *_stakePos;
-	// 地面（y座標0）を基準とし、鉄球の半径の大きさの分だけy座標をプラスする
-	_targetPos.y = _ibSphereCol.r;
+
+	_targetPos = VGet(_stakePos->x, _ibSphereCol.r, _stakePos->z);
+	VECTOR vDir = VSub(_posBeforeMoving, _targetPos);
+	vDir.y = 0.0f;
+	vDir = VNorm(vDir);
+	_targetPos = VAdd(_targetPos, VScale(vDir, 500.0f));
 }
 
 void BossIronBall::DropProcess()
