@@ -67,12 +67,6 @@ public:
 
 	void SetDamage();
 
-
-	// ƒLƒƒƒ‰ƒ‚ƒfƒ‹‚Ì“_–Åˆ—
-	void FlickerProcess();
-
-
-
 	float GetStamina() { return _stamina; }
 	float GetStaminaMax() { return _staminaMax; }
 	float GetStaminaRate() { return _stamina / _staminaMax; }
