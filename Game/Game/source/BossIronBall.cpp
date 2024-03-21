@@ -137,6 +137,11 @@ BossIronBall::BossIronBall()
 	_mStakePosInv = MGetIdent();
 
 
+	_animIndex = 0;
+	_animTotalTime = 0.0f;
+	_playTime = 0.0f;
+
+
 	_player = nullptr;
 }
 
@@ -174,6 +179,10 @@ void BossIronBall::Init(VECTOR* stakePos)
 
 
 	_rotAngle = 0.0f;
+
+	_animIndex = MV1AttachAnim(_ibModelHandle, 0, -1, FALSE);
+	_animTotalTime = MV1GetAttachAnimTotalTime(_ibModelHandle, _animIndex);
+	_playTime = 0.0f;
 
 
 	_player = Player::GetInstance();
@@ -216,8 +225,8 @@ void BossIronBall::Process()
 	_ibPos.y -= 16.0f;
 	if (_ibPos.y - _ibSphereCol.r < 0.0f) _ibPos.y = _ibSphereCol.r;
 	UpdateIBCollision();
-
 	UpdateModelRotation();
+	AnimationProcess();
 
 	_isHitStake = false;
 
@@ -736,32 +745,6 @@ void BossIronBall::SetKnockBack(VECTOR vDir, float speed)
 	}
 }
 
-void BossIronBall::DrawDebugInfo()
-{
-	auto color = _isInvincible ? COLOR_WHITE : COLOR_RED;
-	_ibSphereCol.Render(color);
-
-	for (int i = 0; i < 1; i++) {
-		Sphere s = { *_stakePos, SEARCH_RANGE[i] };
-		s.Render(COLOR_RED);
-	}
-
-	int x = 0;
-	int y = 500;
-	int line = 0;
-	DrawBox(x, y, x + 300, y + 500, GetColor(0, 0, 0), TRUE);
-	std::array<std::string, 7> stateStr = { "IDLE", "STIFFEN", "ATTACK_RUSH", "ATTACK_DROP", "ATTACK_ROTATION", "KnockBack", "HardKnockBack"};
-	DrawFormatString(x, y + 20 * line, COLOR_WHITE, "State:%s", stateStr[static_cast<int>(_ibState)].c_str()); line++;
-	DrawFormatString(x, y + 20 * line, COLOR_WHITE, "pos: x %3.2f, y %3.2f, z %3.2f", _ibPos.x, _ibPos.y, _ibPos.z); line++;
-	DrawFormatString(x, y + 20 * line, COLOR_WHITE, "_phase: %d, _phaseCnt: %d", _phase, _phaseCnt); line++;
-
-	//line++;
-	//DrawFormatString(x, y + 20 * line, COLOR_WHITE, "idleCnt:%d", _ibIdleCnt); line++;
-	//DrawFormatString(x, y + 20 * line, COLOR_WHITE, "idleCntMax:%d", debugFrameMax); line++;
-	//DrawFormatString(x, y + 20 * line, COLOR_WHITE, "次に設定するフレーム数:%d", debugFrame); line++;
-	//DrawFormatString(x, y + 20 * line, COLOR_WHITE, "次に設定する移動距離:%3.2f cm", debugValue); line++;
-}
-
 void BossIronBall::KnockBackProcess()
 {
 	if (_isKnockBack) {
@@ -852,4 +835,42 @@ void BossIronBall::HardKnockBackProcess()
 		}
 		break;
 	}
+}
+
+
+void BossIronBall::AnimationProcess()
+{
+	MV1SetAttachAnimTime(_ibModelHandle, _animIndex, _playTime);
+
+	_playTime += 1.0f;
+	if (_animTotalTime < _playTime) {
+		_playTime = 0.0f;
+	}
+}
+
+
+void BossIronBall::DrawDebugInfo()
+{
+	auto color = _isInvincible ? COLOR_WHITE : COLOR_RED;
+	_ibSphereCol.Render(color);
+
+	for (int i = 0; i < 1; i++) {
+		Sphere s = { *_stakePos, SEARCH_RANGE[i] };
+		s.Render(COLOR_RED);
+	}
+
+	int x = 0;
+	int y = 500;
+	int line = 0;
+	DrawBox(x, y, x + 300, y + 500, GetColor(0, 0, 0), TRUE);
+	std::array<std::string, 7> stateStr = { "IDLE", "STIFFEN", "ATTACK_RUSH", "ATTACK_DROP", "ATTACK_ROTATION", "KnockBack", "HardKnockBack" };
+	DrawFormatString(x, y + 20 * line, COLOR_WHITE, "State:%s", stateStr[static_cast<int>(_ibState)].c_str()); line++;
+	DrawFormatString(x, y + 20 * line, COLOR_WHITE, "pos: x %3.2f, y %3.2f, z %3.2f", _ibPos.x, _ibPos.y, _ibPos.z); line++;
+	DrawFormatString(x, y + 20 * line, COLOR_WHITE, "_phase: %d, _phaseCnt: %d", _phase, _phaseCnt); line++;
+
+	//line++;
+	//DrawFormatString(x, y + 20 * line, COLOR_WHITE, "idleCnt:%d", _ibIdleCnt); line++;
+	//DrawFormatString(x, y + 20 * line, COLOR_WHITE, "idleCntMax:%d", debugFrameMax); line++;
+	//DrawFormatString(x, y + 20 * line, COLOR_WHITE, "次に設定するフレーム数:%d", debugFrame); line++;
+	//DrawFormatString(x, y + 20 * line, COLOR_WHITE, "次に設定する移動距離:%3.2f cm", debugValue); line++;
 }

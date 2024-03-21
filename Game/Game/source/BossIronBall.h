@@ -91,6 +91,9 @@ private:
 
 	void ChainProcess();
 
+	// アニメーションの再生時間を更新
+	void AnimationProcess();
+
 private:
 	// 鉄球のモデルハンドル
 	int _ibModelHandle;
@@ -189,6 +192,15 @@ private:
 	MATRIX _mStakePos;
 	// _mStakePosの逆行列
 	MATRIX _mStakePosInv;
+
+
+	// アニメーション関連
+	// アニメーションのインデックス
+	int _animIndex;
+	// アニメーションの合計時間
+	float _animTotalTime;
+	// 再生時間
+	float _playTime;
 
 
 
