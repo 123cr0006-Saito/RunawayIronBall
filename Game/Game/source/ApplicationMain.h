@@ -1,5 +1,6 @@
 #pragma once
 #include "appframe.h"
+#include"ModeGame.h"
 
 class ApplicationMain : public ApplicationBase
 {
@@ -14,5 +15,8 @@ public:
 	virtual bool AppWindowed() { return true; }
 
 protected:
+	XInput* _input;
+	Vibration* _vibration;
 
+	Fps* _fpsController;
 }; 

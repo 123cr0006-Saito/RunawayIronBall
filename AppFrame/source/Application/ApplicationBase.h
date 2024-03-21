@@ -6,6 +6,9 @@
 #include <time.h>
 #include "../Mode//ModeServer.h"
 
+// EffekseerForDXLib.hをインクルードします。
+#include "EffekseerForDXLib.h"
+
 class ApplicationBase
 {
 public:
@@ -19,6 +22,7 @@ public:
 	virtual bool Render();
 
 	virtual bool AppWindowed() { return true; }
+	virtual bool BeforeDXLib_Init() { return true; }	// DXLib_Init() 実行前に行いたい処理があればオーバーライド
 
 #ifdef _DEBUG
 	virtual int DispSizeW() { return 1280; }

@@ -24,7 +24,7 @@ public:
 	static float AABBShortLength(VECTOR Box, float wide, float height, float depth, VECTOR Point);
 
 	//OBB同士の当たり判定
-	static bool OBBCollision(OBB box_1,OBB box_2,bool flag = false);
+	static bool OBBCollision(OBB box_1,OBB box_2);
 
     //点と直線の最短距離
 	static POINT_LINE_SHORT PointLineShortLength(VECTOR line_start, VECTOR line_end, VECTOR point);
@@ -40,22 +40,26 @@ public:
 
 	//球と球の当たり判定
 	static bool SphereCol(VECTOR pos1, float r1, VECTOR pos2, float r2);
+	static bool SphereCol(const Sphere& sphere1, const Sphere& sphere2);
 
 	//カプセル同士の当たり判定
-	static bool TwoCapselCol(VECTOR line_1_start, VECTOR line_1_end, float r_1, VECTOR line_2_start, VECTOR line_2_end, float r_2);
+	static bool TwoCapsuleCol(VECTOR line_1_start, VECTOR line_1_end, float r_1, VECTOR line_2_start, VECTOR line_2_end, float r_2);
+	static bool TwoCapsuleCol(const Capsule& capsule1, const Capsule& capsule2);
+
+	// 球とカプセルの当たり判定
+	static bool SphereCapsuleCol(VECTOR spherePos, float sphereR, VECTOR capsuleStartPos, VECTOR capsuleEndPos, float capsuleR, VECTOR* shortestPos = nullptr);
+	static bool SphereCapsuleCol(const Sphere& sphere, const Capsule& capsule, VECTOR* shortestPos = nullptr);
 
 	//点とＯＢＢの最接近点　OBBと点が一番近いOBBの位置を返します。
 	static  VECTOR PointOBB(VECTOR point, OBB obb);
-
-	static VECTOR PointOBBToBillBoard(VECTOR point, OBB obb);
 	
 	//OBBと球の当たり判定
-	static bool OBBSphereCol(OBB obb, VECTOR point, float r);
+	static bool OBBSphereCol(OBB obb, VECTOR point, float r, VECTOR * hitPos = nullptr);
+	static bool OBBSphereCol(const OBB& obb, const Sphere& sphere, VECTOR* hitPos = nullptr);
 
 	//OBBとカプセルの当たり判定
-	static bool OBBCapselCol(VECTOR line_start, VECTOR line_end, OBB obb, float r);
+	static bool OBBCapsuleCol(OBB obb, VECTOR line_start, VECTOR line_end, float r, VECTOR* hitPos = nullptr);
 	//オーバーロード
-	static bool OBBCapselCol(Capsule capsule, OBB obb);
-	static bool OBBToBillBoardCapselCol(Capsule capsule, OBB obb);
+	static bool OBBCapsuleCol(OBB obb, Capsule capsule, VECTOR* hitPos = nullptr);
 
 };
