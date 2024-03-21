@@ -127,18 +127,22 @@ bool ModeBossBattle::Process() {
 
 
 	Capsule pCol = _player->GetCollision();
-	Capsule bSCol = _boss->GetStakeCollision();
-	bSCol.down_pos.y = 0.0f;
-	
-	VECTOR vSub = VSub(pCol.down_pos, bSCol.down_pos);
-	vSub.y = 0.0f;
-	float squareLength = VSquareSize(vSub);
-	if (squareLength < (bSCol.r + pCol.r) * (bSCol.r + pCol.r)) {
-		VECTOR vDir = vSub;
-		vDir = VNorm(vDir);
-		float extrudeLength = bSCol.r + pCol.r;
-		VECTOR vMove = VAdd(bSCol.down_pos, VScale(vDir, extrudeLength));
-		_player->SetPos(vMove);
+
+	if (_boss->GetIsStakeBroken() == false) {
+		Capsule bSCol = _boss->GetStakeCollision();
+		bSCol.down_pos.y = 0.0f;
+
+		// プレイヤーとボス杭の当たり判定
+		VECTOR vSub = VSub(pCol.down_pos, bSCol.down_pos);
+		vSub.y = 0.0f;
+		float squareLength = VSquareSize(vSub);
+		if (squareLength < (bSCol.r + pCol.r) * (bSCol.r + pCol.r)) {
+			VECTOR vDir = vSub;
+			vDir = VNorm(vDir);
+			float extrudeLength = bSCol.r + pCol.r;
+			VECTOR vMove = VAdd(bSCol.down_pos, VScale(vDir, extrudeLength));
+			_player->SetPos(vMove);
+		}
 	}
 
 	// プレイヤーの攻撃判定が有効なら
@@ -152,13 +156,17 @@ bool ModeBossBattle::Process() {
 			if (Collision3D::SphereCol(pIBCol, bIBCol)) {
 				VECTOR vDir = VSub(bIBCol.centerPos, pCol.down_pos);
 				vDir.y = 0.0f;
-				_boss->SetKnockBack(vDir, 12.0f);
+				_boss->SetIBKnockBack(vDir, 12.0f);
 			}
 		}
 
-		// プレイヤー鉄球とボス杭の当たり判定
-		if (Collision3D::SphereCapsuleCol(pIBCol, bSCol)) {
-			_boss->SetDamageStake(3);
+		if (_boss->GetIsStakeBroken() == false) {
+			Capsule bSCol = _boss->GetStakeCollision();
+			bSCol.down_pos.y = 0.0f;
+			// プレイヤー鉄球とボス杭の当たり判定
+			if (Collision3D::SphereCapsuleCol(pIBCol, bSCol)) {
+				_boss->SetDamageStake(3);
+			}
 		}
 	}
 
