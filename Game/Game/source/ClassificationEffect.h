@@ -33,6 +33,7 @@ public:
 	static ClassificationEffect* _instance;
 	static ClassificationEffect* GetInstance () { return _instance; }
 protected:
+	Vibration* vib;
 	std::map<int, std::pair<std::string,int> > _commandList;
 };
 

@@ -7,37 +7,14 @@ Vibration::Vibration(int padID)
 	int checkID = -1;
 	if (DX_INPUT_PAD1 <= padID && padID <= DX_INPUT_PAD4) checkID = padID;
 	_padID = checkID;
-
-	_isVibrating = false;
-	_remainingFrame = 0;
-	_power = 0;
 }
 
 Vibration::~Vibration()
 {
 }
 
-void Vibration::Process()
+void Vibration::SetVibrationController(float frame, int power)
 {
-	if (_isVibrating) {
-		_remainingFrame--;
-
-		if (_remainingFrame < 0) {
-			StopVibration();
-		}
-	}
-}
-
-void Vibration::StartVibration(int frame, int power)
-{
-	_isVibrating = true;
-	_remainingFrame = frame;
-	_power = power;
-
-	StartJoypadVibration(_padID, power, -1, -1);
-}
-
-void Vibration::StopVibration()
-{
-	StopJoypadVibration(_padID);
+	float remainingFrame = (float)frame * 1000.0f / 60.0f; // ƒtƒŒ[ƒ€‚ðƒ~ƒŠ•b‚É•ÏŠ· 60fps
+	StartJoypadVibration(_padID, power, remainingFrame, -1);
 }
