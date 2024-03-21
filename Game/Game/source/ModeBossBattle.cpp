@@ -3,6 +3,9 @@
 #include "ModeBossBattle.h"
 #include "ModeZoomCamera.h"
 #include "ModeRotationCamera.h"
+#include "ModePause.h"
+#include "ModeGameOver.h"
+#include "ModeLoading.h"
 
 namespace {
 	// ステージの半径
@@ -15,12 +18,7 @@ bool ModeBossBattle::Initialize() {
 	_collisionManager = NEW CollisionManager();
 	_collisionManager->Init();
 
-	IsLoading = true;
-	LoadFunctionThread = nullptr;
-
 	_light = NEW Light("LightData");
-	_timeLimit = NEW TimeLimit();
-	_timeLimit->SetTimeLimit(12, 0);
 
 	int resolution = 8192;
 	_shadowHandle = MakeShadowMap(resolution, resolution);
@@ -34,8 +32,6 @@ bool ModeBossBattle::Initialize() {
 	_player = NEW Player();
 	_player->Init(playerModelHandle, VGet(0, 0, -1000));
 	_camera = NEW Camera(_player->GetPosition());
-
-
 
 	_boss = NEW Boss();
 	_boss->LoadModel();
@@ -63,52 +59,34 @@ bool ModeBossBattle::Initialize() {
 		ResourceServer::LoadEffekseerEffect("Stanp", "res/Effekseer/Attack/HorizontalThird.efkefc");
 	}
 
-	_suppression = NEW Suppression();
-
-	_floor = NEW Floor();
-
-
-
 	int size = 100;
 	int heartHandle[3];
 	ResourceServer::LoadMultGraph("Heart", "res/UI/Heart/UI_Heart", ".png", 3, heartHandle);
 	ui[0] = NEW UIHeart(VGet(120, 20, 0), 3, heartHandle, 2);
 	ui[1] = NEW UIExpPoint(VGet(100, 150, 0));
-	ResourceServer::LoadMultGraph("Suppressiongauge", "res/UI/SuppressionGauge/SuppressionGauge", ".png", 3, heartHandle);
-	ui[2] = NEW UISuppressionGauge(VGet(700, 100, 0), 3, heartHandle);
-	ui[3] = NEW UITimeLimit(VGet(1600, 100, 0));
+	_bossHp = NEW UIBossHp(VGet(1200,700,0));
 	_gaugeUI[0] = NEW DrawGauge(0, 3, size, true);
 	_gaugeUI[1] = NEW DrawGauge(0, 3, size, true);
 	_gaugeHandle[0] = ResourceServer::LoadGraph("Stamina03", ("res/UI/Stamina/UI_Stamina_03.png"));
 	_gaugeHandle[1] = ResourceServer::LoadGraph("Stamina02", ("res/UI/Stamina/UI_Stamina_02.png"));
 	_gaugeHandle[2] = ResourceServer::LoadGraph("Stamina01", ("res/UI/Stamina/UI_Stamina_01.png"));
 	_gaugeHandle[3] = ResourceServer::LoadGraph("Stamina04", ("res/UI/Stamina/UI_Stamina_04.png"));
-	_sVib = NEW ScreenVibration();
-
-
+	
+	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(4), 10, "RotCamera");
 	return true;
 }
 
 bool ModeBossBattle::Terminate() {
 	base::Terminate();
 	delete _collisionManager;
-	delete _camera;
-	delete _player;
+	//delete _camera;
+	//delete _player;
 	delete _boss;
-	delete _sVib;
 	delete _effectManeger;
 	delete _classificationEffect;
 	delete _light;
-	delete _timeLimit;
-	delete _floor;
-
-
-	if (LoadFunctionThread != nullptr) {
-		LoadFunctionThread->detach();
-		delete LoadFunctionThread; LoadFunctionThread = nullptr;
-	}
-
-	for (int i = 0; i < 4; i++) {
+	delete _bossHp;
+	for (int i = 0; i < 2; i++) {
 		delete ui[i];
 	}
 
@@ -122,7 +100,6 @@ bool ModeBossBattle::Terminate() {
 bool ModeBossBattle::Process() {
 	base::Process();
 	global._timer->TimeElapsed();
-	_sVib->UpdateScreenVibration();
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_RIGHT_THUMB)) {
 		_boss->SetDamageStake(50);
@@ -132,8 +109,7 @@ bool ModeBossBattle::Process() {
 
 	_boss->Process();
 
-	_timeLimit->Process();
-
+	_bossHp->Process(_boss->GetStakeHp(), _boss->GetStakeMaxHp());
 
 
 	Capsule pCol = _player->GetCollision();
@@ -180,7 +156,6 @@ bool ModeBossBattle::Process() {
 		}
 	}
 
-
 	// プレイヤーの移動制限
 	VECTOR pPos = _player->GetPosition();
 	pPos.y = 0.0f;
@@ -218,9 +193,9 @@ bool ModeBossBattle::Process() {
 
 	}
 
-	//for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
-	//	ui[i]->Process();
-	//}
+	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
+		ui[i]->Process();
+	}
 
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_START)) {
@@ -229,33 +204,15 @@ bool ModeBossBattle::Process() {
 		ModeServer::GetInstance()->Add(NEW ModePause(), 10, "Pause");
 	}
 
-	if (XInput::GetInstance()->GetKey(XINPUT_BUTTON_Y)) {
-		if (nowParcent > 0) {
-			nowParcent -= 1.0f / 120 * 100;
-		}
-	}
-	else {
-		if (nowParcent < 100) {
-			nowParcent += 1.0f / 120 * 100;
-		}
-	}
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_BACK)) {
 		_drawDebug = !_drawDebug;
-		//VECTOR pPos = _player->GetPosition();
-		//for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
-		//	
-		//	VECTOR hPos = (*itr)->GetPos();
-		//	VECTOR tmpDir = VSub(hPos, pPos);
-		//	tmpDir.y = 0.0f;
-		//	(*itr)->SetBlast(tmpDir);
-		//}
 	}
 
 	if (_player->GetHP() <= 0) {
 		global._soundServer->BgmFadeOut(2000);
-		ModeServer::GetInstance()->Del(this);
-		//ModeServer::GetInstance()->Add(NEW ModeGameOver(), 1, "gameover");
+		ModeServer::GetInstance()->Add(NEW ModeGameOver(this), 0, "GameOver");
+		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(2500, this,"GameOver", 50), 100, "Fade");
 	}
 
 	VECTOR box_vec = ConvWorldPosToScreenPos(VAdd(_player->GetPosition(), VGet(0, 170, 0)));
@@ -276,7 +233,6 @@ bool ModeBossBattle::Process() {
 }
 
 bool ModeBossBattle::Render() {
-	if (LoadFunctionThread)return true;
 
 	SetUseZBuffer3D(TRUE);
 	SetWriteZBuffer3D(TRUE);
@@ -287,7 +243,6 @@ bool ModeBossBattle::Render() {
 	// 描画に使用するシャドウマップを設定
 	SetUseShadowMap(0, _shadowHandle);
 	MV1DrawModel(_stage);
-	_floor->Render();
 	// 描画に使用するシャドウマップの設定を解除
 	SetUseShadowMap(0, -1);
 
@@ -345,20 +300,21 @@ bool ModeBossBattle::Render() {
 
 	_effectManeger->Render();
 
-
-	//SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
-	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
-		ui[i]->Draw();
-	}
-
-	if (_player->GetStaminaRate() < 1.0f) {
-		int handleNum = floorf(_player->GetStaminaRate() * 100.0f / 33.4f);
-		_gaugeUI[1]->Draw(_gaugeHandle[handleNum]);
-		_gaugeUI[0]->Draw(_gaugeHandle[3]);
+	if (!ModeServer::GetInstance()->Search("RotCamera")) {
+	    for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
+	    	ui[i]->Draw();
+	    }
+	    _bossHp->Draw();
+	    
+	    if (_player->GetStaminaRate() < 1.0f) {
+	    	int handleNum = floorf(_player->GetStaminaRate() * 100.0f / 33.4f);
+	    	_gaugeUI[1]->Draw(_gaugeHandle[handleNum]);
+	    	_gaugeUI[0]->Draw(_gaugeHandle[3]);
+	    }
 	}
 
 	DrawFormatString(1800, 1000, COLOR_RED, "StakeHP:%d", _boss->GetStakeHp());
-	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
 	//for (auto itr = _buildingBase.begin(); itr != _buildingBase.end(); ++itr) {
 	//	(*itr)->DrawDebugInfo();
 	//}

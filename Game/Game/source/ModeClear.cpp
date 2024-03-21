@@ -99,10 +99,6 @@ void ModeClear::Valuation(){
 	}
 };
 
-void ModeClear::AddChain(){
-
-};
-
 void ModeClear::ValuationProcess(){
 	if (!_IsStaging)return;
 
@@ -167,13 +163,13 @@ bool ModeClear::Process(){
 	}
 
 	if (_IsNextStage && input->GetTrg(XINPUT_BUTTON_A)) {
-		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000, this), 100, "Fade");
+		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000, this), 100, "ClearFade");
 		if (_modeGame != nullptr && _modeGame->GetStageNum() < 4) {
 			_modeGame->NewStage();
 		}
 		else {
 			ClearDrawScreen();
-			ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario04.csv", 3), 100, "Title");
+			ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario02.csv", 2), 100, "Title");
 			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000, this, true), 100, "Fade");
 			ModeServer::GetInstance()->Del(_modeGame);
 		}

@@ -15,7 +15,7 @@ bool ModeGame::Initialize() {
 	_collisionManager->Init();
 
 	_gate = nullptr;
-	_stageNum = 1;
+	_stageNum = 3;
 	IsTutorial = false;
 
 	_light = NEW Light("LightData");
@@ -67,7 +67,6 @@ bool ModeGame::Initialize() {
 	_gaugeHandle[1] = ResourceServer::LoadGraph("Stamina02", ("res/UI/Stamina/UI_Stamina_02.png"));
 	_gaugeHandle[2] = ResourceServer::LoadGraph("Stamina01", ("res/UI/Stamina/UI_Stamina_01.png"));
 	_gaugeHandle[3] = ResourceServer::LoadGraph("Stamina04", ("res/UI/Stamina/UI_Stamina_04.png"));
-	_sVib = NEW ScreenVibration();
 
 	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(_stageNum), 10, "RotCamera");
 	SetTime();
@@ -77,9 +76,8 @@ bool ModeGame::Initialize() {
 bool ModeGame::Terminate() {
 	base::Terminate();
 	delete _collisionManager;
-	delete _camera;
-	delete _player;
-	delete _sVib;
+	//delete _camera;
+	//delete _player;
 	delete _enemyPool;
 	delete _suppression;
 	delete _effectManeger;
@@ -150,7 +148,7 @@ void ModeGame::DeleteObject() {
 };
 
 void ModeGame::SetTime() {
-	int min[3] = { 10,10,10 };
+	int min[3] = { 15,15,15 };
 	_timeLimit->SetTimeLimit(min[_stageNum - 1], 0);
 };
 
@@ -292,13 +290,13 @@ bool ModeGame::LoadStage(std::string fileName) {
 	}
 
 	// プレイヤーの座標指定
-	nlohmann::json loadObject = (*json)._json.at("Player_Start_Position");
+	/*nlohmann::json loadObject = (*json)._json.at("Player_Start_Position");
 	VECTOR pos;
 	loadObject.at(0).at("translate").at("x").get_to(pos.x);
 	loadObject.at(0).at("translate").at("y").get_to(pos.z);
 	pos.y = 0;
 	 pos.x *= -1;
-	_player->SetPos(pos);
+	_player->SetPos(pos);*/
 
 	return true;
 };
@@ -329,7 +327,6 @@ bool ModeGame::Process() {
 	bool enabledIBAttackCollision = _player->GetEnabledIBAttackCollision();
 
 	global._timer->TimeElapsed();
-	_sVib->UpdateScreenVibration();
 
 	_player->Process(_camera->GetCamY());
 	_enemyPool->Process(enabledIBAttackCollision);
@@ -384,7 +381,7 @@ bool ModeGame::Process() {
 
 
 bool ModeGame::GateProcess() {
-
+	_suppression->SubSuppression(5);
 	if (_suppression->GetIsRatio() ) {
 		if (_gate == nullptr) {
 			VECTOR pos = VGet(0, 300, 0);
@@ -428,11 +425,11 @@ void ModeGame::CreateTutorial() {
 			ResourceServer::LoadMultGraph("Tutorial", "res/Tutorial/Tutorial", ".png", 5, tutorialHandle);
 			ModeServer::GetInstance()->Add(NEW ModeTutorial(tutorialHandle, 5), 10, "Tutorial");
 		}
-		else if (_stageNum == 4) {
+		/*else if (_stageNum == 4) {
 			int tutorialHandle[5];
 			ResourceServer::LoadMultGraph("Tutorial", "res/Tutorial/Tutorial", ".png", 5, tutorialHandle);
 			ModeServer::GetInstance()->Add(NEW ModeTutorial(tutorialHandle, 5), 10, "Tutorial");
-		}
+		}*/
 	}
 };
 
