@@ -59,15 +59,14 @@ bool ModeGame::Initialize() {
 	ui[1] = NEW UIExpPoint(VGet(100, 150, 0));
 	int suppressionHandle[3];
 	ResourceServer::LoadMultGraph("SuppressionGauge", "res/UI/SuppressionGauge/SuppressionGauge", ".png", 3, suppressionHandle);
-	ui[2] = NEW UISuppressionGauge(VGet(700, 100, 0), 3, suppressionHandle);
-	ui[3] = NEW UITimeLimit(VGet(1600, 100, 0));
+	ui[2] = NEW UISuppressionGauge(VGet(600, 100, 0), 3, suppressionHandle);
+	ui[3] = NEW UITimeLimit(VGet(1450, 30, 0));
 	_gaugeUI[0] = NEW DrawGauge(0, 3, size, true);
 	_gaugeUI[1] = NEW DrawGauge(0, 3, size, true);
 	_gaugeHandle[0] = ResourceServer::LoadGraph("Stamina03", ("res/UI/Stamina/UI_Stamina_03.png"));
 	_gaugeHandle[1] = ResourceServer::LoadGraph("Stamina02", ("res/UI/Stamina/UI_Stamina_02.png"));
 	_gaugeHandle[2] = ResourceServer::LoadGraph("Stamina01", ("res/UI/Stamina/UI_Stamina_01.png"));
 	_gaugeHandle[3] = ResourceServer::LoadGraph("Stamina04", ("res/UI/Stamina/UI_Stamina_04.png"));
-	_sVib = NEW ScreenVibration();
 
 	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(_stageNum), 10, "RotCamera");
 	SetTime();
@@ -78,8 +77,7 @@ bool ModeGame::Terminate() {
 	base::Terminate();
 	delete _collisionManager;
 	delete _camera;
-	delete _player;
-	delete _sVib;
+	//delete _player;
 	delete _enemyPool;
 	delete _suppression;
 	delete _effectManeger;
@@ -150,7 +148,7 @@ void ModeGame::DeleteObject() {
 };
 
 void ModeGame::SetTime() {
-	int min[3] = { 10,10,10 };
+	int min[3] = { 15,15,15 };
 	_timeLimit->SetTimeLimit(min[_stageNum - 1], 0);
 };
 
@@ -200,8 +198,12 @@ bool ModeGame::LoadObjectParam(std::string fileName) {
 			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &y); // obbのYサイズを取得
 			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &z); // obbのZサイズを取得
 			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &objectParam.isBreak); // 破壊可能化
+			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &objectParam._hp); // 耐久力
+			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &objectParam._exp); // 獲得経験値
+			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &objectParam._suppression); // 獲得経験値
 			c += SkipSpace(&p[c], &p[size]); // 空白やコントロールコードをスキップする
 			objectParam._size = VGet(x, y, z);
+
 
 			_objectParam.push_back(objectParam);
 		}
@@ -270,13 +272,14 @@ bool ModeGame::LoadStage(std::string fileName) {
 		std::vector<ModeGame::OBJECTDATA> objectData = LoadJsonObject(*json, nameList);
 		std::string modelName = nameList;
 		_objectName.push_back(modelName);
+		Suppression::GetInstance()->AddSuppression((*itr)._suppression * objectData.size());
 		std::string modelPath = "res/Building/" + modelName + "/" + modelName + ".mv1";
 		for (auto&& object : objectData) {
 			int objHandle = ResourceServer::MV1LoadModel(modelName, modelPath);
 			if ((*itr).isBreak == 1) {
 				// 壊れるオブジェクト
 				House* building = NEW House();
-				building->Init(objHandle, nameList,object._pos, object._rotate, object._scale, (*itr)._size);
+				building->Init(objHandle, nameList,object._pos, object._rotate, object._scale, (*itr)._size,(*itr)._hp, (*itr)._exp,(*itr)._suppression);
 				_house.push_back(building);
 			}
 			else {
@@ -289,13 +292,13 @@ bool ModeGame::LoadStage(std::string fileName) {
 	}
 
 	// プレイヤーの座標指定
-	nlohmann::json loadObject = (*json)._json.at("Player_Start_Position");
-	VECTOR pos;
-	loadObject.at(0).at("translate").at("x").get_to(pos.x);
-	loadObject.at(0).at("translate").at("y").get_to(pos.z);
-	loadObject.at(0).at("translate").at("z").get_to(pos.y);
-	 pos.x *= -1;
-	_player->SetPos(pos);
+	//nlohmann::json loadObject = (*json)._json.at("Player_Start_Position");
+	//VECTOR pos;
+	//loadObject.at(0).at("translate").at("x").get_to(pos.x);
+	//loadObject.at(0).at("translate").at("y").get_to(pos.z);
+	//pos.y = 0;
+	// pos.x *= -1;
+	//_player->SetPos(pos);
 
 	return true;
 };
@@ -326,12 +329,21 @@ bool ModeGame::Process() {
 	bool enabledIBAttackCollision = _player->GetEnabledIBAttackCollision();
 
 	global._timer->TimeElapsed();
-	_sVib->UpdateScreenVibration();
 
 	_player->Process(_camera->GetCamY());
 	_enemyPool->Process(enabledIBAttackCollision);
 	_timeLimit->Process();
-	_fog->Process();
+	_fog->Process(_stageNum);
+
+	// プレイヤーがステージ範囲外に出たら戻す
+	VECTOR playerPos = _player->GetPosition();
+	float stageWidth[3] = {STAGE_ONE_WIDTH,STAGE_TWO_WIDTH,STAGE_THREE_WIDTH};
+	float stageDistance = stageWidth[_stageNum - 1] ;
+	float playerDistance = VSquareSize(playerPos);
+	if(playerDistance > stageDistance * stageDistance){
+	    VECTOR vDir = VNorm(playerPos);
+	    _player->SetPos(VScale(vDir,stageDistance));
+	}
 
 	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
 		ui[i]->Process();
@@ -381,7 +393,6 @@ bool ModeGame::Process() {
 
 
 bool ModeGame::GateProcess() {
-
 	if (_suppression->GetIsRatio() ) {
 		if (_gate == nullptr) {
 			VECTOR pos = VGet(0, 300, 0);
@@ -421,11 +432,6 @@ void ModeGame::CreateTutorial() {
 	if (!IsTutorial) {
 		IsTutorial = true;
 		if (_stageNum == 1) {
-			int tutorialHandle[5];
-			ResourceServer::LoadMultGraph("Tutorial", "res/Tutorial/Tutorial", ".png", 5, tutorialHandle);
-			ModeServer::GetInstance()->Add(NEW ModeTutorial(tutorialHandle, 5), 10, "Tutorial");
-		}
-		else if (_stageNum == 4) {
 			int tutorialHandle[5];
 			ResourceServer::LoadMultGraph("Tutorial", "res/Tutorial/Tutorial", ".png", 5, tutorialHandle);
 			ModeServer::GetInstance()->Add(NEW ModeTutorial(tutorialHandle, 5), 10, "Tutorial");

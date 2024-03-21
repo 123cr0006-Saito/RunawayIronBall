@@ -157,7 +157,7 @@ bool CrystarPattern2::ModeDisCover() {
 bool CrystarPattern2::ModeAttack() {
 	float attackTime = 54.0f / 60.0f * 1000; // 攻撃モーション時間
 	int nowTime = GetNowCount() - _currentTime;//今の状態になってから何秒経ったか？
-	float speed = 2 * -1; //モデルの方向が-z方向なので*-1
+	float speed = 3 * -1; //モデルの方向が-z方向なので*-1
 	if (nowTime > attackTime) { speed *= -1; _animState = ANIMSTATE::HANDBUTT; }
 
 	VECTOR dirvec = Math::MatrixToVector(MGetRotY(_rotation.y), 2);

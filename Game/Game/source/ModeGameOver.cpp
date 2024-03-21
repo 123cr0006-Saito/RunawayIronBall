@@ -5,7 +5,14 @@
 #include "ModeFadeComeBack.h"
 
 ModeGameOver::ModeGameOver(ModeGame* mode) {
-	_mode = mode;
+	_modeGame = mode;
+	_modeBossBattle = nullptr;
+};
+
+ModeGameOver::ModeGameOver(ModeBossBattle* mode){
+	_modeGame = nullptr;
+	_modeBossBattle = mode;
+
 };
 
 bool ModeGameOver::Initialize() {
@@ -15,7 +22,7 @@ bool ModeGameOver::Initialize() {
 	_handle["Retry"] = ResourceServer::LoadGraph("Retry","res/ModeGameOver/UI_Game_Over_Retry.png");
 	_handle["Give"] = ResourceServer::LoadGraph("Give","res/ModeGameOver/UI_Game_Over_Title_Back.png");
 	_selectItem = 0;
-
+	_selectEnd = false;
 	// モデルの読み込み
 	_model = ResourceServer::MV1LoadModel("Player","res/Character/cg_player_girl/Cg_Player_Girl.mv1");
 	MV1SetPosition(_model, VGet(0, 0, 0));
@@ -41,42 +48,57 @@ bool ModeGameOver::Terminate() {
 	return true;
 };
 
+void ModeGameOver::AnimProcess(){
+	MATRIX matrix = MGetRotY(0.02f);
+	_cameraPos = VTransform(_cameraPos, matrix);
+	VECTOR pos = VAdd(_cameraPos, _targetPos);
+	SetCameraPositionAndTarget_UpVecY(pos, _targetPos);
+};
+
+void ModeGameOver::SelectProcess(){
+	if (_selectEnd) return ; // 選択が終わっっているので処理を終了
+
+	//選択項目の切り替え
+	if (_input->GetTrg(XINPUT_BUTTON_DPAD_LEFT) || _input->GetTrg(XINPUT_BUTTON_STICK_LEFT)) {
+		_selectItem = 1 - _selectItem;
+		global._soundServer->DirectPlay("SE_Select");
+	}
+	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_RIGHT) || _input->GetTrg(XINPUT_BUTTON_STICK_RIGHT)) {
+		_selectItem = 1 - _selectItem;
+		global._soundServer->DirectPlay("SE_Select");
+	}
+
+	if (_input->GetTrg(XINPUT_BUTTON_A)) {
+		_selectEnd = true;
+		global._soundServer->DirectPlay("SE_Press");
+		if (_selectItem == 0) {
+			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(3000, this), 100, "Fade");
+			if (_modeGame != nullptr) {
+				_modeGame->NewStage();
+				Player::GetInstance()->MaxHeal();
+			}
+			else if(_modeBossBattle != nullptr){
+				Player::GetInstance()->MaxHeal();
+			}
+		}
+		else {
+			ModeServer::GetInstance()->Add(new ModeTitle(), 1, "Title");
+			ModeServer::GetInstance()->Del(_modeGame);
+			ModeServer::GetInstance()->Del(this);
+		}
+	}
+
+};
+
 bool ModeGameOver::Process() {
 	base::Process();
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->PauseProcessUnderLayer();
 	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
-	//選択項目の切り替え
-	if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP)) {
-		_selectItem = 1 - _selectItem;
-		global._soundServer->DirectPlay("SE_Select");
-	}
-	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN)) {
-		_selectItem = 1 - _selectItem;
-		global._soundServer->DirectPlay("SE_Select");
-	}
+	AnimProcess();
+	SelectProcess();
 
-	if (_input->GetTrg(XINPUT_BUTTON_A)) {
-		global._soundServer->DirectPlay("SE_Press");
-		if (_selectItem == 0) {
-			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(3000, this,true), 100, "Fade");
-			if (_mode != nullptr) {
-				_mode->NewStage();
-				Player::GetInstance()->MaxHeal();
-			}
-		}
-		else {
-			ModeServer::GetInstance()->Add(new ModeTitle(), 1, "Title");
-			ModeServer::GetInstance()->Del(_mode);
-			ModeServer::GetInstance()->Del(this);
-		}
-	}
-
-	MATRIX matrix = MGetRotY(0.02f);
-	_cameraPos = VTransform(_cameraPos, matrix);
-	VECTOR pos = VAdd(_cameraPos, _targetPos);
-	SetCameraPositionAndTarget_UpVecY(pos, _targetPos);
 
 	return true;
 };
@@ -89,14 +111,14 @@ bool ModeGameOver::Render() {
 	int handleX, handleY;
 	std::vector<std::string> name = { "Logo","Retry","Give" };
 
+	int ItemX[2] = {600,1330};
+
 	DrawRotaGraph(1920/2, 200, 1.0f, 0.0f, _handle[name[0]], true);
 	for (int i = 1; i < name.size(); i++) {
-		float exrate = 1.0f;
-		if (i == _selectItem + 1)exrate = 1.1f;
-		GetGraphSize(_handle[name[i]], &handleX, &handleY);
-		DrawRotaGraph(1920 / 2, 1080 / 2 + 175 * i, exrate, 0.0f, _handle[name[i]], true);
+		float extrate = 1.0f;
+		if (i == _selectItem + 1)extrate = 1.1f;
+		DrawRotaGraph(ItemX[i-1], 800, extrate, 0.0f, _handle[name[i]], true);
 	}
-
 	
 	return true;
 };

@@ -1,4 +1,5 @@
 #include "Fog.h"
+#include "modegame.h"
 Fog::Fog(){
 	_player = Player::GetInstance();
 	SetFogColor(255,255,255);
@@ -14,12 +15,13 @@ Fog::~Fog(){
 	}
 };
 
-void Fog::UpdateIsFog(){
+void Fog::UpdateIsFog(int stageNum){
 	
-
 	VECTOR pos = _player->GetPosition();
 	float length = VSquareSize(pos);
-	float fogLength = 27000 / 2.0f;
+
+	float stage_length[3] = { STAGE_ONE_WIDTH ,STAGE_TWO_WIDTH,STAGE_THREE_WIDTH };
+	float fogLength = stage_length[stageNum-1] - 400.0f;
 	if (length > fogLength * fogLength) {
 		if(IsFog == false){
 		IsFog = true;
@@ -37,9 +39,9 @@ void Fog::UpdateIsFog(){
 	}
 };
 
-void Fog::Process(){
+void Fog::Process(int stageNum){
 	
-	UpdateIsFog();
+	UpdateIsFog(stageNum);
 	int easingTime = 60;
 
 	if(_easingCount < easingTime){

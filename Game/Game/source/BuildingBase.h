@@ -21,6 +21,7 @@ public:
 	OBB GetOBBCollision() { return _obbCollision; }
 
 	std::string GetName() {return _objName;}
+	int GetSuppression() { return _suppression; }
 
 
 	virtual void SetHit(VECTOR vDir = VGet(0.0f, 0.0f, -1.0f)) {};
@@ -32,6 +33,9 @@ protected:
 	// モデルハンドル
 	int _modelHandle;
 	std::string _objName;
+	int _hp; // HP
+	int _exp; // 経験値
+	int _suppression; // 制圧値
 	// モデルの座標
 	VECTOR _pos;
 

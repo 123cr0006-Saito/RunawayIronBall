@@ -29,6 +29,10 @@
 #include "EnemyPool.h"
 #include "EffectManeger.h"
 
+const float STAGE_ONE_WIDTH  = 17000.0f/2.0f;
+const float STAGE_TWO_WIDTH  = 20000.0f/2.0f;
+const float STAGE_THREE_WIDTH = 27000.0f/2.0f;
+
 class ModeGame : public ModeBase
 {
 	typedef ModeBase base;
@@ -43,6 +47,9 @@ class ModeGame : public ModeBase
 	struct ObjectParam {
 		std::string _name;
 		VECTOR _size;
+		int _hp;
+		int _exp;
+		int _suppression;
 		int isBreak;
 	};
 
@@ -83,7 +90,6 @@ protected:
 
 	TimeLimit* _timeLimit;
 
-	ScreenVibration* _sVib;
 	EnemyPool* _enemyPool;
 	Suppression* _suppression;
 

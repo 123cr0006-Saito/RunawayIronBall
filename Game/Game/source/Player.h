@@ -42,7 +42,11 @@ private:
 		HIT,
 		WIN,
 	};
-
+	struct LevelData {
+		int power;
+		float magnification;
+		int stamina;
+	};
 public:
 	Player();
 	~Player() override;
@@ -78,21 +82,17 @@ public:
 
 	void SetBone();//齋藤が作った関数です。 boneのフレームを探すために使用する関数です。後でjsonでの読み込みにするかもしれません。
 	//↓齋藤が作った関数です。どこにjson読み込みをどこに書けばよいのかわからなかったので、コンストラクタの次に呼び出す関数として実装しました。
-	void SetNextExp(std::string FileName);//経験値データの読み込み
 	bool HealHp();
-	bool  UpdateExp();//経験値が越えていた時、レベルを上げる。
+	bool UpdateExp();//経験値が越えていた時、レベルを上げる。
 	int GetNowLevel() { return _nowLevel; };
 	void SetExp(int getExp) { _nowExp += getExp; };
 	//経験値UIで使用しています。
 	int GetNowExp() { return _nowExp; }
 	int GetNextExp() { return _nextLevel[_nowLevel]; }
 
-
-	void SetPowerScale(std::string FileName);//ファイル読み込みでレベルに合わせた攻撃力と拡大率を取得
+	void SetLevelParam(std::string FileName);//ファイル読み込みでレベルに合わせた攻撃力と拡大率を取得
 	bool UpdateLevel();// レベルアップ時に攻撃力と拡大率を設定
 	int GetPower() { return _power; }//ノックバック用の力を返します。
-
-
 
 	void UpdateBone();
 	void UpdateCollision();
@@ -101,6 +101,8 @@ public:
 	Sphere GetIBCollision() { return _ironBall->GetIBCollision(); };
 	VECTOR GetIBPos() { return _ironBall->GetBallPosition(); };
 	void SetIBPos(VECTOR pos) { _ironBall->SetBallPosition(pos); };
+
+	Capsule GetChainCollision() { return _ironBall->GetChainCollision(); };
 
 	void SetBlastOffPower(VECTOR dir, float power) { _blastOffDir = dir; _blastOffPower = power; };
 
@@ -213,7 +215,7 @@ private:
 	std::map<int, int> _nextLevel;// first 現在のレベル  second  次のレベルが上がるまでの経験値
 
 	int _power;//吹っ飛ばす力です。
-	std::map<int, std::pair<int, float>> _powerAndScale;//攻撃力と拡大率を格納したコンテナです。
+	std::map<int, LevelData> _levelParam;//攻撃力と拡大率を格納したコンテナです。
 	//------------
 
 

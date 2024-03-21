@@ -2,6 +2,8 @@
 ClassificationEffect* ClassificationEffect::_instance = nullptr;
 ClassificationEffect::ClassificationEffect() {
 	_instance = this;
+	vib = NEW Vibration(DX_INPUT_PAD1);
+	_sVib = NEW ScreenVibration();
 	// ファイルパス
 	std::string filePath = "Data/DirectionList/DirectionList.csv";
 	//ファイル読み込み
@@ -32,11 +34,13 @@ ClassificationEffect::ClassificationEffect() {
 ClassificationEffect::~ClassificationEffect() {
 	_commandList.clear();
 	_instance = nullptr;
+	delete vib ; vib = nullptr;
+	delete _sVib; _sVib = nullptr;
 };
 
 void ClassificationEffect::SetClassification(CommandParam param) {
 	if (param.first == Play_Vibration) {
-		// バイブレーション
+		vib->SetVibrationController(param.second,1000);
 	}
 	else if (param.first == Play_SE) {
 		// SE

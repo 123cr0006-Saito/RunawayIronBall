@@ -1,5 +1,5 @@
 #include "CollisionManager.h"
-
+#include "Suppression.h"
 #include "Player.h"
 #include "IronBall.h"
 #include "EnemyBase.h"
@@ -637,6 +637,7 @@ void CollisionManager::CheckHitIbAndBldg(IronBall* ironBall, BuildingBase* build
 			VECTOR vDir = VSub(bCol.pos, player->GetPosition());
 			building->SetHit(vDir);
 			player->SetExp(50);
+			Suppression::GetInstance()->SubSuppression(building->GetSuppression());
 			global._soundServer->DirectPlay(building->GetName() + "_Break");
 		}
 	}
@@ -693,6 +694,7 @@ void CollisionManager::CheckHitChAndBldg(IronBall* ironBall, BuildingBase* build
 			building->SetHit(vDir);
 			player->SetExp(50);
 			global._soundServer->DirectPlay(building->GetName() + "_Break");
+			Suppression::GetInstance()->SubSuppression(building->GetSuppression());
 		}
 	}
 }
@@ -802,6 +804,7 @@ void CollisionManager::CheckHit(BuildingBase* building, TowerParts* towerParts)
 			VECTOR vDir = VSub(bCol.pos, tCol.centerPos);
 			building->SetHit(vDir);
 			global._soundServer->DirectPlay(building->GetName() + "_Break");
+			Suppression::GetInstance()->SubSuppression(building->GetSuppression());
 		}
 	}
 }

@@ -10,7 +10,7 @@ public:
 	House();
 	~House();
 
-	void Init(int modelHandle,std::string objName, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength) override;
+	void Init(int modelHandle,std::string objName, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength, int hp, int exp,int suppression);
 	void Process() override;
 
 	void SetHit(VECTOR vDir = VGet(0.0f, 0.0f, -1.0f)) override;
