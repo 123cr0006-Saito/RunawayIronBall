@@ -85,7 +85,6 @@ protected:
 
 	TimeLimit* _timeLimit;
 
-	ScreenVibration* _sVib;
 	EnemyPool* _enemyPool;
 	Suppression* _suppression;
 

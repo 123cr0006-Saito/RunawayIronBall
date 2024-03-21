@@ -2,6 +2,7 @@
 #include "ModeFadeComeBack.h"
 #include "ModeMovie.h"
 #include "ModeGame.h"
+#include "ModeBossBattle.h"
 
 bool ModeScenario::IsLoadHandle = false;
 std::unordered_map<int, int> ModeScenario::_charaHandleMap;
@@ -185,6 +186,8 @@ void  ModeScenario::ScenarioUniqueProcess(){
 		ModeServer::GetInstance()->Add(NEW ModeGame(), 1, "Game");
 		break;
 	case 2:
+		ModeServer::GetInstance()->Del("Game");
+		ModeServer::GetInstance()->Add(NEW ModeBossBattle(), 10, "BossBattle");
 		break;
 	case 3:
 		ModeServer::GetInstance()->Add(NEW ModeMovie(), 10, "Movie");

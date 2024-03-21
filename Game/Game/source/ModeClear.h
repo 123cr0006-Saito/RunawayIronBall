@@ -14,7 +14,6 @@ public:
 
 	void AnimProcess();
 	void ValuationProcess();
-	void AddChain();
 	void Valuation();
 
 protected:

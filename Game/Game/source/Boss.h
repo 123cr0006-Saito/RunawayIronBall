@@ -19,7 +19,9 @@ public:
 	void Process();
 	void Render();
 
+
 	VECTOR GetStakePosition() { return _stakePos; }
+	VECTOR GetIBPosition() { return _ironBall->GetPosition(); }
 
 	void SetIBPosition(VECTOR pos) { _ironBall->SetPosition(pos); }
 	bool GetIsGlass() { return _ironBall->GetIsGlass(); }
