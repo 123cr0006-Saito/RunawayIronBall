@@ -6,7 +6,7 @@
 
 namespace {
 	// ステージの半径
-	constexpr float STAGE_RADIUS = 7950.0f / 2.0f;
+	constexpr float STAGE_RADIUS = 8000.0f / 2.0f;
 }
 
 bool ModeBossBattle::Initialize() {
@@ -40,6 +40,7 @@ bool ModeBossBattle::Initialize() {
 	_boss = NEW Boss();
 	_boss->LoadModel();
 	_boss->Init(VGet(0, 0, 0));
+	_boss->SetStageRadius(STAGE_RADIUS);
 
 	_classificationEffect = NEW ClassificationEffect();
 	_effectManeger = NEW EffectManeger();
@@ -184,11 +185,37 @@ bool ModeBossBattle::Process() {
 	VECTOR pPos = _player->GetPosition();
 	pPos.y = 0.0f;
 	float squareLength = VSquareSize(pPos);
-	float moveLength = STAGE_RADIUS - 160.0f;
+	float moveLength = STAGE_RADIUS - 170.0f;
 	if (squareLength > powf(moveLength, 2)) {
 		VECTOR vDir = VNorm(pPos);
 		VECTOR vMove = VScale(vDir, moveLength);
 		_player->SetPos(vMove);
+	}
+
+
+	// ボス鉄球がステージから出ているかを判定
+	// 杭が破壊されている場合に判定をする
+	if (_boss->GetIsStakeBroken()) {
+		Sphere bIBCol = _boss->GetIBCollision();
+
+		VECTOR vDir = VSub(bIBCol.centerPos, VGet(0, 0, 0));
+		vDir.y = 0.0f;
+		float squareLength = VSquareSize(vDir);
+		squareLength -= powf(bIBCol.r + 20.0f, 2);
+
+		if (_boss->GetOnStage()) {
+			if (squareLength > powf(STAGE_RADIUS, 2)) {
+				_boss->SetOnStage(false);
+			}
+		}
+		else {
+			if (squareLength < powf(STAGE_RADIUS, 2)) {
+				VECTOR v = VGet(0, 0, 0);
+				vDir = VNorm(vDir);
+				_boss->SetIBPosition(VAdd(v, VScale(vDir, STAGE_RADIUS + bIBCol.r + 150.0f)));
+			}
+		}
+
 	}
 
 	//for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
