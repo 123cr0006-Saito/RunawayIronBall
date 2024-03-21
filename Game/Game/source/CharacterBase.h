@@ -17,7 +17,7 @@ public:
 public:
 	int GetModelHandle() { return _modelHandle; };
 
-	void SetPos(VECTOR pos) { this->_pos = pos; };
+	virtual void SetPos(VECTOR pos) { this->_pos = pos; };
 	VECTOR GetPosition() { return _pos; };
 	VECTOR* GetPositionPtr() { return &_pos; };
 	VECTOR GetForwardDir() { return _forwardDir; };

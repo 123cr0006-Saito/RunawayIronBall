@@ -53,6 +53,7 @@ namespace {
 	constexpr unsigned int 	C_P_CHECK_CHANGE_COMBO				= 4;
 	constexpr unsigned int 	C_P_CHECK_CHANGE_ATTACK_STATE		= 5;
 	constexpr unsigned int 	C_P_ENACLE_MOTION_CANCEL				= 6;
+	constexpr unsigned int 	C_P_SET_INVINCIBLE_CNT						= 7;
 
 	constexpr unsigned int 	C_P_ENABLE_IB_ATTACK_COLLISION		= 100;
 	constexpr unsigned int 	C_P_ENABLE_IB_FOLLOWING_MODE		= 101;
@@ -770,6 +771,9 @@ void Player::CheckFrameDataCommand()
 		}
 		case C_P_ENACLE_MOTION_CANCEL:
 			_canMotionCancel = static_cast<bool>(param);
+			break;
+		case C_P_SET_INVINCIBLE_CNT:
+			ChangeIsInvincible(true, static_cast<int>(param));
 			break;
 
 		case C_P_ENABLE_IB_ATTACK_COLLISION:
