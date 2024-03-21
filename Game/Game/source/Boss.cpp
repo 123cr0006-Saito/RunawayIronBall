@@ -95,11 +95,14 @@ void Boss::CheckHitBossAndStake()
 		_ironBall->SetPosition(vMove);
 		_ironBall->SetHitStake(true);
 
-		if (_ironBall->CheckKnockBack() && _ironBall->CheckHardKnockBack() == false) {
-			VECTOR vDir = VSub(ibCol.centerPos, _stakePos);
-			vDir.y = 0.0f;
-			_ironBall->SetKnockBack(vDir, 30.0f);
-
+		// �m�b�N�o�b�N��ԂȂ�͂����Ԃ�
+		if (_ironBall->CheckKnockBack()) {
+			// �n�[�h�m�b�N�o�b�N���ɂ�BossIronBall�N���X��ŕʂ̏�����s���̂ŁA�����ł͂͂����Ԃ�������s��Ȃ�
+			if (_ironBall->CheckHardKnockBack() == false) {
+				VECTOR vDir = VSub(ibCol.centerPos, _stakePos);
+				vDir.y = 0.0f;
+				_ironBall->SetKnockBack(vDir, 30.0f);
+			}
 			SetDamageStake(20);
 		}
 	}
