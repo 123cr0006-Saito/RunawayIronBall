@@ -19,6 +19,7 @@ public:
 	void Process();
 	void Render();
 
+	VECTOR GetIBPosition() { return _ironBall->GetPosition(); }
 	void SetIBPosition(VECTOR pos) { _ironBall->SetPosition(pos); }
 
 	Capsule GetStakeCollision() { return _stakeCapsuleCol; }

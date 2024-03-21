@@ -76,7 +76,7 @@ bool ModeGame::Initialize() {
 bool ModeGame::Terminate() {
 	base::Terminate();
 	delete _collisionManager;
-	//delete _camera;
+	delete _camera;
 	//delete _player;
 	delete _enemyPool;
 	delete _suppression;

@@ -79,8 +79,8 @@ bool ModeBossBattle::Initialize() {
 bool ModeBossBattle::Terminate() {
 	base::Terminate();
 	delete _collisionManager;
-	//delete _camera;
-	//delete _player;
+	delete _camera;
+	delete _player;
 	delete _boss;
 	delete _effectManeger;
 	delete _classificationEffect;
@@ -190,7 +190,11 @@ bool ModeBossBattle::Process() {
 				_boss->SetIBPosition(VAdd(v, VScale(vDir, STAGE_RADIUS + bIBCol.r + 150.0f)));
 			}
 		}
-
+	}
+	VECTOR p = _boss->GetIBPosition();
+	if(!ModeServer::GetInstance()->Search("Fade") && p.y < -5000) {
+		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(2500, this,  50), 100, "Fade");
+		ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario03.csv", 3), 0, "Scenario");
 	}
 
 	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
