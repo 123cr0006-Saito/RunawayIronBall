@@ -226,6 +226,9 @@ private:
 	// Ä¶ŠÔ
 	float _playTime;
 
+	// SE‚ğÄ¶‚·‚é‚©‚Ç‚¤‚©
+	bool _playSound;
+
 	float _stageRadius;
 
 	Player* _player;

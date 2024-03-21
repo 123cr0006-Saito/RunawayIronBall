@@ -162,6 +162,8 @@ BossIronBall::BossIronBall()
 	_animTotalTime = 0.0f;
 	_playTime = 0.0f;
 
+	_playSound = false;
+
 	_stageRadius = 0.0f;
 
 	_player = nullptr;
@@ -263,7 +265,10 @@ void BossIronBall::Process()
 		GravityProcess();
 	}
 	UpdateIBCollision();
-	if(_isRotationAttack) UpdateChainCollision();
+	if (_isRotationAttack) {
+		UpdateChainCollision();
+		global._soundServer->DirectPlay("SE_BOSS_Rotate");
+	}
 	UpdateModelRotation();
 	AnimationProcess();
 
@@ -306,6 +311,8 @@ void BossIronBall::ChangeGlass()
 		_animIndex = MV1AttachAnim(_ibModelHandle, 0, -1, FALSE);
 		_animTotalTime = MV1GetAttachAnimTotalTime(_ibModelHandle, _animIndex);
 		_playTime = 0.0f;
+
+		global._soundServer->DirectPlay("SE_BOSS_Glass");
 
 		_isGlass = true;
 	}
@@ -437,6 +444,7 @@ void BossIronBall::IdleProcess()
 		_phaseCnt++;
 		if (_phaseCnt > IDLE_CNT_MAX) {
 			_ibIdleCnt = IDLE_INTERVAL_BASE + (rand() % IDLE_INTERVAL_ADD_MAX);
+			global._soundServer->DirectPlay("SE_Boss_Stay");
 
 			_phaseCnt = 0;
 			_phase++;
@@ -471,6 +479,10 @@ void BossIronBall::SetIdle()
 
 void BossIronBall::StiffenProcess()
 {
+	if (_playSound) {
+		global._soundServer->DirectPlay("SE_BOSS_Confusion");
+		_playSound = false;
+	}
 	_ibStiffenCnt--;
 	if (_ibStiffenCnt < 0) {
 		_ibStiffenCnt = 0;
@@ -485,6 +497,9 @@ void BossIronBall::SetStiffen(int cnt, bool isInvincible)
 	_ibState = IB_STATE::STIFFEN;
 	_ibStiffenCnt = cnt;
 	_isInvincible = isInvincible;
+	if (!_isInvincible) {
+		_playSound = true;
+	}
 }
 
 void BossIronBall::RushProcess()
@@ -512,6 +527,8 @@ void BossIronBall::RushProcess()
 			_posBeforeMoving = _ibPos;
 			_targetPos = VScale(_ibMoveDir, RU_MOVE_DISTANCE);
 
+			global._soundServer->DirectPlay("SE_Boss_Stay");
+
 			_phaseCnt = 0;
 			_phase++;
 		}
@@ -520,6 +537,8 @@ void BossIronBall::RushProcess()
 		_ibModelDirState = IB_MODEL_DIR::NOT_UPDATE;
 		_phaseCnt++;
 		if (_phaseCnt > RU_CHARGE_CNT) {
+			_playSound = true;
+
 			_phaseCnt = 0;
 			_phase++;
 		}
@@ -532,6 +551,12 @@ void BossIronBall::RushProcess()
 			v.z = Easing::Linear(_phaseCnt, _posBeforeMoving.z, _targetPos.z, RU_ATTACK_CNT);
 			_ibPos = v;
 		}
+
+		if (_playSound) {
+			global._soundServer->DirectPlay("SE_BOSS_Rush");
+			_playSound = false;
+		}
+
 		_phaseCnt++;
 		if (_phaseCnt > RU_ATTACK_CNT) {
 			ResetPhase();
@@ -584,8 +609,14 @@ void BossIronBall::DropProcess()
 		_ibPos = v;
 		_ibModelDirState = IB_MODEL_DIR::PLAYER;
 
+		if (_playSound) {
+			global._soundServer->DirectPlay("SE_BOSS_Jump_Attack_01");
+			_playSound = false;
+		}
+
 		_phaseCnt++;
 		if (_phaseCnt > DR_REACH_HIGHEST_CNT) {
+			_playSound = true;
 			_posBeforeMoving = _ibPos;
 			_phaseCnt = 0;
 			_phase++;
@@ -602,8 +633,16 @@ void BossIronBall::DropProcess()
 		_ibPos = v;
 		_ibModelDirState = IB_MODEL_DIR::NOT_UPDATE;
 
+		if (_playSound) {
+			if (_ibPos.y - _ibSphereCol.r < 0.0f) {
+				global._soundServer->DirectPlay("SE_BOSS_Jump_Attack_02");
+				_playSound = false;
+			}
+		}
+
 		_phaseCnt++;
 		if (_phaseCnt > DR_REACH_GROUND_CNT) {
+
 			ResetPhase();
 
 			// ‹­‰»ó‘Ô‚Ìê‡‚Í˜A‘±UŒ‚
@@ -636,6 +675,8 @@ void BossIronBall::SetDrop()
 	_posBeforeMoving = _ibPos;
 	_targetPos = _player->GetPosition();
 	_targetPos.y = _ibSphereCol.r;
+
+	_playSound = true;
 }
 
 void BossIronBall::RotationProcess()
@@ -668,6 +709,8 @@ void BossIronBall::RotationProcess()
 		if (_phaseCnt > RU_REACH_STAKE_CNT) {
 			_rotRadius = RO_ROTAION_RADIUS_MIN;
 			_ibModelDirState = IB_MODEL_DIR::STAKE_REVERSE;
+
+			global._soundServer->DirectPlay("SE_Boss_Stay");
 
 			_phaseCnt = 0;
 			_phase++;
@@ -729,6 +772,8 @@ void BossIronBall::SetRotation()
 	_rotAngularVelocity = 0;
 	_rotAngle = RO_ANGULAR_VELOCITY_MIN;
 	_rotRadius = 0.0f;
+
+	_playSound = true;
 }
 
 
@@ -737,6 +782,7 @@ void BossIronBall::GravityProcess()
 	_ibPos.y += _gravity;
 	if (_isOnStage &&  _ibPos.y - _ibSphereCol.r < 0.0f) {
 		_gravity = 40.0f;
+		global._soundServer->DirectPlay("SE_Boss_Stay");
 	}
 	else {
 		_gravity -= 6.0f;
@@ -879,6 +925,7 @@ void BossIronBall::HardKnockBackProcess()
 
 			_phaseCnt = 0;
 			_phase++;
+			break;
 		}
 		VECTOR v = VGet(0.0f, 0.0f, 0.0f);
 		v.x = Easing::Linear(_phaseCnt, _posBeforeMoving.x, _targetPos.x, HK_REACH_STAKE_CNT);
@@ -904,7 +951,7 @@ void BossIronBall::HardKnockBackProcess()
 		break;
 	case 1: // ’µ‚Ë•Ô‚è
 		{
-			VECTOR v = VGet(0.0f, 0.0f, 0.0f);
+			VECTOR v = VGet(0.0f, _ibPos.y, 0.0f);
 			v.x = Easing::Linear(_phaseCnt, _posBeforeMoving.x, _targetPos.x, HK_BOUNCE_CNT);
 			v.y = _posBeforeMoving.y + 800.0f * sinf(DX_PI_F * (_phaseCnt / static_cast<float>(HK_BOUNCE_CNT)));
 			v.z = Easing::Linear(_phaseCnt, _posBeforeMoving.z, _targetPos.z, HK_BOUNCE_CNT);
