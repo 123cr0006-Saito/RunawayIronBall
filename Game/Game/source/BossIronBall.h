@@ -46,7 +46,11 @@ public:
 
 
 private:
+	// 鉄球モデルの向きを更新する
+	void UpdateModelRotation();
+
 	void CheckState();
+
 	// 強化状態に移行する
 	// 強化状態に遷移が可能なタイミングに呼び出し、初めて_changeEnhancedがtrueになったときに強化状態に移行する（この場合は_isEnhancedは必ずfalse）
 	void CheckChangeEnhanced();
@@ -92,6 +96,19 @@ private:
 	int _ibModelHandle;
 	// 鉄球の座標
 	VECTOR _ibPos;
+	// 鉄球のモデルの向き
+	VECTOR _ibModelForwardDir;
+	// 鉄球のモデルを次に向かせる向き（現在の向きから数フレームかけて向きを補間する）
+	VECTOR _ibModelNextForwardDir;
+
+	enum class IB_MODEL_DIR {
+		PLAYER,		// プレイヤーの方向
+		PLAYER_REVERSE,		// プレイヤーの逆方向
+		STAKE,		// 杭の方向
+		STAKE_REVERSE,		// 杭の逆方向
+		NOT_UPDATE,		// 更新しない
+	} _ibModelDirState;
+
 	// 鉄球の当たり判定
 	Sphere _ibSphereCol;
 	// 無敵状態かどうか

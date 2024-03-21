@@ -88,8 +88,12 @@ BossIronBall::BossIronBall()
 {
 	_ibModelHandle = -1;
 	_ibPos = VGet(0.0f, 0.0f, 0.0f);
+	_ibModelForwardDir = VGet(0.0f, 0.0f, -1.0f);
+	_ibModelNextForwardDir = VGet(0.0f, 0.0f, -1.0f);
+	_ibModelDirState = IB_MODEL_DIR::PLAYER;
 	_ibSphereCol.centerPos = _ibPos;
 	_ibSphereCol.r = 0.0f;
+
 	_isInvincible = false;
 	_useCollision = true;
 	_isEnhanced = false;
@@ -213,6 +217,8 @@ void BossIronBall::Process()
 	if (_ibPos.y - _ibSphereCol.r < 0.0f) _ibPos.y = _ibSphereCol.r;
 	UpdateIBCollision();
 
+	UpdateModelRotation();
+
 	_isHitStake = false;
 
 	// ‰¼
@@ -248,6 +254,51 @@ void BossIronBall::Render()
 void BossIronBall::UpdateIBCollision()
 {
 	_ibSphereCol.centerPos = _ibPos;
+}
+
+// “S‹…ƒ‚ƒfƒ‹‚ÌŒü‚«‚ðXV‚·‚é
+void BossIronBall::UpdateModelRotation()
+{
+	bool isUpdate = false;
+	switch (_ibModelDirState)
+	{
+	case IB_MODEL_DIR::PLAYER:
+		_ibModelNextForwardDir = VSub(_player->GetPosition(), _ibPos);
+		isUpdate = true;
+		break;
+	case IB_MODEL_DIR::PLAYER_REVERSE:
+		_ibModelNextForwardDir = VSub(_ibPos, _player->GetPosition());
+		isUpdate = true;
+		break;
+	case IB_MODEL_DIR::STAKE:
+		_ibModelNextForwardDir = VSub(*_stakePos, _ibPos);
+		isUpdate = true;
+		break;
+	case IB_MODEL_DIR::STAKE_REVERSE:
+		_ibModelNextForwardDir = VSub(_ibPos, *_stakePos);
+		isUpdate = true;
+		break;
+	case IB_MODEL_DIR::NOT_UPDATE:
+		//return;
+		break;
+	}
+
+	if (isUpdate) {
+		_ibModelNextForwardDir.y = 0.0f;
+		_ibModelNextForwardDir = VNorm(_ibModelNextForwardDir);
+	}
+
+	// “S‹…ƒ‚ƒfƒ‹‚ðŠŠ‚ç‚©‚É‰ñ“]‚³‚¹‚é
+	float angle = Math::CalcVectorAngle(_ibModelForwardDir, _ibModelNextForwardDir);
+	float rotRad = (2.0f * DX_PI_F) / 20.0f;
+	if (rotRad > angle) {
+		_ibModelForwardDir = _ibModelNextForwardDir;
+	}
+	else {
+		VECTOR vN = VCross(_ibModelForwardDir, _ibModelNextForwardDir);
+		_ibModelForwardDir = VTransform(_ibModelForwardDir, MGetRotAxis(vN, rotRad));
+	}
+	Math::SetModelForward_RotationY(_ibModelHandle, _ibModelForwardDir);
 }
 
 void BossIronBall::CheckState()
@@ -367,6 +418,7 @@ void BossIronBall::RushProcess()
 			v.z = Easing::Linear(_phaseCnt, _posBeforeMoving.z, _targetPos.z, RU_REACH_STAKE_CNT);
 			_ibPos = v;
 		}
+		_ibModelDirState = IB_MODEL_DIR::STAKE;
 		_phaseCnt++;
 		if (_phaseCnt > RU_REACH_STAKE_CNT) {
 
@@ -374,6 +426,7 @@ void BossIronBall::RushProcess()
 			vDir.y = 0.0f;
 			vDir = VNorm(vDir);
 			_ibMoveDir = vDir;
+			_ibModelDirState = IB_MODEL_DIR::PLAYER;
 
 			_posBeforeMoving = _ibPos;
 			_targetPos = VScale(_ibMoveDir, RU_MOVE_DISTANCE);
@@ -383,6 +436,7 @@ void BossIronBall::RushProcess()
 		}
 		break;
 	case 1:			// —­‚ß
+		_ibModelDirState = IB_MODEL_DIR::NOT_UPDATE;
 		_phaseCnt++;
 		if (_phaseCnt > RU_CHARGE_CNT) {
 			_phaseCnt = 0;
@@ -447,6 +501,8 @@ void BossIronBall::DropProcess()
 		v.y = Easing::OutExpo(_phaseCnt, _posBeforeMoving.y, highestPos.y, DR_REACH_HIGHEST_CNT);
 		v.z = Easing::OutExpo(_phaseCnt, _posBeforeMoving.z, highestPos.z, DR_REACH_HIGHEST_CNT);
 		_ibPos = v;
+		_ibModelDirState = IB_MODEL_DIR::PLAYER;
+
 		_phaseCnt++;
 		if (_phaseCnt > DR_REACH_HIGHEST_CNT) {
 			_posBeforeMoving = _ibPos;
@@ -462,9 +518,9 @@ void BossIronBall::DropProcess()
 		v.x = Easing::EasingOutElastic(_phaseCnt, _posBeforeMoving.x, _targetPos.x, DR_REACH_GROUND_CNT);
 		v.y = Easing::EasingOutElastic(_phaseCnt, _posBeforeMoving.y, _targetPos.y, DR_REACH_GROUND_CNT);
 		v.z = Easing::EasingOutElastic(_phaseCnt, _posBeforeMoving.z, _targetPos.z, DR_REACH_GROUND_CNT);
-
-
 		_ibPos = v;
+		_ibModelDirState = IB_MODEL_DIR::NOT_UPDATE;
+
 		_phaseCnt++;
 		if (_phaseCnt > DR_REACH_GROUND_CNT) {
 			ResetPhase();
@@ -525,10 +581,12 @@ void BossIronBall::RotationProcess()
 		v.y = _ibSphereCol.r + 500.0f * sinf(DX_PI_F * (_phaseCnt / static_cast<float>(RO_REACH_STAKE_CNT)));
 		v.z = Easing::Linear(_phaseCnt, _posBeforeMoving.z, _targetPos.z, RO_REACH_STAKE_CNT);
 		_ibPos = v;
+		_ibModelDirState = IB_MODEL_DIR::STAKE;
 
 		_phaseCnt++;
 		if (_phaseCnt > RU_REACH_STAKE_CNT) {
 			_rotRadius = RO_ROTAION_RADIUS_MIN;
+			_ibModelDirState = IB_MODEL_DIR::STAKE_REVERSE;
 
 			_phaseCnt = 0;
 			_phase++;
