@@ -84,8 +84,12 @@ namespace {
 
 	// ---------
 
-	// âº
-	constexpr float SCALE = 12.8f;
+	// ÉÇÉfÉãÇÃägëÂó¶
+	constexpr float MODEL_SCALE = 12.8f;
+	// ìSãÖïîï™ÇÃìñÇΩÇËîªíËÇÃîºåa
+	constexpr float IB_SPHERE_RADIUS = 20.0f * MODEL_SCALE;
+	// çΩïîï™ÇÃìñÇΩÇËîªíËÇÃîºåa
+	constexpr float CH_CAPSULE_RADIUS = 100.0f;
 }
 
 BossIronBall::BossIronBall()
@@ -100,8 +104,15 @@ BossIronBall::BossIronBall()
 	_ibModelForwardDir = VGet(0.0f, 0.0f, -1.0f);
 	_ibModelNextForwardDir = VGet(0.0f, 0.0f, -1.0f);
 	_ibModelDirState = IB_MODEL_DIR::PLAYER;
+
 	_ibSphereCol.centerPos = _ibPos;
 	_ibSphereCol.r = 0.0f;
+
+	_chainCapsuleCol.down_pos = VGet(0.0f, 0.0f, 0.0f);
+	_chainCapsuleCol.up_pos = VGet(0.0f, 0.0f, 0.0f);
+	_chainCapsuleCol.r = 0.0f;
+	_isRotationAttack = false;
+
 	_isOnStage = true;
 
 	_isInvincible = false;
@@ -181,9 +192,13 @@ void BossIronBall::Init(VECTOR* stakePos)
 
 	_ibPos = _chainPos[BOSS_CHAIN_MAX - 1];
 	_ibSphereCol.centerPos = _ibPos;
-	_ibSphereCol.r = 20.0f * SCALE;
+	_ibSphereCol.r = IB_SPHERE_RADIUS;
+	_chainCapsuleCol.down_pos = *_stakePos;
+	_chainCapsuleCol.up_pos = _ibPos;
+	_chainCapsuleCol.r = CH_CAPSULE_RADIUS;
+
 	for (int i = 0; i < 2; i++) {
-		MV1SetScale(_ibModelHandleArray[i], VScale(VGet(1.0f, 1.0f, 1.0f), SCALE));
+		MV1SetScale(_ibModelHandleArray[i], VScale(VGet(1.0f, 1.0f, 1.0f), MODEL_SCALE));
 	}
 	_ibModelHandle = _ibModelHandleArray[0];
 
@@ -248,6 +263,7 @@ void BossIronBall::Process()
 		GravityProcess();
 	}
 	UpdateIBCollision();
+	if(_isRotationAttack) UpdateChainCollision();
 	UpdateModelRotation();
 	AnimationProcess();
 
@@ -298,6 +314,14 @@ void BossIronBall::ChangeGlass()
 void BossIronBall::UpdateIBCollision()
 {
 	_ibSphereCol.centerPos = _ibPos;
+}
+
+void BossIronBall::UpdateChainCollision()
+{
+	_chainCapsuleCol.down_pos = *_stakePos;
+	_chainCapsuleCol.down_pos.y = _chainCapsuleCol.r;
+	_chainCapsuleCol.up_pos = _ibPos;
+	_chainCapsuleCol.up_pos.y = _chainCapsuleCol.r;
 }
 
 void BossIronBall::SetOnStage(bool isOnStage)
@@ -653,6 +677,8 @@ void BossIronBall::RotationProcess()
 		_rotAngularVelocity = Easing::Linear(_phaseCnt, RO_ANGULAR_VELOCITY_MIN, RO_ANGULAR_VELOCITY_MAX, RO_ACCELERATION_CNT_MAX);
 		_rotRadius = Easing::Linear(_phaseCnt, RO_ROTAION_RADIUS_MIN, RO_ROTAION_RADIUS_MAX, RO_ACCELERATION_CNT_MAX);
 
+		_isRotationAttack = true;
+
 		_phaseCnt++;
 		if (_phaseCnt > RO_ACCELERATION_CNT_MAX) {
 			_phaseCnt = 0;
@@ -671,6 +697,8 @@ void BossIronBall::RotationProcess()
 
 		_phaseCnt++;
 		if (_phaseCnt > RO_DECELERATION_CNT_MAX) {
+			_isRotationAttack = false;
+
 			ResetPhase();
 			SetStiffen(RO_STIFFEN_CNT);
 			return;
@@ -917,6 +945,8 @@ void BossIronBall::DrawDebugInfo()
 {
 	auto color = _isInvincible ? COLOR_WHITE : COLOR_RED;
 	_ibSphereCol.Render(color);
+	color = _isRotationAttack ? COLOR_RED : COLOR_WHITE;
+	_chainCapsuleCol.Render(color);
 
 	for (int i = 0; i < 1; i++) {
 		Sphere s = { *_stakePos, SEARCH_RANGE[i] };

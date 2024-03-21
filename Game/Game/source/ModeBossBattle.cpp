@@ -215,20 +215,46 @@ bool ModeBossBattle::Process() {
 		bool isHit = false;
 		Capsule pCol = _player->GetCollision();
 		Sphere bIBCol = _boss->GetIBCollision();
+		VECTOR bSPos = _boss->GetStakePosition();
 
 		// ボス鉄球とプレイヤーの当たり判定
 		if (Collision3D::SphereCapsuleCol(bIBCol, pCol)) {
-			VECTOR vDir = VSub(pCol.down_pos, bIBCol.centerPos);
+			VECTOR vDir = VGet(0.0f, 0.0f, 0.0f);
+			// 回転攻撃中でなければ、ボス鉄球から見たプレイヤーの方向にはじく
+			if (_boss->GetIsRotationAttack() == false) {
+				vDir = VSub(pCol.down_pos, bIBCol.centerPos);
+			}
+			// 回転攻撃中なら、ボス杭から見たプレイヤーの方向にはじく（ステージの外側にはじく）
+			else {
+				vDir = VSub(pCol.down_pos, bSPos);
+			}
+			// y成分を0にする
 			vDir.y = 0.0f;			
 			_player->SetBlastOffPower(vDir, 40.0f);
+			// 無敵状態でなければダメージを与える
 			if (_player->GetIsInvincible() == false) {
 				_player->SetDamage();
 			}
 			isHit = true;
 		}
 
+		// ボス鎖とプレイヤーの当たり判定
+		// ボス鉄球が当たっている場合は、判定を行わない
 		if (!isHit) {
-
+			// ボス鎖の当たり判定は回転攻撃中にのみ行う
+			if (_boss->GetIsRotationAttack()) {
+				Capsule bCCol = _boss->GetChainCollision();
+				if (Collision3D::TwoCapsuleCol(bCCol, pCol)) {
+					// ボス杭から見たプレイヤーの方向にはじく（ステージの外側にはじく）
+					VECTOR vDir = VSub(pCol.down_pos, bSPos);
+					vDir.y = 0.0f;
+					_player->SetBlastOffPower(vDir, 40.0f);
+					// 無敵状態でなければダメージを与える
+					if (_player->GetIsInvincible() == false) {
+						_player->SetDamage();
+					}
+				}
+			}
 		}
 	}
 

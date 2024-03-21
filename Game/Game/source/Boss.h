@@ -19,10 +19,15 @@ public:
 	void Process();
 	void Render();
 
+	VECTOR GetStakePosition() { return _stakePos; }
+
 	void SetIBPosition(VECTOR pos) { _ironBall->SetPosition(pos); }
 
 	Capsule GetStakeCollision() { return _stakeCapsuleCol; }
 	Sphere GetIBCollision() { return _ironBall->GetIBCollision(); }
+	Capsule GetChainCollision() { return _ironBall->GetChainCollision(); }
+	// “S‹…‚Ì‰ñ“]UŒ‚‚©‚Ç‚¤‚©‚ðŽæ“¾‚·‚é
+	bool GetIsRotationAttack() { return _ironBall->GetIsRotationAttack(); }
 
 	void SetOnStage(bool isOnStage) { _ironBall->SetOnStage(isOnStage); }
 	bool GetOnStage() { return _ironBall->GetOnStage(); }

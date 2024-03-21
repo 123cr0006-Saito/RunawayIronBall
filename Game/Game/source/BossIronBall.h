@@ -23,6 +23,10 @@ public:
 	void UpdateIBCollision();
 	Sphere GetIBCollision() { return _ibSphereCol; }
 
+	void UpdateChainCollision();
+	Capsule GetChainCollision() { return _chainCapsuleCol; }
+	bool GetIsRotationAttack() { return _isRotationAttack; }
+
 	void SetOnStage(bool isOnStage);
 	bool GetOnStage() { return _isOnStage; }
 
@@ -126,6 +130,11 @@ private:
 
 	// “S‹…‚Ì“–‚½‚è”»’è
 	Sphere _ibSphereCol;
+	// ½‚Ì“–‚½‚è”»’è
+	Capsule _chainCapsuleCol;
+	// ‰ñ“]UŒ‚’†‚©‚Ç‚¤‚©
+	bool _isRotationAttack;
+
 	// ƒXƒe[ƒW‚Ì’†‚É‚¢‚é‚©‚Ç‚¤‚©
 	bool _isOnStage;
 
