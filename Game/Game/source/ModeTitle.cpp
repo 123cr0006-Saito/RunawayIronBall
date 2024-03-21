@@ -153,9 +153,9 @@ void ModeTitle::DrawTitleItems(){
 	DrawGraph(0, 1080 - handleY, _handleMap["Logo"], true);
 	//ÇªÇÍÇºÇÍÇÃçÄñ⁄ÇÃï`âÊ
 	
-	int centerX, centerY;
-	centerX = 1300;
-	centerY = 500;
+	int centerX;
+	int centerY[3] = { 550,720,910 };
+	centerX = 1200;
 
 	std::array<std::string,3> _handleNameList = { "Start","Option","Quit" };
 
@@ -164,7 +164,7 @@ void ModeTitle::DrawTitleItems(){
 		float extRate = 1.0f;
 		GetGraphSize(_handleMap[_handleNameList[handleNum]], &handleX, &handleY);
 		if (i == _modeCount) { extRate = 1.1f; }
-		DrawRotaGraph(centerX + handleX / 2, centerY + handleY / 2 + i * (100 + handleY / 2), extRate, 0.0f, _handleMap[_handleNameList[handleNum]], true);
+		DrawRotaGraph(centerX + handleX / 2, centerY[i], extRate, 0.0f, _handleMap[_handleNameList[handleNum]], true);
 	}
 };
 
