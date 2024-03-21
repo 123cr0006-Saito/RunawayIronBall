@@ -25,6 +25,8 @@ public:
 
 
 	virtual void SetHit(VECTOR vDir = VGet(0.0f, 0.0f, -1.0f)) {};
+	virtual int GetExp() { return 0; }
+	virtual int GetHp() { return 0; }
 
 	// デバッグ情報の表示
 	virtual void DrawDebugInfo();
