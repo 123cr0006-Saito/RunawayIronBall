@@ -138,6 +138,7 @@ bool ModeBossBattle::Process() {
 
 	Capsule pCol = _player->GetCollision();
 
+	// 杭が破壊されていない場合に判定を行う
 	if (_boss->GetIsStakeBroken() == false) {
 		Capsule bSCol = _boss->GetStakeCollision();
 		bSCol.down_pos.y = 0.0f;
@@ -155,6 +156,7 @@ bool ModeBossBattle::Process() {
 		}
 	}
 
+	// プレイヤーからボスへの攻撃
 	// プレイヤーの攻撃判定が有効なら
 	if (_player->GetEnabledIBAttackCollision()) {
 		Sphere pIBCol = _player->GetIBCollision();
