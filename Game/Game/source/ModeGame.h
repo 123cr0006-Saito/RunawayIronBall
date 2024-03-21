@@ -45,6 +45,7 @@ class ModeGame : public ModeBase
 		VECTOR _size;
 		int _hp;
 		int _exp;
+		int _suppression;
 		int isBreak;
 	};
 

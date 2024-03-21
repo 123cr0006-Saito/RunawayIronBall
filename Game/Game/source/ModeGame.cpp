@@ -15,7 +15,7 @@ bool ModeGame::Initialize() {
 	_collisionManager->Init();
 
 	_gate = nullptr;
-	_stageNum = 3;
+	_stageNum = 1;
 	IsTutorial = false;
 
 	_light = NEW Light("LightData");
@@ -200,6 +200,7 @@ bool ModeGame::LoadObjectParam(std::string fileName) {
 			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &objectParam.isBreak); // 破壊可能化
 			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &objectParam._hp); // 耐久力
 			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &objectParam._exp); // 獲得経験値
+			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &objectParam._suppression); // 獲得経験値
 			c += SkipSpace(&p[c], &p[size]); // 空白やコントロールコードをスキップする
 			objectParam._size = VGet(x, y, z);
 
@@ -271,13 +272,14 @@ bool ModeGame::LoadStage(std::string fileName) {
 		std::vector<ModeGame::OBJECTDATA> objectData = LoadJsonObject(*json, nameList);
 		std::string modelName = nameList;
 		_objectName.push_back(modelName);
+		Suppression::GetInstance()->AddSuppression((*itr)._suppression * objectData.size());
 		std::string modelPath = "res/Building/" + modelName + "/" + modelName + ".mv1";
 		for (auto&& object : objectData) {
 			int objHandle = ResourceServer::MV1LoadModel(modelName, modelPath);
 			if ((*itr).isBreak == 1) {
 				// 壊れるオブジェクト
 				House* building = NEW House();
-				building->Init(objHandle, nameList,object._pos, object._rotate, object._scale, (*itr)._size,(*itr)._hp, (*itr)._exp);
+				building->Init(objHandle, nameList,object._pos, object._rotate, object._scale, (*itr)._size,(*itr)._hp, (*itr)._exp,(*itr)._suppression);
 				_house.push_back(building);
 			}
 			else {
@@ -290,13 +292,13 @@ bool ModeGame::LoadStage(std::string fileName) {
 	}
 
 	// プレイヤーの座標指定
-	/*nlohmann::json loadObject = (*json)._json.at("Player_Start_Position");
+	nlohmann::json loadObject = (*json)._json.at("Player_Start_Position");
 	VECTOR pos;
 	loadObject.at(0).at("translate").at("x").get_to(pos.x);
 	loadObject.at(0).at("translate").at("y").get_to(pos.z);
 	pos.y = 0;
 	 pos.x *= -1;
-	_player->SetPos(pos);*/
+	_player->SetPos(pos);
 
 	return true;
 };
@@ -381,7 +383,6 @@ bool ModeGame::Process() {
 
 
 bool ModeGame::GateProcess() {
-	_suppression->SubSuppression(5);
 	if (_suppression->GetIsRatio() ) {
 		if (_gate == nullptr) {
 			VECTOR pos = VGet(0, 300, 0);
