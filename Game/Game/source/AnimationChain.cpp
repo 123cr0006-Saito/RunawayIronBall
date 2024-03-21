@@ -1,6 +1,6 @@
 #include "AnimationChain.h"
 AnimationChain::AnimationChain(VECTOR pos,float angle){
-	_handle = LoadGraph("res/Kusari_Straight.png");
+	_handle = ResourceServer::LoadGraph("UI_Chain","res/UI/Chain/Kusari_Straight.png");
 	_frameCount = 0;
 	_maxCount = 60;
 	_endX = pos.x;

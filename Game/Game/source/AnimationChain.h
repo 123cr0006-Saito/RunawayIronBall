@@ -1,6 +1,7 @@
 #pragma once
 #include <math.h>
 #include "../../Appframe/source/System/Header/Function/Easing.h"
+#include "../../Appframe/source/System/Header/Resource/ResourceServer.h"
 #include "dxlib.h"
 class AnimationChain
 {
