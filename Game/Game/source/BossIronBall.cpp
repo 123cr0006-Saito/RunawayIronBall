@@ -633,7 +633,7 @@ void BossIronBall::SetKnockBack(VECTOR vDir, float speed)
 {
 	_isInvincible = true;
 	_isKnockBack = true;
-	if (_ibState != IB_STATE::STIFFEN) {
+	if (_ibState != IB_STATE::STIFFEN || _isStakeBroken) {
 		_ibState = IB_STATE::KNOCK_BACK;
 		_knockBackDir = VNorm(vDir);
 		_knockBackSpeed = speed;
