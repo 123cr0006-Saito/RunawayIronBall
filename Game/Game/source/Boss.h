@@ -19,9 +19,14 @@ public:
 	void Process();
 	void Render();
 
+	void SetIBPosition(VECTOR pos) { _ironBall->SetPosition(pos); }
 
 	Capsule GetStakeCollision() { return _stakeCapsuleCol; }
 	Sphere GetIBCollision() { return _ironBall->GetIBCollision(); }
+
+	void SetOnStage(bool isOnStage) { _ironBall->SetOnStage(isOnStage); }
+	bool GetOnStage() { return _ironBall->GetOnStage(); }
+
 	bool GetIBInvincible() { return _ironBall->GetIsInvincible(); }
 
 	void CheckHitBossAndStake();
@@ -36,6 +41,8 @@ public:
 	int GetStakeMaxHp() { return STAKE_MAX_HP; }
 
 	bool GetIsStakeBroken() { return _isStakeBroken; }
+
+	void SetStageRadius(float radius) { _ironBall->SetStageRadius(radius); }
 
 	// デバッグ情報の表示
 	void DrawDebugInfo();

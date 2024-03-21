@@ -98,6 +98,7 @@ BossIronBall::BossIronBall()
 	_ibModelDirState = IB_MODEL_DIR::PLAYER;
 	_ibSphereCol.centerPos = _ibPos;
 	_ibSphereCol.r = 0.0f;
+	_isOnStage = true;
 
 	_isInvincible = false;
 	_useCollision = true;
@@ -146,6 +147,7 @@ BossIronBall::BossIronBall()
 	_animTotalTime = 0.0f;
 	_playTime = 0.0f;
 
+	_stageRadius = 0.0f;
 
 	_player = nullptr;
 }
@@ -204,36 +206,43 @@ void BossIronBall::Process()
 		SetRotation();
 	}
 
-	switch (_ibState)
-	{
-	case BossIronBall::IB_STATE::IDLE:
-		IdleProcess();
-		CheckChangeEnhanced();
-		break;
-	case BossIronBall::IB_STATE::STIFFEN:
-		StiffenProcess();
-		CheckChangeEnhanced();
-		break;
-	case BossIronBall::IB_STATE::ATTACK_RUSH:
-		RushProcess();
-		break;
-	case BossIronBall::IB_STATE::ATTACK_DROP:
-		DropProcess();
-		break;
-	case BossIronBall::IB_STATE::ATTACK_ROTATION:
-		RotationProcess();
-		break;
-	case BossIronBall::IB_STATE::KNOCK_BACK:
-		KnockBackProcess();
-		break;
-	case BossIronBall::IB_STATE::HARD_KNOCK_BACK:
-		HardKnockBackProcess();
-		break;
-	}
+	if (_isOnStage) {
 
-	//_ibPos = _chainPos[CHAIN_MAX - 1];
-	_ibPos.y -= 16.0f;
-	if (_ibPos.y - _ibSphereCol.r < 0.0f) _ibPos.y = _ibSphereCol.r;
+		switch (_ibState)
+		{
+		case BossIronBall::IB_STATE::IDLE:
+			IdleProcess();
+			CheckChangeEnhanced();
+			break;
+		case BossIronBall::IB_STATE::STIFFEN:
+			StiffenProcess();
+			CheckChangeEnhanced();
+			break;
+		case BossIronBall::IB_STATE::ATTACK_RUSH:
+			RushProcess();
+			break;
+		case BossIronBall::IB_STATE::ATTACK_DROP:
+			DropProcess();
+			break;
+		case BossIronBall::IB_STATE::ATTACK_ROTATION:
+			RotationProcess();
+			break;
+		case BossIronBall::IB_STATE::KNOCK_BACK:
+			KnockBackProcess();
+			break;
+		case BossIronBall::IB_STATE::HARD_KNOCK_BACK:
+			HardKnockBackProcess();
+			break;
+		}
+
+		//_ibPos = _chainPos[CHAIN_MAX - 1];
+		_ibPos.y -= 16.0f;
+		if (_ibPos.y - _ibSphereCol.r < 0.0f) _ibPos.y = _ibSphereCol.r;
+	}
+	else {
+		_ibPos = VAdd(_ibPos, VScale(_knockBackDir, 30.0f));
+		GravityProcess();
+	}
 	UpdateIBCollision();
 	UpdateModelRotation();
 	AnimationProcess();
@@ -285,6 +294,15 @@ void BossIronBall::ChangeGlass()
 void BossIronBall::UpdateIBCollision()
 {
 	_ibSphereCol.centerPos = _ibPos;
+}
+
+void BossIronBall::SetOnStage(bool isOnStage)
+{
+	bool oldState = _isOnStage;
+	_isOnStage = isOnStage;
+	if (!oldState && isOnStage) {
+		_gravity = 0.0f;
+	}
 }
 
 // 鉄球モデルの向きを更新する
@@ -354,6 +372,7 @@ void BossIronBall::CheckState()
 	switch (_ibState)
 	{
 	case BossIronBall::IB_STATE::IDLE:
+		SetIdle();
 		break;
 	case BossIronBall::IB_STATE::STIFFEN:
 		break;
@@ -417,6 +436,9 @@ void BossIronBall::SetIdle()
 	float z = (rand() % 201) - 100;
 	_ibMoveDir = VGet(x, 0.0f, z);
 	_ibMoveDir = VNorm(_ibMoveDir);
+
+	_ibModelDirState = IB_MODEL_DIR::NOT_UPDATE;
+	_ibModelNextForwardDir = _ibMoveDir;
 }
 
 void BossIronBall::StiffenProcess()
@@ -681,7 +703,7 @@ void BossIronBall::SetRotation()
 void BossIronBall::GravityProcess()
 {
 	_ibPos.y += _gravity;
-	if (_ibPos.y - _ibSphereCol.r < 0.0f) {
+	if (_isOnStage &&  _ibPos.y - _ibSphereCol.r < 0.0f) {
 		_gravity = 40.0f;
 	}
 	else {
@@ -695,7 +717,22 @@ void BossIronBall::ChainProcess()
 	for (int i = 0; i < BOSS_CHAIN_MAX - 1; i++) {
 		if (i == 0 && !_isStakeBroken) continue;
 		_chainPos[i].y -= 16.0f;
-		if (_chainPos[i].y - 20.0f < 0.0f) _chainPos[i].y = 20.0f;
+		if (_chainPos[i].y - 20.0f < 0.0f) {
+			//鉄球がステージ上にいるときは、地面からの押し出し処理を行う
+			if (_isOnStage) {
+				_chainPos[i].y = 20.0f;
+			}
+			// 鉄球がステージ上にいないときは、ステージの上にある鎖のみを押し出す
+			else {
+				VECTOR v = _chainPos[i];
+				v.y = 0.0f;
+				float squareLength = VSquareSize(v);
+				squareLength -= powf(_ibSphereCol.r + 230.0f, 2);
+				if (squareLength < powf(_stageRadius, 2)) {
+					_chainPos[i].y = 20.0f;
+				}
+			}
+		}
 	}
 
 	for (int i = BOSS_CHAIN_MAX - 1; i != 0; i--) {

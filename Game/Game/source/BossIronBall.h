@@ -23,6 +23,9 @@ public:
 	void UpdateIBCollision();
 	Sphere GetIBCollision() { return _ibSphereCol; }
 
+	void SetOnStage(bool isOnStage);
+	bool GetOnStage() { return _isOnStage; }
+
 	bool GetIsInvincible() { return _isInvincible; }
 	bool GetUseCollision() { return _useCollision; }
 
@@ -42,6 +45,8 @@ public:
 
 	void SetKnockBack(VECTOR vDir, float speed);
 	bool CheckKnockBack() { return _isKnockBack; }
+
+	void SetStageRadius(float radius) { _stageRadius = radius; }
 
 	// デバッグ情報の表示
 	void DrawDebugInfo();
@@ -121,6 +126,9 @@ private:
 
 	// 鉄球の当たり判定
 	Sphere _ibSphereCol;
+	// ステージの中にいるかどうか
+	bool _isOnStage;
+
 	// 無敵状態かどうか
 	bool _isInvincible;
 	// 当たり判定を行うかどうか
@@ -209,7 +217,7 @@ private:
 	// 再生時間
 	float _playTime;
 
-
+	float _stageRadius;
 
 	Player* _player;
 
