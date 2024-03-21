@@ -36,5 +36,6 @@ protected:
 	int _nowTextLine;
 	int _currentTime;
 	int _handleX, _handleY;
+	int _skipHandle;
 };
 

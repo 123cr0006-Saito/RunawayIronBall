@@ -27,7 +27,7 @@ LoadingChain::~LoadingChain() {
 };
 
 void LoadingChain::Init(){
-	_cModelHandle = ResourceServer::MV1LoadModel("Chain","res/Chain/Cg_Chain.mv1");
+	_cModelHandle = ResourceServer::MV1LoadModel("LoadingChain","res/Character/Loading/Cg_Chain.mv1");
 	_cPos[0] = VGet(0.0f, 0.0f, 0.0f);
 	MV1SetPosition(_cModelHandle, _cPos[0]);
 	MV1SetScale(_cModelHandle, VGet(0.5f, 0.5f, 0.5f));
@@ -36,7 +36,7 @@ void LoadingChain::Init(){
 		_cPos[i] = VAdd(_cPos[i - 1], VGet(100.0f, 0.0f, 0.0f));
 	}
 
-	_iModelHandle = ResourceServer::MV1LoadModel("IronBall", "res/Character/Cg_Iron_Ball/Cg_Iron_Ball.mv1");
+	_iModelHandle = ResourceServer::MV1LoadModel("LoadingIronBall", "res/Character/Loading/Cg_Iron_Ball.mv1");
 	_iPos = VAdd(_cPos[Chain_Num - 1], VGet(0.0f, 10.0f, 0.0f));
 	_ibDefaultScale = VGet(2.5f, 2.5f, 2.5f);
 	MV1SetScale(_iModelHandle, _ibDefaultScale);

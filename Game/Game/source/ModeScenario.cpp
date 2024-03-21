@@ -163,7 +163,7 @@ bool ModeScenario::Initialize(){
 	GetGraphSize(_charaHandleMap[_scenarioData.at(_nowTextLine).charaHandle], &_handleX, &_handleY);
 	_textFontHandle = CreateFontToHandle("メイリオ", 32, 3, DX_FONTTYPE_ANTIALIASING_EDGE_8X8);
 	_nameFontHandle = CreateFontToHandle("メイリオ", 64, 3, DX_FONTTYPE_ANTIALIASING_EDGE_8X8);
-
+	_skipHandle = ResourceServer::LoadGraph("Skip", "res/ModeScenario/Skip/UI_Skip.png");
 	return true;
 };
 
@@ -267,5 +267,7 @@ bool ModeScenario::Render() {
 	std::string copy = _scenarioData.at(_nowTextLine).text.substr(0, _nowTextByte);
 	DrawStringToHandle(_handleX + x / 5, 1080 - y,  copy.c_str(), GetColor(255, 255, 255),_textFontHandle);
 
+	GetGraphSize(_skipHandle, &x, &y);
+	DrawGraph(1920 - x, 1080 - y, _skipHandle, true);
 	return true;
 };

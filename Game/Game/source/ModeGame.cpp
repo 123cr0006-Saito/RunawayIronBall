@@ -17,7 +17,7 @@ bool ModeGame::Initialize() {
 	// プレイヤー経験値とステージ数の初期化
 	global._allExp = 0;
 	global._nowExp = 0;
-	global._stageNum = 3;
+	global._stageNum = 1;
 
 	_gate = nullptr;
 	IsTutorial = false;
@@ -394,9 +394,7 @@ bool ModeGame::Process() {
 	return true;
 }
 
-
 bool ModeGame::GateProcess() {
-	_suppression->SubSuppression(5);
 	if (_suppression->GetIsRatio() ) {
 		if (_gate == nullptr) {
 			VECTOR pos = VGet(0, 300, 0);
