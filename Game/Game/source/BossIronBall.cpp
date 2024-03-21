@@ -38,8 +38,10 @@ namespace {
 	constexpr int DR_REACH_HIGHEST_CNT = 90;
 	// Å‚’n“_‚É“’B‚µ‚Ä‚©‚çA’n–Ê‚É’…’n‚·‚é‚Ü‚Å‚ÌƒtƒŒ[ƒ€”
 	constexpr int DR_REACH_GROUND_CNT = 30;
-	// ’n–Ê‚É’…’nŒã‚Ìd’¼ŠÔ
+	// ’n–Ê‚É’…’nŒã‚Ìd’¼ŠÔi’Êíj
 	constexpr int DR_STIFFEN_CNT = 60;
+	// ’n–Ê‚É’…’nŒã‚Ìd’¼ŠÔi‹­‰»ó‘Ôj
+	constexpr int DR_STIFFEN_CNT_ENHANCED = 180;
 
 	// ‰ñ“]UŒ‚
 	// ‰ñ“]ŠJn‘O‚ÉY‚Ì•t‹ß‚É“’B‚·‚é‚Ü‚Å‚ÌƒtƒŒ[ƒ€”
@@ -249,12 +251,6 @@ void BossIronBall::UpdateIBCollision()
 
 void BossIronBall::CheckState()
 {
-	// ‰¼
-	//int next = 2 + rand() % 2;
-	//_ibState = static_cast<IB_STATE>(next);
-	//_ibState = IB_STATE::ATTACK_RUSH;
-
-
 	int searchRangeIndex = -1;
 	if (!_isStakeBroken) {
 		searchRangeIndex = CheckPlayerInSearchRange();
@@ -279,9 +275,13 @@ void BossIronBall::CheckState()
 	case BossIronBall::IB_STATE::STIFFEN:
 		break;
 	case BossIronBall::IB_STATE::ATTACK_RUSH:
+		// ‹­‰»ó‘Ô‚Ìê‡‚Ì˜A‘±UŒ‚‰ñ”
+		_enhancedAttackCnt = 3;
 		SetRush();
 		break;
 	case BossIronBall::IB_STATE::ATTACK_DROP:
+		// ‹­‰»ó‘Ô‚Ìê‡‚Ì˜A‘±UŒ‚‰ñ”
+		_enhancedAttackCnt = 3;
 		SetDrop();
 		break;
 	case BossIronBall::IB_STATE::ATTACK_ROTATION:
@@ -345,11 +345,13 @@ void BossIronBall::StiffenProcess()
 	}
 }
 
-void BossIronBall::SetStiffen(int cnt)
+// d’¼ó‘Ô‚É‘JˆÚ‚·‚é
+// isInvincible: –³“Gó‘Ô‚É‚·‚é‚©‚Ç‚¤‚© ƒfƒtƒHƒ‹ƒg‚Ífalse
+void BossIronBall::SetStiffen(int cnt, bool isInvincible)
 {
 	_ibState = IB_STATE::STIFFEN;
 	_ibStiffenCnt = cnt;
-	_isInvincible = false;
+	_isInvincible = isInvincible;
 }
 
 void BossIronBall::RushProcess()
@@ -452,7 +454,22 @@ void BossIronBall::DropProcess()
 		_phaseCnt++;
 		if (_phaseCnt > DR_REACH_GROUND_CNT) {
 			ResetPhase();
-			SetStiffen(DR_STIFFEN_CNT);
+
+			// ‹­‰»ó‘Ô‚Ìê‡‚Í˜A‘±UŒ‚
+			if (_isEnhanced) {
+				_enhancedAttackCnt--;
+				// ˜A‘±UŒ‚‰ñ”‚ªc‚Á‚Ä‚¢‚éê‡‚ÍÄ“x—‰ºUŒ‚
+				if (_enhancedAttackCnt > 0) {
+					SetDrop();
+				}
+				// ˜A‘±UŒ‚‰ñ”‚ª‚È‚¢ê‡‚Íd’¼
+				else { 
+					SetStiffen(DR_STIFFEN_CNT_ENHANCED);
+				}
+			}
+			else {
+				SetStiffen(DR_STIFFEN_CNT);
+			}
 		}
 	}
 	break;
@@ -606,8 +623,8 @@ void BossIronBall::ChainProcess()
 	}
 }
 
-// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô‚ÉˆÚsï¿½ï¿½ï¿½ï¿½
-// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô‚É‘Jï¿½Ú‚ï¿½ï¿½Â”\ï¿½Èƒ^ï¿½Cï¿½~ï¿½ï¿½ï¿½Oï¿½ÉŒÄ‚Ñoï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ß‚ï¿½_changeEnhancedï¿½ï¿½trueï¿½É‚È‚ï¿½ï¿½ï¿½ï¿½Æ‚ï¿½ï¿½É‹ï¿½ï¿½ï¿½ï¿½ï¿½Ô‚ÉˆÚsï¿½ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½Ìê‡ï¿½ï¿½_isEnhancedï¿½Í•Kï¿½ï¿½falseï¿½j
+// ‹­‰»ó‘Ô‚ÉˆÚs‚·‚é
+// ‹­‰»ó‘Ô‚É‘JˆÚ‚ª‰Â”\‚Èƒ^ƒCƒ~ƒ“ƒO‚ÉŒÄ‚Ño‚µA‰‚ß‚Ä_changeEnhanced‚ªtrue‚É‚È‚Á‚½‚Æ‚«‚É‹­‰»ó‘Ô‚ÉˆÚs‚·‚éi‚±‚Ìê‡‚Í_isEnhanced‚Í•K‚¸falsej
 void BossIronBall::CheckChangeEnhanced()
 {
 	if (_changeEnhanced && !_isEnhanced) {
@@ -686,11 +703,15 @@ void BossIronBall::KnockBackProcess()
 		if (_knockBackCnt < 0) {
 			_knockBackCnt = 0;
 			_isKnockBack = false;
+
+			// d’¼ó‘Ô‚É‘JˆÚ
 			if (_isStakeBroken) {
+				// Y‚ª”j‰ó‚³‚ê‚Ä‚¢‚éê‡‚Íd’¼‚É–³“G‰»‚µ‚È‚¢
 				SetStiffen(30);
 			}
 			else {
-				SetStiffen(10);
+				// Y‚ª”j‰ó‚³‚ê‚Ä‚¢‚È‚¢ê‡‚Íd’¼‚É–³“G‰»‚ğˆÛ‚·‚é
+				SetStiffen(10, true);
 			}
 		}
 	}
@@ -751,6 +772,7 @@ void BossIronBall::HardKnockBackProcess()
 			_useCollision = true;
 			_phaseCnt = 0;
 			_phase++;
+			CheckChangeEnhanced();
 		}
 		break;
 	case 2: // d’¼
