@@ -155,6 +155,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\ModeMovie.cpp" />
+    <ClCompile Include="source\Fog.cpp" />
+    <ClCompile Include="source\ModeBossBattle.cpp" />
+    <ClCompile Include="source\ModeTutorial.cpp" />
+    <ClCompile Include="source\ModeZoomCamera.cpp" />
+    <ClCompile Include="source\ModeRotationCamera.cpp" />
+    <ClCompile Include="source\ModeFadeComeBack.cpp" />
     <ClCompile Include="source\RotationCamera.cpp" />
     <ClCompile Include="source\CameraBase.cpp" />
     <ClCompile Include="source\Heart.cpp" />
@@ -173,6 +180,7 @@
     <ClCompile Include="source\ModeScenario.cpp" />
     <ClCompile Include="source\EffectManeger.cpp" />
     <ClCompile Include="source\Boss.cpp" />
+    <ClCompile Include="source\BossIronBall.cpp" />
     <ClCompile Include="source\ObjectBase.cpp" />
     <ClCompile Include="source\PlaneEffectBase.cpp" />
     <ClCompile Include="source\BoardPolygonDust.cpp" />
@@ -224,6 +232,14 @@
     <ClCompile Include="source\TargetZoomCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\ModeMovie.h" />
+    <ClInclude Include="source\Fog.h" />
+    <ClInclude Include="source\ModeBossBattle.h" />
+    <ClInclude Include="source\ModeTutorial.h" />
+    <ClInclude Include="source\ModeZoomCamera.h" />
+    <ClInclude Include="source\ModeRotationCamera.h" />
+    <ClInclude Include="source\ModeFadeComeBack.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="source\RotationCamera.h" />
     <ClInclude Include="source\CameraBase.h" />
     <ClCompile Include="source\UnbreakableObject.cpp" />
@@ -246,6 +262,7 @@
     <ClInclude Include="source\ModeScenario.h" />
     <ClInclude Include="source\EffectManeger.h" />
     <ClInclude Include="source\Boss.h" />
+    <ClInclude Include="source\BossIronBall.h" />
     <ClInclude Include="source\ObjectBase.h" />
     <ClInclude Include="source\PlaneEffectBase.h" />
     <ClInclude Include="source\BoardPolygonDust.h" />
@@ -297,6 +314,9 @@
     <ClInclude Include="source\Suppression.h" />
     <ClInclude Include="source\TargetZoomCamera.h" />
     <ClInclude Include="source\UnbreakableObject.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Game.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

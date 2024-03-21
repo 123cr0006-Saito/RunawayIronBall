@@ -32,12 +32,15 @@ ModeServer::~ModeServer()
 
 // 登録はするが、一度メインを回さないといけない
 int ModeServer::Add(ModeBase *mode, int layer, const char *name ) {
-	_vModeAdd.push_back(mode);		// 登録予約
-	mode->_uid = _uid_count;
-	_uid_count++;
-	mode->_layer = layer;
-	mode->_szName = name;
-	return mode->_uid;
+	if (!Search(name)) {
+		_vModeAdd.push_back(mode);		// 登録予約
+		mode->_uid = _uid_count;
+		_uid_count++;
+		mode->_layer = layer;
+		mode->_szName = name;
+		return mode->_uid;
+	}
+	return -1;
 }
 
 // 削除予約
@@ -90,7 +93,7 @@ void ModeServer::Clear() {
 	_vModeDel.clear();
 }
 
-bool ModeServer::Search(const char* name) {
+bool ModeServer::Search(std::string name) {
 	for (auto itr = _vMode.begin(); itr != _vMode.end(); ++itr) {
         if ((*itr)->_szName == name) {
 			return true;
@@ -99,6 +102,26 @@ bool ModeServer::Search(const char* name) {
 	return false;
 };
 
+void ModeServer::ChangeLayer(std::string modeName, int layerNum){
+	ModeBase* mode = Get(modeName.c_str());
+	if(mode != nullptr){
+		mode->_layer = layerNum;
+		for (auto firstItr = _vMode.begin(); firstItr != _vMode.end(); firstItr++) {
+			for (auto secondItr = _vMode.begin(); secondItr != _vMode.end(); secondItr++) {
+				if ((*firstItr)->_layer < (*secondItr)->_layer) {
+					std::swap((*firstItr), (*secondItr));
+				}
+			}
+		}
+	}
+};
+
+bool ModeServer::IsAboutLayer(ModeBase* mode) {
+	for (auto itr = _vMode.begin(); itr != _vMode.end(); ++itr) {
+		if ((*itr)->_layer > mode->_layer) { return true; }
+	}
+	return false;
+};
 
 // 削除予約されているか？
 bool ModeServer::IsDelRegist(ModeBase *mode) {
@@ -138,7 +161,7 @@ ModeBase *ModeServer::Get(int uid) {
 	for (; ite != _vModeAdd.end(); ++ite) {
 		if (!IsDelRegist((*ite)) && (*ite)->_uid == uid) { return (*ite); }
 	}
-	return NULL;
+	return nullptr;
 }
 
 // 名前から検索
@@ -153,7 +176,7 @@ ModeBase *ModeServer::Get(const char *name) {
 	for (; ite != _vModeAdd.end(); ++ite) {
 		if (!IsDelRegist((*ite)) && (*ite)->_szName == name) { return (*ite); }
 	}
-	return NULL;
+	return nullptr;
 }
 
 // ID取得
@@ -172,7 +195,7 @@ const char *ModeServer::GetName(ModeBase* mode) {
 	if (IsAdd(mode)) {
 		return mode->_szName.c_str();
 	}
-	return NULL;
+	return nullptr;
 }
 const char *ModeServer::GetName(int uid) {
 	return GetName(Get(uid));

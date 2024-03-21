@@ -1,10 +1,11 @@
-
 #include "ApplicationMain.h"
 #include "ModeGame.h"
+#include "ModeClear.h"
 #include "ModeTest.h"
 #include "ModeTitle.h"
 #include "ModeGameOver.h"
 #include "ModeScenario.h"
+#include "ModeBossBattle.h"
 
 // ŽÀ‘Ì
 ApplicationMain				g_oApplicationMain;
@@ -15,9 +16,10 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance) {
 	// ƒ‚[ƒh‚Ì“o˜^
 	ModeServer::GetInstance()->Add(NEW ModeTitle(), 1, "Title");
 	//ModeServer::GetInstance()->Add(NEW ModeGameOver(), 1, "Title");
-	//ModeServer::GetInstance()->Add(NEW ModeTest(), 1, "Game");
-	//ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario01.csv"), 2, "Scenario");
+	//ModeServer::GetInstance()->Add(NEW ModeClear(), 1, "Clear");
+	//ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario01.csv",1), 2, "Scenario");
 	//ModeServer::GetInstance()->Add(NEW ModeGame(), 1, "Game");
+	//ModeServer::GetInstance()->Add(NEW ModeBossBattle(), 1, "BossBattle");
 	
 
 	global.Init();
@@ -49,7 +51,7 @@ bool ApplicationMain::Process() {
 
 bool ApplicationMain::Render() {
 	base::Render();
-	_fpsController->DrawFps(0, 0);
+	//_fpsController->DrawFps(0, 0);
 	return true;
 }
 

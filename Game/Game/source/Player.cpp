@@ -32,6 +32,9 @@ namespace {
 	// 「スティック入力ベクトルの大きさ」がこの値を超えたら「走り」状態になる
 	constexpr float MOVE_RUN_THRESHOLD = 0.6f;
 
+	// 回転攻撃のカウント
+	// このフレーム数以上の間、ボタンを押し続けると回転攻撃が発動する
+	constexpr int ROTAION_SWING_CNT_MAX = 45;
 
 	// スタミナの最大値
 	constexpr float STAMINA_MAX = 480.0f;
@@ -59,7 +62,7 @@ namespace {
 Player::Player()
 {
 	_input = nullptr;
-	_stickDir = VGet(0.0f, 0.0f, -1.0f);
+	_inputWorldDir = VGet(0.0f, 0.0f, -1.0f);
 
 	_hp = 0;
 	_isInvincible = false;
@@ -107,14 +110,12 @@ Player::Player()
 	_nowLevel = 0;
 	_maxLevel = 0;
 	_power = 0;
-	_powerAndScale.clear();
+
 	_nextLevel.clear();
 	_animManager = nullptr;
 	_frameData = nullptr;
 	_modelColor = nullptr;
-	for (int i = 0; i < 2; i++) {
-		_bone[i] = nullptr;
-	}
+
 
 
 	_instance = nullptr;
@@ -129,9 +130,10 @@ Player::~Player()
 	delete _modelColor;
 	delete _ironBall;
 
-	for (int i = 0; i < 2; i++) {
-		delete _bone[i];
+	for (auto&& bone : _bone) {
+		delete bone;
 	}
+	_bone.clear();
 
 }
 
@@ -179,35 +181,71 @@ void Player::SetDamage()
 
 void Player::SetBone() {
 	//左髪
-	std::vector<int> bone_left_list(6);
-	bone_left_list[0] = MV1SearchFrame(_modelHandle,"Left_mitsuami1");
-	bone_left_list[1] = MV1SearchFrame(_modelHandle,"Left_mitsuami2");
-	bone_left_list[2] = MV1SearchFrame(_modelHandle,"Left_mitsuami3");
-	bone_left_list[3] = MV1SearchFrame(_modelHandle,"Left_mitsuami4");
-	bone_left_list[4] = MV1SearchFrame(_modelHandle,"Left_mitsuami5");
-	bone_left_list[5] = MV1SearchFrame(_modelHandle,"Left_mitsuami6");
-	_bone[0] = NEW bone(&_modelHandle, bone_left_list, bone_left_list.size() - 2, "res/JsonFile/hair_parameters.json");
+	std::vector<int> Left_mitsuami(6);
+	Left_mitsuami[0] = MV1SearchFrame(_modelHandle, "Left_mitsuami1");
+	Left_mitsuami[1] = MV1SearchFrame(_modelHandle, "Left_mitsuami2");
+	Left_mitsuami[2] = MV1SearchFrame(_modelHandle, "Left_mitsuami3");
+	Left_mitsuami[3] = MV1SearchFrame(_modelHandle, "Left_mitsuami4");
+	Left_mitsuami[4] = MV1SearchFrame(_modelHandle, "Left_mitsuami5");
+	Left_mitsuami[5] = MV1SearchFrame(_modelHandle, "Left_mitsuami6");
+	_bone.push_back(NEW bone(&_modelHandle, Left_mitsuami, Left_mitsuami.size() - 2, "Data/BoneParam/Hear.json"));
 	//右髪
-	std::vector<int> bone_right_list(6);
-	bone_right_list[0] = MV1SearchFrame(_modelHandle,"Right_mitsuami1");
-	bone_right_list[1] = MV1SearchFrame(_modelHandle,"Right_mitsuami2");
-	bone_right_list[2] = MV1SearchFrame(_modelHandle,"Right_mitsuami3");
-	bone_right_list[3] = MV1SearchFrame(_modelHandle,"Right_mitsuami4");
-	bone_right_list[4] = MV1SearchFrame(_modelHandle,"Right_mitsuami5");
-	bone_right_list[5] = MV1SearchFrame(_modelHandle,"Right_mitsuami6");
-	_bone[1] = NEW bone(&_modelHandle, bone_right_list, bone_right_list.size() - 2, "res/JsonFile/hair_parameters.json");
+	std::vector<int> Right_mitsuami(6);
+	Right_mitsuami[0] = MV1SearchFrame(_modelHandle, "Right_mitsuami1");
+	Right_mitsuami[1] = MV1SearchFrame(_modelHandle, "Right_mitsuami2");
+	Right_mitsuami[2] = MV1SearchFrame(_modelHandle, "Right_mitsuami3");
+	Right_mitsuami[3] = MV1SearchFrame(_modelHandle, "Right_mitsuami4");
+	Right_mitsuami[4] = MV1SearchFrame(_modelHandle, "Right_mitsuami5");
+	Right_mitsuami[5] = MV1SearchFrame(_modelHandle, "Right_mitsuami6");
+	_bone.push_back(NEW bone(&_modelHandle, Right_mitsuami, Right_mitsuami.size() - 2, "Data/BoneParam/Hear.json"));
+	//スカーフ下部分
+	std::vector<int> Scarf_Underf(3);
+	Scarf_Underf[0] = MV1SearchFrame(_modelHandle, "Under_sukafu1");
+	Scarf_Underf[1] = MV1SearchFrame(_modelHandle, "Under_sukafu2");
+	Scarf_Underf[2] = MV1SearchFrame(_modelHandle, "Under_sukafu3");
+	_bone.push_back(NEW bone(&_modelHandle, Scarf_Underf, Scarf_Underf.size() - 2, "Data/BoneParam/Scarf.json"));
+	//リボン左下
+	std::vector<int> Left_Sarope(3);
+	Left_Sarope[0] = MV1SearchFrame(_modelHandle, "Left_sarope1");
+	Left_Sarope[1] = MV1SearchFrame(_modelHandle, "Left_sarope2");
+	Left_Sarope[2] = MV1SearchFrame(_modelHandle, "Left_sarope3");
+	_bone.push_back(NEW bone(&_modelHandle, Left_Sarope, Left_Sarope.size() - 2, "Data/BoneParam/Sarope.json"));
+	//リボン右下
+	std::vector<int> Right_Sarope(3);
+	Right_Sarope[0] = MV1SearchFrame(_modelHandle, "Right_sarope1");
+	Right_Sarope[1] = MV1SearchFrame(_modelHandle, "Right_sarope2");
+	Right_Sarope[2] = MV1SearchFrame(_modelHandle, "Right_sarope3");
+	_bone.push_back(NEW bone(&_modelHandle, Right_Sarope, Right_Sarope.size() - 2, "Data/BoneParam/Sarope.json"));
+	//リボン左上
+	std::vector<int> Left_ribbon(4);
+	Left_ribbon[0] = MV1SearchFrame(_modelHandle, "Left_ribbon1");
+	Left_ribbon[1] = MV1SearchFrame(_modelHandle, "Left_ribbon2");
+	Left_ribbon[2] = MV1SearchFrame(_modelHandle, "Left_ribbon3");
+	Left_ribbon[3] = MV1SearchFrame(_modelHandle, "Left_ribbon4");
+	_bone.push_back(NEW bone(&_modelHandle, Left_ribbon, Left_ribbon.size() - 2, "Data/BoneParam/Ribbon.json"));
+	//スカートリボン右下
+	std::vector<int> Right_ribbon(4);
+	Right_ribbon[0] = MV1SearchFrame(_modelHandle, "Right_ribbon1");
+	Right_ribbon[1] = MV1SearchFrame(_modelHandle, "Right_ribbon2");
+	Right_ribbon[2] = MV1SearchFrame(_modelHandle, "Right_ribbon3");
+	Right_ribbon[3] = MV1SearchFrame(_modelHandle, "Right_ribbon4");
+	_bone.push_back(NEW bone(&_modelHandle, Right_ribbon, Right_ribbon.size() - 2, "Data/BoneParam/Ribbon.json"));
+	//アホ毛
+	std::vector<int> Ahoge(3);
+	Ahoge[0] = MV1SearchFrame(_modelHandle, "Ahoge1");
+	Ahoge[1] = MV1SearchFrame(_modelHandle, "Ahoge2");
+	Ahoge[2] = MV1SearchFrame(_modelHandle, "Ahoge3");
+	_bone.push_back(NEW bone(&_modelHandle, Ahoge, Ahoge.size() - 2, "Data/BoneParam/Ahoge.json"));
 };
 
-void Player::SetNextExp(std::string FileName) {
-	myJson json(FileName);
-	_maxLevel = json._size - 1;
-	for(auto& expList : json._json) {
-		int nowLevel = 0;
-		int exp = 0;
-		expList.at("Level").get_to(nowLevel);
-		expList.at("Exp").get_to(exp);
-		_nextLevel[nowLevel] = exp;
+bool Player::HealHp(){
+	if(_hp < HP_MAX){
+		_hp++;
+		global._soundServer->DirectPlay("SE_Heal");
+		global._soundServer->DirectPlay("PL_Heal");
+		return true;
 	}
+	return false;
 };
 
 bool Player::UpdateExp() {
@@ -226,7 +264,7 @@ bool Player::Init(int modelHandle, VECTOR pos)
 	CharacterBase::Init(modelHandle, pos);
 
 	_input = XInput::GetInstance();
-	_stickDir = VGet(0.0f, 0.0f, -1.0f);
+	_inputWorldDir = VGet(0.0f, 0.0f, -1.0f);
 
 	_hp = HP_MAX;
 	_isInvincible = false;
@@ -298,8 +336,8 @@ bool Player::Init(int modelHandle, VECTOR pos)
 
 	_nowExp = 0;
 	_nowLevel = 0;
-	SetNextExp("res/JsonFile/ExpList.json");
-	SetPowerScale("res/JsonFile/IronState.json");
+
+	SetLevelParam("res/JsonFile/IronState.json");
 	UpdateLevel();
 
 
@@ -369,7 +407,7 @@ bool Player::Process(float camAngleY)
 
 				_pos = VAdd(_pos, VScale(vMoveDir, _moveSpeed));
 
-				_stickDir = vMoveDir;
+				_inputWorldDir = vMoveDir;
 				_isMoved = true;
 			}
 		}
@@ -425,10 +463,10 @@ bool Player::Process(float camAngleY)
 
 	// スタミナの更新
 	if (_isRecoveringStamina) {
-		_staminaRecoverySpeed = STAMINA_MAX / STANIMA_RECOVERY_TIME;
+		_staminaRecoverySpeed = _staminaMax / STANIMA_RECOVERY_TIME;
 		_stamina += _staminaRecoverySpeed;
-		if (_stamina > STAMINA_MAX) {
-			_stamina = STAMINA_MAX;
+		if (_stamina > _staminaMax) {
+			_stamina = _staminaMax;
 			_isTired = false;
 			//_animStatus = ANIM_STATE::IDLE;
 		}
@@ -443,7 +481,7 @@ bool Player::Process(float camAngleY)
 			_isTired = true;
 			_isRotationSwinging = false;
 			_rotationCnt = 0;
-			_forwardDir = _stickDir;
+			_forwardDir = _inputWorldDir;
 			_animStatus = ANIM_STATE::HORISONTAL_SWING_03;
 		}
 	}
@@ -454,26 +492,32 @@ bool Player::Process(float camAngleY)
 			_isRecoveringStamina = true;
 		}
 	}
-	//if(!_isAttackState ){
-	//	_isRecoveringStamina = false;
-	//}
 
 	// 攻撃状態の更新
 	if (_isTired == false && _animStatus != ANIM_STATE::AVOIDANCE && _animStatus != ANIM_STATE::HIT) {
-		// 回転攻撃
-		if (_rotationCnt > 90) {
+		// 回転攻撃が発生するかどうかの判定
+		if (_rotationCnt > ROTAION_SWING_CNT_MAX) {
 			if (!_isRotationSwinging) {
 				_animStatus = ANIM_STATE::TO_ROTATION_SWING;
 			}
 		}
-		// 通常攻撃
-		else if (_input->GetRel(XINPUT_BUTTON_X) != 0) {
-			_playNextComboAnim = true;
-			if (!_isAttackState) {
-				_animStatus = ANIM_STATE::HORISONTAL_SWING_01;
+		// コンボ攻撃1段目の入力
+		else if (!_isAttackState) {
+			if (_input->GetRel(XINPUT_BUTTON_X) != 0) { // リリース入力
+				_playNextComboAnim = true;
+				if (!_isAttackState) {
+					_animStatus = ANIM_STATE::HORISONTAL_SWING_01;
+				}
+			}
+		}
+		// コンボ攻撃2段目・3段目の入力
+		else if (_animStatus == ANIM_STATE::HORISONTAL_SWING_01 || _animStatus == ANIM_STATE::HORISONTAL_SWING_02) {
+			if (_input->GetTrg(XINPUT_BUTTON_X) != 0) { // トリガ入力
+				_playNextComboAnim = true;
 			}
 		}
 
+		// 回転攻撃の入力
 		if (_input->GetKey(XINPUT_BUTTON_X) != 0) {
 			_rotationCnt++;
 		}
@@ -483,9 +527,13 @@ bool Player::Process(float camAngleY)
 				_animStatus = ANIM_STATE::HORISONTAL_SWING_03;
 
 				// モデルの正面方向を更新する
-				_forwardDir = _stickDir;
+				_forwardDir = _inputWorldDir;
 			}
 		}
+	}
+
+	if (!_isRotationSwinging && _isAttackState) {
+		_rotationCnt = 0;
 	}
 
 	if (!_isTired && _canMotionCancel) {
@@ -494,7 +542,7 @@ bool Player::Process(float camAngleY)
 			if (!_isSwinging || _isRotationSwinging) {
 				_animStatus = ANIM_STATE::AVOIDANCE;
 				// モデルの正面方向を更新する
-				_forwardDir = _stickDir;
+				_forwardDir = _inputWorldDir;
 				_rotationCnt = 0;
 				_idleFightingRemainingCnt = 240;
 
@@ -572,27 +620,34 @@ void Player::UpdateCollision()
 	_capsuleCollision.Update();
 }
 
-void Player::SetPowerScale(std::string FileName)
+void Player::SetLevelParam(std::string FileName)
 {
 	myJson json(FileName);
+	_maxLevel = json._size - 1;
 	int level = 0;
-	int power = 0;
-	float scale = 0;
+	int exp = 0;
+	LevelData data;
 	for (auto& list : json._json) {
+		// レベルと経験値を取得
 		list.at("Level").get_to(level);
-		list.at("Power").get_to(power);
-		list.at("Magnification").get_to(scale);
-		_powerAndScale[level] = std::make_pair(power, scale);
+		list.at("Exp").get_to(exp);
+		_nextLevel[level] = exp;
+		// 攻撃力と拡大率・スタミナを取得
+		list.at("Power").get_to(data.power);
+		list.at("Magnification").get_to(data.magnification);
+		list.at("Stamina").get_to(data.stamina);
+		_levelParam[level] = data;
 	}
 }
 
 bool Player::UpdateLevel()
 {
-	_power = _powerAndScale[_nowLevel].first;
-	_ironBall->UpdateLevel(_powerAndScale[_nowLevel].second);
+	_power = _levelParam[_nowLevel].power;
+	_ironBall->UpdateLevel(_levelParam[_nowLevel].magnification);
+	_staminaMax =  _levelParam[_nowLevel].stamina;
 	if (_nowLevel > 0) {
 		// レベルアップエフェクト
-		float size = 5.0f * _powerAndScale[_nowLevel].second;
+		float size = 5.0f * _levelParam[_nowLevel].magnification;
 		VECTOR* pos = GetIBPosPtr();
 		int effectHandle = ResourceServer::Load("FX_3D_Level_Up", "res/Effekseer/FX_3D_Level_Up/FX_3D_Level_Up.efkefc");
 		EffekseerPosSynchro* effect = new EffekseerPosSynchro(effectHandle, pos, size);
@@ -606,15 +661,13 @@ bool Player::UpdateLevel()
 }
 
 void Player::UpdateBone() {
-	for (int i = 0; i < sizeof(_bone) / sizeof(_bone[0]); i++) {
-		_bone[i]->Process();
-		_bone[i]->SetMain(_bone[i]->_massPosList);
+	for (int i = 0; i < 2; i++) {
+		// 髪の毛の重力を変更
+		_bone[i]->SetGravity("Character1_Spine", "Character1_Head");
 	}
-	if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN)) {
-		for (int i = 0; i < sizeof(_bone) / sizeof(_bone[0]); i++) {
-			_bone[i]->SetDebugDraw();
-			_bone[i]->DebugProcess(12);
-		}
+	for (auto&& bone : _bone) {
+		bone->Process();
+		bone->SetMain(bone->_massPosList);
 	}
 };
 
@@ -728,12 +781,13 @@ void Player::DrawDebugInfo()
 
 	DrawCapsule3D(_capsuleCollision.up_pos, _capsuleCollision.down_pos, _capsuleCollision.r, 16, COLOR_RED, COLOR_RED, false);
 
-	//int x = 0;
-	//int y = 100;
-	//int line = 0;
+	int x = 0;
+	int y = 500;
+	int line = 0;
 	//DrawFormatString(x, y + line * 16, COLOR_RED, "HP:%d", _hp); line++;
 	//DrawFormatString(x, y + line * 16, COLOR_RED, "isInvincible:%d", _isInvincible); line++;
 	//DrawFormatString(x, y + line * 16, COLOR_RED, "invincibleCnt:%d", _invincibleRemainingCnt); line++;
+	DrawFormatString(x, y + line * 16, COLOR_RED, "_rotationCnt:%d", _rotationCnt); line++;
 
 	//DrawFormatString(x, y + line * 16, COLOR_RED, "ANIM:%d", _animStatus); line++;
 	//DrawCapsule3D(_capsuleCollision._startPos, _capsuleCollision._endPos, _capsuleCollision._r, 16, COLOR_RED, COLOR_RED, false);

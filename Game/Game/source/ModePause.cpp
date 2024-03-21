@@ -13,7 +13,7 @@ bool ModePause::Initialize() {
 	_handleMap["back"] = ResourceServer::LoadGraph("back","res/ModePause/UI_Menu.png");
 	_handleMap["check"] = ResourceServer::LoadGraph("check","res/ModePause/UI_Menu_Check.png");
 	_handleMap["checkBox"] = ResourceServer::LoadGraph("checkBox","res/ModePause/UI_Menu_Check_Box.png");
-	_handleMap["volumBar"] = ResourceServer::LoadGraph("volumBar","res/ModePause/");
+	_handleMap["volumBar"] = ResourceServer::LoadGraph("volumBar","res/ModePause/UI_Menu_Pink_Gauge.png");
 	_handleMap["se"] = ResourceServer::LoadGraph("se","res/ModePause/UI_Menu_SE.png");
 	_handleMap["bgm"] = ResourceServer::LoadGraph("bgm","res/ModePause/UI_Menu_BGM.png");
 	_handleMap["vibration"] = ResourceServer::LoadGraph("vibration","res/ModePause/UI_Menu_Controll.png");
@@ -121,11 +121,11 @@ bool ModePause::Process() {
 		SelectGameEnd();
 		break;
 	}
-
+	// 音量の設定
+	global._soundServer->SetSeVolume(_seVolum);
+	global._soundServer->SetBgmVolume(_bgmVolum);
 	//オプションの終了
 	if (_input->GetTrg(XINPUT_BUTTON_START)) {
-		global._soundServer->SetSeVolume(_seVolum);
-		global._soundServer->SetBgmVolume(_bgmVolum);
 		ModeServer::GetInstance()->Del(this);
 	}
 	return true;
@@ -139,41 +139,41 @@ bool ModePause::Render() {
 
 	//----------------------------------------------------------------------------------
 	//ボリュームとかとかの描画（仮）
-	int handleX, handleY;
+	float handleX, handleY;
 
 	DrawGraph(0, 0, _handleMap["back"], true);
 	DrawGraph(1000, 550, _handleMap["checkBox"], true);
 
 	int length[] = { _seVolum,_bgmVolum };
-	GetGraphSize(_handleMap["volumBar"], &handleX, &handleY);
+	GetGraphSizeF(_handleMap["volumBar"], &handleX, &handleY);
 	for (int i = 0; i < 2; i++) {
-		DrawExtendGraph(500, 250 + 110 * i, 500 + (handleX / 255 * length[i]), 250 + 110 * i + handleY, _handleMap["volumBar"],true);
+		DrawExtendGraph(400, 380 + 110 * i, 400 + (handleX / 255 * length[i]), 380 + 110 * i + handleY, _handleMap["volumBar"],true);
 	}
+
+	int x = 180;
+	int y = 400;
 
 	std::array<std::string,5> _itemList = { "se","bgm","vibration","gide","return" };
 
 	for (int i = 0; i < MAX_MODE; i++) {
 		int _selectedItems = 0;
-		int _gameEnd = 0;
-		float extRate = 1.0f;
-
-		int originX = 180;
-		int originY = 400;
+		float extRate = 1.0f;		
 		
 		if (_selectItem == i)  extRate = 1.1f; 
 		int length = 50;
 		switch (i) {
 		case 2:
-			originY -= 50;
-			GetGraphSize(_handleMap["check"], &handleX, &handleY);
-			if (_isVibration)  DrawGraph(1000+handleX/2, 350 + 100 * i + handleY / 2,  _handleMap["check"], true);
+			//y -= 50;
+			GetGraphSizeF(_handleMap["check"], &handleX, &handleY);
+			if (_isVibration)  DrawGraph(980+handleX/2, y + handleY / 2 - 80,  _handleMap["check"], true);
 			break;
 		case 4:
-			_gameEnd = 400;
+			x += 600;
 			break;
 		}
-		GetGraphSize(_handleMap[_itemList[i]], &handleX, &handleY);
-		DrawRotaGraph(originX + handleX/2 + _gameEnd, originY + handleY/2 + 100 * i , extRate, 0.0f, _handleMap[_itemList[i]], true);
+		GetGraphSizeF(_handleMap[_itemList[i]], &handleX, &handleY);
+		DrawRotaGraph(x + handleX/2 , y + handleY/2 , extRate, 0.0f, _handleMap[_itemList[i]], true);
+		y += 100;
 	}
 
 	return true;

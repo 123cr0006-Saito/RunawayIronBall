@@ -9,7 +9,9 @@ enum OBJ_TYPE {
 	PL_IB_CHAIN,
 	EN,
 	EN_IB,
-	BLDG
+	BLDG,
+	TWR,
+	TWR_PRT,
 };
 
 class ObjectBase;

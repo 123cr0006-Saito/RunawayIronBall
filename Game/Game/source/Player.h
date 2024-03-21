@@ -42,7 +42,11 @@ private:
 		HIT,
 		WIN,
 	};
-
+	struct LevelData {
+		int power;
+		float magnification;
+		int stamina;
+	};
 public:
 	Player();
 	~Player() override;
@@ -55,6 +59,7 @@ public:
 
 
 	int GetHP() { return _hp; }
+	void MaxHeal() { _hp = 4; }
 	bool GetIsInvincible() { return _isInvincible; }
 	// 無敵状態の更新
 	void ChangeIsInvincible(bool b, int frame);
@@ -77,21 +82,17 @@ public:
 
 	void SetBone();//齋藤が作った関数です。 boneのフレームを探すために使用する関数です。後でjsonでの読み込みにするかもしれません。
 	//↓齋藤が作った関数です。どこにjson読み込みをどこに書けばよいのかわからなかったので、コンストラクタの次に呼び出す関数として実装しました。
-	void SetNextExp(std::string FileName);//経験値データの読み込み
 	bool HealHp();
-	bool  UpdateExp();//経験値が越えていた時、レベルを上げる。
+	bool UpdateExp();//経験値が越えていた時、レベルを上げる。
 	int GetNowLevel() { return _nowLevel; };
 	void SetExp(int getExp) { _nowExp += getExp; };
 	//経験値UIで使用しています。
 	int GetNowExp() { return _nowExp; }
 	int GetNextExp() { return _nextLevel[_nowLevel]; }
 
-
-	void SetPowerScale(std::string FileName);//ファイル読み込みでレベルに合わせた攻撃力と拡大率を取得
+	void SetLevelParam(std::string FileName);//ファイル読み込みでレベルに合わせた攻撃力と拡大率を取得
 	bool UpdateLevel();// レベルアップ時に攻撃力と拡大率を設定
 	int GetPower() { return _power; }//ノックバック用の力を返します。
-
-
 
 	void UpdateBone();
 	void UpdateCollision();
@@ -110,7 +111,6 @@ public:
 	VECTOR* GetIBPosPtr() { return _ironBall->GetBallPosPtr(); }
 
 
-	bool GetAttackState() { return _isAttackState; }
 	bool GetEnabledIBAttackCollision() { return _ironBall->GetEnabledAttackCollision(); }
 
 	// フレームデータのコマンドをチェックする
@@ -120,13 +120,13 @@ public:
 
 	void DrawDebugInfo();
 
-	VECTOR GetStickDir() { return _stickDir; }
+	VECTOR GetInputWorld() { return _inputWorldDir; }
 private:
 	// 入力情報
 	XInput* _input;
-	// Lスティックの入力方向
+	// Lスティックの入力方向をカメラの回転を考慮してワールド上の方向に変換する
 	// Lスティック入力があった場合に更新する
-	VECTOR _stickDir;
+	VECTOR _inputWorldDir;
 
 	/* ステータス関連 */
 	// HP
@@ -206,14 +206,14 @@ private:
 
 	//------------
 	//齋藤が書きました。
-	bone* _bone[2];// 0:leftHear 1:RightHear
+	std::vector<bone*> _bone;
 	int _nowLevel;//現在のレベルが入ります。
 	int _nowExp; //現在持っている経験値を格納します。
 	int _maxLevel;//レベルの最大値
 	std::map<int, int> _nextLevel;// first 現在のレベル  second  次のレベルが上がるまでの経験値
 
 	int _power;//吹っ飛ばす力です。
-	std::map<int, std::pair<int, float>> _powerAndScale;//攻撃力と拡大率を格納したコンテナです。
+	std::map<int, LevelData> _levelParam;//攻撃力と拡大率を格納したコンテナです。
 	//------------
 
 

@@ -1,5 +1,7 @@
 #pragma once
 #include "appframe.h"
+#include "BossIronBall.h"
+#include "Player.h"
 
 class Boss
 {
@@ -14,13 +16,24 @@ public:
 	void Render();
 
 
-
 	Capsule GetStakeCollision() { return _stakeCapsuleCol; }
+	Sphere GetIBCollision() { return _ironBall->GetIBCollision(); }
 
 
+	void CheckHitBossAndStake();
 
-
-
+	void SetKnockBack(VECTOR vDir = VGet(0.0f, 0.0f, -1.0f)) { _ironBall->SetKnockBack(vDir); }
+	// Y‚ÌHP‚ğŒ¸‚ç‚·
+	void SetDamageStake(int damage) {
+		_stakeHp -= damage;
+		if (_stakeHp < 0) { 
+			_stakeHp = 0; 
+			_isStakeBroken = true;
+			_ironBall->SetISStakeBroken(true);
+		}
+	}
+	// Y‚ÌHP‚ğæ“¾
+	int GetStakeHp() { return _stakeHp; }
 
 	// ƒfƒoƒbƒOî•ñ‚Ì•\¦
 	void DrawDebugInfo();
@@ -32,4 +45,13 @@ private:
 	VECTOR _stakePos;
 	// Y‚Ì“–‚½‚è”»’è
 	Capsule _stakeCapsuleCol;
+	// Y‚ÌHP
+	int _stakeHp;
+	// Y‚ª”j‰ó‚³‚ê‚½‚©‚Ç‚¤‚©
+	bool _isStakeBroken;
+
+	BossIronBall* _ironBall;
+
+
+	Player* _player;
 };

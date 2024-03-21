@@ -27,7 +27,7 @@ LoadingChain::~LoadingChain() {
 };
 
 void LoadingChain::Init(){
-	_cModelHandle = MV1LoadModel("res/Chain/chain02.mv1");
+	_cModelHandle = ResourceServer::MV1LoadModel("Chain","res/Chain/Cg_Chain.mv1");
 	_cPos[0] = VGet(0.0f, 0.0f, 0.0f);
 	MV1SetPosition(_cModelHandle, _cPos[0]);
 	MV1SetScale(_cModelHandle, VGet(0.5f, 0.5f, 0.5f));
@@ -36,7 +36,7 @@ void LoadingChain::Init(){
 		_cPos[i] = VAdd(_cPos[i - 1], VGet(100.0f, 0.0f, 0.0f));
 	}
 
-	_iModelHandle = MV1LoadModel("res/Character/Tetsuo/cg_tetsuo.mv1");
+	_iModelHandle = ResourceServer::MV1LoadModel("IronBall", "res/Character/Cg_Iron_Ball/Cg_Iron_Ball.mv1");
 	_iPos = VAdd(_cPos[Chain_Num - 1], VGet(0.0f, 10.0f, 0.0f));
 	_ibDefaultScale = VGet(2.5f, 2.5f, 2.5f);
 	MV1SetScale(_iModelHandle, _ibDefaultScale);
@@ -48,6 +48,16 @@ void LoadingChain::Init(){
 	_attackAnimCnt = 0;
 
 	_length = 50.0f;
+
+	// ã´äEê¸Çè¡Ç∑
+	for (int i = 0; i < MV1GetMaterialNum(_cModelHandle); i++) {
+		MV1SetMaterialOutLineWidth(_cModelHandle, i, 0);
+		MV1SetMaterialOutLineDotWidth(_cModelHandle, i, 0);
+	}
+	for (int i = 0; i < MV1GetMaterialNum(_iModelHandle); i++) {
+		MV1SetMaterialOutLineWidth(_iModelHandle, i, 0);
+		MV1SetMaterialOutLineDotWidth(_iModelHandle, i, 0);
+	}
 
 	_modelColor = new ModelColor();
 	_modelColor->Init(_iModelHandle);

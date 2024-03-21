@@ -36,8 +36,8 @@ public:
 
 	void Update();
 
-	void SetSeVolume(int volume) { _SeVolume = volume; }
-	void SetBgmVolume(int volume) { _BgmVolume = volume; }
+	void SetSeVolume(int volume) {_SeVolume = volume;}
+	void SetBgmVolume(int volume);
 	void SetVoiceVolume(int volume) { _VoiceVolume = volume; }
 
 	int GetSeVolume() { return _SeVolume ; }

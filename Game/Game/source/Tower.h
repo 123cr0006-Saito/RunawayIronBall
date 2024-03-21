@@ -1,11 +1,12 @@
 #pragma once
 #include "TowerParts.h"
+#include "ObjectBase.h"
 
-class Tower
+class Tower : public ObjectBase
 {
 public:
 	Tower();
-	~Tower();
+	virtual ~Tower();
 
 
 	void Init(std::array<int, 3> modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale);
@@ -19,10 +20,8 @@ public:
 	void SetBlast(VECTOR vDir);
 	bool GetCanBlast() { return _canBlast; }
 
-	void UpdateCollision();
 
-
-	Sphere GetBottomSphereCollision() { return _towerParts[_bottomIndex]->GetSphereCollision(); }
+	Sphere GetCollision() { return _sphereCollision; }
 
 
 	// デバッグ情報の表示
@@ -50,6 +49,6 @@ protected:
 	int _bottomIndex;
 
 
-	Sphere* _bottomSphereCollision;
+	Sphere _sphereCollision;
 
 };

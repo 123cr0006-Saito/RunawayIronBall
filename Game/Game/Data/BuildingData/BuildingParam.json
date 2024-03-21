@@ -1,0 +1,18 @@
+{
+	"House_Grass": {
+		"Hp": 100,
+		"Exp": 30
+	},
+	"House_Rock": {
+		"Hp": 250,
+		"Exp": 50
+	},
+	"House_Iron": {
+		"Hp": 500,
+		"Exp": 80
+	},
+	"CG_OBJ_Long_House": {
+		"Hp": 200,
+		"Exp": 50
+	}
+}

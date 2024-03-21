@@ -133,7 +133,6 @@ void	SoundItemVOICE::SetVolume() {
 	}
 }
 
-
 void	SoundItemOneShot::Update() {
 	int snd = _snd;
 	base::Update();

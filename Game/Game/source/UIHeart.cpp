@@ -85,7 +85,7 @@ bool  UIHeart::Draw() {
 		}
 	}
 	//Œ¸‚Á‚Ä‚¢‚é‘Ì—Í‚Ì•\Ž¦
-	if (_IsDamage) {
+	if (_IsDamage && hp < 4) {
 		int nowTime = GetNowCount() - _currentTime;
 		if (nowTime % 500 > 250) {
 			_heart->Draw();
