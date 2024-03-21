@@ -85,20 +85,18 @@ void ModeClear::AnimProcess(){
 };
 
 void ModeClear::Valuation(){
-	//if(TimeLimit::GetInstance() != nullptr){
-	//	TimeLimit* time = TimeLimit::GetInstance();
-	//	_valuationTime =time->GetElapsedTime();
-	//	int startTime = time->GetStartTime ();
-	//	int valuationCount = 3; // 0 s 1 a 2 b 3 c
-	//	float valuationPercentage[3] = {10.0f,7.5f,5.0f,3.0f};
-	//	for(int i = 0; i < 3; i++){
-	//		int Parcentage = startTime / 10 * valuationPercentage[i];
-	//	   if(_valuationTime <= Parcentage)valuationCount--;
-	//	}
-	//	_valuation = valuationCount;
-	//}
-	_valuation = 0;
-	_valuationTime = 1000;
+	if(TimeLimit::GetInstance() != nullptr){
+		TimeLimit* time = TimeLimit::GetInstance();
+		_valuationTime =time->GetElapsedTime();
+		int startTime = time->GetStartTime ();
+		int valuationCount = 3; // 0 s 1 a 2 b 3 c
+		float valuationPercentage[3] = {10.0f,7.5f,5.0f};
+		for(int i = 0; i < 3; i++){
+			int Parcentage = startTime / 10 * valuationPercentage[i];
+		   if(_valuationTime <= Parcentage)valuationCount--;
+		}
+		_valuation = valuationCount;
+	}
 };
 
 void ModeClear::AddChain(){
@@ -121,8 +119,10 @@ void ModeClear::ValuationProcess(){
 			return temp;
 		};
 
-		if(stagingTime > 500 * _chain.size() && _chain.size() < 3){
-			_chain.push_back(NEW AnimationChain(VGet((1920 / 2) * _chain.size(), 200, 0), 30));
+		if(stagingTime > 500 * _chain.size() && _chain.size() < 4){
+			VECTOR pos[4] = {VGet(900,100,0),VGet(200,500,0),VGet(1800,600,0), VGet(1700,800,0)};
+			float angle[4] = {-5,50,100,-15};
+			_chain.push_back(NEW AnimationChain(pos[_chain.size()], angle[_chain.size()]));
 		}
 
 		// Timeアルファ値処理
@@ -189,8 +189,6 @@ bool ModeClear::Render() {
 	// モデルの描画
 	MV1DrawModel(_model);
 
-
-
 	int handleX, handleY, screenX, screenY, screenDepth;
 	GetScreenState(&screenX, &screenY, &screenDepth);
 
@@ -237,7 +235,6 @@ bool ModeClear::Render() {
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, _alphaValue);
 
 	// 評価の表示
-
 	GetGraphSize(_valuationHandle[_valuation], &handleX, &handleY);
 	DrawRotaGraph(1100 + handleX/2, 450 + handleY/2, _valuationSize, -5 * DX_PI / 180, _valuationHandle[_valuation], true);
 

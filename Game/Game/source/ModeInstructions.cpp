@@ -51,16 +51,16 @@ bool ModeInstructions::Process() {
 
 bool ModeInstructions::Render() {
 
-	DrawGraph(0,300,_frameHandle, true);
+	DrawGraph(0,440,_frameHandle, true);
 
 	int handleX[5] = {280,340, 290, 350, 310};
-	int handleY[5] = {380 ,465,550,625,710};
+	int handleY[5] = {520 ,605,690,765,850};
 	
 	for (int i = 0; i < LIST_SIZE_MAX; i++) {
 		float Extrate = 1.0f;
 		
 		if (i == _listChoice) {
-			DrawGraph(500, 200, _imageHandle[i], true);//À•W‚ÍŽG‚ÉÝ’è ‰æ‘œ‚ª—ˆ‚Ä‚©‚ç”÷’²®
+			DrawGraph(400, 150, _imageHandle[i], true);//À•W‚ÍŽG‚ÉÝ’è ‰æ‘œ‚ª—ˆ‚Ä‚©‚ç”÷’²®
 			Extrate = 1.1f;
 		}
 		DrawRotaGraph(handleX[i], handleY[i], Extrate, 0.0f, _itemHandle[i], true);
