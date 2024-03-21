@@ -1,5 +1,10 @@
 #include "Boss.h"
 
+namespace {
+	// 最大無敵時間
+	constexpr int STAKE_INVINCIBLE_CNT_MAX = 60;
+}
+
 Boss::Boss()
 {
 	_stakeModelHandle = -1;
@@ -11,6 +16,8 @@ Boss::Boss()
 	_stakeCapsuleCol.up = 0.0f;
 
 	_stakeHp = 0;
+	_isStakeInvincible = false;
+	_stakeInvincibleCnt = 0;
 	_isStakeBroken = false;
 
 	_ironBall = NEW BossIronBall();
@@ -20,9 +27,6 @@ Boss::Boss()
 
 Boss::~Boss()
 {
-	ResourceServer::MV1DeleteModel("Stake", _stakeModelHandle);
-	_stakeModelHandle = -1;
-
 	delete _ironBall;
 	_ironBall = nullptr;
 
@@ -57,6 +61,19 @@ void Boss::Process()
 	_ironBall->Process();
 	if (!_isStakeBroken) {
 		CheckHitBossAndStake();
+
+		// HPが半分以下になったら鉄球を強化状態にする
+		if (_stakeHp / static_cast<float>(STAKE_MAX_HP) <= 0.5f) {
+			_ironBall->SetEnhanced();
+		}
+
+		// 杭の無敵時間を更新する
+		if (_isStakeInvincible) {
+			_stakeInvincibleCnt--;
+			if (_stakeInvincibleCnt <= 0) {
+				_isStakeInvincible = false;
+			}
+		}
 	}
 }
 
@@ -70,6 +87,7 @@ void Boss::Render()
 
 void Boss::CheckHitBossAndStake()
 {
+	if(_ironBall->GetUseCollision() == false) { return; }
 	_ironBall->UpdateIBCollision();
 	Sphere ibCol = _ironBall->GetIBCollision();
 	VECTOR shortestPos = VGet(0.0f, 0.0f, 0.0f);
@@ -83,11 +101,33 @@ void Boss::CheckHitBossAndStake()
 		_ironBall->SetPosition(vMove);
 		_ironBall->SetHitStake(true);
 
-		if (_ironBall->GetKnockBack()) {
-			vDir.y = 0.0f;
-			_ironBall->SetKnockBack(vDir);
-
+		// 鉄球がノックバック時ならはじき返し処理を行う
+		if (_ironBall->CheckKnockBack()) {
+			// ハードノックバック時にはBossIronBallクラス内で別の処理を行うため、ここでははじき返し処理を行わない
+			if (_ironBall->CheckHardKnockBack() == false) {
+				VECTOR vDir = VSub(ibCol.centerPos, _stakePos);
+				vDir.y = 0.0f;
+				_ironBall->SetKnockBack(vDir, 30.0f);
+			}
+			// 杭にダメージを与える
 			SetDamageStake(20);
+			global._soundServer->DirectPlay("House_Iron_Hit");
+		}
+	}
+}
+
+void Boss::SetDamageStake(int damage)
+{
+	if (!_isStakeInvincible) {
+		_isStakeInvincible = true;
+		_stakeInvincibleCnt = STAKE_INVINCIBLE_CNT_MAX;
+		_stakeHp -= damage;
+		if (_stakeHp <= 0) {
+			_stakeHp = 0;
+			_isStakeBroken = true;
+			_ironBall->SetISStakeBroken(true);
+			_ironBall->ChangeGlass();
+			global._soundServer->DirectPlay("House_Iron_Break");
 		}
 	}
 }

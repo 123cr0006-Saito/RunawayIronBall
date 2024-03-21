@@ -102,6 +102,8 @@ public:
 	VECTOR GetIBPos() { return _ironBall->GetBallPosition(); };
 	void SetIBPos(VECTOR pos) { _ironBall->SetBallPosition(pos); };
 
+	Capsule GetChainCollision() { return _ironBall->GetChainCollision(); };
+
 	void SetBlastOffPower(VECTOR dir, float power) { _blastOffDir = dir; _blastOffPower = power; };
 
 
