@@ -60,7 +60,8 @@ private:
 
 	// d’¼ó‘Ô‚Ìˆ—
 	void StiffenProcess();
-	void SetStiffen(int cnt);
+	// d’¼ó‘Ô‚É‘JˆÚ‚·‚é
+	void SetStiffen(int cnt, bool isInvincible = false);
 
 
 	// “ËiUŒ‚
