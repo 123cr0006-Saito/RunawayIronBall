@@ -209,14 +209,13 @@ bool ModeClear::Render() {
 		if (loopCount == 4) {
 			break;
 		}
-
 	}
 	// ìßâﬂêFèIóπ
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, _alphaValue);
 
 	// ï]âøÇÃï\é¶
 	GetGraphSize(_valuationHandle[_valuation], &handleX, &handleY);
-	DrawRotaGraph(1100 + handleX/2, 300 + handleY/2, _valuationSize, 0.0f, _valuationHandle[_valuation], true);
+	DrawRotaGraph(1100 + handleX/2, 450 + handleY/2, _valuationSize, -5 * DX_PI / 180, _valuationHandle[_valuation], true);
 
 	return true;
 };
