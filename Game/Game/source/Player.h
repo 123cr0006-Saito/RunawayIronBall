@@ -71,7 +71,10 @@ public:
 	float GetStaminaMax() { return _staminaMax; }
 	float GetStaminaRate() { return _stamina / _staminaMax; }
 
-
+	void Respawn() { 
+		_animStatus = ANIM_STATE::IDLE; 
+		_frameData->Process(static_cast<int>(_animStatus), 0);
+	}
 
 
 

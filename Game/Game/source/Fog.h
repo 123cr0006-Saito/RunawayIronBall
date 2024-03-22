@@ -9,6 +9,7 @@ class Fog
 	~Fog();
 	void Process(int stageNum);
 	void UpdateIsFog(int stageNum);
+	bool GetIsFog() { return IsFog; }
 protected:
 	Player* _player;
 	bool IsFog;

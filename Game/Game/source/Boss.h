@@ -26,6 +26,8 @@ public:
 	void SetIBPosition(VECTOR pos) { _ironBall->SetPosition(pos); }
 	bool GetIsGlass() { return _ironBall->GetIsGlass(); }
 
+	bool GetIsStakeInvincible() { return _isStakeInvincible; }
+
 	Capsule GetStakeCollision() { return _stakeCapsuleCol; }
 	Sphere GetIBCollision() { return _ironBall->GetIBCollision(); }
 	Capsule GetChainCollision() { return _ironBall->GetChainCollision(); }

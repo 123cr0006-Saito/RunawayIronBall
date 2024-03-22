@@ -230,10 +230,10 @@ bool ModeScenario::Process(){
 	}
 
 	// シナリオをすべて描画し終えた スキップするときは自分より上のレイヤーがないか確認する
-	if (_nowTextLine >= _scenarioData.size() || _input->GetTrg(XINPUT_BUTTON_START) && !ModeServer::GetInstance()->IsAboutLayer(this)) {
+	if (_nowTextLine >= _scenarioData.size() || _input->GetTrg(XINPUT_BUTTON_START) /*&& ModeServer::GetInstance()->IsAboutLayer(this)*/) {
 		_nowTextLine = _scenarioData.size()-1;
 		ScenarioUniqueProcess();
-		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000,this), 1000, "Fade");
+		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000,this), 1000, "ScenarioFade");
 	}
 	
 	return true;

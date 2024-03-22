@@ -48,7 +48,7 @@ public:
 
 	void SetParentInstance(ObjectBase* parent) { _parent = parent; }
 	ObjectBase* GetParentInstance() { return _parent; }
-	void SetParentPosPtr(VECTOR* pos) { _parentPos = pos; }
+	void SetParentPosPtr(VECTOR* pos);
 	VECTOR* GetParentPosPtr() { return _parentPos; }
 
 	// デバッグ情報の表示

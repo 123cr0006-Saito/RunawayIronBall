@@ -8,7 +8,7 @@ Camera::Camera(VECTOR InitPos) : CameraBase() {
 	_reverseX = -1;
 	_reverseY = 1;
 
-	_cameraDistanceCount = 0;
+	_cameraDistanceCount = 2;
 	_startDistance = 0.0f;
 	_endDistance = 0.0f;
 	_zoomCount = 0;

@@ -372,6 +372,16 @@ void IronBall::SetPlayerModelHandle(int handle)
 	_socketNo[2] = MV1SearchFrame(_playerModelHandle, "chain3");
 }
 
+void IronBall::SetParentPosPtr(VECTOR* pos)
+{
+	_parentPos = pos;
+
+	for (int i = 0; i < CHAIN_MAX; i++) {
+		_cPos[i] = VAdd(*_parentPos, VGet(0, 0, 10 * i));
+	}
+	_iPos = _cPos[CHAIN_MAX - 1];
+}
+
 void IronBall::DrawDebugInfo() {
 	unsigned int color = _enabledAttackCollision ? COLOR_RED : COLOR_WHITE;
 	_ibBodySphereCollision.Render(COLOR_GREEN);

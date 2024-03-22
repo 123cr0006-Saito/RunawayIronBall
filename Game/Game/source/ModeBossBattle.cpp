@@ -30,7 +30,7 @@ bool ModeBossBattle::Initialize() {
 
 	int playerModelHandle = ResourceServer::MV1LoadModel("Player", "res/Character/cg_player_girl/Cg_Player_Girl.mv1");
 	_player = NEW Player();
-	_player->Init(playerModelHandle, VGet(0, 0, -1000));
+	_player->Init(playerModelHandle, VGet(0, 0, -3000));
 	_player->SetLevel(global._allExp);
 	_camera = NEW Camera(_player->GetPosition());
 
@@ -172,7 +172,7 @@ bool ModeBossBattle::Process() {
 		}
 
 		// 杭が破壊されていない場合に判定を行う
-		if (_boss->GetIsStakeBroken() == false) {
+		if (_boss->GetIsStakeBroken() == false && _boss->GetIsStakeInvincible() == false) {
 			bool isHit = false;
 			Capsule bSCol = _boss->GetStakeCollision();
 
@@ -182,6 +182,7 @@ bool ModeBossBattle::Process() {
 				global._soundServer->DirectPlay("House_Iron_Hit");
 				isHit = true;
 			}
+
 
 			// プレイヤー鎖とボス杭の当たり判定
 			// プレイヤー鉄球が当たっている場合は、判定を行わない
@@ -341,14 +342,7 @@ bool ModeBossBattle::Render() {
 	// ライト設定
 	SetUseLighting(TRUE);
 
-	// 0,0,0を中心に線を引く
-	{
-		float linelength = 1000.f;
-		VECTOR v = { 0, 0, 0 };
-		DrawLine3D(VAdd(v, VGet(-linelength, 0, 0)), VAdd(v, VGet(linelength, 0, 0)), GetColor(255, 0, 0));
-		DrawLine3D(VAdd(v, VGet(0, -linelength, 0)), VAdd(v, VGet(0, linelength, 0)), GetColor(0, 255, 0));
-		DrawLine3D(VAdd(v, VGet(0, 0, -linelength)), VAdd(v, VGet(0, 0, linelength)), GetColor(0, 0, 255));
-	}
+
 
 	//------------------------------------
 	// シャドウマップの設定　
@@ -381,11 +375,7 @@ bool ModeBossBattle::Render() {
 	}
 
 
-	if (_drawDebug) {
-		_player->DrawDebugInfo();
-		_boss->DrawDebugInfo();
-		_collisionManager->DrawAreaIndex();
-	}
+
 
 	SetUseZBuffer3D(FALSE);
 
@@ -404,7 +394,6 @@ bool ModeBossBattle::Render() {
 	    }
 	}
 
-	DrawFormatString(1800, 1000, COLOR_RED, "StakeHP:%d", _boss->GetStakeHp());
 
 	//for (auto itr = _buildingBase.begin(); itr != _buildingBase.end(); ++itr) {
 	//	(*itr)->DrawDebugInfo();

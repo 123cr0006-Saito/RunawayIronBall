@@ -25,6 +25,7 @@ bool CharacterBase::Init(int modelHandle, VECTOR pos)
 {
 	this->_modelHandle = modelHandle;
 	this->_pos = pos;
+	MV1SetPosition(_modelHandle, _pos);
 	return true;
 }
 

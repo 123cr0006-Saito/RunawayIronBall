@@ -76,7 +76,7 @@ void UIExpPoint::SetRatio() {
 		_ratio = Easing::OutSine(nowTime, _nowRatio, _nextRatio, easingTime);
 	}
 
-	if(nowLevel >= _levelMax){
+	if(nowLevel >= _levelMax-1){
 		_ratio = 0.0f;
 	}
 

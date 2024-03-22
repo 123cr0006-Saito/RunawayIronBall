@@ -188,16 +188,19 @@ void BossIronBall::Init(VECTOR* stakePos)
 	_stakePos = stakePos;
 	_chainDistance = BOSS_CHAIN_TOTAL_LENGTH / BOSS_CHAIN_MAX;
 	for (int i = 0; i < BOSS_CHAIN_MAX; i++) {
-		_chainPos.push_back(VAdd(*_stakePos, VGet(0.0f, 500.0f, -_chainDistance * 2 * i)));
+		_chainPos.push_back(VAdd(*_stakePos, VGet(0.0f, 100.0f, -80.0f * i)));
 	}
 
 
-	_ibPos = _chainPos[BOSS_CHAIN_MAX - 1];
+
 	_ibSphereCol.centerPos = _ibPos;
 	_ibSphereCol.r = IB_SPHERE_RADIUS;
 	_chainCapsuleCol.down_pos = *_stakePos;
 	_chainCapsuleCol.up_pos = _ibPos;
 	_chainCapsuleCol.r = CH_CAPSULE_RADIUS;
+
+	_ibPos = VGet(0, 0, -1000);
+	_ibPos.y = _ibSphereCol.r;
 
 	for (int i = 0; i < 2; i++) {
 		MV1SetScale(_ibModelHandleArray[i], VScale(VGet(1.0f, 1.0f, 1.0f), MODEL_SCALE));

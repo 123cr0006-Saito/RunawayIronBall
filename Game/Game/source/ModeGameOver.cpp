@@ -68,7 +68,7 @@ void ModeGameOver::SelectProcess(){
 		global._soundServer->DirectPlay("SE_Select");
 	}
 
-	if (_input->GetTrg(XINPUT_BUTTON_A)) {
+	if (_input->GetTrg(XINPUT_BUTTON_A)&& !ModeServer::GetInstance()->Search("Fade")) {
 		_selectEnd = true;
 		global._soundServer->DirectPlay("SE_Press");
 		if (_selectItem == 0) {
@@ -76,9 +76,11 @@ void ModeGameOver::SelectProcess(){
 			if (_modeGame != nullptr) {
 				_modeGame->NewStage();
 				Player::GetInstance()->MaxHeal();
+				Player::GetInstance()->Respawn();
 			}
 			else if(_modeBossBattle != nullptr){
 				Player::GetInstance()->MaxHeal();
+				Player::GetInstance()->Respawn();
 			}
 		}
 		else {

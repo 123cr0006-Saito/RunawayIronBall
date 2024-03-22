@@ -83,7 +83,7 @@ bool ModeGame::Terminate() {
 	base::Terminate();
 	delete _collisionManager;
 	delete _camera;
-	//delete _player;
+	delete _player;
 	delete _enemyPool;
 	delete _suppression;
 	delete _effectManeger;
@@ -402,7 +402,6 @@ bool ModeGame::Process() {
 }
 
 bool ModeGame::GateProcess() {
-
 	if (_suppression->GetIsRatio() ) {
 		if (_gate == nullptr) {
 			VECTOR pos = VGet(0, 300, 0);
@@ -433,6 +432,12 @@ bool ModeGame::GateProcess() {
 
 void ModeGame::NewStage(){
 	StageMutation();
+	if (_fog->GetIsFog()) {
+		SetFogEnable(false);
+	}
+	transitionGameOver = false;
+	_gameOverCnt = 0;
+
 	_player->MaxHeal();
 	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(global._stageNum), 10, "RotCamera");
 	global._soundServer->DirectPlay("Stage0" + std::to_string(global._stageNum));
