@@ -297,7 +297,7 @@ bool ModeBossBattle::Process() {
 
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_BACK)) {
-		_drawDebug = !_drawDebug;
+		//_drawDebug = !_drawDebug;
 	}
 
 	if (_player->GetHP() <= 0) {

@@ -14,7 +14,7 @@ namespace {
 
 	// 移動速度（通常状態）
 	// 最大値
-	constexpr float MOVE_SPEED_MAX = 16.0f;
+	constexpr float MOVE_SPEED_MAX = 14.0f;
 	// 最小値
 	constexpr float MOVE_SPEED_MIN = 1.0f;
 	
@@ -34,7 +34,7 @@ namespace {
 
 	// 回転攻撃のカウント
 	// このフレーム数以上の間、ボタンを押し続けると回転攻撃が発動する
-	constexpr int ROTAION_SWING_CNT_MAX = 45;
+	constexpr int ROTAION_SWING_CNT_MAX = 25;
 
 	// スタミナの最大値
 	constexpr float STAMINA_MAX = 480.0f;

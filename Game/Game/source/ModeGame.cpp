@@ -325,12 +325,12 @@ bool ModeGame::Process() {
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->PauseProcessUnderLayer();
 
-	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_LEFT_THUMB) ) {
-		if(global._stageNum < 3){
-			global._stageNum++;
-		   NewStage();
-		}
-	}
+	//if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_LEFT_THUMB) ) {
+	//	if(global._stageNum < 3){
+	//		global._stageNum++;
+	//	   NewStage();
+	//	}
+	//}
 
 	bool enabledIBAttackCollision = _player->GetEnabledIBAttackCollision();
 
@@ -368,7 +368,7 @@ bool ModeGame::Process() {
 	}
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_BACK)) {
-		_drawDebug = !_drawDebug;
+	//	_drawDebug = !_drawDebug;
 	}
 
 	if (_player->GetHP() <= 0 || _timeLimit->GetTimeLimit() < 0) {
@@ -433,6 +433,7 @@ bool ModeGame::GateProcess() {
 
 void ModeGame::NewStage(){
 	StageMutation();
+	_player->MaxHeal();
 	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(global._stageNum), 10, "RotCamera");
 	global._soundServer->DirectPlay("Stage0" + std::to_string(global._stageNum));
 	SetTime();
