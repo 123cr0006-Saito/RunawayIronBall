@@ -299,8 +299,8 @@ void EnemyBase::SetKnockBackAndDamage(VECTOR vDir, float damage) {
 		if (_knockBackSpeedFrame < EN_KNOCKBACK_MIN) {
 			_knockBackSpeedFrame = EN_KNOCKBACK_MIN;
 		}
-		else if(_knockBackSpeedFrame > EN_KNOCKBACK_MIN) {
-			_knockBackSpeedFrame = EN_KNOCKBACK_MIN;
+		else if(_knockBackSpeedFrame > EN_KNOCKBACK_MAX) {
+			_knockBackSpeedFrame = EN_KNOCKBACK_MAX;
 		}
 		_currentTime = GetNowCount();
 		VECTOR effectPos = VAdd(VAdd(_pos, _diffeToCenter), VScale(vDir, -50));
@@ -312,7 +312,8 @@ void EnemyBase::SetKnockBackAndDamage(VECTOR vDir, float damage) {
 
 		_modeState = ENEMYTYPE::KNOCKBACK;
 		if (_hp <= 0) {
-			_knockBackSpeedFrame = damage;
+			_knockBackSpeedFrame = damage - _weightExp;
+			_knockBackSpeedFrame = Math::Clamp(EN_KNOCKBACK_MIN, 300, _knockBackSpeedFrame);
 			Suppression::GetInstance()->SubSuppression(_suppression);
 			_player->SetExp(_weightExp);
 			_modeState = ENEMYTYPE::DEAD;
