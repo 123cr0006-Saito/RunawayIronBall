@@ -25,6 +25,7 @@ protected:
 		int charaHandle;
 		int nameHandle;
 		int backGroundHandle;
+		int textBoxHandle;
 		std::string text;
 	};
 	XInput* _input;

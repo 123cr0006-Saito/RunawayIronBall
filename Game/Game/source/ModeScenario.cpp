@@ -31,6 +31,8 @@ ModeScenario::ModeScenario(std::string scenarioFile,int scenarioNum) {
 			c += FindString(&data[c], ',', &data[size]); c++; c += GetDecNum(&data[c], &scenario.nameHandle);
 			// 背景の番号を取得する
 			c += FindString(&data[c], ',', &data[size]); c++; c += GetDecNum(&data[c], &scenario.backGroundHandle);
+			// 背景の番号を取得する
+			c += FindString(&data[c], ',', &data[size]); c++; c += GetDecNum(&data[c], &scenario.textBoxHandle);
 			// 改行などスキップ
 			c += 2;
 			_scenarioData.push_back(scenario);
@@ -186,8 +188,10 @@ void  ModeScenario::ScenarioUniqueProcess(){
 		ModeServer::GetInstance()->Add(NEW ModeGame(), 1, "Game");
 		break;
 	case 2:
-		ModeServer::GetInstance()->Del("Game");
-		ModeServer::GetInstance()->Add(NEW ModeBossBattle(), 10, "BossBattle");
+		ModeServer::GetInstance()->Add(NEW ModeBossBattle(), 1, "BossBattle");
+		if (!ModeServer::GetInstance()->Search("ScenarioFade")) {
+			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1500, this,"BossBattle",100), 1000, "ScenarioFade");
+		}
 		break;
 	case 3:
 		ModeServer::GetInstance()->Add(NEW ModeMovie(), 10, "Movie");
@@ -214,26 +218,24 @@ bool ModeScenario::Process(){
 		_currentTime = GetNowCount();
 	}
 
+	if (_nowTextLine >= (_scenarioData.size() - 1) && _input->GetTrg(XINPUT_BUTTON_A) || _input->GetTrg(XINPUT_BUTTON_START)) {
+		ScenarioUniqueProcess();
+		if (!ModeServer::GetInstance()->Search("ScenarioFade")) {
+			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1500, this), 1000, "ScenarioFade");
+		}
+	}
+
 	// 次のラインに行く
-	if (_nowTextByte >= _scenarioData.at(_nowTextLine).text.length()) {
+	if (_nowTextByte >= _scenarioData.at(_nowTextLine).text.length() && _nowTextLine < (_scenarioData.size() - 1) ) {
 		if (_input->GetTrg(XINPUT_BUTTON_A)) {
 			_nowTextLine++;
 			_nowTextByte = 0;
 			_currentTime = GetNowCount();
-			if (_nowTextLine < _scenarioData.size()) {
-				std::string voiceName = _scenarioData.at(_nowTextLine).voiceData;
-				if (voiceName != "") {
-					global._soundServer->DirectPlay(voiceName);
-				}
+			std::string voiceName = _scenarioData.at(_nowTextLine).voiceData;
+			if (voiceName != "") {
+				global._soundServer->DirectPlay(voiceName);
 			}
 		}
-	}
-
-	// シナリオをすべて描画し終えた スキップするときは自分より上のレイヤーがないか確認する
-	if (_nowTextLine >= _scenarioData.size() || _input->GetTrg(XINPUT_BUTTON_START) /*&& ModeServer::GetInstance()->IsAboutLayer(this)*/) {
-		_nowTextLine = _scenarioData.size()-1;
-		ScenarioUniqueProcess();
-		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000,this), 1000, "ScenarioFade");
 	}
 	
 	return true;

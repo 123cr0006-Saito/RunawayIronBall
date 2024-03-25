@@ -632,6 +632,8 @@ void Player::UpdateCollision()
 void Player::SetLevel(int allExp){
 	int exp = allExp;
 	while(1){
+		if (_nowLevel >= 9)break;// Å‘åƒŒƒxƒ‹
+
 		if(exp >= _nextLevel[_nowLevel]){
 			exp -= _nextLevel[_nowLevel];
 			_nowLevel++;

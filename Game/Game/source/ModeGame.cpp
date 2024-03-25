@@ -14,11 +14,6 @@ bool ModeGame::Initialize() {
 	_collisionManager = NEW CollisionManager();
 	_collisionManager->Init();
 
-	// プレイヤー経験値とステージ数の初期化
-	global._allExp = 0;
-	global._nowExp = 0;
-	global._stageNum = 1;
-
 	_gate = nullptr;
 	IsTutorial = false;
 
@@ -38,6 +33,7 @@ bool ModeGame::Initialize() {
 	int playerModelHandle = ResourceServer::MV1LoadModel("Player", "res/Character/cg_player_girl/Cg_Player_Girl.mv1");
 	_player = NEW Player();
 	_player->Init(playerModelHandle, VGet(0, 0, 0));
+	_player->SetLevel(global._allExp);
 	_gameOverCnt = 0;
 	transitionGameOver = false;
 
@@ -368,7 +364,7 @@ bool ModeGame::Process() {
 	}
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_BACK)) {
-	//	_drawDebug = !_drawDebug;
+		_drawDebug = !_drawDebug;
 	}
 
 	if (_player->GetHP() <= 0 || _timeLimit->GetTimeLimit() < 0) {
@@ -376,7 +372,7 @@ bool ModeGame::Process() {
 		_gameOverCnt++;	
 		if (!transitionGameOver && _gameOverCnt > 160) {
 			ModeServer::GetInstance()->Add(NEW ModeGameOver(this), 0, "GameOver");
-			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(2000, "GameOver", 50), 100, "Fade");
+			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(2000,this, "GameOver", 50), 100, "Fade");
 			transitionGameOver = true;
 		}
 	}
@@ -402,6 +398,7 @@ bool ModeGame::Process() {
 }
 
 bool ModeGame::GateProcess() {
+	
 	if (_suppression->GetIsRatio() ) {
 		if (_gate == nullptr) {
 			VECTOR pos = VGet(0, 300, 0);
@@ -424,7 +421,8 @@ bool ModeGame::GateProcess() {
 		// ゴールゲートの当たり判定
 		if (Collision3D::SphereCol(pPos, pR, gPos, gR)) {
 			global._stageNum++;
-			ModeServer::GetInstance()->Add(NEW ModeClear(this),100,"Clear");	
+			ModeServer::GetInstance()->Del(this);
+			ModeServer::GetInstance()->Add(NEW ModeClear(),100,"Clear");	
 		}
 	}
 	return true;

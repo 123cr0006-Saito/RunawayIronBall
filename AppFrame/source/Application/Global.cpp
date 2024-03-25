@@ -7,7 +7,7 @@ Global::Global() {
 	_soundServer = new SoundServer();
 	_timer->Start();
 	exit_count = false;
-	_stageNum = 0;
+	_stageNum = 1;
 	_nowExp = 0;
 	_allExp = 0;
 	Init();
