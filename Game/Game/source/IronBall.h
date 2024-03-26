@@ -36,6 +36,7 @@ public:
 	void SetEnabledAttackCollision(bool state) { _enabledAttackCollision = state; }
 
 	Sphere GetIBCollision() { return _ibAttackSphereCollision; }
+	Sphere GetIBBodyCollision() { return _ibBodySphereCollision; }
 	Capsule GetChainCollision() { return _chainCapsuleCollision; }
 	void UpdateIBCollision();
 	void UpdateChainCollision();

@@ -87,7 +87,7 @@ void ClassificationEffect::SetClassification(CommandParam param) {
 	else if (param.first == Play_Effekseer_IU) {
 		// エフェクシア 鉄球足元
 		VECTOR* pos = Player::GetInstance()->GetIBPosPtr();
-		float height = Player::GetInstance()->GetIBCollision().r * -1.0f; // 高さの半分を割り出す 今回は高さぶん下げるので -1を掛ける
+		float height = Player::GetInstance()->GetIBBodyCollision().r * -1.0f; // 高さの半分を割り出す 今回は高さぶん下げるので -1を掛ける IBbodyCollisionの半径を取得
 		CreateEffeckseer(param.second, pos,height);
 	}
 	else if (param.first == Play_Effekseer_Rotation) {
@@ -97,7 +97,7 @@ void ClassificationEffect::SetClassification(CommandParam param) {
 			VECTOR* pos = Player::GetInstance()->GetPositionPtr();
 			VECTOR* dir = Player::GetInstance()->GetForwardDirPtr();
 			float height = Player::GetInstance()->GetCollision().up_pos.y / 2.0f; // 高さの半分を割り出す
-			EffekseerRotation* effect = NEW EffekseerRotation(handle, pos, _commandList[effectName].second, dir, height);
+			EffekseerRotation* effect = NEW EffekseerRotation(handle, pos, 1, dir, height);
 			EffectManeger::GetInstance()->LoadEffect(effect);
 		}
 	}
