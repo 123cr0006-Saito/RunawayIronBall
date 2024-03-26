@@ -12,7 +12,6 @@ public :
 	bool Render()override;
 private :
 	VECTOR* _pos;
-	float _height;
 	int _currentTime;
 };
 

@@ -96,8 +96,8 @@ void ClassificationEffect::SetClassification(CommandParam param) {
 		if (handle != -1) {
 			VECTOR* pos = Player::GetInstance()->GetPositionPtr();
 			VECTOR* dir = Player::GetInstance()->GetForwardDirPtr();
-			float height = Player::GetInstance()->GetCollision().up_pos.y / 2.0f; // ‚‚³‚Ì”¼•ª‚ðŠ„‚èo‚·
-			EffekseerRotation* effect = NEW EffekseerRotation(handle, pos, 1, dir, height);
+			float height = Player::GetInstance()->GetCollision().up_pos.y; // ‚‚³‚Ì”¼•ª‚ðŠ„‚èo‚·
+			EffekseerRotation* effect = NEW EffekseerRotation(handle, pos, _commandList[effectName].second, dir, height);
 			EffectManeger::GetInstance()->LoadEffect(effect);
 		}
 	}

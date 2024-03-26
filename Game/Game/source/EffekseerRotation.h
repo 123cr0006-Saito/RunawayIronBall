@@ -10,7 +10,7 @@ public:
 	bool Render()override;
 	void SetLoop(bool Loop) { _loopFlag = Loop;}
 protected: 
-	static const int _maxEffect = 1;
+	static const int _maxEffect = 2;
 	int _playingEffectHandle[_maxEffect];
 	int _currentTime;
 	VECTOR* _pos;

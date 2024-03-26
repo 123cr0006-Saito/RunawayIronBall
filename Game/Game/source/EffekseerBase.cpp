@@ -4,27 +4,30 @@
 //1ÇeÇ…ÇPâÒÇæÇØåƒÇ—èoÇ∑
 //âΩâÒÇ‡åƒÇ—èoÇ∑Ç∆ÇªÇÃÇ‘ÇÒàÍèèÇ…èàóùÇ≥ÇÍÇÈ
 
-EffekseerBase::EffekseerBase(std::string name, VECTOR* pos,float size,float speed,bool loopFlag, bool loadFlag) :
+EffekseerBase::EffekseerBase(std::string name, VECTOR* pos,float size, float height,float speed,bool loopFlag, bool loadFlag) :
 	EffectBase(),
 	_effectResourceHandle(ResourceServer::LoadEffekseerEffect(_T(name.c_str()),_T(name.c_str()))),
 	_pos(*pos),
 	_speed(speed),
 	_size(size),
-	_loopFlag(loopFlag)
+	_loopFlag(loopFlag),
+	_height(height)
 {
 	if (loadFlag) {
 		_playingEffectHandle = PlayEffekseer3DEffect(_effectResourceHandle);
 		SetSpeedPlayingEffekseer3DEffect(_playingEffectHandle, _speed);
 		SetScalePlayingEffekseer3DEffect(_playingEffectHandle, _size, _size, _size);
 	}
+	_height = 0.0f;
 };
-EffekseerBase::EffekseerBase(int handle, VECTOR* pos, float size, float speed , bool loopFlag, bool loadFlag) :
+EffekseerBase::EffekseerBase(int handle, VECTOR* pos, float size, float height, float speed , bool loopFlag, bool loadFlag) :
 	EffectBase(),
 	_effectResourceHandle(handle),
 	_pos(*pos),
 	_speed(speed),
 	_size(size),
-	_loopFlag(loopFlag)
+	_loopFlag(loopFlag),
+	_height(height)
 {
 	if (loadFlag) {
 		_playingEffectHandle = PlayEffekseer3DEffect(_effectResourceHandle);

@@ -1,9 +1,8 @@
 #include "EffekseerPosSynchro.h"
 
 EffekseerPosSynchro::EffekseerPosSynchro(std::string name, VECTOR* pos, float size, VECTOR rotation, float height, float speed, bool loopFlag) :
-	base(name, pos, size, speed, loopFlag, false),
-	_pos(pos),
-	_height(height)
+	base(name, pos, size, height, speed, loopFlag, false),
+	_pos(pos)
 {
 	_playingEffectHandle = PlayEffekseer3DEffect(_effectResourceHandle);
 	SetSpeedPlayingEffekseer3DEffect(_playingEffectHandle, _speed);
@@ -16,9 +15,9 @@ EffekseerPosSynchro::EffekseerPosSynchro(std::string name, VECTOR* pos, float si
 	SetRotationPlayingEffekseer3DEffect(_playingEffectHandle, 0, angle, 0);
 };
 
-EffekseerPosSynchro::EffekseerPosSynchro(int handle, VECTOR* pos, float size, VECTOR rotation, float height, float speed, bool loopFlag) :base(handle, pos, size, speed, loopFlag,false),
-_pos(pos),
-_height(height)
+EffekseerPosSynchro::EffekseerPosSynchro(int handle, VECTOR* pos, float size, VECTOR rotation, float height, float speed, bool loopFlag) :
+	base(handle, pos, size, height, speed, loopFlag, false),
+_pos(pos)
 {
 	_playingEffectHandle = PlayEffekseer3DEffect(_effectResourceHandle);
 	SetSpeedPlayingEffekseer3DEffect(_playingEffectHandle, _speed);
