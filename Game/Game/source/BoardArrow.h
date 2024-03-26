@@ -3,16 +3,18 @@
 #include <string>
 class BoardArrow
 {
-public :
-	BoardArrow(std::string name);
+public:
+	BoardArrow(std::string name, float length);
 	~BoardArrow();
-	bool Update(VECTOR pos, float dirY, float length, float katamuki);
+	bool Update(VECTOR pos, float dirY); // ｙ軸角度
+	bool Update(VECTOR pos, VECTOR dirVec); // 方向ベクトル
 	bool Render();
 protected:
 	int _handle;
-	static const int ONE_ROW_POLYGON_MAX = 100;
+	float _length;
 	static const int VERTEX_MAX = 4;
-	unsigned short vertexOrder[ONE_ROW_POLYGON_MAX * 6];
-	VERTEX3D vertex[ONE_ROW_POLYGON_MAX / 2 * VERTEX_MAX + 2];
+	static const unsigned short vertexList[6];
+	VERTEX3D vertex[VERTEX_MAX];
+	VECTOR _originPos[4];
 };
 

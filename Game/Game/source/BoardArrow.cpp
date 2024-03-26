@@ -1,63 +1,55 @@
 #include "BoardArrow.h"
 
-BoardArrow::BoardArrow(std::string name) :
-_handle(LoadGraph(name.c_str()))
+const unsigned short ::BoardArrow::vertexList[6] = { 0,1,2,2,1,3 };
+
+BoardArrow::BoardArrow(std::string name,float length):
+	_handle(ResourceServer::LoadGraph("Arrow", name.c_str()))
 {
-	int count = 0;
-	for (int i = 0; i < VERTEX_MAX * (ONE_ROW_POLYGON_MAX/2)+2; i++) {
-	//	vertex[i].dif = GetColorU8(0, 0, 125, 100);
-		vertex[i].dif = GetColorU8(200, 255, 255, 100);
-		
-		vertex[i].norm = VGet(0.0f,1.0f,0.0f);
+	_length = length;
+	//uvƒŠƒXƒg
+	float uvList[4][2] = {
+		{0.0 ,0.0 },
+		{1.0f,0.0 },
+		{0.0 ,1.0f},
+		{1.0f,1.0f}
+	};
+	float Width = 50.0f;
+	float posListX[4] = { -Width,Width, -Width ,Width };
+	float posListZ[4] = { _length,_length,0.0f,0.0f };
+	for (int i = 0; i < 4; i++) {
+		_originPos[i] = VGet(posListX[i], 50, posListZ[i]);
+		vertex[i].norm = VGet(0,1,0);
+		vertex[i].dif = GetColorU8(255, 255, 255, 255);
 		vertex[i].spc = GetColorU8(0, 0, 0, 0);
-		count++;
-	}
-
-	float uvPos = 0;
-	for (int i = 0; i <= ONE_ROW_POLYGON_MAX; i++) {
-		vertex[i * 2].u = uvPos / ONE_ROW_POLYGON_MAX;
-		vertex[i * 2].v = 0;
-		vertex[i * 2 + 1].u = uvPos / ONE_ROW_POLYGON_MAX ;
-		vertex[i * 2 + 1].v = 1.0f;
-		uvPos++;
-	}
-
-	for (int i = 0; i < ONE_ROW_POLYGON_MAX; i++) {
-		vertexOrder[i * 6] = 0 + 2 * i;
-		vertexOrder[i * 6 + 1] = 2 + 2 * i;
-		vertexOrder[i * 6 + 2] = 1 + 2 * i;
-		vertexOrder[i * 6 + 3] = 1 + 2 * i;
-		vertexOrder[i * 6 + 4] = 2 + 2 * i;
-		vertexOrder[i * 6 + 5] = 3 + 2 * i;
+		vertex[i].u = uvList[i][0];
+		vertex[i].v = uvList[i][1];
+		vertex[i].su = 0.0f;
+		vertex[i].sv = 0.0f;
 	}
 };
 
 BoardArrow::~BoardArrow() {
+
 };
 
-bool BoardArrow::Update(VECTOR pos,float dirY,float length, float katamuki) {
+bool BoardArrow::Update(VECTOR pos, float dirY) {
 	MATRIX matrix = MGetRotY(dirY);
-	float harfLength = length / 2;
-	float Length = -harfLength;
+	for (int i = 0; i < 4; i++) {
+		vertex[i].pos = VAdd(pos,VTransform(_originPos[i], matrix));
+	}
+	return true;
+};
 
-	for (int i = 0; i <= ONE_ROW_POLYGON_MAX;i++) {
-		float okuyuki = (Length + harfLength) * -1;
-		vertex[i * 2].pos.x = 50;
-		vertex[i * 2].pos.y = -katamuki * pow(Length, 2) + katamuki * pow(harfLength, 2);
-		vertex[i * 2].pos.z = okuyuki;
-		vertex[i * 2].pos = VTransform(vertex[i * 2].pos, matrix);
-		vertex[i * 2].pos = VAdd(pos, vertex[i * 2].pos);
-		vertex[i * 2 +1].pos.x = -50;
-		vertex[i * 2 +1].pos.y = -katamuki * pow(Length, 2) + katamuki * pow(harfLength, 2);
-		vertex[i * 2 +1].pos.z = okuyuki;
-		vertex[i * 2 +1].pos = VTransform(vertex[i * 2 + 1].pos, matrix);
-		vertex[i * 2 + 1].pos = VAdd(pos, vertex[i * 2 + 1].pos);
-		Length += length / ONE_ROW_POLYGON_MAX;
+bool BoardArrow::Update(VECTOR pos, VECTOR dirVec) {
+	float dirY = atan2(dirVec.x, dirVec.z);
+	MATRIX matrix = MGetRotY(dirY);
+	for (int i = 0; i < 4; i++) {
+		vertex[i].pos = VAdd(pos, VTransform(_originPos[i], matrix));
 	}
 	return true;
 };
 
 bool BoardArrow::Render() {
-	DrawPolygonIndexed3D(vertex, VERTEX_MAX/2 * ONE_ROW_POLYGON_MAX  + 2, vertexOrder, ONE_ROW_POLYGON_MAX * 2, _handle, true);
+	DrawPolygonIndexed3D(vertex, VERTEX_MAX, vertexList,  2, _handle, true);
 	return true;
 };
