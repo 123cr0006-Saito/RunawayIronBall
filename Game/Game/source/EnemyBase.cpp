@@ -42,9 +42,10 @@ bool EnemyBase::Create(int model, VECTOR pos, EnemyParam param, std::string name
 
 	Init(pos);
 	InheritanceInit();
-	AnimInit();
-
+	
 	MV1SetPosition(_model, _pos);
+
+	AnimInit();
 
 	return true;
 };

@@ -204,7 +204,7 @@ bool CrystarPattern3::ModeKnockBack() {
 
 bool CrystarPattern3::IndividualProcessing() {
 	for(int i = 0; i < 2; i++){
-	_roof[i]->Updata();
+	_roof[i]->Update();
 	}
 	_animManager->Process(static_cast<int>(_animState));
 	_frameData->Process(static_cast<int>(_animState), _animManager->GetPlayTime());

@@ -6,7 +6,7 @@ class CrystarRoof
 public:
 	CrystarRoof(int model, int parent,std::string frameName);
 	~CrystarRoof();
-	bool Updata();
+	bool Update();
 	bool Render();
 protected:
 	int _model;

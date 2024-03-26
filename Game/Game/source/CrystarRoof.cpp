@@ -4,13 +4,14 @@ CrystarRoof::CrystarRoof(int model, int parent,std::string frameName) {
     _parent = parent;
 	_frame = MV1SearchFrame(parent,"Hip");
 	_joint = frameName;
+	Update();
 };
 
 CrystarRoof:: ~CrystarRoof() {
 
 };
 
-bool CrystarRoof::Updata(){
+bool CrystarRoof::Update(){
 	// s—ñ‚Ì‰Šú‰»
 	MV1SetMatrix(_model, MGetIdent());
 
