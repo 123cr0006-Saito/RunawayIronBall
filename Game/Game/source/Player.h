@@ -83,9 +83,9 @@ public:
 	bool HealHp();
 	bool UpdateExp();//経験値が越えていた時、レベルを上げる。
 	int GetNowLevel() { return _nowLevel; };
-	void SetExp(int getExp) { global._nowExp += getExp; };
+	void SetExp(int getExp) { _nowExp += getExp; };
 	//経験値UIで使用しています。
-	int GetNowExp() { return global._nowExp; }
+	int GetNowExp() { return _nowExp; }
 	int GetNextExp() { return _nextLevel[_nowLevel]; }
 
 	void SetLevel(int allExp);
@@ -212,6 +212,7 @@ private:
 	int _nowLevel;//現在のレベルが入ります。
 	
 	int _maxLevel;//レベルの最大値
+	int _nowExp;//現在の経験値
 	std::map<int, int> _nextLevel;// first 現在のレベル  second  次のレベルが上がるまでの経験値
 	int _power;//吹っ飛ばす力です。
 	std::map<int, LevelData> _levelParam;//攻撃力と拡大率を格納したコンテナです。

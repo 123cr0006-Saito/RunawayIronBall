@@ -8,9 +8,9 @@ Global::Global() {
 	_timer->Start();
 	exit_count = false;
 	_stageNum = 1;
-	_nowExp = 0;
 	_allExp = 0;
-	Init();
+	_oldExp = 0;
+	SoundLoad();
 };
 
 Global::~Global() {
@@ -19,7 +19,9 @@ Global::~Global() {
 };
 
 bool Global::Init() {
-	SoundLoad();
+	_stageNum = 1;
+	_allExp = 0;
+	_oldExp = 0;
 	return true;
 };
 

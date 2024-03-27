@@ -51,7 +51,7 @@ bool ModeGame::Initialize() {
 	// オブジェクトのデータの読み込み
 	LoadObjectParam("BuildingtList.csv");
 	// ステージのデータの読み込み
-	std::string fileName = "Data/ObjectList/Stage_0" + std::to_string(global._stageNum) + ".json";
+	std::string fileName = "Data/ObjectList/Stage_0" + std::to_string(global.GetStageNum()) + ".json";
 	LoadStage(fileName);
 
 	int size = 100;
@@ -70,7 +70,7 @@ bool ModeGame::Initialize() {
 	_gaugeHandle[2] = ResourceServer::LoadGraph("Stamina01", ("res/UI/Stamina/UI_Stamina_01.png"));
 	_gaugeHandle[3] = ResourceServer::LoadGraph("Stamina04", ("res/UI/Stamina/UI_Stamina_04.png"));
 
-	int stageNum = global._stageNum;
+	int stageNum = global.GetStageNum();
 	if (stageNum < 4) {
 		int min[3] = { 15,15,15 };
 		TimeLimit::GetInstance()->SetTimeLimit(min[stageNum - 1], 0);
@@ -78,7 +78,7 @@ bool ModeGame::Initialize() {
 
 	TimeLimit::GetInstance()->Stop();
 
-	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(global._stageNum), 10, "RotCamera");
+	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(global.GetStageNum()), 10, "RotCamera");
 
 	return true;
 }
@@ -198,7 +198,7 @@ bool ModeGame::LoadObjectParam(std::string fileName) {
 
 std::vector<std::string> ModeGame::LoadObjectName(std::string fileName) {
 	std::vector<std::string> nameList;
-	std::string filePath = "Data/LoadStageName/" + fileName + "/"  + fileName + "0" + std::to_string(global._stageNum) + ".csv";
+	std::string filePath = "Data/LoadStageName/" + fileName + "/"  + fileName + "0" + std::to_string(global.GetStageNum()) + ".csv";
 	// csvファイルを読み込む
 	CFile file(filePath);
 	// ファイルが開けた場合
@@ -220,9 +220,9 @@ bool ModeGame::LoadStage(std::string fileName) {
 	myJson* json = new myJson(fileName);
 	int j = 0;
 
-	_enemyPool->Create(*json,global._stageNum);
+	_enemyPool->Create(*json,global.GetStageNum());
 
-	_floor->Create(*json, global._stageNum);
+	_floor->Create(*json, global.GetStageNum());
 
 	// タワー
 	std::vector<ModeGame::OBJECTDATA> towerData = LoadJsonObject(*json, "Tower");
@@ -298,12 +298,12 @@ bool ModeGame::Process() {
 	_player->Process(_camera->GetCamY());
 	_enemyPool->Process(enabledIBAttackCollision);
 	_timeLimit->Process();
-	_fog->Process(global._stageNum);
+	_fog->Process(global.GetStageNum());
 
 	// プレイヤーがステージ範囲外に出たら戻す
 	VECTOR playerPos = _player->GetPosition();
 	float stageWidth[3] = {STAGE_ONE_WIDTH,STAGE_TWO_WIDTH,STAGE_THREE_WIDTH};
-	float stageDistance = stageWidth[global._stageNum - 1] ;
+	float stageDistance = stageWidth[global.GetStageNum() - 1] ;
 	float playerDistance = VSquareSize(playerPos);
 	if(playerDistance > stageDistance * stageDistance){
 	    VECTOR vDir = VNorm(playerPos);
@@ -368,7 +368,7 @@ bool ModeGame::GateProcess() {
 			int handle[43];
 			ResourceServer::LoadDivGraph("Gate", "res/TemporaryMaterials/FX_Hole_2D00_sheet.png", 43, 16, 3, 1200, 1200, handle);
 			float time = 1.0f / 60.0f * 1000.0f;
-			if (global._stageNum == 3) {
+			if (global.GetStageNum() == 3) {
 				pos = VGet(-6787.0f, 300.0f, 7486.0);
 			}
 			_gate = NEW Gate(pos, 300, handle, 43, time, 1000);
@@ -383,7 +383,7 @@ bool ModeGame::GateProcess() {
 
 		// ゴールゲートの当たり判定
 		if (Collision3D::SphereCol(pPos, pR, gPos, gR)) {
-			global._stageNum++;
+			global.AddStageNum();
 			ModeServer::GetInstance()->Del(this);
 			ModeServer::GetInstance()->Add(NEW ModeClear(),100,"Clear");	
 		}
@@ -394,7 +394,7 @@ bool ModeGame::GateProcess() {
 void ModeGame::CreateTutorial() {
 	if (!IsTutorial) {
 		IsTutorial = true;
-		if (global._stageNum == 1) {
+		if (global.GetStageNum() == 1) {
 			int tutorialHandle[5];
 			ResourceServer::LoadMultGraph("Tutorial", "res/Tutorial/Tutorial", ".png", 5, tutorialHandle);
 			ModeServer::GetInstance()->Add(NEW ModeTutorial(tutorialHandle, 5), 10, "Tutorial");
@@ -409,7 +409,7 @@ bool ModeGame::Render() {
 	SetUseBackCulling(TRUE);
 
 	MV1DrawModel(_skySphere);
-	if (global._stageNum < 3) {
+	if (global.GetStageNum() < 3) {
 		MV1DrawModel(_mountain);
 	}
 	// 描画に使用するシャドウマップを設定

@@ -66,11 +66,7 @@ public:
 	bool LoadStage(std::string fileName);// ステージの読み込み 敵も含む
 	std::vector<OBJECTDATA> LoadJsonObject(const myJson& json, std::string loadName);//引数 読み込みたいオブジェクトの名前
 	bool GateProcess();// ゴールゲートの処理
-	void CreateTutorial();// チュートリアルの作成
-
-	int GetStageNum() { return global._stageNum; };
-
-	
+	void CreateTutorial();// チュートリアルの作成	
 
 protected:
 

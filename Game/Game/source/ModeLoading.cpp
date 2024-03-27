@@ -7,6 +7,7 @@ bool ModeLoading::Initialize(){
 	GetScreenState(&sizeX, &sizeY, &colorBit);
 	SetCameraScreenCenter(sizeX - 500, sizeY - 150);
 	global.ResourceLoad();
+	global.Init();
 	return true;
 };
 

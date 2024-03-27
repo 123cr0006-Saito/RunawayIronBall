@@ -6,7 +6,7 @@ std::map<int, ANIMATION_INFO> Player::_animMap;
 
 namespace {
 	// 最大レベル
-	constexpr int LEVEL_MAX = 10;
+	constexpr int LEVEL_MAX = 9;
 	// 最大HP
 	constexpr int HP_MAX = 4;
 	// 最大無敵時間
@@ -104,11 +104,12 @@ Player::Player()
 
 	_rightHandFrameIndex = -1;
 
-
+	global._oldExp = global.GetAllExp();
 
 
 	_nowLevel = 0;
 	_maxLevel = 0;
+	global.SetOldExp(global.GetAllExp());
 	_power = 0;
 
 	_nextLevel.clear();
@@ -135,7 +136,7 @@ Player::~Player()
 	}
 	_bone.clear();
 
-	global._allExp += global._nowExp;
+	global.SetAllExpAdd(_nowExp);
 }
 
 // 無敵状態の更新
@@ -251,9 +252,9 @@ bool Player::HealHp(){
 
 bool Player::UpdateExp() {
 	if (_nowLevel < _maxLevel) {
-		if (global._nowExp >= _nextLevel[_nowLevel]) {
-			global._nowExp -= _nextLevel[_nowLevel];
-			global._allExp += _nextLevel[_nowLevel];
+		if (_nowExp >= _nextLevel[_nowLevel]) {
+			_nowExp -= _nextLevel[_nowLevel];
+			global.SetAllExpAdd(_nextLevel[_nowLevel]);
 			_nowLevel++;
 			UpdateLevel();
 		}
@@ -632,12 +633,13 @@ void Player::UpdateCollision()
 void Player::SetLevel(int allExp){
 	int exp = allExp;
 	while(1){
-		if (_nowLevel >= 9)break;// 最大レベル
+		if (_nowLevel >= LEVEL_MAX)break;// 最大レベル
 
 		if(exp >= _nextLevel[_nowLevel]){
 			exp -= _nextLevel[_nowLevel];
 			_nowLevel++;
 		}else{
+			_nowExp = exp;
 			break;
 		}
 	}
