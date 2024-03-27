@@ -61,20 +61,16 @@ public:
 	virtual bool Render();
 
 	void SetTime();
-	void DeleteObject();
 	std::vector<std::string> LoadObjectName(std::string fileName); // オブジェクトの名前を読み込む
 	bool LoadObjectParam(std::string fileName); // オブジェクトのパラメータを読み込む
 	bool LoadStage(std::string fileName);// ステージの読み込み 敵も含む
-	bool StageMutation();// ステージクリア処理
+	std::vector<OBJECTDATA> LoadJsonObject(const myJson& json, std::string loadName);//引数 読み込みたいオブジェクトの名前
 	bool GateProcess();// ゴールゲートの処理
-	void NewStage();// ステージの初期化
 	void CreateTutorial();// チュートリアルの作成
 
 	int GetStageNum() { return global._stageNum; };
 
-
-	//デバッグ用
-	std::vector<OBJECTDATA> LoadJsonObject(const myJson& json, std::string loadName);//引数 読み込みたいオブジェクトの名前
+	
 
 protected:
 

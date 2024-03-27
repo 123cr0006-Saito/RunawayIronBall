@@ -70,13 +70,22 @@ bool ModeGame::Initialize() {
 	_gaugeHandle[2] = ResourceServer::LoadGraph("Stamina01", ("res/UI/Stamina/UI_Stamina_01.png"));
 	_gaugeHandle[3] = ResourceServer::LoadGraph("Stamina04", ("res/UI/Stamina/UI_Stamina_04.png"));
 
+	int stageNum = global._stageNum;
+	if (stageNum < 4) {
+		int min[3] = { 15,15,15 };
+		TimeLimit::GetInstance()->SetTimeLimit(min[stageNum - 1], 0);
+	}
+
+	TimeLimit::GetInstance()->Stop();
+
 	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(global._stageNum), 10, "RotCamera");
-	SetTime();
+
 	return true;
 }
 
 bool ModeGame::Terminate() {
 	base::Terminate();
+	_suppression->ClearSuppression();
 	delete _collisionManager;
 	delete _camera;
 	delete _player;
@@ -113,46 +122,17 @@ bool ModeGame::Terminate() {
 		delete uObj;
 	}
 
-	return true;
-}
-
-void ModeGame::DeleteObject() {
-	_suppression->ClearSuppression();
-	_collisionManager->ClearTreeAndList();
-	if (_gate != nullptr) {
-		delete _gate; _gate = nullptr;
-	}
-
-	_enemyPool->DeleteEnemy();
-
-	_floor->Delete();
-
-	for(auto itr = _house.begin(); itr != _house.end();++itr){
-		delete (*itr);(*itr) = nullptr;
-	}
-
-	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
-		delete (*itr);(*itr) = nullptr;
-	}
-
-	for (auto itr = _uObj.begin(); itr != _uObj.end(); ++itr) {
-		delete (*itr); (*itr) = nullptr;
-	}
-
 	_house.clear();
 	_tower.clear();
 	_uObj.clear();
 
-	for(auto&& name : _objectName){
+	for (auto&& name : _objectName) {
 		ResourceServer::MV1DeleteModelAll(name);
 	}
 
-};
+	return true;
+}
 
-void ModeGame::SetTime() {
-	int min[3] = { 15,15,15 };
-	_timeLimit->SetTimeLimit(min[global._stageNum - 1], 0);
-};
 
 std::vector<ModeGame::OBJECTDATA> ModeGame::LoadJsonObject(const myJson& json, std::string loadName) {
 	nlohmann::json loadObject = json._json.at(loadName);
@@ -305,28 +285,11 @@ bool ModeGame::LoadStage(std::string fileName) {
 	return true;
 };
 
-bool ModeGame::StageMutation() {
-	// ロード開始
-	// 中身がいらないものはdeleteする
-	DeleteObject();
-	// オブジェクトのデータの読み込み ファイル名は 1 から始まるので +1 する
-	std::string fileName = "Data/ObjectList/Stage_0" + std::to_string(global._stageNum) + ".json";
-	LoadStage(fileName);
-	// ロード終了
-	return true;
-}
-
 bool ModeGame::Process() {
 	base::Process();
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->PauseProcessUnderLayer();
 
-	//if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_LEFT_THUMB) ) {
-	//	if(global._stageNum < 3){
-	//		global._stageNum++;
-	//	   NewStage();
-	//	}
-	//}
 
 	bool enabledIBAttackCollision = _player->GetEnabledIBAttackCollision();
 
@@ -426,20 +389,6 @@ bool ModeGame::GateProcess() {
 		}
 	}
 	return true;
-};
-
-void ModeGame::NewStage(){
-	StageMutation();
-	if (_fog->GetIsFog()) {
-		SetFogEnable(false);
-	}
-	transitionGameOver = false;
-	_gameOverCnt = 0;
-
-	_player->MaxHeal();
-	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(global._stageNum), 10, "RotCamera");
-	global._soundServer->DirectPlay("Stage0" + std::to_string(global._stageNum));
-	SetTime();
 };
 
 void ModeGame::CreateTutorial() {
