@@ -10,6 +10,8 @@ class TimeLimit
 	
 	float Process();
 	int SecondsToTime();
+	void Stop();
+	void Restart();
 	
 	static TimeLimit* _instance;
 	static TimeLimit* GetInstance() { return _instance; }
@@ -25,5 +27,7 @@ protected:
 	float _startTime,_timeLimit;
 	float _setTime;
 	float _remainingTime;
+	int _stopTime;
+	bool _IsStop;
 };
 

@@ -1,4 +1,5 @@
 #include "ModeRotationCamera.h"
+#include "TimeLimit.h"
 
 ModeRotationCamera::ModeRotationCamera(int stageNum) {
 	_camera = nullptr;
@@ -19,6 +20,7 @@ bool ModeRotationCamera::Initialize(){
 
 bool ModeRotationCamera::Terminate(){
 	delete _camera; _camera = nullptr;
+	TimeLimit::GetInstance()->Restart();
 	return true;
 };
 
