@@ -72,21 +72,12 @@ void ModeGameOver::SelectProcess(){
 		_selectEnd = true;
 		global._soundServer->DirectPlay("SE_Press");
 		if (_selectItem == 0) {
+			global.SetAllExp(global.GetOldExp());
 			ModeServer::GetInstance()->Add(NEW ModeGame(), 1, "Game");
 			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(3000, this), 100, "Fade");
-		/*	if (_modeGame != nullptr) {
-				_modeGame->NewStage();
-				Player::GetInstance()->MaxHeal();
-				Player::GetInstance()->Respawn();
-			}
-			else if(_modeBossBattle != nullptr){
-				Player::GetInstance()->MaxHeal();
-				Player::GetInstance()->Respawn();*/
-			//}
 		}
 		else {
 			ModeServer::GetInstance()->Add(new ModeTitle(), 1, "Title");
-			//ModeServer::GetInstance()->Del(_modeGame);
 			ModeServer::GetInstance()->Del(this);
 		}
 	}

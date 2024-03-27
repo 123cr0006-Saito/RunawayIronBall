@@ -62,7 +62,7 @@ bool ModeFadeComeBack::Process(){
 		   ModeServer::GetInstance()->Del(_deleteMode);
 	    }
 		// ƒŒƒCƒ„[‚ð•ÏX‚·‚éê‡
-		else if(_changeModeName != ""){
+		if(_changeModeName != ""){
 			ModeServer::GetInstance()->ChangeLayer(_changeModeName, _changeLayer);
 		}
 	}

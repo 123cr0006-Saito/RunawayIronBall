@@ -164,7 +164,7 @@ bool ModeClear::Process(){
 
 	if (_IsNextStage && input->GetTrg(XINPUT_BUTTON_A)) {
 		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000, this), 100, "ClearFade");
-		if ( _modeGame->GetStageNum() < 4) {
+		if (global.GetStageNum() < 4) {
 			ModeServer::GetInstance()->Add(NEW ModeGame(), 1, "Game");
 		}
 		else {
