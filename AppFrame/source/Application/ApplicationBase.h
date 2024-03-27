@@ -9,6 +9,8 @@
 // EffekseerForDXLib.hをインクルードします。
 #include "EffekseerForDXLib.h"
 
+#define FULLSCREEN
+
 class ApplicationBase
 {
 public:
@@ -24,12 +26,12 @@ public:
 	virtual bool AppWindowed() { return true; }
 	virtual bool BeforeDXLib_Init() { return true; }	// DXLib_Init() 実行前に行いたい処理があればオーバーライド
 
-#ifdef _DEBUG
-	virtual int DispSizeW() { return 1280; }
-	virtual int DispSizeH() { return 720; }
-#else
+#if !defined(_DEBUG) || defined(FULLSCREEN)
 	virtual int DispSizeW() { return 1920; }
 	virtual int DispSizeH() { return 1080; }
+#else
+	virtual int DispSizeW() { return 1280; }
+	virtual int DispSizeH() { return 720; }
 #endif
 
 	static	ApplicationBase	*GetInstance() { return _lpInstance; }
