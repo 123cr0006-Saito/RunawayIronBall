@@ -25,7 +25,6 @@ bool CharacterBase::Init(int modelHandle, VECTOR pos)
 {
 	this->_modelHandle = modelHandle;
 	this->_pos = pos;
-	MV1SetPosition(_modelHandle, _pos);
 	return true;
 }
 
@@ -37,6 +36,7 @@ bool CharacterBase::Process()
 
 bool CharacterBase::Render()
 {
+	MV1SetPosition(_modelHandle, _pos);
 	MV1DrawModel(_modelHandle);
 	return true;
 }

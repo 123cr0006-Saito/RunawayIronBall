@@ -577,7 +577,6 @@ bool Player::Process(float camAngleY)
 
 	BlastOffProcess();
 
-	MV1SetPosition(_modelHandle, _pos);
 	UpdateCollision();
 	//-------------------
 	//âV“¡‚ªì¬‚µ‚½ŠÖ”‚Å‚·B
