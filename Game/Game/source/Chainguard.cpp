@@ -17,10 +17,10 @@ void Chainguard::AnimInit(){
 	MotionList::Load("Chainguard", "MotionList_Chainguard.csv");
 	auto motionList = MotionList::GetMotionList("Chainguard");
 	// アニメーションマネージャーの初期化
-	_animManager = new AnimationManager();
+	_animManager = NEW AnimationManager();
 	_animManager->InitMap("Chainguard", _model, *motionList);
 	// フレームデータの初期化
-	_frameData = new FrameData();
+	_frameData = NEW FrameData();
 	_frameData->LoadData("Chainguard", *motionList);
 };
 
@@ -127,7 +127,7 @@ void Chainguard::SetKnockBackAndDamage(VECTOR vDir, float damage) {
 		VECTOR effectPos = VAdd(VAdd(_pos, _diffeToCenter), VScale(vDir, -50));
 		int effectHandle[30];
 		ResourceServer::LoadMultGraph("HitEffect_Blue", "res/Effect/HitEffect_Blue/HitEffect_Blue", ".png", 30, effectHandle);
-		BoardPolygon* effect = new BoardPolygon(effectPos, GetCameraBillboardMatrix(), 200, effectHandle, 30, 0.5f / 60.0f * 1000.0f);
+		BoardPolygon* effect = NEW BoardPolygon(effectPos, GetCameraBillboardMatrix(), 200, effectHandle, 30, 0.5f / 60.0f * 1000.0f);
 		EffectManeger::GetInstance()->LoadEffect(effect);
 		_currentTime = GetNowCount();
 		// 状態を追跡所歌に変更

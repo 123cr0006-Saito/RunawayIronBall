@@ -679,7 +679,7 @@ bool Player::UpdateLevel()
 		float size = 5.0f * _levelParam[_nowLevel].magnification;
 		VECTOR* pos = GetIBPosPtr();
 		int effectHandle = ResourceServer::Load("FX_3D_Level_Up", "res/Effekseer/FX_3D_Level_Up/FX_3D_Level_Up.efkefc");
-		EffekseerPosSynchro* effect = new EffekseerPosSynchro(effectHandle, pos, size);
+		EffekseerPosSynchro* effect = NEW EffekseerPosSynchro(effectHandle, pos, size);
 		EffectManeger::GetInstance()->LoadEffect(effect);
 		// レベルアップボイス
 		int randomNum = rand() % 2 + 1; // ランダムで音声を再生　1~2

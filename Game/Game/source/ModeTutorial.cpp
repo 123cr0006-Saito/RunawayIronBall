@@ -2,7 +2,7 @@
 #include "TimeLimit.h"
 ModeTutorial::ModeTutorial(int* handle, int size){
 	_pageSize = size;
-	_handle = new int[_pageSize];
+	_handle = NEW int[_pageSize];
 	for(int i = 0; i < _pageSize; i++){
 		_handle[i] = handle[i];
 	}

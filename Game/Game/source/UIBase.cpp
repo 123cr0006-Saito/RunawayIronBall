@@ -8,7 +8,7 @@ UIBase::UIBase(VECTOR pos) {
 };
 
 UIBase::UIBase(VECTOR pos, std::string handleName) {
-	_handle = new int[1];
+	_handle = NEW int[1];
 	*_handle = ResourceServer::LoadGraph(handleName.c_str(),handleName.c_str());
 	_pos = pos;
 	_handleNum = 0;
@@ -19,7 +19,7 @@ UIBase::UIBase(VECTOR pos, std::string handleName) {
 };
 
 UIBase::UIBase(VECTOR pos, std::string handleName, int AllNum, int XNum, int YNum, int XSize, int YSize, int* HandleBuf) {
-	_handle = new int[AllNum];
+	_handle = NEW int[AllNum];
 	ResourceServer::LoadDivGraph(handleName.c_str(), handleName.c_str(), AllNum, XNum, YNum, XSize, YSize, _handle);
 	_pos = pos;
 	_handleNum = 0;
@@ -30,7 +30,7 @@ UIBase::UIBase(VECTOR pos, std::string handleName, int AllNum, int XNum, int YNu
 };
 
 UIBase::UIBase(VECTOR pos, int size, int* handle) {
-	_handle = new int[size];
+	_handle = NEW int[size];
 	for (int i = 0; i < size; i++) {
 		_handle[i] = handle[i];
 	}

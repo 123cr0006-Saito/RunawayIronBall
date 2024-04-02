@@ -59,7 +59,7 @@ void LoadingChain::Init(){
 		MV1SetMaterialOutLineDotWidth(_iModelHandle, i, 0);
 	}
 
-	_modelColor = new ModelColor();
+	_modelColor = NEW ModelColor();
 	_modelColor->Init(_iModelHandle);
 	_modelColor->ChangeFlickerTexture(true);
 	_modelColor->Init(_cModelHandle);

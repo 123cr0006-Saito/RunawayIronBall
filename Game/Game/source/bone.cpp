@@ -235,6 +235,9 @@ void bone::UpdatePosAndAccel(double _elapsedTime) {
 	// 速度と位置をまとめて変更
 	std::swap(_massAccelList, newAccelList);
 	std::swap(_massPosList, newPosList);
+
+	delete[] newPosList;
+	delete[] newAccelList;
 };
 
 //質点に働く力を計算 F=maを求める

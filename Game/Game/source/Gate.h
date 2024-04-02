@@ -1,5 +1,5 @@
 #pragma once
-#include "dxlib.h"
+#include "appframe.h"
 class Gate
 {
 public:

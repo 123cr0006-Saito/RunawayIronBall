@@ -6,7 +6,7 @@ _size(size),
 _animSpeed(animsPeed),
 _handleSize(handlesize)
 {
-	_handle = new int[_size];
+	_handle = NEW int[_size];
 	for (int i = 0; i < _size; i++) {
 		_handle[i] = handle[i];
 	}

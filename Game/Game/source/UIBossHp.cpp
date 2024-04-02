@@ -3,7 +3,7 @@
 const unsigned short UIBossHp::vertex[6]{ 0,1,2,2,1,3 };
 
 UIBossHp::UIBossHp(VECTOR pos) : UIBase(pos){
-	_handle = new int[2];
+	_handle = NEW int[2];
 	std::string path = "res/UI/Boss/";
 	std::string name[2] = { "UI_Boss_Hp_Frame","gauge" };
 	for (int i = 0; i < 2; i++) {

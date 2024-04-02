@@ -217,7 +217,7 @@ std::vector<std::string> ModeGame::LoadObjectName(std::string fileName) {
 }
 
 bool ModeGame::LoadStage(std::string fileName) {
-	myJson* json = new myJson(fileName);
+	myJson* json = NEW myJson(fileName);
 	int j = 0;
 
 	_enemyPool->Create(*json,global.GetStageNum());

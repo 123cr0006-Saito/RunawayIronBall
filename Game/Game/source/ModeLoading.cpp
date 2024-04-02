@@ -1,7 +1,7 @@
 #include "ModeLoading.h"
 #include "ModeScenario.h"
 bool ModeLoading::Initialize(){
-	_chara = new LoadingPlayer();
+	_chara = NEW LoadingPlayer();
 	// 3‚c‹óŠÔ‚Ì‰æ–Ê‚Ì’†S“_‚ğˆÚ“®
 	int sizeX, sizeY, colorBit;
 	GetScreenState(&sizeX, &sizeY, &colorBit);
@@ -27,7 +27,7 @@ bool ModeLoading::Process(){
 
 	if (GetASyncLoadNum() <= 0) {
 		ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario01.csv",	1), 50, "Scenario");
-		ModeServer::GetInstance()->Add(new ModeFadeComeBack(1000,this),1000,"Fade");
+		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000,this),1000,"Fade");
 	}
 
 	_chara->Process();

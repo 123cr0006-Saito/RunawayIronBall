@@ -44,13 +44,13 @@ bool ModeBossBattle::Initialize() {
 
 
 	{
-		global._soundServer->Add("SE_Boss_Stay", new SoundItemSE("Sound/SE/Enemy/SE_Boss_Stay.wav"));
-		global._soundServer->Add("SE_BOSS_Confusion", new SoundItemSE("Sound/SE/Enemy/SE_BOSS_Confusion.wav"));
-		global._soundServer->Add("SE_BOSS_Rush", new SoundItemSE("Sound/SE/Enemy/SE_BOSS_Rush.wav"));
-		global._soundServer->Add("SE_BOSS_Jump_Attack_01", new SoundItemSE("Sound/SE/Enemy/SE_BOSS_Jump_Attack_01.wav"));
-		global._soundServer->Add("SE_BOSS_Jump_Attack_02", new SoundItemSE("Sound/SE/Enemy/SE_BOSS_Jump_Attack_02.wav"));
-		global._soundServer->Add("SE_BOSS_Rotate", new SoundItemSE("Sound/SE/Enemy/SE_BOSS_Rotate.wav"));
-		global._soundServer->Add("SE_BOSS_Glass", new SoundItemSE("Sound/SE/Enemy/SE_BOSS_Glass.wav"));
+		global._soundServer->Add("SE_Boss_Stay", NEW SoundItemSE("Sound/SE/Enemy/SE_Boss_Stay.wav"));
+		global._soundServer->Add("SE_BOSS_Confusion", NEW SoundItemSE("Sound/SE/Enemy/SE_BOSS_Confusion.wav"));
+		global._soundServer->Add("SE_BOSS_Rush", NEW SoundItemSE("Sound/SE/Enemy/SE_BOSS_Rush.wav"));
+		global._soundServer->Add("SE_BOSS_Jump_Attack_01", NEW SoundItemSE("Sound/SE/Enemy/SE_BOSS_Jump_Attack_01.wav"));
+		global._soundServer->Add("SE_BOSS_Jump_Attack_02", NEW SoundItemSE("Sound/SE/Enemy/SE_BOSS_Jump_Attack_02.wav"));
+		global._soundServer->Add("SE_BOSS_Rotate", NEW SoundItemSE("Sound/SE/Enemy/SE_BOSS_Rotate.wav"));
+		global._soundServer->Add("SE_BOSS_Glass", NEW SoundItemSE("Sound/SE/Enemy/SE_BOSS_Glass.wav"));
 	}
 
 	int size = 100;

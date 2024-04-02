@@ -6,7 +6,7 @@
 	PlaneEffectBase::PlaneEffectBase(VECTOR pos, int sizeX, int* handle, int handleMax, int speed) {
 		_animCount = 0;
 		_animMax = handleMax;
-		_handle = new int[_animMax];
+		_handle = NEW int[_animMax];
 		for (int i = 0; i < _animMax; i++) {
 			_handle[i] = handle[i];
 		}

@@ -33,7 +33,7 @@ UIHeart::UIHeart(VECTOR pos, int size, int* handle, int damageHandleNum) : UIBas
 	_player = Player::GetInstance();
 	float _x, _y;
 	GetGraphSizeF(_handle[_handleNum], &_x, &_y);
-	_heart = new DrawGauge(_handle[damageHandleNum], 3, _x, true);
+	_heart = NEW DrawGauge(_handle[damageHandleNum], 3, _x, true);
 	_currentTime = 0;
 	_oldHp = 4;
 	_IsDamage = false;

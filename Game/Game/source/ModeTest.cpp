@@ -15,12 +15,12 @@
 //	MV1SetPosition(_tile, VGet(0, 0, 0));
 //
 //	int playerModelHandle = ResourceServer::MV1LoadModel("Player", "res/Character/cg_player_girl/cg_player_girl_TEST_Ver.2.mv1");
-//	_player = new Player(playerModelHandle, VGet(0, 0, 0));
-//	_camera = new Camera(_player->GetPosition());
+//	_player = NEW Player(playerModelHandle, VGet(0, 0, 0));
+//	_camera = NEW Camera(_player->GetPosition());
 //
 //
-//	_classificationEffect = new ClassificationEffect();
-//	_effectManeger = new EffectManeger();
+//	_classificationEffect = NEW ClassificationEffect();
+//	_effectManeger = NEW EffectManeger();
 //
 //	{
 //
@@ -30,24 +30,24 @@
 //		ResourceServer::LoadEffekseerEffect("Stanp", "res/Effekseer/Attack/HorizontalThird.efkefc");
 //	}
 //
-//	_suppression = new Suppression();
+//	_suppression = NEW Suppression();
 //
 //
 //
 //	int size = 100;
 //	int heartHandle[3];
 //	ResourceServer::LoadMultGraph("Heart", "res/UI/UI_Heart", ".png", 3, heartHandle);
-//	ui[0] = new UIHeart(VGet(20, 20, 0), 3, heartHandle, 2);
-//	ui[1] = new UIExpPoint(VGet(0, 150, 0), "res/TemporaryMaterials/UI_EXP_01.png");
+//	ui[0] = NEW UIHeart(VGet(20, 20, 0), 3, heartHandle, 2);
+//	ui[1] = NEW UIExpPoint(VGet(0, 150, 0), "res/TemporaryMaterials/UI_EXP_01.png");
 //	ResourceServer::LoadMultGraph("Suppressiongauge", "res/TemporaryMaterials/SuppressionGauge/suppressiongauge", ".png", 3, heartHandle);
-//	ui[2] = new UISuppressionGauge(VGet(700, 100, 0), 3, heartHandle);
-//	_gaugeUI[0] = new DrawGauge(0, 3, size, true);
-//	_gaugeUI[1] = new DrawGauge(0, 3, size, true);
+//	ui[2] = NEW UISuppressionGauge(VGet(700, 100, 0), 3, heartHandle);
+//	_gaugeUI[0] = NEW DrawGauge(0, 3, size, true);
+//	_gaugeUI[1] = NEW DrawGauge(0, 3, size, true);
 //	_gaugeHandle[0] = ResourceServer::LoadGraph("Stamina03", _T("res/UI/UI_Stamina_03.png"));
 //	_gaugeHandle[1] = ResourceServer::LoadGraph("Stamina02", _T("res/UI/UI_Stamina_02.png"));
 //	_gaugeHandle[2] = ResourceServer::LoadGraph("Stamina01", _T("res/UI/UI_Stamina_01.png"));
 //	_gaugeHandle[3] = ResourceServer::LoadGraph("Stamina04", _T("res/UI/UI_Stamina_04.png"));
-//	_sVib = new ScreenVibration();
+//	_sVib = NEW ScreenVibration();
 //
 //
 //
@@ -56,7 +56,7 @@
 //	TowerParts::InitBlastTowerParts();
 //
 //
-//	_boss = new Boss();
+//	_boss = NEW Boss();
 //	_boss->LoadModel();
 //	_boss->Init(VGet(0, 0, 500));
 //
@@ -228,7 +228,7 @@
 //
 //
 //	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_START)) {
-//		ModeServer::GetInstance()->Add(new ModePause(), 10, "Pause");
+//		ModeServer::GetInstance()->Add(NEW ModePause(), 10, "Pause");
 //	}
 //
 //
@@ -240,7 +240,7 @@
 //	if (_player->GetHP() <= 0) {
 //		global._soundServer->BgmFadeOut(2000);
 //		ModeServer::GetInstance()->Del(this);
-//		ModeServer::GetInstance()->Add(new ModeGameOver(), 1, "gameover");
+//		ModeServer::GetInstance()->Add(NEW ModeGameOver(), 1, "gameover");
 //	}
 //
 //	VECTOR box_vec = ConvWorldPosToScreenPos(VAdd(_player->GetPosition(), VGet(0, 170, 0)));

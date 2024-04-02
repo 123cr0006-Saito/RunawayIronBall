@@ -77,7 +77,7 @@ void ModeGameOver::SelectProcess(){
 			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(3000, this), 100, "Fade");
 		}
 		else {
-			ModeServer::GetInstance()->Add(new ModeTitle(), 1, "Title");
+			ModeServer::GetInstance()->Add(NEW ModeTitle(), 1, "Title");
 			ModeServer::GetInstance()->Del(this);
 		}
 	}

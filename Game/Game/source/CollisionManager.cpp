@@ -59,7 +59,7 @@ void CollisionManager::Init()
 	_tree.resize(_treeSize);
 
 	for (int i = 0; i < _treeSize; i++) {
-		_tree[i] = new Cell();
+		_tree[i] = NEW Cell();
 	}
 }
 
