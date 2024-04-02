@@ -1,12 +1,11 @@
 #include "appframe.h"
-#include "ModeGame.h"
 #include "AnimationChain.h"
+#include "ModeGame.h"
 class ModeClear : public ModeBase
 {
 	typedef ModeBase base;
 public:
-	ModeClear();
-	ModeClear(ModeGame* mode);
+	ModeClear(int elapsedTime,int startTime);
 	virtual bool Initialize();
 	virtual bool Terminate();
 	virtual bool Process();
@@ -14,10 +13,10 @@ public:
 
 	void AnimProcess();
 	void ValuationProcess();
-	void Valuation();
+	void Valuation(int elapsedTime,int startTime);
 
 protected:
-	XInput* input;
+	XInput* _input;
 	// モデル
 	int _model;
 	int _attachAnim;
@@ -27,7 +26,6 @@ protected:
 	std::unordered_map<std::string,int> _handle;
 	int _valuationHandle[4];
 	int _timeHandle[10];
-	ModeGame* _modeGame;
 	// ステージング
 	float _valuationSize;
 	int _valuationTime;

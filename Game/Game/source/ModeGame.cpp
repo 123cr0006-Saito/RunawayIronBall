@@ -385,7 +385,7 @@ bool ModeGame::GateProcess() {
 		if (Collision3D::SphereCol(pPos, pR, gPos, gR)) {
 			global.AddStageNum();
 			ModeServer::GetInstance()->Del(this);
-			ModeServer::GetInstance()->Add(NEW ModeClear(),100,"Clear");	
+			ModeServer::GetInstance()->Add(NEW ModeClear(_timeLimit->GetElapsedTime(),_timeLimit->GetStartTime()),100,"Clear");	
 		}
 	}
 	return true;

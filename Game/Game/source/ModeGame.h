@@ -81,8 +81,6 @@ protected:
 	DrawGauge* _gaugeUI[2];
 	int _gaugeHandle[4];// 0フレーム 3ゲージ
 
-	TimeLimit* _timeLimit;
-
 	EnemyPool* _enemyPool;
 	Suppression* _suppression;
 
@@ -110,6 +108,8 @@ protected:
 	std::vector<std::string>  _objectName;
 
 	Light* _light;
+
+	TimeLimit* _timeLimit;
 
 	// ステージ読み込み用変数
 	bool IsTutorial;
