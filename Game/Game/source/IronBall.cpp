@@ -125,9 +125,9 @@ void IronBall::Init() {
 
 
 	int afterglow = MV1SearchFrame(_iModelHandle, "left_eye02");
-	_afterglowList.push_back(NEW Afterglow(_iModelHandle, afterglow, 10, LoadGraph("res/afterglow.png"), 20));
+	_afterglowList.push_back(NEW Afterglow(_iModelHandle, afterglow, 10, LoadGraph("res/Effect/afterglow.png"), 20));
 	afterglow = MV1SearchFrame(_iModelHandle, "right_eye02");
-	_afterglowList.push_back(NEW Afterglow(_iModelHandle, afterglow, 10, LoadGraph("res/afterglow.png"), 20));
+	_afterglowList.push_back(NEW Afterglow(_iModelHandle, afterglow, 10, LoadGraph("res/Effect/afterglow.png"), 20));
 }
 
 
@@ -379,6 +379,12 @@ void IronBall::UpdateChainCollision()
 {
 	_chainCapsuleCollision.up_pos = _cPos[0];
 	_chainCapsuleCollision.down_pos = _cPos[CHAIN_MAX - 1];
+}
+
+void IronBall::SetEnabledAfterGlow(bool enable) {
+	for (auto list : _afterglowList) {
+		list->SetUpdate(enable);
+	}
 }
 
 void IronBall::SetPlayerModelHandle(int handle)

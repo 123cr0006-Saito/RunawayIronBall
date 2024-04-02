@@ -58,6 +58,7 @@ namespace {
 	constexpr unsigned int 	C_P_ENABLE_IB_ATTACK_COLLISION		= 100;
 	constexpr unsigned int 	C_P_ENABLE_IB_FOLLOWING_MODE		= 101;
 	constexpr unsigned int 	C_P_ENABLE_IB_INTERPOLATION			= 102;
+	constexpr unsigned int 	C_P_ENABLE_IB_AFTERGLOW = 103;
 }
 
 Player::Player()
@@ -799,6 +800,9 @@ void Player::CheckFrameDataCommand()
 		}
 		case C_P_ENABLE_IB_INTERPOLATION:
 			_ironBall->SetMoveState(IB_MOVE_STATE::INTERPOLATION);
+			break;
+		case C_P_ENABLE_IB_AFTERGLOW:
+			_ironBall->SetEnabledAfterGlow(static_cast<bool>(param));
 			break;
 		}
 	}

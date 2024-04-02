@@ -41,7 +41,8 @@ public:
 	Capsule GetChainCollision() { return _chainCapsuleCollision; }
 	void UpdateIBCollision();
 	void UpdateChainCollision();
-
+	// サイトウが作成しました。
+	void SetEnabledAfterGlow(bool enable);// 目の残光を表示するかどうかを設定
 
 	// このオブジェクトを保有している親オブジェクト関連の関数
 	// プレイヤーのモデルハンドルをセット
