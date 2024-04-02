@@ -1,6 +1,7 @@
 #pragma once
 #include "appframe.h"
 #include "ObjectBase.h"
+#include "Afterglow.h"
 
 #define CHAIN_MAX 12
 
@@ -115,5 +116,5 @@ private:
 
 	int _playerModelHandle;
 
-
+	std::vector<Afterglow*> _afterglowList;
 };

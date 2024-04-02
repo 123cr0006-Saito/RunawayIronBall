@@ -14,7 +14,8 @@ Afterglow::Afterglow(int model,int frameNum,float length,int handle,int animCoun
 };
 
 Afterglow::~Afterglow(){
-
+	_vertex.clear();
+	_vertexIndex.clear();
 };
 
 void Afterglow::SetVertex(){
