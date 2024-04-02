@@ -60,6 +60,8 @@ IronBall::~IronBall()
 	_input = nullptr;
 	_parent = nullptr;
 	_parentPos = nullptr;
+	delete _cell; _cell = nullptr;
+	delete _chainCell; _chainCell = nullptr;
 	for (auto list : _afterglowList) {
 		delete list;
 	}

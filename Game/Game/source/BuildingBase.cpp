@@ -10,6 +10,7 @@ BuildingBase::BuildingBase()
 
 BuildingBase::~BuildingBase()
 {
+	delete _cell; _cell = nullptr;
 	if (_modelHandle != -1) {
 	/*	MV1DeleteModel(_modelHandle);
 		_modelHandle = -1;*/

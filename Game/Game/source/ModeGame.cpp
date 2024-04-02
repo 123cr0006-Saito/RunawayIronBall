@@ -217,15 +217,15 @@ std::vector<std::string> ModeGame::LoadObjectName(std::string fileName) {
 }
 
 bool ModeGame::LoadStage(std::string fileName) {
-	myJson* json = NEW myJson(fileName);
+	myJson json = myJson(fileName);
 	int j = 0;
 
-	_enemyPool->Create(*json,global.GetStageNum());
+	_enemyPool->Create(json,global.GetStageNum());
 
-	_floor->Create(*json, global.GetStageNum());
+	_floor->Create(json, global.GetStageNum());
 
 	// タワー
-	std::vector<ModeGame::OBJECTDATA> towerData = LoadJsonObject(*json, "Tower");
+	std::vector<ModeGame::OBJECTDATA> towerData = LoadJsonObject(json, "Tower");
 	for (auto&& towerParam : towerData) {
 
 		std::array<int, 3> towerModelHandle;
@@ -251,7 +251,7 @@ bool ModeGame::LoadStage(std::string fileName) {
 				return temp._name == nameList;
 		});
 
-		std::vector<ModeGame::OBJECTDATA> objectData = LoadJsonObject(*json, nameList);
+		std::vector<ModeGame::OBJECTDATA> objectData = LoadJsonObject(json, nameList);
 		std::string modelName = nameList;
 		_objectName.push_back(modelName);
 		Suppression::GetInstance()->AddSuppression((*itr)._suppression * objectData.size());
@@ -274,7 +274,7 @@ bool ModeGame::LoadStage(std::string fileName) {
 	}
 
 	// プレイヤーの座標指定
-	nlohmann::json loadObject = (*json)._json.at("Player_Start_Position");
+	nlohmann::json loadObject = json._json.at("Player_Start_Position");
 	VECTOR pos;
 	loadObject.at(0).at("translate").at("x").get_to(pos.x);
 	loadObject.at(0).at("translate").at("y").get_to(pos.z);
