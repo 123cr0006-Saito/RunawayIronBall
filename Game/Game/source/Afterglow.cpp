@@ -1,5 +1,21 @@
+//----------------------------------------------------------------------
+// @filename Afterglow.cpp
+// ＠date: 2024/04/01
+// ＠author: saito ko
+// @explanation
+// 鉄球が攻撃時、鉄球の目に残光を発生させるクラス
+//----------------------------------------------------------------------
 #include "Afterglow.h"
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @param model: モデルハンドル
+// @param frameNum: モデルハンドルにある位置を取得したいジョイント番号
+// @param length: ポリゴンを表示するときのy軸の長さ
+// @param handle: 画像ハンドル
+// @param animCountMax: アニメーションの流したい時間
+//----------------------------------------------------------------------
 Afterglow::Afterglow(int model,int frameNum,float length,int handle,int animCountMax){
+	// 初期化
 	IsUpdate = false;
 	_model = model;
 	_frameNum = frameNum;
@@ -19,12 +35,14 @@ Afterglow::~Afterglow(){
 };
 
 void Afterglow::SetVertex(){
+	// コンテナの最初に値を追加する関数
 	auto vertex_push_front = [&](VERTEX3D index){
 		_vertex.insert(_vertex.begin(), index);
 	};
 	auto index_push_front = [&](unsigned short index){
 		_vertexIndex.insert(_vertexIndex.begin(),index);
 	};
+
 	// フレームの位置を取得
 	VECTOR pos = MV1GetFramePosition(_model,_frameNum);
 	// 前の位置との差分を取得

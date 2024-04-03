@@ -12,19 +12,11 @@ ApplicationMain				g_oApplicationMain;
 
 bool ApplicationMain::Initialize(HINSTANCE hInstance) {
 	if (!base::Initialize(hInstance)) { return false; }
-
 	// モードの登録
 	ModeServer::GetInstance()->Add(NEW ModeTitle(), 1, "Title");
-	//ModeServer::GetInstance()->Add(NEW ModeGameOver(), 1, "Title");
-	//global.ResourceLoad();
-	//ModeServer::GetInstance()->Add(NEW ModeClear(), 1, "Clear");
-	//ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario01.csv",1), 2, "Scenario");
-	//ModeServer::GetInstance()->Add(NEW ModeGame(), 1, "Game");
-	//ModeServer::GetInstance()->Add(NEW ModeBossBattle(), 1, "BossBattle");
-
-	global.Init();
-
+	// コントローラーの初期化
 	_input = NEW XInput(DX_INPUT_PAD1);
+	// FPSを安定させるためのクラスを初期化
 	_fpsController = NEW Fps();
 	return true;
 }
