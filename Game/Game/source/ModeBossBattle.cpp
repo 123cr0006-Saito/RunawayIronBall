@@ -42,7 +42,6 @@ bool ModeBossBattle::Initialize() {
 	_classificationEffect = NEW ClassificationEffect();
 	_effectManeger = NEW EffectManeger();
 
-
 	{
 		global._soundServer->Add("SE_Boss_Stay", NEW SoundItemSE("Sound/SE/Enemy/SE_Boss_Stay.wav"));
 		global._soundServer->Add("SE_BOSS_Confusion", NEW SoundItemSE("Sound/SE/Enemy/SE_BOSS_Confusion.wav"));
@@ -94,20 +93,12 @@ bool ModeBossBattle::Terminate() {
 
 bool ModeBossBattle::Process() {
 	base::Process();
-	global._timer->TimeElapsed();
-
-	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_RIGHT_THUMB)) {
-		_boss->SetDamageStake(50);
-	}
 
 	_player->Process(_camera->GetCamY());
 
 	_boss->Process();
 
 	_bossHp->Process(_boss->GetStakeHp(), _boss->GetStakeMaxHp());
-
-
-	
 
 	// 杭が破壊されていない場合に判定を行う
 	if (_boss->GetIsStakeBroken() == false) {
@@ -336,8 +327,6 @@ bool ModeBossBattle::Render() {
 	// ライト設定
 	SetUseLighting(TRUE);
 
-
-
 	//------------------------------------
 	// シャドウマップの設定　
 	// shadowCount 0 シャドウマップに描画 1 モデルの描画
@@ -369,8 +358,6 @@ bool ModeBossBattle::Render() {
 	}
 
 
-
-
 	SetUseZBuffer3D(FALSE);
 
 	_effectManeger->Render();
@@ -387,11 +374,5 @@ bool ModeBossBattle::Render() {
 	    	_gaugeUI[0]->Draw(_gaugeHandle[3]);
 	    }
 	}
-
-
-	//for (auto itr = _buildingBase.begin(); itr != _buildingBase.end(); ++itr) {
-	//	(*itr)->DrawDebugInfo();
-	//}
-
 	return true;
 }

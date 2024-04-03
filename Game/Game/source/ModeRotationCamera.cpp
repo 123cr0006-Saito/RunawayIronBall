@@ -21,7 +21,9 @@ bool ModeRotationCamera::Initialize(){
 
 bool ModeRotationCamera::Terminate(){
 	delete _camera; _camera = nullptr;
-	TimeLimit::GetInstance()->Restart();
+	if(TimeLimit::GetInstance() != nullptr){
+	    TimeLimit::GetInstance()->Restart();
+	}
 	return true;
 };
 

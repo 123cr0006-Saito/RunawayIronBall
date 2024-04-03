@@ -189,9 +189,9 @@ void  ModeScenario::ScenarioUniqueProcess(){
 		break;
 	case 2:
 		ModeServer::GetInstance()->Add(NEW ModeBossBattle(), 1, "BossBattle");
-		if (!ModeServer::GetInstance()->Search("ScenarioFade")) {
-			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1500, this,"BossBattle",100), 1000, "ScenarioFade");
-		}
+	/*	if (!ModeServer::GetInstance()->Search("ScenarioFade")) {
+			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1500, this,"BossBattle",100, true), 1000, "ScenarioFade");
+		}*/
 		break;
 	case 3:
 		ModeServer::GetInstance()->Add(NEW ModeMovie(), 10, "Movie");
