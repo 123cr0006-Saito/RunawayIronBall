@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename ClassificationEffect.cpp
+// ＠date: 2024/02/28
+// ＠author: saito ko
+// @explanation
+// FrameDataからのコマンドを受け取り、それに応じたエフェクトやSEを再生するクラス
+//----------------------------------------------------------------------
 #include "ClassificationEffect.h"
 ClassificationEffect* ClassificationEffect::_instance = nullptr;
 ClassificationEffect::ClassificationEffect() {

@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename EffekseerBase.h
+// ＠date: 2024/02/8
+// ＠author: saito ko
+// @explanation
+// エフェクシアを再生するための基本的なクラス
+//----------------------------------------------------------------------
 #pragma once
 #include "EffectBase.h"
 #include "EffekseerForDXLib.h"

@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename EffectManeger.h
+// ＠date: 2024/01/12
+// ＠author: saito ko
+// @explanation
+// 全てのエフェクトを管理するためのクラス
+//----------------------------------------------------------------------
 #pragma once
 #include "EffectBase.h"
 #include "EffekseerForDXLib.h"

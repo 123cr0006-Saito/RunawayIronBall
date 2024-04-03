@@ -1,5 +1,11 @@
+//----------------------------------------------------------------------
+// @filename EffectManeger.cpp
+// ＠date: 2024/01/12
+// ＠author: saito ko
+// @explanation
+// 全てのエフェクトを管理するためのクラス
+//----------------------------------------------------------------------
 #include "EffectManeger.h"
-
 EffectManeger* EffectManeger::_instance = nullptr;
 
 EffectManeger::EffectManeger(){

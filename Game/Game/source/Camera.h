@@ -1,5 +1,11 @@
+//----------------------------------------------------------------------
+// @filename Camera.h
+// ＠date: 2023/12/14
+// ＠author: saito ko
+// @explanation
+// プレイヤーを追従する基本的なカメラ
+//----------------------------------------------------------------------
 #pragma once
-
 #include "CameraBase.h"
 class Camera : public CameraBase
 {

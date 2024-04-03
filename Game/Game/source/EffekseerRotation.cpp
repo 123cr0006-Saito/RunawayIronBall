@@ -1,5 +1,21 @@
+//----------------------------------------------------------------------
+// @filename EffekseerRotation.cpp
+// ＠date: 2024/03/07
+// ＠author: saito ko
+// @explanation
+// 回転攻撃のエフェクトを再生するクラス
+//----------------------------------------------------------------------
 #include "EffekseerRotation.h"
-
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @param handle エフェクシアハンドル
+// @param pos 再生位置
+// @param size エフェクトの拡大率
+// @param rotation エフェクトの回転値
+// @param height エフェクト再生位置から+y方向にずらす高さ
+// @param speed エフェクトの再生速度
+// @param loopFlag ループフラグ
+//----------------------------------------------------------------------
 EffekseerRotation::EffekseerRotation(int handle, VECTOR* pos, float size, VECTOR* rotation,float height, float speed, bool loopFlag) :
 	EffekseerBase(handle, pos, size,height,1.0f,false,false),
 	_pos(pos),

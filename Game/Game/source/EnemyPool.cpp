@@ -1,7 +1,16 @@
+//----------------------------------------------------------------------
+// @filename EnemyPool.cpp
+// ＠date: 2023/12/14
+// ＠author: saito ko
+// @explanation
+// エネミーの生成、管理を行うクラス
+//----------------------------------------------------------------------
 #include "EnemyPool.h"
-
 EnemyPool*  EnemyPool::_instance = nullptr;
-
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @param paramJsonFile パラメータのjsonファイル
+//----------------------------------------------------------------------
 EnemyPool::EnemyPool(std::string paramJsonFile){
 	_instance = this;
 	myJson json(paramJsonFile);

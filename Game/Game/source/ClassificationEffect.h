@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename ClassificationEffect.h
+// ＠date: 2024/02/28
+// ＠author: saito ko
+// @explanation
+// FrameDataからのコマンドを受け取り、それに応じたエフェクトやSEを再生するクラス
+//----------------------------------------------------------------------
 #pragma once
 #include "appframe.h"
 #include "EffekseerBase.h"
@@ -7,7 +14,6 @@
 #include "BoardPolygon.h"
 #include "BoardPolygonDust.h"
 #include "ScreenVibration.h"
-
 #include "Player.h"
 #include "FrameData.h"
 

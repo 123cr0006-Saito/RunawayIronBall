@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename EffekseerRotation.h
+// ＠date: 2024/03/07
+// ＠author: saito ko
+// @explanation
+// 回転攻撃のエフェクトを再生するクラス
+//----------------------------------------------------------------------
 #pragma once
 #include "EffekseerBase.h"
 class EffekseerRotation :  public EffekseerBase

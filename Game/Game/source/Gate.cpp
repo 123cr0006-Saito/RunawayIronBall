@@ -1,9 +1,25 @@
+//----------------------------------------------------------------------
+// @filename Gate.h
+// ＠date: 2024/03/15
+// ＠author: saito ko
+// @explanation
+// プレイヤーが触れればクリアになるオブジェクトクラス
+//----------------------------------------------------------------------
 #include "Gate.h"
-Gate::Gate(VECTOR pos, int r, int* handle, int size, int animsPeed, int handlesize) :
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @param pos 位置
+// @param r 半径
+// @param handle 画像ハンドル
+// @param size 画像ハンドルの最大数
+// @param animSpeed アニメーションの再生速度
+// @param handlesize ビルボードで表示するときの横幅
+//----------------------------------------------------------------------
+Gate::Gate(VECTOR pos, int r, int* handle, int size, int animSpeed, int handlesize) :
 _pos(pos),
 _r(r),
 _size(size),
-_animSpeed(animsPeed),
+_animSpeed(animSpeed),
 _handleSize(handlesize)
 {
 	_handle = NEW int[_size];

@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename CrystarPattern2.cpp
+// ＠date: 2024/01/26
+// ＠author: saito ko
+// @explanation
+// クライスターのパターン2(岩)のクラス 頭突き攻撃をします。
+//----------------------------------------------------------------------
 #include "CrystarPattern2.h"
 
 int CrystarPattern2::_collisionFrame = -1;

@@ -1,5 +1,21 @@
+//----------------------------------------------------------------------
+// @filename EffekseerPosSynchro.h
+// ＠date: 2024/02/8
+// ＠author: saito ko
+// @explanation
+// 位置情報のあるアドレスを受け取り移動するエフェクシアを再生するクラス
+//----------------------------------------------------------------------
 #include "EffekseerPosSynchro.h"
-
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @param name 読み込み時のファイル名
+// @param pos エフェクトの再生位置
+// @param size エフェクトの拡大倍率
+// @param rotation エフェクトの回転
+// @param height エフェクトの位置から+y軸方向にずらす高さ
+// @param speed エフェクトの再生速度
+// @param loopFlag ループするかどうか
+//----------------------------------------------------------------------
 EffekseerPosSynchro::EffekseerPosSynchro(std::string name, VECTOR* pos, float size, VECTOR rotation, float height, float speed, bool loopFlag) :
 	base(name, pos, size, height, speed, loopFlag, false),
 	_pos(pos)
