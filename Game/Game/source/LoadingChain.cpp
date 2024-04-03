@@ -18,6 +18,8 @@ LoadingChain::LoadingChain() {
 	_attackAnimCnt = 0;
 	_length = 0;
 
+	_modelColor = nullptr;
+	_ibDefaultScale = VGet(1,1,1);
 };
 
 LoadingChain::~LoadingChain() {

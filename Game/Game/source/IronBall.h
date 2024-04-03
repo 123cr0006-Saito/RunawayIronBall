@@ -14,7 +14,7 @@ class IronBall : public ObjectBase
 {
 public:
 	IronBall();
-	~IronBall();
+	virtual ~IronBall();
 
 	void Init();
 	void Process();

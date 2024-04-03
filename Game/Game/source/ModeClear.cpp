@@ -143,13 +143,12 @@ bool ModeClear::Process(){
 		chain->Process();
 	}
 
-	if (_IsNextStage && _input->GetTrg(XINPUT_BUTTON_A)) {
-		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000, this), 100, "ClearFade");
+	if (_IsNextStage && _input->GetTrg(XINPUT_BUTTON_A) && !ModeServer::GetInstance()->Search("Fade")) {
+		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000, this), 100, "Fade");
 		if (global.GetStageNum() < 4) {
 			ModeServer::GetInstance()->Add(NEW ModeGame(), 1, "Game");
 		}
 		else {
-			ClearDrawScreen();
 			ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario02.csv", 2), 0, "Scenario");
 			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000, this,"Scenario",50), 100, "Fade");
 		}

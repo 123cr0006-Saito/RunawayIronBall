@@ -14,10 +14,10 @@ bool ModeMovie::Terminate(){
 };
 
 bool ModeMovie::Process(){
-	if (!GetMovieStateToGraph(_movie)) {
+	if (!GetMovieStateToGraph(_movie) && !ModeServer::GetInstance()->Search("Fade")) {
 		ModeServer::GetInstance()->Del(this);
 		ModeServer::GetInstance()->Add(NEW ModeTitle(), 1, "Title");
-		ModeServer::GetInstance()->Add(NEW ModeFade(2000, true), 10, "Title");
+		ModeServer::GetInstance()->Add(NEW ModeFade(2000, true), 10, "Fade");
 	}
 	return true;
 };

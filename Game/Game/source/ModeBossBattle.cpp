@@ -291,17 +291,11 @@ bool ModeBossBattle::Process() {
 
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_START)) {
-		//_enemyPool->Init();
-		//_player->SetDamage();
 		ModeServer::GetInstance()->Add(NEW ModePause(), 10, "Pause");
 	}
 
 
-	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_BACK)) {
-		//_drawDebug = !_drawDebug;
-	}
-
-	if (_player->GetHP() <= 0) {
+	if (_player->GetHP() <= 0 && !ModeServer::GetInstance()->Search("Fade")) {
 		global._soundServer->BgmFadeOut(2000);
 		ModeServer::GetInstance()->Add(NEW ModeGameOver(this), 0, "GameOver");
 		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(2500, this,"GameOver", 50), 100, "Fade");

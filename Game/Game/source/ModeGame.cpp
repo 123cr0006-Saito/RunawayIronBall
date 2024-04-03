@@ -382,7 +382,7 @@ bool ModeGame::GateProcess() {
 		float gR = _gate->GetR();
 
 		// ƒS[ƒ‹ƒQ[ƒg‚Ì“–‚½‚è”»’è
-		if (Collision3D::SphereCol(pPos, pR, gPos, gR)) {
+		if (Collision3D::SphereCol(pPos, pR, gPos, gR) && !ModeServer::GetInstance()->Search("Clear")) {
 			global.AddStageNum();
 			ModeServer::GetInstance()->Del(this);
 			ModeServer::GetInstance()->Add(NEW ModeClear(_timeLimit->GetElapsedTime(),_timeLimit->GetStartTime()),100,"Clear");	

@@ -12,6 +12,7 @@ bool ModeRotationCamera::Initialize(){
 	float distance = 6000;
 	VECTOR targetPos = VGet(0, 2000, 0);
 	_camera = NEW RotationCamera(distance,targetPos);
+	_input = XInput::GetInstance();
 	_currentTime = GetNowCount();
 	int Num = _stageNum;
 	_handle = ResourceServer::LoadGraph("StageHandle" + std::to_string(Num),"res/StageName/Stage" + std::to_string(Num) + ".png");
@@ -34,7 +35,7 @@ bool ModeRotationCamera::Process() {
 	int nowTime = GetNowCount() - _currentTime;
 	if (nowTime > endTime) {
 		bool SearchFade = ModeServer::GetInstance()->Search("Fade");
-		if (!SearchFade) {
+		if (!SearchFade || _input->GetTrg(XINPUT_BUTTON_START)) {
 			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(3000, this), 100, "Fade");
 		}
 	}

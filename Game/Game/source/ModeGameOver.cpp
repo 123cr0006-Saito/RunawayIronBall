@@ -68,7 +68,7 @@ void ModeGameOver::SelectProcess(){
 		global._soundServer->DirectPlay("SE_Select");
 	}
 
-	if (_input->GetTrg(XINPUT_BUTTON_A)&& !ModeServer::GetInstance()->Search("Fade")) {
+	if (_input->GetTrg(XINPUT_BUTTON_A) && !ModeServer::GetInstance()->Search("Fade")) {
 		_selectEnd = true;
 		global._soundServer->DirectPlay("SE_Press");
 		if (_selectItem == 0) {

@@ -4,18 +4,12 @@ BreakObject::BreakObject()
 {
 	_isActive = false;
 	_finishedBreakAll = false;
-	
 
 	_modelHandle = -1;
-	//MV1SetPosition(_modelHandle, _pos);
-	//MV1SetScale(_modelHandle, VGet(10.0f, 10.0f, 10.0f));
-
-	//_breakFrameIndex = 35;
 
 	_breakCnt = 0;
 
 	_blastDir = VGet(0.0f, 0.0f, -1.0f);
-
 
 	_isDrawLocus = false;
 }

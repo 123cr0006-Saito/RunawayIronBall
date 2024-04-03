@@ -12,6 +12,7 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 protected:
+	XInput* _input;
 	int _handle;
 	int _stageNum;
 	RotationCamera* _camera;

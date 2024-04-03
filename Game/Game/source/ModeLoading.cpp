@@ -25,7 +25,7 @@ bool ModeLoading::Process(){
 	ModeServer::GetInstance()->PauseProcessUnderLayer();
 	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
-	if (GetASyncLoadNum() <= 0 && !ModeServer::GetInstance()->IsAboutLayer(this)) {
+	if (GetASyncLoadNum() <= 0 && !ModeServer::GetInstance()->Search("Fade")) {
 		ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario01.csv",	1), 50, "Scenario");
 		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000,this),1000,"Fade");
 	}
