@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename ModeClear.h
+// ＠date: 2024/03/16
+// ＠author: saito ko
+// @explanation
+// クリア時にリザルトと次のステージへの遷移を管理するクラス
+//----------------------------------------------------------------------
 #include "appframe.h"
 #include "AnimationChain.h"
 #include "ModeGame.h"

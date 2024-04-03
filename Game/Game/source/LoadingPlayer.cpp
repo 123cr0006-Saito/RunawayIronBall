@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename LoadingPlayer.cpp
+// ＠date: 2024/03/03
+// ＠author: saito ko
+// @explanation
+// loading時のキャラクターのを制御・描画を行うクラス
+//----------------------------------------------------------------------
 #include "LoadingPlayer.h"
 LoadingPlayer::LoadingPlayer(){
 

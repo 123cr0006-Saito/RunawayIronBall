@@ -1,8 +1,19 @@
+//----------------------------------------------------------------------
+// @filename ModeClear.cpp
+// ＠date: 2024/03/16
+// ＠author: saito ko
+// @explanation
+// クリア時にリザルトと次のステージへの遷移を管理するクラス
+//----------------------------------------------------------------------
 #include "AppFrame.h"
 #include "ModeClear.h"
 #include "ModeScenario.h"
 #include "ModeFadeComeBack.h"
-
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @param elapsedTime 経過時間
+// @param startTime 開始時間
+//----------------------------------------------------------------------
 ModeClear::ModeClear(int elapsedTime, int startTime) {
 	_input = nullptr;
 	_model = 0;

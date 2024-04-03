@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename ModeLoading.cpp
+// ＠date: 2024/03/06
+// ＠author: saito ko
+// @explanation
+// loading時のキャラクターや鉄球などの処理・描画を行うクラス
+//----------------------------------------------------------------------
 #include "ModeLoading.h"
 #include "ModeScenario.h"
 bool ModeLoading::Initialize(){

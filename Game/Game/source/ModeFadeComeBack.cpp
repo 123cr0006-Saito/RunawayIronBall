@@ -1,5 +1,20 @@
+//----------------------------------------------------------------------
+// @filename ModeFadeComeBack.cpp
+// ＠date: 2024/03/02
+// ＠author: saito ko
+// @explanation
+// ステージ遷移時にフェードイン、フェードアウトを行うためのクラス
+// ModeFadeと違う点は常にフェードインしてからフェードアウトし、
+// 指定のモードを削除しながら遷移する
+//----------------------------------------------------------------------
 #include "ModeFadeComeBack.h"
-
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @param Time フェード時間
+// @param modeName レイヤーを変更するモード名
+// @param layer 指定したモードのレイヤーをこの値に変更
+// @param IsProcessSkip フェード時プロセスをスキップするかどうか
+//----------------------------------------------------------------------
 ModeFadeComeBack::ModeFadeComeBack(int Time, std::string modeName, int layer, bool IsProcessSkip) :ModeFade(Time, false) {
 	_fadeEnd = 255;
 	_fadeStart = 0;
@@ -8,7 +23,12 @@ ModeFadeComeBack::ModeFadeComeBack(int Time, std::string modeName, int layer, bo
 	_changeModeName = modeName;
 	_IsProcessSkip = IsProcessSkip;
 };
-
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @param Time フェード時間
+// @param mode 削除するモード名
+// @param IsProcessSkip フェード時プロセスをスキップするかどうか
+//----------------------------------------------------------------------
 ModeFadeComeBack::ModeFadeComeBack(int Time, ModeBase* mode, bool IsProcessSkip) :ModeFade(Time,false){
 	_fadeEnd = 255;
     _fadeStart = 0;
@@ -17,7 +37,14 @@ ModeFadeComeBack::ModeFadeComeBack(int Time, ModeBase* mode, bool IsProcessSkip)
 	_changeModeName = "";
 	_IsProcessSkip = IsProcessSkip;
 };
-
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @param Time フェード時間
+// @param mode 削除するモード名
+// // @param modeName レイヤーを変更するモード名
+// @param layer 指定したモードのレイヤーをこの値に変更
+// @param IsProcessSkip フェード時プロセスをスキップするかどうか
+//----------------------------------------------------------------------
 ModeFadeComeBack::ModeFadeComeBack(int Time, ModeBase* mode, std::string modeName, int layer, bool IsProcessSkip) :ModeFade(Time, false) {
 	_fadeEnd = 255;
 	_fadeStart = 0;

@@ -297,7 +297,7 @@ bool ModeBossBattle::Process() {
 
 	if (_player->GetHP() <= 0 && !ModeServer::GetInstance()->Search("Fade")) {
 		global._soundServer->BgmFadeOut(2000);
-		ModeServer::GetInstance()->Add(NEW ModeGameOver(this), 0, "GameOver");
+		ModeServer::GetInstance()->Add(NEW ModeGameOver(), 0, "GameOver");
 		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(2500, this,"GameOver", 50), 100, "Fade");
 	}
 

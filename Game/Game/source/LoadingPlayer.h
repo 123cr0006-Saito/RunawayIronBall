@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename LoadingPlayer.h
+// ＠date: 2024/03/03
+// ＠author: saito ko
+// @explanation
+// loading時のキャラクターのを制御・描画を行うクラス
+//----------------------------------------------------------------------
 #pragma once
 #include "dxlib.h"
 #include "CharacterBase.h"

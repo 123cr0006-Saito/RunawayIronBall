@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename LoadingChain.cpp
+// ＠date: 2024/03/03
+// ＠author: saito ko
+// @explanation
+// loading時の鎖を制御・描画を行うクラス
+//----------------------------------------------------------------------
 #include "LoadingChain.h"
 LoadingChain::LoadingChain() {
 	_cModelHandle = -1;

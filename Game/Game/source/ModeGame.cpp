@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename ModeGame.cpp
+// ＠date: 2023/12/14
+// ＠author: saito ko
+// @explanation
+// ボスバトル以外のステージを管理するクラス
+//----------------------------------------------------------------------
 #include "ModeGame.h"
 #include "ModeClear.h"
 #include "ModePause.h"
@@ -334,7 +341,7 @@ bool ModeGame::Process() {
 		global._soundServer->BgmFadeOut(2000);
 		_gameOverCnt++;	
 		if (!transitionGameOver && _gameOverCnt > 160) {
-			ModeServer::GetInstance()->Add(NEW ModeGameOver(this), 0, "GameOver");
+			ModeServer::GetInstance()->Add(NEW ModeGameOver(), 0, "GameOver");
 			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(2000,this, "GameOver", 50), 100, "Fade");
 			transitionGameOver = true;
 		}
