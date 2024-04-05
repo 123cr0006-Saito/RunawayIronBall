@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename UIExpPoint.cpp
+// ＠date: 2024/12/25
+// ＠author: saito ko
+// @explanation
+// 経験値のUIを表示するクラス
+//----------------------------------------------------------------------
 #include "UIExpPoint.h"
 
 const unsigned short UIExpPoint::vertex[6]{ 0,1,2,2,1,3 };

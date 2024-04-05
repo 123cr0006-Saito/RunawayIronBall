@@ -306,7 +306,7 @@ bool ModeGame::Process() {
 	_enemyPool->Process(enabledIBAttackCollision);
 	_timeLimit->Process();
 	_fog->Process(global.GetStageNum());
-
+	_classificationEffect->Process();
 	// プレイヤーがステージ範囲外に出たら戻す
 	VECTOR playerPos = _player->GetPosition();
 	float stageWidth[3] = {STAGE_ONE_WIDTH,STAGE_TWO_WIDTH,STAGE_THREE_WIDTH};

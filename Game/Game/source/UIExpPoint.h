@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename UIExpPoint.cpp
+// ＠date: 2024/12/25
+// ＠author: saito ko
+// @explanation
+// 経験値のUIを表示するクラス
+//----------------------------------------------------------------------
 #pragma once
 #include "../AppFrame/source/System/Header/Resource/ResourceServer.h"
 #include "UIBase.h"

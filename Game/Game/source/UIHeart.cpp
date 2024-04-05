@@ -1,5 +1,11 @@
+//----------------------------------------------------------------------
+// @filename UIHeart.cpp
+// ＠date: 2023/12/25
+// ＠author: saito ko
+// @explanation
+// プレイヤーHPのUIを表示するクラス
+//----------------------------------------------------------------------
 #include "UIHeart.h"
-
 const int UIHeart::_damageSeconds = 3000;
 
 UIHeart::UIHeart(VECTOR pos, std::string handleName) : UIBase::UIBase(pos, handleName)

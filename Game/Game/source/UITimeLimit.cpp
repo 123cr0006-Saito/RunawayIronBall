@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename UITimeLimit.cpp
+// ＠date: 2024/03/11
+// ＠author: saito ko
+// @explanation
+// 残り時間を表示するUIクラス
+//----------------------------------------------------------------------
 #include "UITimeLimit.h"
 UITimeLimit::UITimeLimit(VECTOR pos,VECTOR numPos, int size, int* numhandle, int colonHandle,int frameHandle) : UIBase(pos, size, numhandle){
 	_timeLimit = TimeLimit::GetInstance();

@@ -1,5 +1,17 @@
+//----------------------------------------------------------------------
+// @filename ModeTutorial.cpp
+// ＠date: 2024/03/17
+// ＠author: saito ko
+// @explanation
+// ステージの最初にチュートリアル画面を表示するクラス
+//----------------------------------------------------------------------
 #include "ModeTutorial.h"
 #include "TimeLimit.h"
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @param handle チュートリアル画像のハンドル
+// @param size チュートリアル画像の数
+//----------------------------------------------------------------------
 ModeTutorial::ModeTutorial(int* handle, int size){
 	_pageSize = size;
 	_handle = NEW int[_pageSize];

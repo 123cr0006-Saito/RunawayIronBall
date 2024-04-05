@@ -1,12 +1,15 @@
+//----------------------------------------------------------------------
+// @filename SlaBlockPattern2.cpp
+// ＠date: 2024/01/26
+// ＠author: saito ko
+// @explanation
+// スラブロックの攻撃パターン2(ガラス,鉄)のクラス 1度だけプレイヤーの真上から落下攻撃を行います
+//----------------------------------------------------------------------
 #include "SlaBlockPattern2.h"
 
 int SlaBlockPattern2::_collisionFrame = -1;
 
-SlaBlockPattern2::SlaBlockPattern2() :EnemyBase::EnemyBase()
-{
-	//デバック時登録
-	//_model = ResourceServer::MV1LoadModel("res/katatumuri/snail.mv1");
-};
+SlaBlockPattern2::SlaBlockPattern2() :EnemyBase::EnemyBase(){};
 
 SlaBlockPattern2::~SlaBlockPattern2() {
 	delete _animManager;

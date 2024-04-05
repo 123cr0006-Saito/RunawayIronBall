@@ -100,6 +100,8 @@ bool ModeBossBattle::Process() {
 
 	_bossHp->Process(_boss->GetStakeHp(), _boss->GetStakeMaxHp());
 
+	_classificationEffect->Process();
+
 	// Y‚ª”j‰ó‚³‚ê‚Ä‚¢‚È‚¢ê‡‚É”»’è‚ðs‚¤
 	if (_boss->GetIsStakeBroken() == false) {
 		Capsule pCol = _player->GetCollision();

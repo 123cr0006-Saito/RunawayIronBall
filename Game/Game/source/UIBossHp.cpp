@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename UIBossHp.cpp
+// ＠date: 2024/03/21
+// ＠author: saito ko
+// @explanation
+// ボスのHPを表示するUIクラス
+//----------------------------------------------------------------------
 #include "UIBossHp.h"
 
 const unsigned short UIBossHp::vertex[6]{ 0,1,2,2,1,3 };

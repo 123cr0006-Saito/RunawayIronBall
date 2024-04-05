@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename ModePause.cpp
+// ＠date: 2023/12/25
+// ＠author: saito ko
+// @explanation
+// 音量設定や振動設定、操作説明画面、ゲーム終了を選択するポーズ画面のクラス
+//----------------------------------------------------------------------
 #include "ModePause.h"
 
 const unsigned short ModePause::vertex[6]{ 0,1,2,2,1,3 };
@@ -89,7 +96,7 @@ void ModePause::SelectSetVolum(int& setVolum) {
 
 void ModePause::SelectSetVibration() {
 	if (_input->GetTrg(XINPUT_BUTTON_A)) {
-		_isVibration = 1 - _isVibration;
+		global.SetVibration();
 		global._soundServer->DirectPlay("SE_Press");
 	}
 };
@@ -201,7 +208,7 @@ bool ModePause::Render() {
 
 	DrawGraph(0, 0, _handleMap["back"], true);
 	DrawGraph(800, 550, _handleMap["checkBox"], true);
-	if (_isVibration)  DrawGraph(800, 550, _handleMap["check"], true);
+	if (global.GetVibration())  DrawGraph(800, 550, _handleMap["check"], true);
 
 	int length[] = { _seVolum,_bgmVolum };
 	GetGraphSizeF(_handleMap["volumBar"], &handleX, &handleY);

@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename ModeScenario.h
+// ＠date: 2024/02/20
+// ＠author: saito ko
+// @explanation
+// シナリオを再生するクラス
+//----------------------------------------------------------------------
 #pragma once
 #include "appframe.h"
 class ModeScenario : public ModeBase

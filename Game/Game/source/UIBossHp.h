@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename UIBossHp.h
+// ＠date: 2024/03/21
+// ＠author: saito ko
+// @explanation
+// ボスのHPを表示するUIクラス
+//----------------------------------------------------------------------
 #pragma once
 #include "UIBase.h"
 #include "../AppFrame/source/System/Header/Resource/ResourceServer.h"

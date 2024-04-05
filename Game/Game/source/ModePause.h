@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename ModePause.h
+// ＠date: 2023/12/25
+// ＠author: saito ko
+// @explanation
+// 音量設定や振動設定、操作説明画面、ゲーム終了を選択するポーズ画面のクラス
+//----------------------------------------------------------------------
 #pragma once
 #include "appframe.h"
 #include "ModeInstructions.h"
@@ -30,7 +37,6 @@ protected:
 	//多分グローバルで作るか、それぞれのクラスを直接オプションでいじるか
 	int _bgmVolum;
 	int _seVolum;
-	bool _isVibration;
 	static const int MAX_MODE = 5;
 
 	VERTEX2D _seGauge[4];

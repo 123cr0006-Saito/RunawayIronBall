@@ -45,9 +45,13 @@ ClassificationEffect::~ClassificationEffect() {
 	delete _sVib; _sVib = nullptr;
 };
 
+void ClassificationEffect::Process(){
+	_sVib->UpdateScreenVibration();
+};
+
 void ClassificationEffect::SetClassification(CommandParam param) {
 	if (param.first == Play_Vibration) {
-		vib->SetVibrationController(param.second,1000);
+		if(global.GetVibration()) vib->SetVibrationController(param.second,1000);
 	}
 	else if (param.first == Play_SE) {
 		// SE

@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename UISuppressionGauge.cpp
+// ＠date: 2024/02/26
+// ＠author: saito ko
+// @explanation
+// 制圧ゲージを表示するクラス
+//----------------------------------------------------------------------
 #include "UISuppressionGauge.h"
 
 const unsigned short UISuppressionGauge::vertex[6]{ 0,1,2,2,1,3 };

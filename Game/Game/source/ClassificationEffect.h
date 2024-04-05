@@ -34,6 +34,7 @@ class ClassificationEffect
 public:
 	ClassificationEffect();
 	~ClassificationEffect();
+	void Process();
 	void SetClassification(CommandParam param);
 	void CreateEffeckseer(float handle, VECTOR* pos,  float height = 0.0f, VECTOR rotation = VGet(0, 0, 0));
 	static ClassificationEffect* _instance;

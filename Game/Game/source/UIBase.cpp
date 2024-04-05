@@ -1,5 +1,11 @@
+//----------------------------------------------------------------------
+// @filename UIBase.cpp
+// —date: 2023/12/19
+// —author: saito ko
+// @explanation
+// UI‚ÌŠî’êƒNƒ‰ƒX
+//----------------------------------------------------------------------
 #include "UIBase.h"
-
 UIBase::UIBase(VECTOR pos) {
 	_pos = pos;
 	_handleNum = 0;

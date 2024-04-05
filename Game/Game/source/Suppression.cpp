@@ -1,5 +1,11 @@
+//----------------------------------------------------------------------
+// @filename Suppression.cpp
+// ＠date: 2024/02/26
+// ＠author: saito ko
+// @explanation
+// 敵や建物を破壊した時に減少していく制圧ゲージを管理するクラス
+//----------------------------------------------------------------------
 #include "Suppression.h"
-
 Suppression* Suppression::_instance = nullptr;
 
 Suppression::Suppression(){

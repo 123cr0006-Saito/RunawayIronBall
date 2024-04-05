@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename ModeRotationCamera.cpp
+// ＠date: 2024/03/09
+// ＠author: saito ko
+// @explanation
+// ステージ開始時のカメラの回転処理を行うクラス
+//----------------------------------------------------------------------
 #pragma once
 #include "appframe.h"
 #include "RotationCamera.h"
