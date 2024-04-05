@@ -18,5 +18,5 @@ public:
 	bool Process()override;
 	bool Render()override;
 protected:
-	VERTEX3D polygon[4];
+	VERTEX3D _vertex[4];// ”Âƒ|ƒŠ‚Ì’¸“_î•ñ
 };

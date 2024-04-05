@@ -13,6 +13,7 @@
 // @param length: ポリゴンを表示するときのy軸の長さ
 // @param handle: 画像ハンドル
 // @param animCountMax: アニメーションの流したい時間
+// @return なし
 //----------------------------------------------------------------------
 Afterglow::Afterglow(int model,int frameNum,float length,int handle,int animCountMax){
 	// 初期化
@@ -28,12 +29,18 @@ Afterglow::Afterglow(int model,int frameNum,float length,int handle,int animCoun
 
 	_subColor = static_cast<int>(255 / animCountMax);
 };
-
+//----------------------------------------------------------------------
+// @brief デストラクタ
+// @return なし
+//----------------------------------------------------------------------
 Afterglow::~Afterglow(){
 	_vertex.clear();
 	_vertexIndex.clear();
 };
-
+//----------------------------------------------------------------------
+// @brief 頂点を追加し位置とuv値を設定する
+// @return なし
+//----------------------------------------------------------------------
 void Afterglow::SetVertex(){
 	// コンテナの最初に値を追加する関数
 	auto vertex_push_front = [&](VERTEX3D index){
@@ -98,7 +105,10 @@ void Afterglow::SetVertex(){
 	// 位置を保存
 	_oldPos = pos;
 };
-
+//----------------------------------------------------------------------
+// @brief 頂点を更新しアニメーションを行う
+// @return なし
+//----------------------------------------------------------------------
 void Afterglow::Process(){
 	// u値を更新
 	for(auto&& vertex : _vertex){
@@ -136,7 +146,10 @@ void Afterglow::Process(){
 	}
 
 };
-
+//----------------------------------------------------------------------
+// @brief ポリゴンを描画する
+// @return なし
+//----------------------------------------------------------------------
 void Afterglow::Render(){
 	if(_vertex.size() >= 4){
 		// ライティングとバックカリングを無効にして描画

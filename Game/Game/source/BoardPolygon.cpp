@@ -14,6 +14,7 @@
 // @param handle: 画像ハンドル
 // @param handleMax: アニメーションの切り替え数
 // @param speed: アニメーションスピード
+// @return なし
 //----------------------------------------------------------------------
 BoardPolygon::BoardPolygon(VECTOR pos, VECTOR dir, int sizeX, int* handle, int handleMax, int speed)
 	: PlaneEffectBase(pos, sizeX, handle, handleMax, speed) {
@@ -37,15 +38,15 @@ BoardPolygon::BoardPolygon(VECTOR pos, VECTOR dir, int sizeX, int* handle, int h
 	};
 	//初期化
 	for (int i = 0; i < 4; i++) {
-		polygon[i].pos = VecSize[i];
+		_vertex[i].pos = VecSize[i];
 		//向かっている方向の逆なので*-1
-		polygon[i].norm = VScale(dir, -1);
-		polygon[i].dif = GetColorU8(255, 255, 255, 255);
-		polygon[i].spc = GetColorU8(0, 0, 0, 0);
-		polygon[i].u = uvList[i][0];
-		polygon[i].v = uvList[i][1];
-		polygon[i].su = 0.0f;
-		polygon[i].sv = 0.0f;
+		_vertex[i].norm = VScale(dir, -1);
+		_vertex[i].dif = GetColorU8(255, 255, 255, 255);
+		_vertex[i].spc = GetColorU8(0, 0, 0, 0);
+		_vertex[i].u = uvList[i][0];
+		_vertex[i].v = uvList[i][1];
+		_vertex[i].su = 0.0f;
+		_vertex[i].sv = 0.0f;
 	}
 
 };
@@ -57,10 +58,12 @@ BoardPolygon::BoardPolygon(VECTOR pos, VECTOR dir, int sizeX, int* handle, int h
 // @param handle: 画像ハンドル
 // @param handleMax: アニメーションの切り替え数
 // @param speed: アニメーションスピード
+// @return なし
 //----------------------------------------------------------------------
 BoardPolygon::BoardPolygon(VECTOR pos, MATRIX matrix, int sizeX, int* handle, int handleMax, int speed)
 	:PlaneEffectBase(pos, sizeX, handle, handleMax, speed) {
 
+	// 頂点の座標を求める
 	VECTOR VecSize[4] = {
 	VAdd(pos,VTransform(VGet(-sizeX / 2, _sizeY / 2,0), matrix)),
 	VAdd(pos,VTransform(VGet(sizeX / 2,  _sizeY / 2,0), matrix)),
@@ -75,34 +78,43 @@ BoardPolygon::BoardPolygon(VECTOR pos, MATRIX matrix, int sizeX, int* handle, in
 		{1.0f,1.0f}
 	};
 
-	//マトリックスからフォワードベクトルを取り出す
+	//行列からフォワードベクトルを取り出す
 	VECTOR norm = Math::MatrixToVector(matrix, 2);
 	//初期化
 	for (int i = 0; i < 4; i++) {
-		polygon[i].pos = VecSize[i];
-		polygon[i].norm = norm;
-		polygon[i].dif = GetColorU8(255, 255, 255, 255);
-		polygon[i].spc = GetColorU8(0, 0, 0, 0);
-		polygon[i].u = uvList[i][0];
-		polygon[i].v = uvList[i][1];
-		polygon[i].su = 0.0f;
-		polygon[i].sv = 0.0f;
+		_vertex[i].pos = VecSize[i];
+		_vertex[i].norm = norm;
+		_vertex[i].dif = GetColorU8(255, 255, 255, 255);
+		_vertex[i].spc = GetColorU8(0, 0, 0, 0);
+		_vertex[i].u = uvList[i][0];
+		_vertex[i].v = uvList[i][1];
+		_vertex[i].su = 0.0f;
+		_vertex[i].sv = 0.0f;
 	}
 
 };
-
+//----------------------------------------------------------------------
+// @brief デストラクタ
+// @return なし
+//----------------------------------------------------------------------
 BoardPolygon::~BoardPolygon() {
 	PlaneEffectBase::~PlaneEffectBase();
 };
-
+//----------------------------------------------------------------------
+// @brief メイン処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool BoardPolygon::Process() {
 	PlaneEffectBase::Process();
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 描画
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool BoardPolygon::Render() {
 	if (_IsPlay) {
-		DrawPolygonIndexed3D(polygon, 4, vertexOrder, 2, _handle[_animCount], true);
+		DrawPolygonIndexed3D(_vertex, 4, vertexOrder, 2, _handle[_animCount], true);
 	}
 	return true;
 };

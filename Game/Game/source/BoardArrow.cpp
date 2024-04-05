@@ -11,6 +11,7 @@ const unsigned short ::BoardArrow::vertexList[6] = { 0,1,2,2,1,3 };
 // @brief コンストラクタ
 // @param name: ファイル名
 // @param length: 矢印の長さ
+// @return なし
 //----------------------------------------------------------------------
 BoardArrow::BoardArrow(std::string name,float length):
 	_handle(ResourceServer::LoadGraph("Arrow", name.c_str()))
@@ -42,11 +43,19 @@ BoardArrow::BoardArrow(std::string name,float length):
 		vertex[i].sv = 0.0f;
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief デストラクタ
+// @return なし
+//----------------------------------------------------------------------
 BoardArrow::~BoardArrow() {
 
 };
-
+//----------------------------------------------------------------------
+// @brief 更新処理
+// @param pos: 座標
+// @param dirY: y軸の回転角度
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool BoardArrow::Update(VECTOR pos, float dirY) {
 	// y軸行列を使用し回転させる
 	MATRIX matrix = MGetRotY(dirY);
@@ -55,7 +64,12 @@ bool BoardArrow::Update(VECTOR pos, float dirY) {
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 更新処理
+// @param pos: 座標
+// @param dirVec: 方向ベクトル
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool BoardArrow::Update(VECTOR pos, VECTOR dirVec) {
 	// 方向ベクトルから角度を出し、y軸行列で回転させる
 	float dirY = atan2(dirVec.x, dirVec.z);
@@ -65,7 +79,10 @@ bool BoardArrow::Update(VECTOR pos, VECTOR dirVec) {
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 描画処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool BoardArrow::Render() {
 	DrawPolygonIndexed3D(vertex, VERTEX_MAX, vertexList,  2, _handle, true);
 	return true;

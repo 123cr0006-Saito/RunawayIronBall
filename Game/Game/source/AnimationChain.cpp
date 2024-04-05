@@ -10,6 +10,7 @@
 // @brief コンストラクタ
 // @param pos: 鎖の終点の座標
 // @param angle: 鎖の角度
+// @return なし
 //----------------------------------------------------------------------
 AnimationChain::AnimationChain(VECTOR pos,float angle){
 	// 初期化
@@ -26,11 +27,16 @@ AnimationChain::AnimationChain(VECTOR pos,float angle){
 	_nowX = _startX;
 	_nowY = _startY;
 };
-
+//----------------------------------------------------------------------
+// @brief デストラクタ
+// @return なし
+//----------------------------------------------------------------------
 AnimationChain::~AnimationChain(){
-
 };
-
+//----------------------------------------------------------------------
+// @brief メイン処理
+// @return なし
+//----------------------------------------------------------------------
 void AnimationChain::Process(){
 	// フレームカウントが最大値に達するまで、座標を更新
 	if (_frameCount < _maxCount) {
@@ -39,7 +45,10 @@ void AnimationChain::Process(){
 		_frameCount++;
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief 終了処理
+// @return なし
+//----------------------------------------------------------------------
 void AnimationChain::Draw(){
 	// 画像の描画 鎖の画像が大きかったため 0.8倍に修正
 	DrawRotaGraph(_nowX, _nowY, 0.8f, _angle, _handle, true);

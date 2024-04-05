@@ -10,6 +10,7 @@
 //----------------------------------------------------------------------
 // @brief コンストラクタ
 // @param InitPos: カメラの初期地点
+// @return なし
 //----------------------------------------------------------------------
 Camera::Camera(VECTOR InitPos) : CameraBase() {
 
@@ -56,11 +57,19 @@ Camera::Camera(VECTOR InitPos) : CameraBase() {
 
 	SetCameraPositionAndTarget_UpVecY(VecAdd, target);
 };
-
+//----------------------------------------------------------------------
+// @brief デストラク
+// @return なし
+//----------------------------------------------------------------------
 Camera::~Camera() {
 	_input = nullptr;
 };
-
+//----------------------------------------------------------------------
+// @brief カメラの処理
+// @param pos: プレイヤーの位置
+// @param map: マップのハンドル
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool Camera::Process(VECTOR pos, int map) {
 	// 前フレームのX軸回転の値を保存
 	float oldDirX = _cameraDirX;
@@ -150,7 +159,10 @@ bool Camera::Process(VECTOR pos, int map) {
 	SetCameraPositionAndTarget_UpVecY(VecAdd, target);
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief カメラの距離を変更する
+// @return なし
+//----------------------------------------------------------------------
 void Camera::SetCameraDistance() {
 	_cameraDistanceCount++;
 	_cameraDistanceCount = (_cameraDistanceCount + CAMERA_ZOOM_MAX) % CAMERA_ZOOM_MAX;
@@ -160,7 +172,10 @@ void Camera::SetCameraDistance() {
 	_IsZoom = true;
 	_currentTime = GetNowCount();
 };
-
+//----------------------------------------------------------------------
+// @brief ズームの処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool Camera::ZoomProcess() {
 	if (_IsZoom) {
 		float moveTime = 5.0f ;// 5フレームで移動
@@ -174,7 +189,10 @@ bool Camera::ZoomProcess() {
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief カメラの向きをスティックの方向に変更する
+// @return なし
+//----------------------------------------------------------------------
 void Camera::SetForwardCamera() {
 	VECTOR dir = VGet(_stick.x, 0, _stick.y);
 	if (!_IsForwardCamera && VSquareSize(dir) != 0) {
@@ -186,7 +204,10 @@ void Camera::SetForwardCamera() {
 		_endDirY = atan2(dir.x, dir.z);
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief カメラの向きをスティックの方向に変更する
+// @return なし
+//----------------------------------------------------------------------
 void Camera::MoveProcess(){
 	if (_IsForwardCamera) {
 		float moveTime = 5.0f;// 5フレームで移動

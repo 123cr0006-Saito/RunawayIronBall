@@ -40,8 +40,8 @@ public:
 	static ClassificationEffect* _instance;
 	static ClassificationEffect* GetInstance () { return _instance; }
 protected:
-	Vibration* vib;
-	ScreenVibration* _sVib;
-	std::map<int, std::pair<std::string,int> > _commandList;
+	Vibration* vib;// コントローラー振動
+	ScreenVibration* _sVib;// 画面振動
+	std::map<int, std::pair<std::string,int> > _commandList;// コマンドと対応するパラメータ
 };
 
