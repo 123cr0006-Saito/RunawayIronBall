@@ -18,7 +18,7 @@ public :
 	bool Process()override;
 	bool Render()override;
 private :
-	VECTOR* _pos;
-	int _currentTime;
+	VECTOR* _pos;//座標のアドレス
+	int _currentTime;//再生時間
 };
 

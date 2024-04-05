@@ -16,9 +16,9 @@ public:
 	bool Update();
 	bool Render();
 protected:
-	int _model;
-	int _frame;
-	int _parent;
-	std::string _joint;
+	int _model;//モデルハンドル
+	int _frame;//フレームの番号
+	int _parent;//親のモデルハンドル
+	std::string _joint;//親のモデルのどのジョイントにくっつけるか
 };
 

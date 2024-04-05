@@ -16,6 +16,6 @@ public :
 	virtual bool Render();
 	bool GetFlag() { return _IsPlay; }
 protected : 		
-	bool _IsPlay;
+	bool _IsPlay;// Ä¶‚µ‚Ä‚¢‚é‚©‚Ç‚¤‚©
 };
 

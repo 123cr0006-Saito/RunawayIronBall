@@ -6,6 +6,10 @@
 // loading時の鎖を制御・描画を行うクラス
 //----------------------------------------------------------------------
 #include "LoadingChain.h"
+//----------------------------------------------------------------------
+// @brief: コンストラクタ
+// @return: 無し
+//----------------------------------------------------------------------
 LoadingChain::LoadingChain() {
 	_cModelHandle = -1;
 	_iModelHandle = -1;
@@ -28,13 +32,19 @@ LoadingChain::LoadingChain() {
 	_modelColor = nullptr;
 	_ibDefaultScale = VGet(1,1,1);
 };
-
+//----------------------------------------------------------------------
+// @brief: デストラクタ
+// @return: 無し
+//----------------------------------------------------------------------
 LoadingChain::~LoadingChain() {
 	delete _modelColor; _modelColor = nullptr;
 	MV1DeleteModel(_cModelHandle);
 	MV1DeleteModel(_iModelHandle);
 };
-
+//----------------------------------------------------------------------
+// @brief: 初期化
+// @return: 無し
+//----------------------------------------------------------------------
 void LoadingChain::Init(){
 	_cModelHandle = ResourceServer::MV1LoadModel("LoadingChain","res/Character/Loading/Cg_Chain.mv1");
 	_cPos[0] = VGet(0.0f, 0.0f, 0.0f);
@@ -74,7 +84,10 @@ void LoadingChain::Init(){
 	_modelColor->Init(_cModelHandle);
 	_modelColor->ChangeFlickerTexture(true);
 };
-
+//----------------------------------------------------------------------
+// @brief: 鎖の移動
+// @return: 無し
+//----------------------------------------------------------------------
 void LoadingChain::Process(){
 	// 鎖の初めの位置
 	MATRIX m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, _socketNo[0]);
@@ -105,11 +118,6 @@ void LoadingChain::Process(){
 		float offsetY = (difference * vDelta.y / distance) * 0.9f;
 		float offsetZ = (difference * vDelta.z / distance) * 0.9f;
 
-		//if (i != 0) {
-		//	_cPos[i].x -= offsetX;
-		//	_cPos[i].y -= offsetY;
-		//	_cPos[i].z -= offsetZ;
-		//}
 		float mul = 1.0f;
 		if (i == 0) mul = 2.0f;
 		_cPos[i + 1].x += offsetX * mul;
@@ -130,7 +138,10 @@ void LoadingChain::Process(){
 	// アニメーションプロセス
 	AnimProcess();
 };
-
+//----------------------------------------------------------------------
+// @brief: アニメーションの処理
+// @return: 無し
+//----------------------------------------------------------------------
 void LoadingChain::AnimProcess(){
 	MV1SetAttachAnimTime(_iModelHandle, _animIndex, _playTime);
 
@@ -139,7 +150,10 @@ void LoadingChain::AnimProcess(){
 		_playTime = 0.0f;
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief: プレイヤーモデルのハンドルをセット
+// @param: handle : プレイヤーモデルのハンドル
+// @return: 無し
 void LoadingChain::SetPlayerModelHandle(int handle) {
 	_playerModelHandle = handle;
 
@@ -147,7 +161,10 @@ void LoadingChain::SetPlayerModelHandle(int handle) {
 	_socketNo[1] = MV1SearchFrame(_playerModelHandle, "chain2");
 	_socketNo[2] = MV1SearchFrame(_playerModelHandle, "chain3");
 };
-
+//----------------------------------------------------------------------
+// @brief: 描画処理
+// @return: 無し
+//----------------------------------------------------------------------
 void LoadingChain::Render() {
 	// 鎖の描画
 	for (int i = 0; i < Chain_Num; i++) {

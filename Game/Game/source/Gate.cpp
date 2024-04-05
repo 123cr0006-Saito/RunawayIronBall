@@ -14,6 +14,7 @@
 // @param size 画像ハンドルの最大数
 // @param animSpeed アニメーションの再生速度
 // @param handlesize ビルボードで表示するときの横幅
+// ＠return 無し
 //----------------------------------------------------------------------
 Gate::Gate(VECTOR pos, int r, int* handle, int size, int animSpeed, int handlesize) :
 _pos(pos),
@@ -30,11 +31,17 @@ _handleSize(handlesize)
 	_currentTime = GetNowCount();
 	_animCount = 0;
 };
-
+//----------------------------------------------------------------------
+// @brief デストラクタ
+// ＠return 無し
+//----------------------------------------------------------------------
 Gate::~Gate() {
 	delete[] _handle; _handle = nullptr;
 };
-
+//----------------------------------------------------------------------
+// @brief 更新処理
+// ＠return 無し
+//----------------------------------------------------------------------
 void Gate::Process(){
 	if (GetNowCount() - _currentTime >= _animSpeed) {
 		_currentTime = GetNowCount();
@@ -44,7 +51,10 @@ void Gate::Process(){
 		}
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief 描画処理
+// ＠return 無し
+//----------------------------------------------------------------------
 void Gate::Draw() {
 	DrawBillboard3D(_pos, 0.5f, 0.5f, _handleSize, 0.0f, _handle[_animCount], true);
 };

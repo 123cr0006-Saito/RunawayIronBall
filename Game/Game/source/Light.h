@@ -14,6 +14,6 @@ public :
 	~Light();
 	bool LoadLightColor(std::string fileName);
 protected:
-	int _lightHandle;
+	int _lightHandle;//ライトハンドル
 };
 

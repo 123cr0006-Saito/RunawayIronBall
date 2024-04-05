@@ -52,10 +52,10 @@ public:
 	int GetSize() { return _enemy.size(); };
 
 private:
-	std::vector<EnemyBase*> _enemy;
-	std::map<std::string, EnemyParam> _enemyParametersMap;
-	std::vector<VECTOR> _enemyInitPos;
+	std::vector<EnemyBase*> _enemy;//敵のコンテナ
+	std::map<std::string, EnemyParam> _enemyParametersMap;//敵のパラメータ
+	std::vector<VECTOR> _enemyInitPos;//敵の初期位置
 
-	CollisionManager* _collisionManager;
+	CollisionManager* _collisionManager;//当たり判定を管理するクラス
 };
 

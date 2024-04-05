@@ -18,7 +18,7 @@ public :
 	std::vector<std::string> LoadName(int stageNum);
 	void Render();
 protected:
-	std::vector<int> _modelList;
-	std::vector<std::string> _nameList;
+	std::vector<int> _modelList;//モデルのリスト
+	std::vector<std::string> _nameList;//モデルの名前リスト
 };
 

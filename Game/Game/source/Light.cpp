@@ -13,11 +13,18 @@
 Light::Light(std::string fileName) {
 	LoadLightColor(fileName);
 };
-
+//----------------------------------------------------------------------
+// @brief デストラクタ
+// ＠return なし
+//----------------------------------------------------------------------
 Light::~Light() {
 	DeleteLightHandle(_lightHandle);
 };
-
+//----------------------------------------------------------------------
+// @brief ライトの色を設定する
+// @param fileName ライトのデータが入ったファイル名
+// ＠return 成功しているどうか
+//----------------------------------------------------------------------
 bool Light::LoadLightColor(std::string fileName) {
 	std::string filePath = "Data/LightData/" + fileName + ".csv";
 	//ファイル読み込み

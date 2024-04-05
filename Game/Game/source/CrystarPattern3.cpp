@@ -8,11 +8,15 @@
 #include "CrystarPattern3.h"
 
 int CrystarPattern3::_collisionFrame = -1;
-
-CrystarPattern3::CrystarPattern3() :EnemyBase::EnemyBase() {
-
-};
-
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @return なし
+//----------------------------------------------------------------------
+CrystarPattern3::CrystarPattern3() :EnemyBase::EnemyBase() {};
+//----------------------------------------------------------------------
+// @brief デストラクタ
+// @return なし
+//----------------------------------------------------------------------
 CrystarPattern3::~CrystarPattern3() {
 	delete _frameData;
 	delete _animManager;
@@ -20,14 +24,20 @@ CrystarPattern3::~CrystarPattern3() {
 		delete _roof[i];
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief 固有変数の初期化
+// @return なし
+//----------------------------------------------------------------------
 void CrystarPattern3::InheritanceInit() {
 	//個別でセットするもの
 	_animState = ANIMSTATE::IDLE;
 	_attackPos = VGet(0, 0, 0);
 	_attackDir = 0.0f;
 };
-
+//----------------------------------------------------------------------
+// @brief アニメーションマネージャーとフレームデータ・クライスターの屋根の初期化
+// @return なし
+//----------------------------------------------------------------------
 void CrystarPattern3::AnimInit() {
 
 	_roof[0] = NEW CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof_Glass", "res/Enemy/Cg_Enemy_Crystar_Iron/Cg_Crystar_Roof_Iron.mv1"), _model,"joint1");
@@ -48,7 +58,10 @@ void CrystarPattern3::AnimInit() {
 	}
 
 }
-
+//----------------------------------------------------------------------
+// @brief フレームデータでのコマンド処理
+// @return 無し
+//----------------------------------------------------------------------
 void CrystarPattern3::CommandProcess() {
 	std::vector<CommandParam> commandParam = _frameData->GetCommandData();
 
@@ -65,7 +78,11 @@ void CrystarPattern3::CommandProcess() {
 		}
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief 初期化処理
+// @param pos 位置
+// @return 無し
+//----------------------------------------------------------------------
 void CrystarPattern3::Init(VECTOR pos) {
 	_IsUse = true;
 
@@ -87,7 +104,11 @@ void CrystarPattern3::Init(VECTOR pos) {
 
 	InheritanceInit();
 };
-
+//----------------------------------------------------------------------
+// @brief サーチ状態の更新処理
+// ＠param plAttack プレイヤーが攻撃しているかどうか
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool CrystarPattern3::ModeSearch(bool plAttack) {
 	switch (_searchState) {
 	case SEARCHTYPE::MOVE:
@@ -123,7 +144,7 @@ bool CrystarPattern3::ModeSearch(bool plAttack) {
 			VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
 			VECTOR pla_dir = VNorm(dirVec);
 			float range_dir = Math::CalcVectorAngle(ene_dir, pla_dir);
-
+			// プレイヤーが視界に入ったら発見
 			if (range_dir <= _flontAngle) {
 				_modeState = ENEMYTYPE::ATTACK;//状態を発見にする
 				_animState = ANIMSTATE::HANDSTAND;
@@ -135,7 +156,10 @@ bool CrystarPattern3::ModeSearch(bool plAttack) {
 
 	return true;
 }
-
+//----------------------------------------------------------------------
+// @brief 攻撃状態の処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool CrystarPattern3::ModeAttack() {
 	int nowTime = GetNowCount() - _currentTime;//今の状態になってから何秒経ったか？
 
@@ -181,7 +205,10 @@ bool CrystarPattern3::ModeAttack() {
 
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief クールタイム時の処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool CrystarPattern3::ModeCoolTime() {
 	
 	if (GetNowCount() - _currentTime >= _coolTime) {
@@ -192,7 +219,10 @@ bool CrystarPattern3::ModeCoolTime() {
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief ノックバック状態の処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool CrystarPattern3::ModeKnockBack() {
 	int nowTime = GetNowCount() - _currentTime;
 	float CoolTime = 3.0f * 1000; //硬直時間
@@ -208,7 +238,10 @@ bool CrystarPattern3::ModeKnockBack() {
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief このクラスの固有の処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool CrystarPattern3::IndividualProcessing() {
 	for(int i = 0; i < 2; i++){
 	_roof[i]->Update();
@@ -217,7 +250,10 @@ bool CrystarPattern3::IndividualProcessing() {
 	_frameData->Process(static_cast<int>(_animState), _animManager->GetPlayTime());
 	return true;
 }
-
+//----------------------------------------------------------------------
+// @brief モデルの更新処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool CrystarPattern3::SetState() {
 	//最終的なモデルの位置や角度を調整
 	if (_model != 0) {
@@ -226,14 +262,20 @@ bool CrystarPattern3::SetState() {
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 固有の描画処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool CrystarPattern3::IndividualRendering() {
 	for (int i = 0; i < 2; i++) {
 		_roof[i]->Render();
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief デバック用の描画処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool CrystarPattern3::DebugRender() {
 	DrawSphere3D(MV1GetFramePosition(_model, _collisionFrame), _r, 8, GetColor(0, 255, 0), GetColor(0, 0, 255), false);
 	return true;

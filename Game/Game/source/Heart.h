@@ -17,9 +17,9 @@ public :
 
 	Sphere GetSphere() { return _sphere; }
 protected:
-	int _model;
-	int _currentTime;
-	VECTOR _pos;
-	Sphere _sphere;
+	int _model;//モデルハンドル
+	int _currentTime;//現在の時間
+	VECTOR _pos;//座標
+	Sphere _sphere;//当たり判定
 };
 

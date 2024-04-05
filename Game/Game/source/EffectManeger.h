@@ -21,5 +21,5 @@ public:
 	static EffectManeger* _instance;
 	static EffectManeger* GetInstance() { return _instance; };
 protected:
-	std::vector<EffectBase*> _effect;
+	std::vector<EffectBase*> _effect;//エフェクトを格納するための変数
 };

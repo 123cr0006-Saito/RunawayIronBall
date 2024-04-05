@@ -35,6 +35,7 @@ enum class ENEMYTYPE : int {
 	DEAD
 };
 
+//õ“G‚Ìí—Ş
 enum class SEARCHTYPE : int {
 	COOLTIME,
 	TURN,

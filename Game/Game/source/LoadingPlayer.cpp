@@ -6,6 +6,10 @@
 // loading時のキャラクターのを制御・描画を行うクラス
 //----------------------------------------------------------------------
 #include "LoadingPlayer.h"
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @return 無し
+//----------------------------------------------------------------------
 LoadingPlayer::LoadingPlayer(){
 
 	_modelHandle = ResourceServer::MV1LoadModel("LoadingPlayer", "res/Character/Loading/Cg_Player_Girl.mv1");
@@ -33,6 +37,7 @@ LoadingPlayer::LoadingPlayer(){
 
 	//アニメーションの初期化
 	std::string frameName;
+	// ランダムでアニメーションを変更
 	if (rand() % 2 == 0) {
 		frameName = "MO_PL_Walk";
 	}
@@ -46,13 +51,19 @@ LoadingPlayer::LoadingPlayer(){
 	_totalTime = MV1GetAttachAnimTotalTime(_modelHandle,_attachIndex);
 	_playTime = 0.0f;
 };
-
+//----------------------------------------------------------------------
+// @brief デストラクタ
+// @return 無し
+//----------------------------------------------------------------------
 LoadingPlayer::~LoadingPlayer() {
 	MV1DeleteModel(_modelHandle);
 	delete _chain; _chain = nullptr;
 	delete _modelColor; _modelColor = nullptr;
 };
-
+//----------------------------------------------------------------------
+// @brief 更新処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool LoadingPlayer::Process(){
 	_chain->Process();
 
@@ -61,7 +72,10 @@ bool LoadingPlayer::Process(){
 	AnimationProcess();
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief アニメーション処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool LoadingPlayer::AnimationProcess(){
 
 	MV1SetAttachAnimTime(_modelHandle, _attachIndex, _playTime);
@@ -73,7 +87,10 @@ bool LoadingPlayer::AnimationProcess(){
 
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 描画処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool LoadingPlayer::Render() {
 	MV1DrawModel(_modelHandle);
 	_chain->Render();
