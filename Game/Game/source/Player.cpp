@@ -314,7 +314,6 @@ bool Player::Init(int modelHandle, VECTOR pos)
 	_ironBall = NEW IronBall();
 	_ironBall->Init();
 	_ironBall->SetParentInstance(this);
-	_ironBall->SetParentPosPtr(&_pos);
 	_ironBall->SetPlayerModelHandle(_modelHandle);
 	// 鉄球の移動状態を「追従」に設定
 	_ironBall->SetMoveState(IB_MOVE_STATE::FOLLOWING);
@@ -346,18 +345,16 @@ bool Player::Init(int modelHandle, VECTOR pos)
 	SetLevelParam("res/JsonFile/IronState.json");
 	UpdateLevel();
 
-
-
-
-
-
-
-
-
-
-
-
 	return true;
+}
+
+// 鉄球の初期位置を設定する
+void Player::InitIBPos()
+{
+	// 鉄球の位置はプレイヤーと鎖の連結位置をもとに設定するので、モデルの座標を更新する
+	MV1SetPosition(_modelHandle, _pos);
+	// 鉄球の初期位置を設定する
+	_ironBall->InitPosFromParent();
 }
 
 bool Player::Process(float camAngleY)
