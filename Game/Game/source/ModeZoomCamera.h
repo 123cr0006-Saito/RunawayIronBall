@@ -18,9 +18,9 @@ public:
 	virtual bool Terminate();
 	virtual bool Process();
 protected:
-	TargetZoomCamera* _camera;
-	int _time;
-	int _currentTime;
-	VECTOR _pos;
+	TargetZoomCamera* _camera;// カメラクラス
+	int _time;// カメラの移動時間
+	int _currentTime;// 現在の時間
+	VECTOR _pos;// カメラの目標座標
 };
 

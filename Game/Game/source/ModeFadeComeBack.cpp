@@ -53,28 +53,38 @@ ModeFadeComeBack::ModeFadeComeBack(int Time, ModeBase* mode, std::string modeNam
 	_changeModeName = modeName;
 	_IsProcessSkip = IsProcessSkip;
 };
-
+//----------------------------------------------------------------------
+// @brief 初期化
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool ModeFadeComeBack::Initialize(){
 	if (!base::Initialize()) { return false; }
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 終了処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool ModeFadeComeBack::Terminate(){
 	base::Terminate();
 	_deleteMode = nullptr;
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 更新処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool ModeFadeComeBack::Process(){
 	base::Process();
+	// プロセスをスキップする場合
 	if(_IsProcessSkip){
 	   ModeServer::GetInstance()->SkipProcessUnderLayer();
 	}
 	ModeServer::GetInstance()->PauseProcessUnderLayer();
 	int nowTime = GetNowCount() - _currentTime;
-
+	// フェード処理
 	_alphaFade = Easing::Linear(nowTime, _fadeStart, _fadeEnd, _fadeTime);
-
+	// フェード終了
 	if (_alphaFade >= 255) {
 		// 値の入れ替え
 		_alphaFade = _fadeEnd;
@@ -100,7 +110,10 @@ bool ModeFadeComeBack::Process(){
 
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 描画処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool ModeFadeComeBack::Render() {
 	base::Render();
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, _alphaFade);

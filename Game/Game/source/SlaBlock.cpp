@@ -8,20 +8,32 @@
 #include "SlaBlock.h"
 
 int SlaBlock::_collisionFrame = -1;
-
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @return 無し
+//----------------------------------------------------------------------
 SlaBlock::SlaBlock() :EnemyBase::EnemyBase(){};
-
+//----------------------------------------------------------------------
+// @brief デストラクタ
+// @return 無し
+//----------------------------------------------------------------------
 SlaBlock::~SlaBlock() {
 	delete _animManager;
 	delete _frameData;
 };
-
+//----------------------------------------------------------------------
+// @brief エネミーの固有変数の初期化
+// @return 成功しているか
+//----------------------------------------------------------------------
 void SlaBlock::InheritanceInit() {
 	_animState = ANIMSTATE::IDLE;
 };
-
+//----------------------------------------------------------------------
+// @brief アニメーション・フレームデータの初期化
+// @return 無し
+//----------------------------------------------------------------------
 void SlaBlock::AnimInit() {
-	//// モーションリストのロード
+	// モーションリストのロード
 	MotionList::Load("Slablock", "MotionList_Slablock.csv");
 	auto motionList = MotionList::GetMotionList("Slablock");
 	// アニメーションマネージャーの初期化
@@ -36,7 +48,10 @@ void SlaBlock::AnimInit() {
 	}
 
 }
-
+//----------------------------------------------------------------------
+// @brief  フレームデータでのコマンド処理
+// @return 無し
+//----------------------------------------------------------------------
 void SlaBlock::CommandProcess() {
 	std::vector<CommandParam> commandParam = _frameData->GetCommandData();
 
@@ -53,7 +68,11 @@ void SlaBlock::CommandProcess() {
 		}
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief  サーチ状態の処理
+// @param plAttack : プレイヤーが攻撃しているかどうか
+// @return 成功しているかどうか
+//----------------------------------------------------------------------
 bool SlaBlock::ModeSearch(bool plAttack) {
 	switch (_searchState) {
 	case SEARCHTYPE::MOVE:
@@ -95,11 +114,12 @@ bool SlaBlock::ModeSearch(bool plAttack) {
 			}
 		}
 	}
-
-
 	return true;
 }
-
+//----------------------------------------------------------------------
+// @brief 追跡状態の処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool SlaBlock::ModeDisCover() {
 	//移動処理
 	VECTOR move = VSub(_player->GetCollision().down_pos, _pos); move.y = 0.0f;//これをオンにするとy軸の移動がなくなる
@@ -132,7 +152,10 @@ bool SlaBlock::ModeDisCover() {
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 攻撃状態の処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool SlaBlock::ModeAttack() {
 	int nowTime = GetNowCount() - _currentTime;//今の状態になってから何秒経ったか？
 
@@ -164,7 +187,10 @@ bool SlaBlock::ModeAttack() {
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief クールタイム時の処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool SlaBlock::ModeCoolTime() {
 
 	if (GetNowCount() - _currentTime >= _coolTime) {
@@ -174,7 +200,10 @@ bool SlaBlock::ModeCoolTime() {
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief ノックバック状態の処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool SlaBlock::ModeKnockBack() {
 	int nowTime = GetNowCount() - _currentTime;
 	float CoolTime = 3.0f * 1000; //硬直時間
@@ -189,8 +218,10 @@ bool SlaBlock::ModeKnockBack() {
 	}
 	return true;
 }
-
-
+//----------------------------------------------------------------------
+// @brief 重力の設定
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool SlaBlock::SetGravity() {
 	//重力処理
 	if (_modeState != ENEMYTYPE::ATTACK) {
@@ -205,13 +236,19 @@ bool SlaBlock::SetGravity() {
 	}
 	return true;
 }
-
+//----------------------------------------------------------------------
+// @brief このクラスの固有の処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool SlaBlock::IndividualProcessing(){
 	_animManager->Process(static_cast<int>(_animState));
 	_frameData->Process(static_cast<int>(_animState), _animManager->GetPlayTime());
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief このクラスの固有の描画処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool SlaBlock::IndividualRendering() {
 	return true;
 };

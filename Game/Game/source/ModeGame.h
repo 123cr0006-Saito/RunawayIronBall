@@ -76,48 +76,40 @@ public:
 	void CreateTutorial();// チュートリアルの作成	
 
 protected:
+	// その他の変数
+	int _shadowHandle;// シャドウマップ用のハンドル
+	bool _drawDebug = false;// デバッグ表示をするかどうか
+	int _gameOverCnt;// ゲームオーバー演出のカウント
+	bool transitionGameOver;// ゲームオーバー演出をし終えたか
 
-	CollisionManager* _collisionManager;
-
-	Camera* _camera;
-	Player* _player;
-	int _gameOverCnt;
-	bool transitionGameOver;
-
-	UIBase* ui[4];
-	DrawGauge* _gaugeUI[2];
-	int _gaugeHandle[4];// 0フレーム 3ゲージ
-
-	EnemyPool* _enemyPool;
-	Suppression* _suppression;
-
-	std::vector<House*> _house;
-	std::vector<Tower*> _tower;
-	std::vector<UnbreakableObject*> _uObj;
-	Floor* _floor;
-
-	int _skySphere;
-	int _tile;
-	int _mountain;
-
-	Gate* _gate;
-	ClassificationEffect* _classificationEffect;
-	EffectManeger* _effectManeger;
-	OBB obb;
-	Fog* _fog;
-
-	int _shadowHandle;
-
-	// デバッグ表示をするかどうか
-	bool _drawDebug = false;
-
-	std::vector<ObjectParam>_objectParam;
-	std::vector<std::string>  _objectName;
-
-	Light* _light;
-
-	TimeLimit* _timeLimit;
-
+	// 衝突判定クラス
+	CollisionManager* _collisionManager;// 衝突判定クラス
+	//オブジェクト関連
+	int _skySphere;// スカイスフィア
+	int _tile;// タイル
+	int _mountain;// 山
+	Player* _player;// プレイヤー
+	EnemyPool* _enemyPool;// 敵
+	Floor* _floor;// 床
+	Gate* _gate;// ゴールゲート
+	std::vector<House*> _house;// 家
+	std::vector<Tower*> _tower;// 塔
+	std::vector<UnbreakableObject*> _uObj;// 破壊不可能オブジェクト
 	// ステージ読み込み用変数
-	bool IsTutorial;
+	std::vector<ObjectParam>_objectParam;// オブジェクトのパラメータ
+	std::vector<std::string>  _objectName;// オブジェクトの名前
+	//UI関連
+	UIBase* ui[4];// UI　0:HP 1:EXP 2:制圧ゲージ 3:制限時間
+	DrawGauge* _gaugeUI[2];// スタミナゲージUI
+	int _gaugeHandle[4];// 0~2フレーム 3ゲージ
+	// 演出関連
+	Suppression* _suppression;// 制圧値管理クラス
+	Camera* _camera;// カメラクラス
+	Light* _light;// ライトクラス
+	Fog* _fog;// フォグクラス
+	ClassificationEffect* _classificationEffect;// エフェクト分類クラス
+	EffectManeger* _effectManeger;// エフェクト管理クラス
+	TimeLimit* _timeLimit;// 制限時間クラス
+	
+	bool IsTutorial;// チュートリアルを表示し終えたか
 };

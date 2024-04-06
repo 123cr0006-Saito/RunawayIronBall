@@ -35,7 +35,6 @@ protected:
 	int _modeCount;//今選択されている項目の番号
 	std::unordered_map<std::string, int> _handleMap;//タイトルで使用する画像ハンドルのマップ
 	bool _IsGameStart;//ゲームを開始したかどうか
-	//-----------------
 	//タイトルが割れる処理の変数
 	int _modelHandle;//割れるモデルのハンドル
 	int _frameSize;//割れるモデルのフレーム数

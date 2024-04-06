@@ -32,8 +32,8 @@ public:
 
 protected:
 	//U“®—p‚Ì•Ï”
-	float vibration_x,vibration_y;
-	float max_x, max_y;
-	float time;
-	bool use_flag;
+	float vibration_x,vibration_y;//U“®—Ê
+	float max_x, max_y;//U“®‚ÌÅ‘å’l
+	float time;//U“®ŠÔ
+	bool use_flag;//U“®’†‚©‚Ç‚¤‚©
 };

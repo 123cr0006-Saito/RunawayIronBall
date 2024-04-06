@@ -42,6 +42,6 @@ protected :
 		STOMP,
 		STAN
 	};
-	static int _collisionFrame;
-	ANIMSTATE _animState;
+	static int _collisionFrame;// 当たり判定のフレーム
+	ANIMSTATE _animState;// アニメーションの状態
 };

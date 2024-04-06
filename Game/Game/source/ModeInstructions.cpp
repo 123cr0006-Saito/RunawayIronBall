@@ -6,6 +6,10 @@
 // ポーズ画面から操作説明画面を表示するクラス
 //----------------------------------------------------------------------
 #include "ModeInstructions.h"
+//----------------------------------------------------------------------
+// @brief 初期化処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool ModeInstructions::Initialize() {
 	if (!base::Initialize()) { return false; }
 	_input = XInput::GetInstance();
@@ -18,12 +22,18 @@ bool ModeInstructions::Initialize() {
 	ResourceServer::LoadMultGraph("OperateItem", "res/ModePause/Operation/UI_Operation", ".png", 5, _itemHandle);
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 終了処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool ModeInstructions::Terminate(){
 	base::Terminate();
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 更新処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool ModeInstructions::Process() {
 	base::Process();
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
@@ -54,7 +64,10 @@ bool ModeInstructions::Process() {
 
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 描画処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool ModeInstructions::Render() {
 
 	DrawGraph(0,440,_frameHandle, true);

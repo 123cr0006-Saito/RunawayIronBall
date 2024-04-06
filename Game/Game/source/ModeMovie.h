@@ -16,6 +16,6 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 protected:
-	int _movie;
+	int _movie;// ムービーハンドル
 };
 

@@ -14,7 +14,10 @@
 #include "ModeZoomCamera.h"
 #include "ModeRotationCamera.h"
 #include "ModeTutorial.h"
-
+//----------------------------------------------------------------------
+// @brief 初期化処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool ModeGame::Initialize() {
 	if (!base::Initialize()) { return false; }
 
@@ -89,7 +92,10 @@ bool ModeGame::Initialize() {
 
 	return true;
 }
-
+//----------------------------------------------------------------------
+// @brief 削除処理
+// @return 無し
+//----------------------------------------------------------------------
 bool ModeGame::Terminate() {
 	base::Terminate();
 	_suppression->ClearSuppression();
@@ -139,8 +145,12 @@ bool ModeGame::Terminate() {
 
 	return true;
 }
-
-
+//----------------------------------------------------------------------
+// @brief Jsonファイルからオブジェクトの位置・拡大率・回転値の読み込み
+// @param json 読み込むjsonファイル
+// @param loadName データを読み込むオブジェクトの名前
+// @return 読み込んだデータ
+//----------------------------------------------------------------------
 std::vector<ModeGame::OBJECTDATA> ModeGame::LoadJsonObject(const myJson& json, std::string loadName) {
 	nlohmann::json loadObject = json._json.at(loadName);
 	std::vector<ModeGame::OBJECTDATA> _objectList;
@@ -166,7 +176,11 @@ std::vector<ModeGame::OBJECTDATA> ModeGame::LoadJsonObject(const myJson& json, s
 	}
 	return _objectList;
 };
-
+//----------------------------------------------------------------------
+// @brief csvファイルからオブジェクトのパラメータを読み込む
+// @param fileName 読み込むファイル名
+// @return 読み込みが成功したかどうか
+//----------------------------------------------------------------------
 bool ModeGame::LoadObjectParam(std::string fileName) {
 	std::vector<ObjectParam> paramList;
 	std::string filePath = "Data/BuildingData/" + fileName;
@@ -202,7 +216,11 @@ bool ModeGame::LoadObjectParam(std::string fileName) {
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief csvファイルからオブジェクトの名前を読み込む
+// @param fileName 読み込むファイル名
+// @return 読み込んだデータ
+//----------------------------------------------------------------------
 std::vector<std::string> ModeGame::LoadObjectName(std::string fileName) {
 	std::vector<std::string> nameList;
 	std::string filePath = "Data/LoadStageName/" + fileName + "/"  + fileName + "0" + std::to_string(global.GetStageNum()) + ".csv";
@@ -222,7 +240,11 @@ std::vector<std::string> ModeGame::LoadObjectName(std::string fileName) {
 	}
 	return nameList;
 }
-
+//----------------------------------------------------------------------
+// @brief ステージのデータを読み込む
+// @param fileName 読み込むファイル名
+// @return 読み込みが成功したかどうか
+//----------------------------------------------------------------------
 bool ModeGame::LoadStage(std::string fileName) {
 	myJson json = myJson(fileName);
 	int j = 0;
@@ -291,7 +313,10 @@ bool ModeGame::LoadStage(std::string fileName) {
 
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 更新処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool ModeGame::Process() {
 	base::Process();
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
@@ -366,10 +391,14 @@ bool ModeGame::Process() {
 
 	return true;
 }
-
+//----------------------------------------------------------------------
+// @brief ゴールゲートの処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool ModeGame::GateProcess() {
 	
-	if (_suppression->GetIsRatio() ) {
+	if (_suppression->GetIsRatioBut20PercentLess() ) {
+		// ゲートの生成
 		if (_gate == nullptr) {
 			VECTOR pos = VGet(0, 300, 0);
 			int handle[43];
@@ -381,6 +410,7 @@ bool ModeGame::GateProcess() {
 			_gate = NEW Gate(pos, 300, handle, 43, time, 1000);
 			ModeServer::GetInstance()->Add(NEW ModeZoomCamera(pos), 10, "Camera");
 		}
+		// ゲートの処理
 		_gate->Process();
 
 		VECTOR pPos = _player->GetPosition();
@@ -397,7 +427,10 @@ bool ModeGame::GateProcess() {
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief チュートリアルの生成
+// @return 無し
+//----------------------------------------------------------------------
 void ModeGame::CreateTutorial() {
 	if (!IsTutorial) {
 		IsTutorial = true;
@@ -408,7 +441,10 @@ void ModeGame::CreateTutorial() {
 		}
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief 描画処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool ModeGame::Render() {
 
 	SetUseZBuffer3D(TRUE);
@@ -425,7 +461,6 @@ bool ModeGame::Render() {
 	_floor->Render();
 	// 描画に使用するシャドウマップの設定を解除
 	SetUseShadowMap(0, -1);
-
 
 	// ライト設定
 	SetUseLighting(TRUE);
@@ -470,8 +505,8 @@ bool ModeGame::Render() {
 			(*itr)->Render();
 		}
 	}
-
-
+	// シャドウマップの描画を終了
+	// デバッグ時の描画
 	if (_drawDebug) {
 		_player->DrawDebugInfo();
 		for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
@@ -485,7 +520,7 @@ bool ModeGame::Render() {
 		}
 		_collisionManager->DrawAreaIndex();
 	}
-
+	// ゲートのインスタンスがあった場合描画
 	if (_gate != nullptr) {
 		_gate->Draw();
 	}
@@ -494,8 +529,7 @@ bool ModeGame::Render() {
 
 	_effectManeger->Render();
 
-
-	if (!ModeServer::GetInstance()->Search("RotCamera")) {
+	if (!ModeServer::GetInstance()->IsAboutLayer(this)) {
 		for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
 			ui[i]->Draw();
 		}

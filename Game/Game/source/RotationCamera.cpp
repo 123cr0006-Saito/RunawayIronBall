@@ -10,16 +10,21 @@
 // @brief コンストラクタ
 // @param distance カメラと注視点の距離
 // @param targetPos 注視点の位置
+// @return 無し
 //----------------------------------------------------------------------
 RotationCamera::RotationCamera(float distance,VECTOR targetPos) : CameraBase() {
 	_pointDistance.z = -distance;
 	_targetPos = targetPos;
 };
-
-RotationCamera::~RotationCamera() {
-
-};
-
+//----------------------------------------------------------------------
+// @brief デストラクタ
+// @return 無し
+//----------------------------------------------------------------------
+RotationCamera::~RotationCamera() {};
+//----------------------------------------------------------------------
+// @brief 更新処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool RotationCamera::Process() {
 
 	float _cameraDirYAdd = 0.01f;

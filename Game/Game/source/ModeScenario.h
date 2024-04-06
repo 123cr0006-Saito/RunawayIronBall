@@ -22,11 +22,12 @@ public:
 	bool SearchLetter(std::string text, int byte);
 
 protected:
-	static bool IsLoadHandle;
-	static std::unordered_map<int,int>_charaHandleMap;
-	static std::unordered_map<int, std::string>_nameHandleMap;
-	static std::unordered_map<int, int>_backGroundHandleMap;
-	static std::unordered_map<int, int> _textBoxHandle;
+	static bool IsLoadHandle;// 画像を読み込んだかどうか
+	static std::unordered_map<int,int>_charaHandleMap;// キャラクターハンドルの管理コンテナ
+	static std::unordered_map<int, std::string>_nameHandleMap;// キャラクター名の管理コンテナ
+	static std::unordered_map<int, int>_backGroundHandleMap;// 背景の管理コンテナ
+	static std::unordered_map<int, int> _textBoxHandle;// テキストボックスの管理コンテナ
+	// シナリオデータ
 	struct ScenarioData {
 		std::string voiceData;
 		int charaHandle;
@@ -35,15 +36,15 @@ protected:
 		int textBoxHandle;
 		std::string text;
 	};
-	XInput* _input;
-	std::vector<ScenarioData> _scenarioData;
-	int _scenarioNum;
-	int _nameFontHandle;
-	int _textFontHandle;
-	int _nowTextByte;
-	int _nowTextLine;
-	int _currentTime;
-	int _handleX, _handleY;
-	int _skipHandle;
+	XInput* _input;// 入力クラス
+	std::vector<ScenarioData> _scenarioData;// シナリオデータの管理コンテナ
+	int _scenarioNum;// シナリオの番号
+	int _nameFontHandle;// 名前のフォントハンドル
+	int _textFontHandle;// テキストのフォントハンドル
+	int _nowTextByte;// 現在のテキストのバイト数
+	int _nowTextLine;// 現在のテキストの行数
+	int _currentTime;// 現在の時間
+	int _handleX, _handleY;// 画像の座標
+	int _skipHandle;// スキップボタンの画像
 };
 

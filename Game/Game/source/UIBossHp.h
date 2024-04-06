@@ -18,15 +18,11 @@ public:
 	virtual bool Draw()override;
 protected:
 	VERTEX2D _vertex[4];//2dポリゴンで使う頂点データ 本体
-
-	int _currentTime;
-	float _ratio;
-	float _nowRatio, _nextRatio;
-
-	int _easingframe;
-
-	int flontHandleX, flontHandleY;
-
+	int _currentTime;// 現在の時間
+	float _ratio;// 現在の割合
+	float _nowRatio, _nextRatio;// 現在の割合と次の割合
+	int _easingframe;// イージングのフレーム
+	int flontHandleX, flontHandleY;// bossHPバーのハンドルの横幅と縦幅
 	static const unsigned short vertex[6];//頂点データを簡略化するための配列
 };
 

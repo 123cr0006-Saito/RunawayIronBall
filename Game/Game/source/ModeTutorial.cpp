@@ -21,22 +21,31 @@ ModeTutorial::ModeTutorial(int* handle, int size){
 	_selectItem = 0;
 	_input = XInput::GetInstance();
 };
-
+//----------------------------------------------------------------------
+// @brief 初期化処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool ModeTutorial::Initialize(){
 	TimeLimit::GetInstance()->Stop();
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 終了処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool ModeTutorial::Terminate(){
 	delete[] _handle;
 	_input = nullptr;
 	TimeLimit::GetInstance()->Restart();
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 更新処理
+// @return 成功しているか
 bool ModeTutorial::Process(){
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->PauseProcessUnderLayer();
+	// 次の画像へ
 	if (_input->GetTrg(XINPUT_BUTTON_A) ) {
 		if (_selectItem < _pageSize) {
 			_selectItem++;
@@ -48,8 +57,11 @@ bool ModeTutorial::Process(){
 
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 描画処理
+// @return 成功しているか
 bool ModeTutorial::Render(){
+	// このmodeより上にmodeが無い場合、チュートリアル画像の描画
 	if (!ModeServer::GetInstance()->IsAboutLayer(this)) {
 		int x, y;
 		GetGraphSize(_handle[_selectItem], &x, &y);

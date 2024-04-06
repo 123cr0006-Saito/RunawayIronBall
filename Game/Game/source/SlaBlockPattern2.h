@@ -35,8 +35,9 @@ public:
 	VECTOR GetCollisionPos()override { return MV1GetFramePosition(_model, _collisionFrame); }
 
 protected:
-	int _fallCount;
-	static int _collisionFrame;
+	int _fallCount;// 落下カウント
+	static int _collisionFrame;// 当たり判定のフレーム
+	// アニメーションの状態
 	static enum ANIMSTATE : int {
 		IDLE = 0,
 		WALK,
@@ -45,6 +46,6 @@ protected:
 		STOMP,
 		STAN
 	};
-	ANIMSTATE _animState;
+	ANIMSTATE _animState;// アニメーションの状態
 };
 

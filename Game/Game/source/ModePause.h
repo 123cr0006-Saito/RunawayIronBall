@@ -30,19 +30,14 @@ public:
 	void VertexProcess();
 
 protected:
-	XInput* _input;
-	int gauss_handle;
-	int _selectItem;
-	//-----------------------------
-	//多分グローバルで作るか、それぞれのクラスを直接オプションでいじるか
-	int _bgmVolum;
-	int _seVolum;
-	static const int MAX_MODE = 5;
-
-	VERTEX2D _seGauge[4];
-	VERTEX2D _bgmGauge[4];
-
-	static const unsigned short vertex[6];
-
-	std::unordered_map<std::string, int> _handleMap;
+	XInput* _input;// 入力クラス
+	int _gaussHandle;// ガウスの画像
+	int _selectItem;// 選択中の項目
+	int _bgmVolum;// BGMの音量
+	int _seVolum;// SEの音量
+	static const int MAX_MODE = 5;// 項目の最大数
+	VERTEX2D _seGauge[4];// SEのゲージの頂点データ
+	VERTEX2D _bgmGauge[4];// BGMのゲージの頂点データ
+	static const unsigned short vertex[6];// ポリゴンを描画する際の頂点の順番
+	std::unordered_map<std::string, int> _handleMap;// 画像ハンドルの管理コンテナ
 };

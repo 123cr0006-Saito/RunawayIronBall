@@ -14,6 +14,6 @@ public:
 	~RotationCamera();
 	bool Process()override;
 protected:
-	VECTOR _targetPos;
+	VECTOR _targetPos;// カメラのターゲット座標
 };
 
