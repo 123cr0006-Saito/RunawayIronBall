@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename IronBall.h
+// ＠date: 2024/04/01
+// ＠author: Morozumi Hiroya
+// @explanation
+// プレイヤーが持つ鉄球・鎖の制御・描画を行うクラス
+//----------------------------------------------------------------------
 #pragma once
 #include "appframe.h"
 #include "ObjectBase.h"
@@ -17,6 +24,8 @@ public:
 	virtual ~IronBall();
 
 	void Init();
+	// 親モデルの座標をもとに初期位置を設定
+	void InitPosFromParent();
 	void Process();
 
 	void MoveProcess();
@@ -51,8 +60,6 @@ public:
 
 	void SetParentInstance(ObjectBase* parent) { _parent = parent; }
 	ObjectBase* GetParentInstance() { return _parent; }
-	void SetParentPosPtr(VECTOR* pos);
-	VECTOR* GetParentPosPtr() { return _parentPos; }
 
 	// デバッグ情報の表示
 	void DrawDebugInfo();
@@ -90,9 +97,6 @@ private:
 
 	// このオブジェクトを保有している親のオブジェクトへのポインタ
 	ObjectBase* _parent;
-	// このオブジェクトを保有している親の座標へのポインタ
-	VECTOR* _parentPos;
-
 
 	int _attackAnimCnt;
 

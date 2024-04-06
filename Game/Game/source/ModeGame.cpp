@@ -310,6 +310,7 @@ bool ModeGame::LoadStage(std::string fileName) {
 	pos.y = 0;
 	 pos.x *= -1;
 	_player->SetPos(pos);
+	_player->InitIBPos();
 
 	return true;
 };

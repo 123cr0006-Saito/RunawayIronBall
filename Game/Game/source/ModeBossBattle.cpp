@@ -32,6 +32,7 @@ bool ModeBossBattle::Initialize() {
 	_player = NEW Player();
 	_player->Init(playerModelHandle, VGet(0, 0, -3000));
 	_player->SetLevel(global._allExp);
+	_player->InitIBPos();
 	_camera = NEW Camera(_player->GetPosition());
 
 	_boss = NEW Boss();

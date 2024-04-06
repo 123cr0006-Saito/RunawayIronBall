@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename IronBall.cpp
+// ＠date: 2024/04/01
+// ＠author: Morozumi Hiroya
+// @explanation
+// プレイヤーが持つ鉄球・鎖の制御・描画を行うクラス
+//----------------------------------------------------------------------
 #include "IronBall.h"
 
 namespace {
@@ -52,14 +59,12 @@ IronBall::IronBall()
 	_socketNo[1] = -1;
 	_socketNo[2] = -1;
 	_parent = nullptr;
-	_parentPos = nullptr;
 }
 
 IronBall::~IronBall()
 {
 	_input = nullptr;
 	_parent = nullptr;
-	_parentPos = nullptr;
 	delete _cell; _cell = nullptr;
 	delete _chainCell; _chainCell = nullptr;
 	for (auto list : _afterglowList) {
@@ -130,6 +135,19 @@ void IronBall::Init() {
 	_afterglowList.push_back(NEW Afterglow(_iModelHandle, afterglow, 10, LoadGraph("res/Effect/afterglow.png"), 20));
 	afterglow = MV1SearchFrame(_iModelHandle, "right_eye02");
 	_afterglowList.push_back(NEW Afterglow(_iModelHandle, afterglow, 10, LoadGraph("res/Effect/afterglow.png"), 20));
+}
+
+// 親モデルの座標をもとに初期位置を設定
+void IronBall::InitPosFromParent()
+{
+	MATRIX m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, _socketNo[0]);
+	VECTOR v = VGet(0.0f, 0.0f, 0.0f);
+	_cPos[0] = VTransform(v, m);
+
+	for (int i = 1; i < CHAIN_MAX; i++) {
+		_cPos[i] = VAdd(_cPos[i - 1], VGet(0.0f, 0.0f, _length));
+	}
+	_iPos = _cPos[CHAIN_MAX - 1];
 }
 
 
@@ -271,7 +289,7 @@ void IronBall::PuttingOnSocketProcess()
 	float rad = Math::CalcVectorAngle(vBase, vTarget);
 	float dist = VSize(vTarget);
 	VECTOR vCross = VCross(vBase, vTarget);
-	const float chainNum = CHAIN_MAX - 1; ////////////////// （要修正）振り回している感じを出すなら、最後の鎖がピッタリ鉄球の接続位置に来るようにせず、少し引っ張っている方向にずらす必要がある
+	const float chainNum = CHAIN_MAX - 1;
 	//rad /= chainNum;
 	for (int i = 1; i < CHAIN_MAX; i++) {
 		VECTOR vTmp = VScale(VNorm(vBase), dist * ((float)(i - 1) / chainNum));
@@ -326,7 +344,7 @@ void IronBall::InterpolationProcess()
 	float rad = Math::CalcVectorAngle(vBase, vTarget);
 	float dist = VSize(vTarget);
 	VECTOR vCross = VCross(vBase, vTarget);
-	const float chainNum = CHAIN_MAX - 1; ////////////////// （要修正）振り回している感じを出すなら、最後の鎖がピッタリ鉄球の接続位置に来るようにせず、少し引っ張っている方向にずらす必要がある
+	const float chainNum = CHAIN_MAX - 1;
 	//rad /= chainNum;
 	for (int i = 1; i < CHAIN_MAX; i++) {
 		VECTOR vTmp = VScale(VNorm(vBase), dist * ((float)(i - 1) / chainNum));
@@ -396,16 +414,6 @@ void IronBall::SetPlayerModelHandle(int handle)
 	_socketNo[0] = MV1SearchFrame(_playerModelHandle, "chain1");
 	_socketNo[1] = MV1SearchFrame(_playerModelHandle, "chain2");
 	_socketNo[2] = MV1SearchFrame(_playerModelHandle, "chain3");
-}
-
-void IronBall::SetParentPosPtr(VECTOR* pos)
-{
-	_parentPos = pos;
-
-	for (int i = 0; i < CHAIN_MAX; i++) {
-		_cPos[i] = VAdd(*_parentPos, VGet(0, 0, 10 * i));
-	}
-	_iPos = _cPos[CHAIN_MAX - 1];
 }
 
 void IronBall::DrawDebugInfo() {

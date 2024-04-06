@@ -59,6 +59,8 @@ public:
 	~Player() override;
 
 	bool Init(int modelHandle, VECTOR pos) override;
+	// 鉄球の初期位置を設定する
+	void InitIBPos();
 	bool Process(float camAngleY);
 	// アニメーションの処理
 	bool AnimationProcess();
