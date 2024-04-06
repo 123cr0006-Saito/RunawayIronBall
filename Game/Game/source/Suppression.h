@@ -14,7 +14,7 @@ public:
 	void AddSuppression(int suppression);
 	void ClearSuppression();
 	void SubSuppression(int suppression);
-	bool GetIsRatio();
+	bool GetIsRatioBut20PercentLess();
 	int GetNowSuppression() { return _nowSuppression; }
 	int GetMaxSuppression() { return _maxSuppression; }
 
@@ -23,6 +23,6 @@ public:
 
 protected:
 	
-	int _nowSuppression, _maxSuppression;
+	int _nowSuppression, _maxSuppression;// åªç›ÇÃêßà≥ílÇ∆ç≈ëÂÇÃêßà≥íl
 };
 

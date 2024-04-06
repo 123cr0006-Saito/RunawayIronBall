@@ -22,16 +22,14 @@ public:
 	virtual bool  Process()override;
 	virtual bool  Draw()override;
 
-	//デバッグ用
-	//void DecreaseHP() { _hp--; };
 
 private:
-	DrawGauge* _heart;
-	Player* _player;
-	int _oldHp;
-	bool _IsDamage;
-	int _currentTime;
+	DrawGauge* _heart;// ハートの画像
+	Player* _player;// プレイヤークラス
+	int _oldHp;// 前回のHP
+	bool _IsDamage;// ダメージを受けたかどうか
+	int _currentTime;// 現在の時間
 
-	static const int _damageSeconds;
+	static const int _damageSeconds;// ダメージを受けている時間
 };
 

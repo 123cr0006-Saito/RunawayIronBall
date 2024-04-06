@@ -34,6 +34,7 @@ bool ModeRotationCamera::Initialize(){
 //----------------------------------------------------------------------
 // @brief èIóπèàóù
 // @return ê¨å˜ÇµÇΩÇ©Ç«Ç§Ç©
+//----------------------------------------------------------------------
 bool ModeRotationCamera::Terminate(){
 	delete _camera; _camera = nullptr;
 	if(TimeLimit::GetInstance() != nullptr){

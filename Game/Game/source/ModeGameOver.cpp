@@ -10,7 +10,10 @@
 #include "ModeTitle.h"
 #include "ModeGame.h"
 #include "ModeFadeComeBack.h"
-
+//----------------------------------------------------------------------
+// @brief 初期化処理
+// @return 成功しているかどうか
+//----------------------------------------------------------------------
 bool ModeGameOver::Initialize() {
 	if (!base::Initialize()) { return false; }
 	_input = XInput::GetInstance();
@@ -36,21 +39,30 @@ bool ModeGameOver::Initialize() {
 	global._soundServer->DirectPlay("PL_GameOver");
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 終了処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool ModeGameOver::Terminate() {
 	base::Terminate();
 	_input = nullptr;
 	_handle.clear();
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief アニメーション処理
+// @return 無し
+//----------------------------------------------------------------------
 void ModeGameOver::AnimProcess(){
 	MATRIX matrix = MGetRotY(0.02f);
 	_cameraPos = VTransform(_cameraPos, matrix);
 	VECTOR pos = VAdd(_cameraPos, _targetPos);
 	SetCameraPositionAndTarget_UpVecY(pos, _targetPos);
 };
-
+//----------------------------------------------------------------------
+// @brief 選択処理
+// @return 無し
+//----------------------------------------------------------------------
 void ModeGameOver::SelectProcess(){
 	if (_selectEnd) return ; // 選択が終わっっているので処理を終了
 
@@ -79,20 +91,25 @@ void ModeGameOver::SelectProcess(){
 	}
 
 };
-
+//----------------------------------------------------------------------
+// @brief 更新処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool ModeGameOver::Process() {
 	base::Process();
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->PauseProcessUnderLayer();
 	ModeServer::GetInstance()->SkipRenderUnderLayer();
-
+	// アニメーション処理
 	AnimProcess();
+	// 選択処理
 	SelectProcess();
-
-
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 描画処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool ModeGameOver::Render() {
 	base::Render();
     // モデルの描画

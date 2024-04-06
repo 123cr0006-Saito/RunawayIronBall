@@ -8,7 +8,10 @@
 #include "ScreenVibration.h"
 
 ScreenVibration* ScreenVibration::_instance = nullptr;
-
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// ＠return 無し
+//----------------------------------------------------------------------
 ScreenVibration::ScreenVibration() {
 	_instance = this;
 	vibration_x = 0.0f;
@@ -18,11 +21,20 @@ ScreenVibration::ScreenVibration() {
 	time = 0.0f;
 	use_flag = false;
 };
-
+//----------------------------------------------------------------------
+// @brief デストラクタ
+// ＠return 無し
+//----------------------------------------------------------------------
 ScreenVibration::~ScreenVibration() {
 	_instance = nullptr;
 };
-
+//----------------------------------------------------------------------
+// @brief 揺れる最大の移動値と時間を設定
+// ＠param x x軸の最大移動値
+// ＠param y y軸の最大移動値
+// ＠param time 揺れる時間
+// ＠return 無し
+//----------------------------------------------------------------------
 void ScreenVibration::SetVibration(float x, float y, float time) {
 		vibration_x = x;
 		vibration_y = y;
@@ -31,19 +43,34 @@ void ScreenVibration::SetVibration(float x, float y, float time) {
 		this->time = time;
 		use_flag = true;
 };
+//----------------------------------------------------------------------
+// @brief x軸の最大移動値と時間を設定
+// ＠param x x軸の最大移動値
+// ＠param time 揺れる時間
+// ＠return 無し
+//----------------------------------------------------------------------
 void ScreenVibration::SetVibrationX(float x, float time){
 	vibration_x = x;
 	max_x = x;
 	this->time = time;
 	use_flag = true;
 };
+//----------------------------------------------------------------------
+// @brief y軸の最大移動値と時間を設定
+// ＠param y y軸の最大移動値
+// ＠param time 揺れる時間
+// ＠return 無し
+//----------------------------------------------------------------------
 void ScreenVibration::SetVibrationY(float y, float time){
 	vibration_y = y;
 	max_y = y;
 	this->time = time;
 	use_flag = true;
 };
-
+//----------------------------------------------------------------------
+// @brief 画面を揺らす処理
+// ＠return 無し
+//----------------------------------------------------------------------
 void ScreenVibration::UpdateScreenVibration() {
 	if (use_flag) {
 		//z軸に対して

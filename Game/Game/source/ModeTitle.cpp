@@ -12,13 +12,16 @@
 #include "ModeLoading.h"
 #include "ModePause.h"
 #include "math.h"
-
-
+//----------------------------------------------------------------------
+// @brief 初期化処理
+// ＠return 成功しているかどうか
+//----------------------------------------------------------------------
 bool ModeTitle::Initialize() {
 	if (!base::Initialize()) { return false; }
 
 	_input = XInput::GetInstance();
 	_modeCount = 0;
+	//画像の読み込み
 	_handleMap["BackGround"] = ResourceServer::LoadGraph("T_BackGround", _T("res/ModeTitle/title_base.png"));
 	_handleMap["Title"] = ResourceServer::LoadGraph("T_Title",_T("res/ModeTitle/UI_Title.png"));
 	_handleMap["Start"] = ResourceServer::LoadGraph("T_Start",_T("res/ModeTitle/UI_Start.png"));
@@ -59,7 +62,10 @@ bool ModeTitle::Initialize() {
 
 	return true;
 }
-
+//----------------------------------------------------------------------
+// @brief 終了処理
+// ＠return 成功しているか
+//----------------------------------------------------------------------
 bool ModeTitle::Terminate() {
 	base::Terminate();
 	delete[] _MoveVec;
@@ -68,22 +74,34 @@ bool ModeTitle::Terminate() {
 	_handleMap.clear();
 	return true;
 }
-
+//----------------------------------------------------------------------
+// @brief ゲーム開始処理
+// ＠return 無し
+//----------------------------------------------------------------------
 void ModeTitle::SelectGameStart() {
 	ModeServer::GetInstance()->Del(this);
 	ModeServer::GetInstance()->Add(NEW ModeLoading(),100,"Loading");
 };
-
+//----------------------------------------------------------------------
+// @brief オプション選択処理
+// ＠return 無し
+//----------------------------------------------------------------------
 void ModeTitle::SelectOption() {
 	ModeServer::GetInstance()->Add(NEW ModePause(), 10, "Pause");
 };
-
+//----------------------------------------------------------------------
+// @brief ゲーム終了処理
+// ＠return 無し
+//----------------------------------------------------------------------
 void ModeTitle::SelectGameEnd() {
 	if (_input->GetTrg(XINPUT_BUTTON_A)) {
 		global.exit_count = true;
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief 選択項目の更新処理
+// ＠return 無し
+//----------------------------------------------------------------------
 void ModeTitle::UpdateSelectItems(){
 	int count = 0;
 
@@ -123,7 +141,10 @@ void ModeTitle::UpdateSelectItems(){
 		}
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief 画面が割れる演出とゲーム開始の更新処理
+// ＠return 無し
+//----------------------------------------------------------------------
 void ModeTitle::UpdateSelectToGameStart() {
 	int nowTime = GetNowCount() - _currentTime;
 	if (nowTime >= 1000) {
@@ -133,7 +154,10 @@ void ModeTitle::UpdateSelectToGameStart() {
 		}
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief 画面が割れる演出の処理
+// ＠return 無し
+//----------------------------------------------------------------------
 void ModeTitle::UpdateCrackedScreen(){
 	for (int i = 0; i < _frameSize; i++) {
 		MATRIX matrix = MGetIdent();
@@ -146,7 +170,10 @@ void ModeTitle::UpdateCrackedScreen(){
 		MV1SetFrameUserLocalMatrix(_modelHandle, i, matrix);
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief タイトル画面の描画処理
+// ＠return 無し
+//----------------------------------------------------------------------
 void ModeTitle::DrawTitleItems(){
 	DrawGraph(0, 0, _handleMap["BackGround"], true);
 	int handleX, handleY;
@@ -174,29 +201,42 @@ void ModeTitle::DrawTitleItems(){
 		DrawRotaGraph(centerX + handleX / 2, centerY[i], extRate, 0.0f, _handleMap[_handleNameList[handleNum]], true);
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief 割れる画面の描画処理
+// ＠return 無し
+//----------------------------------------------------------------------
 void ModeTitle::DrawCrackedScreen() {
 	MV1DrawModel(_modelHandle);
 };
-
+//----------------------------------------------------------------------
+// @brief 更新処理
+// ＠return 成功しているか
+//----------------------------------------------------------------------
 bool ModeTitle::Process() {
 	base::Process();
 	if (!_IsGameStart) {
+		//タイトル画面の更新
 		UpdateSelectItems();
 	}
 	else {
+		//割れる画面の更新
 		UpdateSelectToGameStart();
 	}
 
 	return true;
 }
-
+//----------------------------------------------------------------------
+// @brief 描画処理
+// ＠return 成功しているか
+//----------------------------------------------------------------------
 bool ModeTitle::Render() {
 	base::Render();
 	if (!_IsGameStart) {
+		//タイトル画面の描画
 		DrawTitleItems();
 	}
 	else {
+		//割れる画面の描画
 		DrawCrackedScreen();
 	}
 

@@ -14,6 +14,7 @@ const unsigned short PlaneEffectBase::vertexOrder[6] = { 0,1,2,2,1,3 };
 // @param handle ハンドル
 // @param handleMax ハンドルの最大数
 // @param speed アニメーションの速度
+// @return 無し
 //----------------------------------------------------------------------
 PlaneEffectBase::PlaneEffectBase(VECTOR pos, int sizeX, int* handle, int handleMax, int speed) {
 	_animCount = 0;
@@ -30,22 +31,31 @@ PlaneEffectBase::PlaneEffectBase(VECTOR pos, int sizeX, int* handle, int handleM
 	_sizeX = sizeX;
 	_sizeY = y * _sizeX / x;
 };
-
+//----------------------------------------------------------------------
+// @brief デストラクタ
+// @return 無し
+//----------------------------------------------------------------------
 PlaneEffectBase::~PlaneEffectBase() {
 	delete[] _handle;  _handle = nullptr;
 };
-
+//----------------------------------------------------------------------
+// @brief 更新処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool PlaneEffectBase::Process(){
 	if (GetNowCount() - _currentTime >= _speed) {
-	_currentTime = GetNowCount();
-	_animCount++;
-	if (_animCount > _animMax) {
-	_IsPlay = false;
-	}
+	     _currentTime = GetNowCount();
+	     _animCount++;
+	     if (_animCount > _animMax) {
+	         _IsPlay = false;
+	     }
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 描画処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool PlaneEffectBase::Render() {
 	return true;
 };

@@ -18,14 +18,14 @@ public:
 	void AnimProcess();
 	void SelectProcess();
 protected:
-	XInput* _input;
-	std::unordered_map<std::string,int> _handle;
-	int _selectItem;
+	XInput* _input;// 入力クラス
+	std::unordered_map<std::string,int> _handle;// 画像ハンドルの管理コンテナ
+	int _selectItem;// 選択中の項目
 
-	bool _selectEnd;
-	int _model;
-	int _modelFrame;
-	VECTOR _targetPos;
-	VECTOR _cameraPos;
+	bool _selectEnd;// 選択終了
+	int _model;// モデルハンドル
+	int _modelFrame;// モデルのフレーム
+	VECTOR _targetPos;// カメラのターゲット座標
+	VECTOR _cameraPos;// カメラの位置
 };
 

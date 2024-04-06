@@ -16,7 +16,7 @@ public:
 	myJson(std::string fileName);
 	~myJson();
 
-	nlohmann::json _json;
-	int _size;
+	nlohmann::json _json;// jsonファイルの内容
+	int _size;// jsonファイルのサイズ
 };
 

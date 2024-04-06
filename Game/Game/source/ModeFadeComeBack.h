@@ -21,10 +21,10 @@ public:
 	virtual bool Process()override;
 	virtual bool Render()override;
 protected:
-	bool _IsProcessSkip;
-	int _fadeEnd, _fadeStart;
-	int _changeLayer;
-	std::string _changeModeName;
-	ModeBase* _deleteMode;
+	bool _IsProcessSkip;// フェード時プロセスをスキップするかどうか
+	int _fadeEnd, _fadeStart;// フェードの開始と終了のアルファ値
+	int _changeLayer;// レイヤーを変更する場合
+	std::string _changeModeName;// 削除するモード名
+	ModeBase* _deleteMode;// 削除するモード
 };
 

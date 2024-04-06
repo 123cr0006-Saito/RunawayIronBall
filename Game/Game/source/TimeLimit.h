@@ -31,10 +31,10 @@ class TimeLimit
 	int GetStartTime() { return _setTime / 1000; }
 
 protected:
-	float _startTime,_timeLimit;
-	float _setTime;
-	float _remainingTime;
-	int _stopTime;
-	bool _IsStop;
+	float _startTime,_timeLimit;// 開始時間と制限時間
+	float _setTime;// 設定時間
+	float _remainingTime;// 残り時間
+	int _stopTime;// ストップした時間
+	bool _IsStop;// 時間を止めるかどうか
 };
 

@@ -17,6 +17,6 @@ public :
 	virtual bool Process();
 	virtual bool Render();
 protected:
-	LoadingPlayer* _chara;
+	LoadingPlayer* _chara;// loading中に表示するキャラクター
 };
 

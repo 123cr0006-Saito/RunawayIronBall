@@ -19,10 +19,10 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 protected:
-	XInput* _input;
-	int _handle;
-	int _stageNum;
-	RotationCamera* _camera;
-	int _currentTime;
+	XInput* _input;// 入力クラス
+	int _handle;// ステージの名前の画像ハンドル
+	int _stageNum;// ステージの番号
+	RotationCamera* _camera;// カメラクラス
+	int _currentTime;// 現在の時間
 };
 

@@ -6,13 +6,11 @@
 // 残り時間を表示するUIクラス
 //----------------------------------------------------------------------
 #include "UITimeLimit.h"
-UITimeLimit::UITimeLimit(VECTOR pos,VECTOR numPos, int size, int* numhandle, int colonHandle,int frameHandle) : UIBase(pos, size, numhandle){
-	_timeLimit = TimeLimit::GetInstance();
-	_colonHandle = colonHandle;
-	_frameHandle = frameHandle;
-	_numPos = numPos;
-};
-
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @param pos 位置
+// ＠return 無し
+//----------------------------------------------------------------------
 UITimeLimit::UITimeLimit(VECTOR pos) :UIBase(pos){
 	_timeLimit = TimeLimit::GetInstance();
 	_numPos = VAdd(pos,VGet(200,130,0));
@@ -22,18 +20,27 @@ UITimeLimit::UITimeLimit(VECTOR pos) :UIBase(pos){
 	_colonHandle = ResourceServer::Load("TimeColon", "res/UI/Time/UI_Time_Colon.png");
 	_frameHandle = ResourceServer::Load("TimeFrame", "res/UI/Time/UI_TIME_Gauge.png");
 };
-
+//----------------------------------------------------------------------
+// @brief デストラクタ
+// ＠return 無し
+//----------------------------------------------------------------------
 UITimeLimit::~UITimeLimit(){
 	_timeLimit = nullptr;
 	if (_handle != nullptr) {
 		delete[] _handle; _handle = nullptr;
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief 更新処理
+// ＠return 成功しているか
+//----------------------------------------------------------------------
 bool UITimeLimit::Process(){
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 描画処理
+// ＠return 成功しているか
+//----------------------------------------------------------------------
 bool UITimeLimit::Draw() {
 	DrawGraph(_pos.x, _pos.y, _frameHandle, true);
 	int time = _timeLimit->GetTimeLimit();

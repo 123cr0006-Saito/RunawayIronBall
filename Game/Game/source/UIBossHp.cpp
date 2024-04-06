@@ -8,7 +8,11 @@
 #include "UIBossHp.h"
 
 const unsigned short UIBossHp::vertex[6]{ 0,1,2,2,1,3 };
-
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @param pos 位置
+// @return 無し
+//----------------------------------------------------------------------
 UIBossHp::UIBossHp(VECTOR pos) : UIBase(pos){
 	_handle = NEW int[2];
 	std::string path = "res/UI/Boss/";
@@ -33,7 +37,7 @@ UIBossHp::UIBossHp(VECTOR pos) : UIBase(pos){
 		{flontHandleSizeX,flontHandleSizeY + flontHandleY,0.0f,1.0f},
 		{flontHandleSizeX + flontHandleX,flontHandleSizeY + flontHandleY,1.0f,1.0f}
 	};
-
+	// 頂点の設定
 	for (int i = 0; i < 4; i++) {
 		_vertex[i].pos = VAdd(_pos, VGet(posTbl[i][0], posTbl[i][1], 0));
 		_vertex[i].u = posTbl[i][2];
@@ -42,13 +46,21 @@ UIBossHp::UIBossHp(VECTOR pos) : UIBase(pos){
 		_vertex[i].rhw = 1.0f;
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief デストラクタ
+// @return 無し
+//----------------------------------------------------------------------
 UIBossHp::~UIBossHp(){
 	if (_handle != nullptr) {
 		delete[] _handle; _handle = nullptr;
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief bossの最大HPから見た現在のHPの割合を計算
+// @param nowHp 現在のHP
+// @param maxHp 最大HP
+// @return 無し
+//----------------------------------------------------------------------
 void UIBossHp::SetRatio(int nowHp,int maxHp){
 	static int oldHp;
 	
@@ -70,11 +82,16 @@ void UIBossHp::SetRatio(int nowHp,int maxHp){
 
 	oldHp = nowHp;
 };
-
+//----------------------------------------------------------------------
+// @brief 更新処理
+// @param nowHp bossの現在のHP
+// @param maxHp bossの最大HP
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool UIBossHp::Process(int nowHp, int maxHp){
-
+	// HPの割合を計算
 	SetRatio(nowHp,maxHp);
-
+	// 頂点の設定
 	for (int i = 0; i < 2; i++) {
 		_vertex[i * 2].pos.x = _vertex[1].pos.x - flontHandleX * ( _ratio);
 		_vertex[i * 2].u = 1-_ratio;
@@ -82,7 +99,10 @@ bool UIBossHp::Process(int nowHp, int maxHp){
 
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 描画処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool UIBossHp::Draw(){
 	// 経験値フレーム
 	DrawGraph(_pos.x, _pos.y, _handle[0], true);
