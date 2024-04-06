@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename CrystarPattern1.h
+// ＠date: 2024/01/15
+// ＠author: saito ko
+// @explanation
+// 一番弱いクライスターのパターン1(ガラス)のクラス 突進攻撃をします
+//----------------------------------------------------------------------
 #pragma once
 #include "EnemyBase.h"
 #include "CrystarRoof.h"
@@ -26,7 +33,7 @@ public:
 
 	int GetModelHandle() { return _model; }
 protected:
-	static int _collisionFrame;
+	static int _collisionFrame;//当たり判定のフレーム番号
 	static enum ANIMSTATE : int {
 		IDLE = 0,
 		WALK,
@@ -35,7 +42,7 @@ protected:
 		HANDSTANDLOOP,
 		HANDBUTT
 	};
-	ANIMSTATE _animState;
-	CrystarRoof* _roof;
+	ANIMSTATE _animState;//アニメーションの状態
+	CrystarRoof* _roof;//クライスターの屋根
 };
 

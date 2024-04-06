@@ -1,5 +1,11 @@
+//----------------------------------------------------------------------
+// @filename ModeInstructions.cpp
+// ＠date: 2024/01/31
+// ＠author: saito ko
+// @explanation
+// ポーズ画面から操作説明画面を表示するクラス
+//----------------------------------------------------------------------
 #include "ModeInstructions.h"
-
 bool ModeInstructions::Initialize() {
 	if (!base::Initialize()) { return false; }
 	_input = XInput::GetInstance();

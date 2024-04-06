@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename ModeLoading.h
+// ＠date: 2024/03/06
+// ＠author: saito ko
+// @explanation
+// loading時のキャラクターや鉄球などの処理・描画を行うクラス
+//----------------------------------------------------------------------
 #pragma once
 #include "appframe.h"
 #include "ModeFadeComeBack.h"

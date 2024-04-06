@@ -58,6 +58,7 @@ namespace {
 	constexpr unsigned int 	C_P_ENABLE_IB_ATTACK_COLLISION		= 100;
 	constexpr unsigned int 	C_P_ENABLE_IB_FOLLOWING_MODE		= 101;
 	constexpr unsigned int 	C_P_ENABLE_IB_INTERPOLATION			= 102;
+	constexpr unsigned int 	C_P_ENABLE_IB_AFTERGLOW = 103;
 }
 
 Player::Player()
@@ -677,7 +678,7 @@ bool Player::UpdateLevel()
 		float size = 5.0f * _levelParam[_nowLevel].magnification;
 		VECTOR* pos = GetIBPosPtr();
 		int effectHandle = ResourceServer::Load("FX_3D_Level_Up", "res/Effekseer/FX_3D_Level_Up/FX_3D_Level_Up.efkefc");
-		EffekseerPosSynchro* effect = new EffekseerPosSynchro(effectHandle, pos, size);
+		EffekseerPosSynchro* effect = NEW EffekseerPosSynchro(effectHandle, pos, size);
 		EffectManeger::GetInstance()->LoadEffect(effect);
 		// レベルアップボイス
 		int randomNum = rand() % 2 + 1; // ランダムで音声を再生　1~2
@@ -798,6 +799,9 @@ void Player::CheckFrameDataCommand()
 		}
 		case C_P_ENABLE_IB_INTERPOLATION:
 			_ironBall->SetMoveState(IB_MOVE_STATE::INTERPOLATION);
+			break;
+		case C_P_ENABLE_IB_AFTERGLOW:
+			_ironBall->SetEnabledAfterGlow(static_cast<bool>(param));
 			break;
 		}
 	}

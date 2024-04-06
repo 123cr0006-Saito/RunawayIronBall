@@ -10,10 +10,6 @@ BuildingBase::BuildingBase()
 
 BuildingBase::~BuildingBase()
 {
-	if (_modelHandle != -1) {
-	/*	MV1DeleteModel(_modelHandle);
-		_modelHandle = -1;*/
-	}
 }
 
 void BuildingBase::Init(int modelHandle, std::string objName, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength)

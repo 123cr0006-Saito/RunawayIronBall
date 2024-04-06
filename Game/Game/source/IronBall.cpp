@@ -60,6 +60,11 @@ IronBall::~IronBall()
 	_input = nullptr;
 	_parent = nullptr;
 	_parentPos = nullptr;
+	delete _cell; _cell = nullptr;
+	delete _chainCell; _chainCell = nullptr;
+	for (auto list : _afterglowList) {
+		delete list;
+	}
 }
 
 void IronBall::Init() {
@@ -119,6 +124,12 @@ void IronBall::Init() {
 	_chainCell = NEW Cell();
 	_chainCell->_obj = this;
 	_chainCell->_objType = OBJ_TYPE::PL_IB_CHAIN;
+
+
+	int afterglow = MV1SearchFrame(_iModelHandle, "left_eye02");
+	_afterglowList.push_back(NEW Afterglow(_iModelHandle, afterglow, 10, LoadGraph("res/Effect/afterglow.png"), 20));
+	afterglow = MV1SearchFrame(_iModelHandle, "right_eye02");
+	_afterglowList.push_back(NEW Afterglow(_iModelHandle, afterglow, 10, LoadGraph("res/Effect/afterglow.png"), 20));
 }
 
 
@@ -164,6 +175,11 @@ void IronBall::Process() {
 	}
 
 	AnimProcess();
+
+	// cŒõ‚Ìˆ—
+	for (auto list : _afterglowList) {
+		list->Process();
+	}
 }
 
 void IronBall::MoveProcess()
@@ -338,6 +354,10 @@ void IronBall::AnimProcess()
 
 void IronBall::Render()
 {
+	// cŒõ‚Ì•`‰æ
+	for (auto list : _afterglowList) {
+		list->Render();
+	}
 	// ½‚Ì•`‰æ
 	for (int i = 0; i < CHAIN_MAX; i++) {
 		// ƒ‚ƒfƒ‹‚ÉÀ•W‚ğ”½‰f‚³‚¹‚é
@@ -361,6 +381,12 @@ void IronBall::UpdateChainCollision()
 {
 	_chainCapsuleCollision.up_pos = _cPos[0];
 	_chainCapsuleCollision.down_pos = _cPos[CHAIN_MAX - 1];
+}
+
+void IronBall::SetEnabledAfterGlow(bool enable) {
+	for (auto list : _afterglowList) {
+		list->SetUpdate(enable);
+	}
 }
 
 void IronBall::SetPlayerModelHandle(int handle)

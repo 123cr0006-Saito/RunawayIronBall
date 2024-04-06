@@ -1,11 +1,21 @@
+//----------------------------------------------------------------------
+// @filename ModeClear.cpp
+// ＠date: 2024/03/16
+// ＠author: saito ko
+// @explanation
+// クリア時にリザルトと次のステージへの遷移を管理するクラス
+//----------------------------------------------------------------------
 #include "AppFrame.h"
 #include "ModeClear.h"
 #include "ModeScenario.h"
 #include "ModeFadeComeBack.h"
-
-ModeClear::ModeClear() {
-	_modeGame = nullptr;
-	input = nullptr;
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @param elapsedTime 経過時間
+// @param startTime 開始時間
+//----------------------------------------------------------------------
+ModeClear::ModeClear(int elapsedTime, int startTime) {
+	_input = nullptr;
 	_model = 0;
 	_attachAnim = 0;
 	_frameCount = 0;
@@ -18,28 +28,13 @@ ModeClear::ModeClear() {
 	_valuationSize = 0.0f;
 	_IsStaging = false;
 	_IsNextStage = false;
-};
 
-ModeClear::ModeClear(ModeGame* mode){
-	_modeGame = mode;
-	input = nullptr;
-	_model = 0;
-	_attachAnim = 0;
-	_frameCount = 0;
-	_maxCount = 0;
-	_alphaValue = 0;
-	_currentTime = 0;
-	_valuation = 0;
-	_valuationTime = 0;
-	_nowValuationTime = 0;
-	_valuationSize = 0.0f;
-	_IsStaging = false;
-	_IsNextStage = false;
+	Valuation(elapsedTime,startTime);
 };
 
 bool ModeClear::Initialize(){
 	if (!base::Initialize()) { return false; }
-	input = XInput::GetInstance();
+	_input = XInput::GetInstance();
 	_model = ResourceServer::Load("Player", "res/Character/cg_player_girl/Cg_Player_Girl.mv1");
 	_frameCount = 0;
 	int animNum = MV1GetAnimIndex(_model, "MO_PL_Win_Pose");
@@ -53,15 +48,13 @@ bool ModeClear::Initialize(){
 	SetCameraNearFar(20.0f, 30000.0f);
 	MV1SetPosition(_model, VGet(0, 0, 0));
 	global._soundServer->DirectPlay("Result");
-	Valuation();
 
 	return true;
 };
 
 bool ModeClear::Terminate(){
 	base::Terminate();
-	input = nullptr;
-	_modeGame = nullptr;
+	_input = nullptr;
 	return true;
 };
 
@@ -84,19 +77,18 @@ void ModeClear::AnimProcess(){
 	}
 };
 
-void ModeClear::Valuation(){
-	if(TimeLimit::GetInstance() != nullptr){
-		TimeLimit* time = TimeLimit::GetInstance();
-		_valuationTime =time->GetElapsedTime();
-		int startTime = time->GetStartTime ();
+void ModeClear::Valuation(int elapsedTime, int startTime){
+
+		_valuationTime = elapsedTime;
+		int gameStartTime = startTime;
 		int valuationCount = 3; // 0 s 1 a 2 b 3 c
 		float valuationPercentage[3] = {10.0f,7.5f,5.0f};
 		for(int i = 0; i < 3; i++){
-			int Parcentage = startTime / 10 * valuationPercentage[i];
+			int Parcentage = gameStartTime / 10 * valuationPercentage[i];
 		   if(_valuationTime <= Parcentage)valuationCount--;
 		}
 		_valuation = valuationCount;
-	}
+	
 };
 
 void ModeClear::ValuationProcess(){
@@ -162,13 +154,12 @@ bool ModeClear::Process(){
 		chain->Process();
 	}
 
-	if (_IsNextStage && input->GetTrg(XINPUT_BUTTON_A)) {
-		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000, this), 100, "ClearFade");
+	if (_IsNextStage && _input->GetTrg(XINPUT_BUTTON_A) && !ModeServer::GetInstance()->Search("Fade")) {
+		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000, this), 100, "Fade");
 		if (global.GetStageNum() < 4) {
 			ModeServer::GetInstance()->Add(NEW ModeGame(), 1, "Game");
 		}
 		else {
-			ClearDrawScreen();
 			ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario02.csv", 2), 0, "Scenario");
 			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000, this,"Scenario",50), 100, "Fade");
 		}

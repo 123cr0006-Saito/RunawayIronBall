@@ -23,7 +23,7 @@ void ModelColor::Init(int modelHandle)
 
 	for (int i = 0; i < MV1GetMaterialNum(_modelHandle); i++)
 	{
-		MATERIAL* material = new MATERIAL();
+		MATERIAL* material = NEW MATERIAL();
 		material->index = i;
 		material->textureHandle = MV1GetTextureGraphHandle(_modelHandle, i);
 		material->color = MV1GetMaterialEmiColor(_modelHandle, i);

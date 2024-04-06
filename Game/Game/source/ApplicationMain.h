@@ -1,6 +1,5 @@
 #pragma once
 #include "appframe.h"
-#include"ModeGame.h"
 
 class ApplicationMain : public ApplicationBase
 {
@@ -16,7 +15,5 @@ public:
 
 protected:
 	XInput* _input;
-	Vibration* _vibration;
-
 	Fps* _fpsController;
 }; 

@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename ModeScenario.cpp
+// ＠date: 2024/02/20
+// ＠author: saito ko
+// @explanation
+// シナリオを再生するクラス
+//----------------------------------------------------------------------
 #include "ModeScenario.h"
 #include "ModeFadeComeBack.h"
 #include "ModeMovie.h"
@@ -9,7 +16,11 @@ std::unordered_map<int, int> ModeScenario::_charaHandleMap;
 std::unordered_map<int, std::string> ModeScenario::_nameHandleMap;
 std::unordered_map<int, int> ModeScenario::_backGroundHandleMap;
 std::unordered_map<int, int> ModeScenario::_textBoxHandle;
-
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @param scenarioFile シナリオのデータが入ったファイルのパス
+// @param scenarioNum シナリオの番号
+//----------------------------------------------------------------------
 ModeScenario::ModeScenario(std::string scenarioFile,int scenarioNum) {
 	_scenarioNum = scenarioNum;
 	LoadOnceHandleData();
@@ -189,9 +200,9 @@ void  ModeScenario::ScenarioUniqueProcess(){
 		break;
 	case 2:
 		ModeServer::GetInstance()->Add(NEW ModeBossBattle(), 1, "BossBattle");
-		if (!ModeServer::GetInstance()->Search("ScenarioFade")) {
-			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1500, this,"BossBattle",100), 1000, "ScenarioFade");
-		}
+	/*	if (!ModeServer::GetInstance()->Search("ScenarioFade")) {
+			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1500, this,"BossBattle",100, true), 1000, "ScenarioFade");
+		}*/
 		break;
 	case 3:
 		ModeServer::GetInstance()->Add(NEW ModeMovie(), 10, "Movie");

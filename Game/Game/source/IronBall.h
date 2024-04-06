@@ -1,6 +1,7 @@
 #pragma once
 #include "appframe.h"
 #include "ObjectBase.h"
+#include "Afterglow.h"
 
 #define CHAIN_MAX 12
 
@@ -13,7 +14,7 @@ class IronBall : public ObjectBase
 {
 public:
 	IronBall();
-	~IronBall();
+	virtual ~IronBall();
 
 	void Init();
 	void Process();
@@ -40,7 +41,8 @@ public:
 	Capsule GetChainCollision() { return _chainCapsuleCollision; }
 	void UpdateIBCollision();
 	void UpdateChainCollision();
-
+	// サイトウが作成しました。
+	void SetEnabledAfterGlow(bool enable);// 目の残光を表示するかどうかを設定
 
 	// このオブジェクトを保有している親オブジェクト関連の関数
 	// プレイヤーのモデルハンドルをセット
@@ -115,5 +117,5 @@ private:
 
 	int _playerModelHandle;
 
-
+	std::vector<Afterglow*> _afterglowList;
 };

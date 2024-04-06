@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename EffekseerBase.h
+// ＠date: 2024/02/8
+// ＠author: saito ko
+// @explanation
+// エフェクシアを再生するための基本的なクラス
+//----------------------------------------------------------------------
 #pragma once
 #include "EffectBase.h"
 #include "EffekseerForDXLib.h"
@@ -13,13 +20,13 @@ public:
 	virtual bool Render()override;
 
 protected:
-	int _effectResourceHandle;
-	int _playingEffectHandle;
-	VECTOR  _pos;
-	float _height;
-	float _speed;
-	float _size;
-	bool _loopFlag;
+	int _effectResourceHandle;//エフェクトのリソースハンドル
+	int _playingEffectHandle;//再生中のエフェクトハンドル
+	VECTOR  _pos;//エフェクトの座標
+	float _height;//エフェクトの高さ
+	float _speed;//エフェクトの再生速度
+	float _size;//エフェクトの大きさ
+	bool _loopFlag;//エフェクトのループフラグ
 };
 
 typedef EffekseerBase EffekseerFixed; //座標固定のエフェクト

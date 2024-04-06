@@ -1,19 +1,15 @@
+//----------------------------------------------------------------------
+// @filename ModeGameOver.cpp
+// ＠date: 2024/02/15
+// ＠author: saito ko
+// @explanation
+// ゲームオーバー時に遷移し、リトライかタイトルに戻るかを選択するモード
+//----------------------------------------------------------------------
 #include "AppFrame.h"
 #include "ModeGameOver.h"
 #include "ModeTitle.h"
 #include "ModeGame.h"
 #include "ModeFadeComeBack.h"
-
-ModeGameOver::ModeGameOver(ModeGame* mode) {
-	_modeGame = mode;
-	_modeBossBattle = nullptr;
-};
-
-ModeGameOver::ModeGameOver(ModeBossBattle* mode){
-	_modeGame = nullptr;
-	_modeBossBattle = mode;
-
-};
 
 bool ModeGameOver::Initialize() {
 	if (!base::Initialize()) { return false; }
@@ -68,7 +64,7 @@ void ModeGameOver::SelectProcess(){
 		global._soundServer->DirectPlay("SE_Select");
 	}
 
-	if (_input->GetTrg(XINPUT_BUTTON_A)&& !ModeServer::GetInstance()->Search("Fade")) {
+	if (_input->GetTrg(XINPUT_BUTTON_A) && !ModeServer::GetInstance()->Search("Fade")) {
 		_selectEnd = true;
 		global._soundServer->DirectPlay("SE_Press");
 		if (_selectItem == 0) {
@@ -77,7 +73,7 @@ void ModeGameOver::SelectProcess(){
 			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(3000, this), 100, "Fade");
 		}
 		else {
-			ModeServer::GetInstance()->Add(new ModeTitle(), 1, "Title");
+			ModeServer::GetInstance()->Add(NEW ModeTitle(), 1, "Title");
 			ModeServer::GetInstance()->Del(this);
 		}
 	}

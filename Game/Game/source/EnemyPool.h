@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename EnemyPool.cpp
+// ＠date: 2023/12/14
+// ＠author: saito ko
+// @explanation
+// エネミーの生成、管理を行うクラス
+//----------------------------------------------------------------------
 #pragma once
 //ObjectPool   今回は敵の初期データや配置など敵の種類によって
 // 読み込んだデータで配置したいのでテンプレートではなく個別に作ろうと思う
@@ -45,10 +52,10 @@ public:
 	int GetSize() { return _enemy.size(); };
 
 private:
-	std::vector<EnemyBase*> _enemy;
-	std::map<std::string, EnemyParam> _enemyParametersMap;
-	std::vector<VECTOR> _enemyInitPos;
+	std::vector<EnemyBase*> _enemy;//敵のコンテナ
+	std::map<std::string, EnemyParam> _enemyParametersMap;//敵のパラメータ
+	std::vector<VECTOR> _enemyInitPos;//敵の初期位置
 
-	CollisionManager* _collisionManager;
+	CollisionManager* _collisionManager;//当たり判定を管理するクラス
 };
 

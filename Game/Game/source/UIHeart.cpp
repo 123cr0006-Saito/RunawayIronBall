@@ -1,5 +1,11 @@
+//----------------------------------------------------------------------
+// @filename UIHeart.cpp
+// ＠date: 2023/12/25
+// ＠author: saito ko
+// @explanation
+// プレイヤーHPのUIを表示するクラス
+//----------------------------------------------------------------------
 #include "UIHeart.h"
-
 const int UIHeart::_damageSeconds = 3000;
 
 UIHeart::UIHeart(VECTOR pos, std::string handleName) : UIBase::UIBase(pos, handleName)
@@ -33,7 +39,7 @@ UIHeart::UIHeart(VECTOR pos, int size, int* handle, int damageHandleNum) : UIBas
 	_player = Player::GetInstance();
 	float _x, _y;
 	GetGraphSizeF(_handle[_handleNum], &_x, &_y);
-	_heart = new DrawGauge(_handle[damageHandleNum], 3, _x, true);
+	_heart = NEW DrawGauge(_handle[damageHandleNum], 3, _x, true);
 	_currentTime = 0;
 	_oldHp = 4;
 	_IsDamage = false;

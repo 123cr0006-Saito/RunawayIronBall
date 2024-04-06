@@ -155,6 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\Afterglow.cpp" />
     <ClCompile Include="source\BoardParabola.cpp" />
     <ClCompile Include="source\AnimationChain.cpp" />
     <ClCompile Include="source\ModeMovie.cpp" />
@@ -235,6 +236,7 @@
     <ClCompile Include="source\UIBossHp.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\Afterglow.h" />
     <ClInclude Include="source\BoardParabola.h" />
     <ClInclude Include="source\AnimationChain.h" />
     <ClInclude Include="source\ModeMovie.h" />

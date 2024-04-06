@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename TimeLimit.cpp
+// —date: 2024/02/27
+// —author: saito ko
+// @explanation
+// §ŒÀŠÔ‚ÌŠÇ—‚ğs‚¤ƒNƒ‰ƒX
+//----------------------------------------------------------------------
 #include "TimeLimit.h"
 TimeLimit* TimeLimit::_instance = nullptr;
 TimeLimit::TimeLimit() {

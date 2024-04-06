@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename TargetZoomCamera.cpp
+// ＠date: 2024/03/09
+// ＠author: saito ko
+// @explanation
+// 今のカメラの位置を指定の位置に移動する処理を行うクラス
+//----------------------------------------------------------------------
 #include "TargetZoomCamera.h"
 
 TargetZoomCamera::TargetZoomCamera(VECTOR target, VECTOR nextPos, VECTOR keepDir, VECTOR nextDir, int time) :CameraBase() {

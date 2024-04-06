@@ -1,6 +1,16 @@
+//----------------------------------------------------------------------
+// @filename EnemyBase.cpp
+// ＠date: 2023/12/14
+// ＠author: saito ko
+// @explanation
+// エネミーの基本行動や共通の変数が書かれた基底クラス
+//----------------------------------------------------------------------
 #include "EnemyBase.h"
 #include "EnemyPool.h"
-
+//----------------------------------------------------------------------
+// @brief: コンストラクタ
+// @return: 無し
+//----------------------------------------------------------------------
 EnemyBase::EnemyBase() : ObjectBase() {
 	_player = nullptr;
 
@@ -15,11 +25,21 @@ EnemyBase::EnemyBase() : ObjectBase() {
 
 	_cell->_objType = OBJ_TYPE::EN;
 };
-
+//----------------------------------------------------------------------
+// @brief: デストラクタ
+// @return: 無し
+//----------------------------------------------------------------------
 EnemyBase::~EnemyBase() {
 	_player = nullptr;
 };
-
+//----------------------------------------------------------------------
+// @brief: エネミーの初期化
+// @param: model モデルハンドル
+// @param: pos 初期座標
+// @param: param パラメータ
+// @param: name エネミーの名前
+// @return: 無し
+//----------------------------------------------------------------------
 bool EnemyBase::Create(int model, VECTOR pos, EnemyParam param, std::string name) {
 	_model = model;
 
@@ -49,11 +69,18 @@ bool EnemyBase::Create(int model, VECTOR pos, EnemyParam param, std::string name
 
 	return true;
 };
-
-void EnemyBase::Init(VECTOR pos, float scale) {
-	//スケール値は未定
-};
-
+//----------------------------------------------------------------------
+// @brief: エネミーの初期化
+// @param: pos 初期座標
+// @param: scale エネミーの大きさ
+// @return: 無し
+//----------------------------------------------------------------------
+void EnemyBase::Init(VECTOR pos, float scale) {};
+//----------------------------------------------------------------------
+// @brief: エネミーの初期化
+// @param: pos 初期座標
+// @return: 無し
+//----------------------------------------------------------------------
 void EnemyBase::Init(VECTOR pos) {
 	_IsUse = true;
 
@@ -74,27 +101,38 @@ void EnemyBase::Init(VECTOR pos) {
 	_weightExp = _weightExp * randSize;
 
 };
-
-void EnemyBase::InheritanceInit() {
-
-};
-
-void EnemyBase::AnimInit() {
-
-};
-
+//----------------------------------------------------------------------
+// @brief: 固有変数の初期化
+// @return: 無し
+//----------------------------------------------------------------------
+void EnemyBase::InheritanceInit() {};
+//----------------------------------------------------------------------
+// @brief: アニメーションの初期化
+// @return: 無し
+//----------------------------------------------------------------------
+void EnemyBase::AnimInit() {};
+//----------------------------------------------------------------------
+// @brief: エネミーの位置を設定
+// @return: 無し
+//----------------------------------------------------------------------
 void EnemyBase::SetPos(VECTOR pos) {
 	_pos = pos;
 	_saveNextPoint = pos;
 };
-
+//----------------------------------------------------------------------
+// @brief: エネミーの初期位置を設定
+// @return: 無し
+//----------------------------------------------------------------------
 void EnemyBase::SetKindPos(VECTOR pos) {
 	_pos = pos;
 	_orignPos = pos;
 	_savePos = pos;
 	_nextMovePoint = pos;
 };
-
+//----------------------------------------------------------------------
+// @brief: エネミーの回転処理
+// @return: 成功したかどうか
+//----------------------------------------------------------------------
 bool EnemyBase::ModeSearchToTurn() {
 	_easingFrame++;
 	_rotation.y = Easing::Linear(_easingFrame, _oldDir, _nextDir, 60);
@@ -114,17 +152,14 @@ bool EnemyBase::ModeSearchToTurn() {
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief: エネミーの移動処理
+// @return: 成功したかどうか
+//----------------------------------------------------------------------
 bool EnemyBase::ModeSearchToMove() {
-	//移動処理
-	/*VECTOR move = VSub(_nextMovePoint, _pos);
-	move = VNorm(move);
-	move = VScale(move, _speed);
-	_pos = VAdd(_pos, move);*/
 	VECTOR move = VScale(_forwardVec, _speed);
 	_pos = VAdd(_pos, move);
 
-	//if (StopPos()) {
 	if (GetNowCount() - _currentTime >= _stopTime * 1000) {
 		_stopTime = (float)(rand() % 200) / 100.0f + 2.0f;//2秒から4秒まで止まる　小数点２桁までのランダム
 		_currentTime = GetNowCount();
@@ -133,7 +168,10 @@ bool EnemyBase::ModeSearchToMove() {
 
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief: エネミーの移動後の休憩処理
+// @return: 成功したかどうか
+//----------------------------------------------------------------------
 bool EnemyBase::ModeSearchToCoolTime() {
 	if (GetNowCount() - _currentTime >= _stopTime * 1000) {
 
@@ -157,7 +195,11 @@ bool EnemyBase::ModeSearchToCoolTime() {
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief: エネミーの索敵処理
+// @param: plAttack プレイヤーが攻撃しているかどうか
+// @return: 成功したかどうか
+//----------------------------------------------------------------------
 bool EnemyBase::ModeSearch(bool plAttack) {
 	switch (_searchState) {
 	case SEARCHTYPE::MOVE:
@@ -199,7 +241,10 @@ bool EnemyBase::ModeSearch(bool plAttack) {
 
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief: エネミーの追跡処理
+// @return: 成功したかどうか
+//----------------------------------------------------------------------
 bool EnemyBase::ModeDisCover() {
 	//移動処理
 	VECTOR move = VSub(_player->GetCollision().down_pos, _pos); move.y = 0.0f;//これをオンにするとy軸の移動がなくなる
@@ -230,15 +275,24 @@ bool EnemyBase::ModeDisCover() {
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief: エネミーの攻撃処理
+// @return: 成功したかどうか
+//----------------------------------------------------------------------
 bool EnemyBase::ModeAttack() {
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief: エネミーのクールタイム処理
+// @return: 成功したかどうか
+//----------------------------------------------------------------------
 bool EnemyBase::ModeCoolTime() {
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief: エネミーのノックバック処理
+// @return: 成功したかどうか
+//----------------------------------------------------------------------
 bool EnemyBase::ModeKnockBack() {
 	int nowTime = GetNowCount() - _currentTime;
 	float CoolTime = 3.0f * 1000; //攻撃してからのクールタイム   
@@ -254,7 +308,10 @@ bool EnemyBase::ModeKnockBack() {
 
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief: エネミーの死亡処理
+// @return: 成功したかどうか
+//----------------------------------------------------------------------
 bool EnemyBase::ModeDead() {
 	VECTOR knockBackVecter = VScale(_knockBackDir, _knockBackSpeedFrame);
 	_pos = VAdd(_pos, knockBackVecter);
@@ -265,11 +322,17 @@ bool EnemyBase::ModeDead() {
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief: エネミーの個別処理
+// @return: 成功したかどうか
+//----------------------------------------------------------------------
 bool EnemyBase::IndividualProcessing() {
 	return true;
 }
-
+//----------------------------------------------------------------------
+// @brief: エネミーの位置設定
+// @return: 成功したかどうか
+//----------------------------------------------------------------------
 bool EnemyBase::SetState() {
 	//最終的なモデルの位置や角度を調整
 	if (_model != 0) {
@@ -278,7 +341,10 @@ bool EnemyBase::SetState() {
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief: エネミーの重力処理
+// @return: 成功したかどうか
+//----------------------------------------------------------------------
 bool EnemyBase::SetGravity() {
 	//重力処理
 	_gravity++;
@@ -289,7 +355,12 @@ bool EnemyBase::SetGravity() {
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief: エネミーに攻撃時、ダメージとノックバックの設定
+// @param: vDir 攻撃方向
+// @param: damage ダメージ
+// @return: 無し
+//----------------------------------------------------------------------
 void EnemyBase::SetKnockBackAndDamage(VECTOR vDir, float damage) {
 	if (_knockBackSpeedFrame <= 0) {
 		InheritanceInit();
@@ -321,11 +392,18 @@ void EnemyBase::SetKnockBackAndDamage(VECTOR vDir, float damage) {
 		}
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief: フレームデータのコマンド処理
+// @return: 無し
+//----------------------------------------------------------------------
 void EnemyBase::CommandProcess() {
 
 };
-
+//----------------------------------------------------------------------
+// @brief: エネミーの更新処理
+// @param: plAttack プレイヤーが攻撃しているかどうか
+// @return: 成功したかどうか
+//----------------------------------------------------------------------
 bool EnemyBase::Process(bool plAttack) {
 	if (_IsUse) {
 
@@ -379,33 +457,25 @@ bool EnemyBase::Process(bool plAttack) {
 
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief: エネミーの描画処理
+// @return: 成功したかどうか
+//----------------------------------------------------------------------
 bool  EnemyBase::DebugRender() {
 	DrawSphere3D(VAdd(_pos, _diffeToCenter), _r, 8, GetColor(255, 0, 0), GetColor(255, 0, 0), false);
-
-	//デバッグ用
-	//索敵範囲などの描画
-	// MATRIX matrix = Math::MMultXYZ(0.0f, _direction, 0.0f);
-	// VECTOR now_dir = VScale(Math::MatrixToVector(matrix, 2), -1);//フォワードベクトル
-	////------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	////視界
-	//DrawLine3D(_pos, VAdd(_pos, VScale(now_dir, 3000)),GetColor(255,0,0));
-	//DrawLine3D(_pos, VAdd(_pos,VTransform( VScale(now_dir, 3000),MGetRotY(45*3.14/180))), GetColor(0, 255, 0));
-	//DrawLine3D(_pos, VAdd(_pos, VTransform(VScale(now_dir, 3000), MGetRotY(-45 * 3.14 / 180))), GetColor(0, 255, 0));
-	////------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	////聴覚
-	//TDD::ThrDimColOfCircleDraw(_pos, 2000, 0, false);
-	////-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	////攻撃時の索敵範囲
-	//TDD::ThrDimColOfCircleDraw(_pos, 10000, 0, false);
-	////-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief: エネミーの固有の描画処理
+// @return: 成功したかどうか
+//----------------------------------------------------------------------
 bool EnemyBase::IndividualRendering() {
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief: エネミーの描画処理
+// @return: 成功したかどうか
+//----------------------------------------------------------------------
 bool EnemyBase::Render() {
 	if (_model != 0) {   
 #ifdef _DEBUG

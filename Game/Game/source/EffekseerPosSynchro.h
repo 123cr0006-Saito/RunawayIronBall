@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename EffekseerPosSynchro.h
+// ＠date: 2024/02/8
+// ＠author: saito ko
+// @explanation
+// 位置情報のあるアドレスを受け取り移動するエフェクシアを再生するクラス
+//----------------------------------------------------------------------
 #pragma once
 #include "EffekseerBase.h"
 //座標が変化する effekseerクラス
@@ -11,7 +18,7 @@ public :
 	bool Process()override;
 	bool Render()override;
 private :
-	VECTOR* _pos;
-	int _currentTime;
+	VECTOR* _pos;//座標のアドレス
+	int _currentTime;//再生時間
 };
 

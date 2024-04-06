@@ -42,15 +42,14 @@ bool ModeBossBattle::Initialize() {
 	_classificationEffect = NEW ClassificationEffect();
 	_effectManeger = NEW EffectManeger();
 
-
 	{
-		global._soundServer->Add("SE_Boss_Stay", new SoundItemSE("Sound/SE/Enemy/SE_Boss_Stay.wav"));
-		global._soundServer->Add("SE_BOSS_Confusion", new SoundItemSE("Sound/SE/Enemy/SE_BOSS_Confusion.wav"));
-		global._soundServer->Add("SE_BOSS_Rush", new SoundItemSE("Sound/SE/Enemy/SE_BOSS_Rush.wav"));
-		global._soundServer->Add("SE_BOSS_Jump_Attack_01", new SoundItemSE("Sound/SE/Enemy/SE_BOSS_Jump_Attack_01.wav"));
-		global._soundServer->Add("SE_BOSS_Jump_Attack_02", new SoundItemSE("Sound/SE/Enemy/SE_BOSS_Jump_Attack_02.wav"));
-		global._soundServer->Add("SE_BOSS_Rotate", new SoundItemSE("Sound/SE/Enemy/SE_BOSS_Rotate.wav"));
-		global._soundServer->Add("SE_BOSS_Glass", new SoundItemSE("Sound/SE/Enemy/SE_BOSS_Glass.wav"));
+		global._soundServer->Add("SE_Boss_Stay", NEW SoundItemSE("Sound/SE/Enemy/SE_Boss_Stay.wav"));
+		global._soundServer->Add("SE_BOSS_Confusion", NEW SoundItemSE("Sound/SE/Enemy/SE_BOSS_Confusion.wav"));
+		global._soundServer->Add("SE_BOSS_Rush", NEW SoundItemSE("Sound/SE/Enemy/SE_BOSS_Rush.wav"));
+		global._soundServer->Add("SE_BOSS_Jump_Attack_01", NEW SoundItemSE("Sound/SE/Enemy/SE_BOSS_Jump_Attack_01.wav"));
+		global._soundServer->Add("SE_BOSS_Jump_Attack_02", NEW SoundItemSE("Sound/SE/Enemy/SE_BOSS_Jump_Attack_02.wav"));
+		global._soundServer->Add("SE_BOSS_Rotate", NEW SoundItemSE("Sound/SE/Enemy/SE_BOSS_Rotate.wav"));
+		global._soundServer->Add("SE_BOSS_Glass", NEW SoundItemSE("Sound/SE/Enemy/SE_BOSS_Glass.wav"));
 	}
 
 	int size = 100;
@@ -94,11 +93,6 @@ bool ModeBossBattle::Terminate() {
 
 bool ModeBossBattle::Process() {
 	base::Process();
-	global._timer->TimeElapsed();
-
-	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_RIGHT_THUMB)) {
-		_boss->SetDamageStake(50);
-	}
 
 	_player->Process(_camera->GetCamY());
 
@@ -106,8 +100,7 @@ bool ModeBossBattle::Process() {
 
 	_bossHp->Process(_boss->GetStakeHp(), _boss->GetStakeMaxHp());
 
-
-	
+	_classificationEffect->Process();
 
 	// 杭が破壊されていない場合に判定を行う
 	if (_boss->GetIsStakeBroken() == false) {
@@ -291,19 +284,13 @@ bool ModeBossBattle::Process() {
 
 
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_START)) {
-		//_enemyPool->Init();
-		//_player->SetDamage();
 		ModeServer::GetInstance()->Add(NEW ModePause(), 10, "Pause");
 	}
 
 
-	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_BACK)) {
-		//_drawDebug = !_drawDebug;
-	}
-
-	if (_player->GetHP() <= 0) {
+	if (_player->GetHP() <= 0 && !ModeServer::GetInstance()->Search("Fade")) {
 		global._soundServer->BgmFadeOut(2000);
-		ModeServer::GetInstance()->Add(NEW ModeGameOver(this), 0, "GameOver");
+		ModeServer::GetInstance()->Add(NEW ModeGameOver(), 0, "GameOver");
 		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(2500, this,"GameOver", 50), 100, "Fade");
 	}
 
@@ -342,8 +329,6 @@ bool ModeBossBattle::Render() {
 	// ライト設定
 	SetUseLighting(TRUE);
 
-
-
 	//------------------------------------
 	// シャドウマップの設定　
 	// shadowCount 0 シャドウマップに描画 1 モデルの描画
@@ -375,8 +360,6 @@ bool ModeBossBattle::Render() {
 	}
 
 
-
-
 	SetUseZBuffer3D(FALSE);
 
 	_effectManeger->Render();
@@ -393,11 +376,5 @@ bool ModeBossBattle::Render() {
 	    	_gaugeUI[0]->Draw(_gaugeHandle[3]);
 	    }
 	}
-
-
-	//for (auto itr = _buildingBase.begin(); itr != _buildingBase.end(); ++itr) {
-	//	(*itr)->DrawDebugInfo();
-	//}
-
 	return true;
 }

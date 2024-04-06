@@ -8,7 +8,7 @@ class House : public BuildingBase
 {
 public:
 	House();
-	~House();
+	virtual ~House();
 
 	void Init(int modelHandle,std::string objName, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength, int hp, int exp,int suppression);
 	void Process() override;

@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename bone.h
+// ＠date: 2023/12/30
+// ＠author: saito ko
+// @explanation
+// キャラクターの髪の毛やリボンなどをboneを物理演算で動かすためのクラス
+//----------------------------------------------------------------------
 #pragma once
 #include <vector>
 #include "dxlib.h"
@@ -10,7 +17,7 @@ public:
 	~bone();
 	void SetMain(Vector3D* pos_list);//boneの位置をセットする
 	void SetBoneDir(Vector3D world_dir_vec, Vector3D boon_pos, int target_frame, int parent_frame, MATRIX trans_mat, Vector3D dir_parent);;
-	void SetDebugDraw() { _transFlag = 1 - _transFlag; };//;透過するかどうか
+	void SetDebugDraw() { _isTrans = 1 - _isTrans; };//;透過するかどうか
 	void DebugProcess(int transNum);//透過フラグが立っていたらboneのフレームを透過　透過したいフレームと連携していなかった場合引数で指定
 	void DebugRender();//透過されていた場合デバッグ表示
 
@@ -27,8 +34,8 @@ private:
 	std::vector<int> _frameList;//フレームの番号リスト
 
 	//デバッグ表示
-	bool _transFlag;//表示するかしないか
-	bool _oldTransFlag;
+	bool _isTrans;//表示するかしないか
+	bool _oldIsTrans;
 
 	// ↓ ここから下は物理演算で使う変数や関数
 public:

@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename ModeTitle.cpp
+// ＠date: 2023/12/25
+// ＠author: saito ko
+// @explanation
+// タイトル画面の処理を行うクラス
+//----------------------------------------------------------------------
 #include "AppFrame.h"
 #include "ApplicationMain.h"
 #include "ModeTitle.h"

@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename UIExpPoint.cpp
+// ＠date: 2024/12/25
+// ＠author: saito ko
+// @explanation
+// 経験値のUIを表示するクラス
+//----------------------------------------------------------------------
 #include "UIExpPoint.h"
 
 const unsigned short UIExpPoint::vertex[6]{ 0,1,2,2,1,3 };
@@ -6,7 +13,7 @@ UIExpPoint::UIExpPoint(VECTOR pos) :
 	UIBase(pos) 
 {
 	_player = Player::GetInstance();
-	_handle = new int[2];
+	_handle = NEW int[2];
 	std::string path = "res/UI/Gauge/";
 	std::string name[2] = {"UI_EXP_Gauge_Black","UI_EXP_Gauge_Red"};
 	for (int i = 0; i < 2; i++) {

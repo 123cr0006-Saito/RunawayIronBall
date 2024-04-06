@@ -386,6 +386,13 @@ void ResourceServer::DeleteResourceAll() {
 		}
 	}
 
+	for (auto itr = _multMap.begin(); itr != _multMap.end(); ++itr) {
+		for (int i = 0; i < itr->second.AllNum; i++) {
+			DeleteGraph(itr->second.handle[i]);
+		}
+		delete[] itr->second.handle;
+	}
+
 	InitSoundMem();//‰¹‚¾‚¯‚Í“Ç‚İ‚ñ‚¾‚à‚Ì‚ğ‚Ü‚Æ‚ß‚ÄÁ‚¹‚é‚Ì‚Å‚±‚ÌŠÖ”‚Åíœ‚·‚é
 	//”z—ñ‚Ìíœ
 	_handleMap.clear();

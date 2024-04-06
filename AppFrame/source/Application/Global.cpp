@@ -10,6 +10,7 @@ Global::Global() {
 	_stageNum = 1;
 	_allExp = 0;
 	_oldExp = 0;
+	IsVibration = 1; 
 	SoundLoad();
 };
 

@@ -7,10 +7,6 @@ House::House()
 
 House::~House()
 {
-	if (_modelHandle != -1) {
-		//MV1DeleteModel(_modelHandle);
-		//_modelHandle = -1;
-	}
 	SAFE_DELETE(_breakObj);
 }
 

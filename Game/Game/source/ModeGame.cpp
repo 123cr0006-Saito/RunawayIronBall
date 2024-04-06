@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename ModeGame.cpp
+// ＠date: 2023/12/14
+// ＠author: saito ko
+// @explanation
+// ボスバトル以外のステージを管理するクラス
+//----------------------------------------------------------------------
 #include "ModeGame.h"
 #include "ModeClear.h"
 #include "ModePause.h"
@@ -217,15 +224,15 @@ std::vector<std::string> ModeGame::LoadObjectName(std::string fileName) {
 }
 
 bool ModeGame::LoadStage(std::string fileName) {
-	myJson* json = new myJson(fileName);
+	myJson json = myJson(fileName);
 	int j = 0;
 
-	_enemyPool->Create(*json,global.GetStageNum());
+	_enemyPool->Create(json,global.GetStageNum());
 
-	_floor->Create(*json, global.GetStageNum());
+	_floor->Create(json, global.GetStageNum());
 
 	// タワー
-	std::vector<ModeGame::OBJECTDATA> towerData = LoadJsonObject(*json, "Tower");
+	std::vector<ModeGame::OBJECTDATA> towerData = LoadJsonObject(json, "Tower");
 	for (auto&& towerParam : towerData) {
 
 		std::array<int, 3> towerModelHandle;
@@ -251,7 +258,7 @@ bool ModeGame::LoadStage(std::string fileName) {
 				return temp._name == nameList;
 		});
 
-		std::vector<ModeGame::OBJECTDATA> objectData = LoadJsonObject(*json, nameList);
+		std::vector<ModeGame::OBJECTDATA> objectData = LoadJsonObject(json, nameList);
 		std::string modelName = nameList;
 		_objectName.push_back(modelName);
 		Suppression::GetInstance()->AddSuppression((*itr)._suppression * objectData.size());
@@ -274,7 +281,7 @@ bool ModeGame::LoadStage(std::string fileName) {
 	}
 
 	// プレイヤーの座標指定
-	nlohmann::json loadObject = (*json)._json.at("Player_Start_Position");
+	nlohmann::json loadObject = json._json.at("Player_Start_Position");
 	VECTOR pos;
 	loadObject.at(0).at("translate").at("x").get_to(pos.x);
 	loadObject.at(0).at("translate").at("y").get_to(pos.z);
@@ -299,7 +306,7 @@ bool ModeGame::Process() {
 	_enemyPool->Process(enabledIBAttackCollision);
 	_timeLimit->Process();
 	_fog->Process(global.GetStageNum());
-
+	_classificationEffect->Process();
 	// プレイヤーがステージ範囲外に出たら戻す
 	VECTOR playerPos = _player->GetPosition();
 	float stageWidth[3] = {STAGE_ONE_WIDTH,STAGE_TWO_WIDTH,STAGE_THREE_WIDTH};
@@ -334,7 +341,7 @@ bool ModeGame::Process() {
 		global._soundServer->BgmFadeOut(2000);
 		_gameOverCnt++;	
 		if (!transitionGameOver && _gameOverCnt > 160) {
-			ModeServer::GetInstance()->Add(NEW ModeGameOver(this), 0, "GameOver");
+			ModeServer::GetInstance()->Add(NEW ModeGameOver(), 0, "GameOver");
 			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(2000,this, "GameOver", 50), 100, "Fade");
 			transitionGameOver = true;
 		}
@@ -382,10 +389,10 @@ bool ModeGame::GateProcess() {
 		float gR = _gate->GetR();
 
 		// ゴールゲートの当たり判定
-		if (Collision3D::SphereCol(pPos, pR, gPos, gR)) {
+		if (Collision3D::SphereCol(pPos, pR, gPos, gR) && !ModeServer::GetInstance()->Search("Clear")) {
 			global.AddStageNum();
 			ModeServer::GetInstance()->Del(this);
-			ModeServer::GetInstance()->Add(NEW ModeClear(),100,"Clear");	
+			ModeServer::GetInstance()->Add(NEW ModeClear(_timeLimit->GetElapsedTime(),_timeLimit->GetStartTime()),100,"Clear");	
 		}
 	}
 	return true;
