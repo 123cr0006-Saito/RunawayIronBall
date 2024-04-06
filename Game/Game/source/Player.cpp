@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename Player.cpp
+// ＠date: 2024/04/01
+// ＠author: Morozumi Hiroya
+// @explanation
+// プレイヤーキャラクターの制御・描画を行うクラス
+//----------------------------------------------------------------------
 #include "Player.h"
 #include "MotionList.h"
 
@@ -102,8 +109,6 @@ Player::Player()
 
 	_blastOffDir = VGet(0, 0, 0);
 	_blastOffPower = 0.0f;
-
-	_rightHandFrameIndex = -1;
 
 	global._oldExp = global.GetAllExp();
 
@@ -324,8 +329,6 @@ bool Player::Init(int modelHandle, VECTOR pos)
 	_blastOffDir = VGet(0, 0, 0);
 	_blastOffPower = 0.0f;
 
-	_rightHandFrameIndex = MV1SearchFrame(_modelHandle, "Character1_RightHand");
-
 	_modelColor = NEW ModelColor();
 	_modelColor->Init(_modelHandle);
 
@@ -362,10 +365,12 @@ bool Player::Process(float camAngleY)
 	// フレームデータの実行コマンドをチェックする
 	CheckFrameDataCommand();
 
+	// HPが0以下になったらゲームオーバー状態にする
 	if(_hp <= 0){
 		_animStatus = ANIM_STATE::GAMEOVER;
 	}
 
+	// GameOver状態でない場合は通常の処理を行う
 	if (_animStatus != ANIM_STATE::GAMEOVER) {
 
 		// 無敵状態関連の処理
@@ -387,52 +392,57 @@ bool Player::Process(float camAngleY)
 			// 移動処理
 
 			// 移動フラグ
-			bool _isMoved = false;
-
-			bool _isRunnning = false;
+			// 移動操作を行った場合はtrueにする
+			bool isMoved = false;
+			// 走っているかどうか
+			bool isRunning = false;
 
 			// 左スティックの入力情報を取得する
 			auto lStick = _input->GetAdjustedStick_L();
 			VECTOR vMoveDir = VGet(lStick.x, 0, lStick.y);
 			if (_canMove || _canMotionCancel) {
-				float size = VSize(vMoveDir);
+				float sqSize = VSize(vMoveDir);
 				// 左スティックの入力があったら
-				if (size > 0.000000f) {
-
+				if (sqSize > 0.000000f) {
+					float size = sqrtf(sqSize);
+					// ステックの倒し具合によって移動速度を変更する
 					float rate = size / MOVE_INPUT_VALUE_MAX;
 					rate = Math::Clamp(0.0f, 1.0f, rate);
 
 					float speedMax = _isTired ? MOVE_SPEED_TIRED_MAX : MOVE_SPEED_MAX;
 					float speedMin = _isTired ? MOVE_SPEED_TIRED_MIN : MOVE_SPEED_MIN;
-
 					_moveSpeed = Easing::Linear(rate, speedMin, speedMax, 1.0f);
-					if (rate > MOVE_RUN_THRESHOLD) _isRunnning = true;
+
+					// ステックの倒し具合が一定以上だったら走り状態にする
+					if (rate > MOVE_RUN_THRESHOLD) isRunning = true;
 
 					// 入力方向ベクトルを正規化する
 					vMoveDir = VScale(vMoveDir, 1.0f / size);
 					// 入力方向ベクトルにカメラの向きの補正をかけて移動方向を決定する
 					MATRIX mRot = MGetRotY(camAngleY);
 					vMoveDir = VTransform(vMoveDir, mRot);
-
+					// 移動処理
 					_pos = VAdd(_pos, VScale(vMoveDir, _moveSpeed));
 
 					_inputWorldDir = vMoveDir;
-					_isMoved = true;
+					isMoved = true;
 				}
 			}
 
+			// フレームデータのコマンドによる移動処理
 			if (_moveSpeedFWD != 0.f) {
 				_pos = VAdd(_pos, VScale(VNorm(_forwardDir), _moveSpeedFWD));
 				_moveSpeedFWD = 0.f;
 			}
 
+			// 移動アニメーションの更新
 			if (_canMotionCancel) {
-				if (_isMoved) {
+				if (isMoved) {
 					if (_isTired) {
 						_animStatus = ANIM_STATE::WALK_TIRED;
 					}
 					else {
-						if (_isRunnning) {
+						if (isRunning) {
 							_animStatus = ANIM_STATE::RUN;
 						}
 						else {
@@ -440,14 +450,17 @@ bool Player::Process(float camAngleY)
 						}
 					}
 
-
 					// キャラクターを滑らかに回転させる
+					// モデルの正面方向ベクトルと移動方向ベクトルの角度を計算する
 					float angle = Math::CalcVectorAngle(_forwardDir, vMoveDir);
+					// 1フレーム当たりの回転角
 					float rotRad = (2.0f * DX_PI_F) / 30.0f;
+					// angleがrotRadより小さい場合は移動方向をモデルの正面方向にする
 					if (rotRad > angle) {
 						_forwardDir = vMoveDir;
 					}
 					else {
+						// 回転処理
 						VECTOR vN = VCross(_forwardDir, vMoveDir);
 						_forwardDir = VTransform(_forwardDir, MGetRotAxis(vN, rotRad));
 					}
@@ -470,31 +483,37 @@ bool Player::Process(float camAngleY)
 			}
 		}
 
-		// スタミナの更新
+		// スタミナの回復処理
 		if (_isRecoveringStamina) {
 			_staminaRecoverySpeed = _staminaMax / STANIMA_RECOVERY_TIME;
 			_stamina += _staminaRecoverySpeed;
+			// スタミナが回復しきったら、疲れ状態を解除する
 			if (_stamina > _staminaMax) {
 				_stamina = _staminaMax;
 				_isTired = false;
-				//_animStatus = ANIM_STATE::IDLE;
 			}
 		}
 
+		// 回転攻撃の処理
 		if (_animStatus == ANIM_STATE::ROTATION_SWING) {
 			_isRecoveringStamina = false;
 			_stamina -= ROTAION_SWING_STAMINA_DECREASE;
 			_cntToStartRecoveryStamina = 90;
+
+			// スタミナが0になったら回転攻撃を解除しする
 			if (_stamina < 0.0f) {
 				_stamina = 0.0f;
+				// 疲れ状態にする
 				_isTired = true;
 				_isRotationSwinging = false;
 				_rotationCnt = 0;
 				_forwardDir = _inputWorldDir;
+				// コンボ攻撃3段目に移行する
 				_animStatus = ANIM_STATE::HORISONTAL_SWING_03;
 			}
 		}
 
+		// スタミナが減少するアクションを行ってから、一定時間経過したらスタミナを回復する
 		if (_cntToStartRecoveryStamina > 0) {
 			_cntToStartRecoveryStamina -= 1;
 			if (_cntToStartRecoveryStamina <= 0) {
@@ -532,6 +551,7 @@ bool Player::Process(float camAngleY)
 			}
 			else {
 				_rotationCnt = 0;
+				// 回転攻撃中にボタンを離したら回転攻撃を解除し、コンボ攻撃3段目に移行する
 				if (_isRotationSwinging) {
 					_animStatus = ANIM_STATE::HORISONTAL_SWING_03;
 
@@ -566,19 +586,24 @@ bool Player::Process(float camAngleY)
 			}
 		}
 
+		// 回転攻撃中のモデルの方向を更新する
 		if (_isRotationSwinging) {
 			float angle = _animStatus == ANIM_STATE::TO_ROTATION_SWING ? -(2.0f * DX_PI_F) / 80.0f : -(2.0f * DX_PI_F) / 30.0f;
 			_forwardDir = VTransform(_forwardDir, MGetRotY(angle));
 		}
 
-		// 回転処理
+		// モデルの正面を指定の方向に向ける（y軸回転）
 		Math::SetModelForward_RotationY(_modelHandle, _forwardDir);
 
 	}
 
 	BlastOffProcess();
 
+	MV1SetPosition(_modelHandle, _pos);
+
+	// 当たり判定の更新
 	UpdateCollision();
+
 	//-------------------
 	//齋藤が作成した関数です。
 	UpdateExp();
@@ -587,7 +612,7 @@ bool Player::Process(float camAngleY)
 
 	
 
-
+	// 鉄球の処理
 	_ironBall->Process();
 
 	_collisionManager->UpdateCell(_cell);
@@ -595,9 +620,12 @@ bool Player::Process(float camAngleY)
 	return true;
 }
 
+// アニメーション処理
 bool Player::AnimationProcess()
 {
+	// アニメーションの更新
 	_animManager->Process(static_cast<int>(_animStatus));
+	// 現在のアニメーション再生時間に実行するコマンドを確認する
 	_frameData->Process(static_cast<int>(_animStatus), _animManager->GetPlayTime());
 	return true;
 }
@@ -615,6 +643,7 @@ bool Player::BlastOffProcess()
 	return true;
 }
 
+// モデルの描画処理
 bool Player::Render()
 {
 	CharacterBase::Render();
@@ -622,8 +651,7 @@ bool Player::Render()
 	return true;
 }
 
-
-
+// 当たり判定の更新処理
 void Player::UpdateCollision()
 {
 	_capsuleCollision.down_pos = VAdd(_pos, VGet(0, _capsuleCollision.r, 0));
@@ -699,14 +727,7 @@ void Player::UpdateBone() {
 	}
 };
 
-VECTOR Player::GetRightHandPos()
-{
-	VECTOR handPos = VGet(0.0f, 0.0f, 0.0f);
-	MATRIX m = MV1GetFrameLocalWorldMatrix(_modelHandle, _rightHandFrameIndex);
-	handPos = VTransform(handPos, m);
-	return handPos;
-}
-
+// フレームデータの実行コマンドをチェックする
 void Player::CheckFrameDataCommand()
 {
 	// 実行コマンドリストを取得する
@@ -721,23 +742,28 @@ void Player::CheckFrameDataCommand()
 		// コマンドによって処理を分岐する
 		switch (command)
 		{
-		// モーションを変更する
+		// アニメーションを変更する
+		// @param param: 次に再生するアニメーションの番号
 		case C_P_CHANGE_MOTION:
 			_animStatus = static_cast<ANIM_STATE>(param);
 			break;
 		// 移動可能状態を変更する
+		// @param param: 移動可能状態を変更するフラグ
 		case C_P_ENABLE_MOVE:
 			_canMove = static_cast<bool>(param);
 			break;
+		// アニメーション内での正面方向への移動を設定する
+		// @param param: アニメーション内での正面方向への移動速度
 		case C_P_MOVE_FORWARD:
 			_moveSpeedFWD = param;
 			break;
 		// コンボの入力受付を開始する
-		// C_P_CHECK_CHANGE_COMBOが実行されるタイミングで_playNextComboAnimがtrueの場合に次のコンボモーションを再生する
+		// C_P_CHECK_CHANGE_COMBOが実行されるタイミングで_playNextComboAnimがtrueの場合に次のコンボアニメーションを再生する
 		case C_P_ACCEPT_COMBO_INPUT:
 			_playNextComboAnim = false;
 			break;
-		// コンボモーションの変更をチェックする
+		// コンボアニメーションの変更をチェックする
+		// C_P_ACCEPT_COMBO_INPUTコマンドが実行されてから、コンボ入力があった場合に次のコンボアニメーションを再生する
 		case C_P_CHECK_CHANGE_COMBO:
 			if (_playNextComboAnim) {
 				switch (_animStatus)
@@ -751,7 +777,8 @@ void Player::CheckFrameDataCommand()
 				}
 			}
 			break;
-		// 攻撃状態の変更をチェックする	
+		// 攻撃状態の変更をチェックする
+		// @param param: 攻撃状態を変更するフラグ
 		case C_P_CHECK_CHANGE_ATTACK_STATE:
 		{
 			// 次の攻撃状態を取得する
@@ -781,16 +808,23 @@ void Player::CheckFrameDataCommand()
 			_isAttackState = nextState;
 			break;
 		}
+		// モーションキャンセル可能状態を変更する
+		// @param param: モーションキャンセル可能状態を変更するフラグ
 		case C_P_ENACLE_MOTION_CANCEL:
 			_canMotionCancel = static_cast<bool>(param);
 			break;
+		// 無敵状態を変更する
+		// @param param: 無敵状態を変更するフレーム数
 		case C_P_SET_INVINCIBLE_CNT:
 			ChangeIsInvincible(true, static_cast<int>(param));
 			break;
-
+		// 鉄球の攻撃判定を有効化/無効化する
+		// @param param: 鉄球の攻撃判定を有効化/無効化するフラグ
 		case C_P_ENABLE_IB_ATTACK_COLLISION:
 			_ironBall->SetEnabledAttackCollision(static_cast<bool>(param));
 			break;
+		// 鉄球の移動状態を変更する
+		// @param param: 鉄球の移動状態（0:PUTTING_ON_SOCKET, 1:FOLLOWING）
 		case C_P_ENABLE_IB_FOLLOWING_MODE:
 		{
 			IB_MOVE_STATE nextState = static_cast<int>(param) == 0 ? IB_MOVE_STATE::PUTTING_ON_SOCKET : IB_MOVE_STATE::FOLLOWING;
@@ -807,6 +841,7 @@ void Player::CheckFrameDataCommand()
 	}
 }
 
+// デバッグ情報の描画
 void Player::DrawDebugInfo()
 {
 	for (int i = 0; i < sizeof(_bone) / sizeof(_bone[0]); i++) {

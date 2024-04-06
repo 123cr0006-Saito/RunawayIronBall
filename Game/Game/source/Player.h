@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename Player.h
+// ＠date: 2024/04/01
+// ＠author: Morozumi Hiroya
+// @explanation
+// プレイヤーキャラクターの制御・描画を行うクラス
+//----------------------------------------------------------------------
 #pragma once
 #include "appframe.h"
 #include "CharacterBase.h"
@@ -53,8 +60,10 @@ public:
 
 	bool Init(int modelHandle, VECTOR pos) override;
 	bool Process(float camAngleY);
+	// アニメーションの処理
 	bool AnimationProcess();
 	bool BlastOffProcess();
+	// モデルの描画処理
 	bool Render() override;
 
 	void SetPos(VECTOR pos) override { CharacterBase::SetPos(pos); UpdateCollision(); };
@@ -70,13 +79,6 @@ public:
 	float GetStamina() { return _stamina; }
 	float GetStaminaMax() { return _staminaMax; }
 	float GetStaminaRate() { return _stamina / _staminaMax; }
-
-	void Respawn() { 
-		_animStatus = ANIM_STATE::IDLE; 
-		_frameData->Process(static_cast<int>(_animStatus), 0);
-	}
-
-
 
 	void SetBone();//齋藤が作った関数です。 boneのフレームを探すために使用する関数です。後でjsonでの読み込みにするかもしれません。
 	//↓齋藤が作った関数です。どこにjson読み込みをどこに書けばよいのかわからなかったので、コンストラクタの次に呼び出す関数として実装しました。
@@ -94,6 +96,7 @@ public:
 	int GetPower() { return _power; }//ノックバック用の力を返します。
 
 	void UpdateBone();
+	// 当たり判定の更新処理
 	void UpdateCollision();
 
 	Capsule GetCollision() { return _capsuleCollision; };
@@ -106,16 +109,12 @@ public:
 
 	void SetBlastOffPower(VECTOR dir, float power) { _blastOffDir = dir; _blastOffPower = power; };
 
-
-
-	VECTOR GetRightHandPos();
-
 	VECTOR* GetIBPosPtr() { return _ironBall->GetBallPosPtr(); }
 
 
 	bool GetEnabledIBAttackCollision() { return _ironBall->GetEnabledAttackCollision(); }
 
-	// フレームデータのコマンドをチェックする
+	// フレームデータの実行コマンドをチェックする
 	void CheckFrameDataCommand();
 
 	static Player* GetInstance() { return _instance; }
@@ -194,9 +193,6 @@ private:
 
 	VECTOR _blastOffDir;
 	float _blastOffPower;
-
-
-	int _rightHandFrameIndex;
 
 
 

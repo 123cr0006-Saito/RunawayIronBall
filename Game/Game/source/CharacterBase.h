@@ -7,7 +7,6 @@ class CharacterBase : public ObjectBase
 {
 public: 
 	CharacterBase();
-	//CharacterBase(int modelHandle, VECTOR pos);
 	virtual ~CharacterBase();
 
 	virtual bool Init(int modelHandle, VECTOR pos);
