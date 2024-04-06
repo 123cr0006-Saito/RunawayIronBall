@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename ModelColor.cpp
+// ＠date: 2024/04/01
+// ＠author: Morozumi Hiroya
+// @explanation
+// モデルの白点滅処理を行うクラス
+//----------------------------------------------------------------------
 #include "ModelColor.h"
 
 ModelColor::ModelColor()
@@ -17,16 +24,18 @@ ModelColor::~ModelColor()
 	_defaultMaterial.clear();
 }
 
+// 初期化処理
 void ModelColor::Init(int modelHandle)
 {
 	_modelHandle = modelHandle;
 
+	// モデルのマテリアル情報を取得
 	for (int i = 0; i < MV1GetMaterialNum(_modelHandle); i++)
 	{
 		MATERIAL* material = NEW MATERIAL();
 		material->index = i;
 		material->textureHandle = MV1GetTextureGraphHandle(_modelHandle, i);
-		material->color = MV1GetMaterialEmiColor(_modelHandle, i);
+		material->emiColor = MV1GetMaterialEmiColor(_modelHandle, i);
 
 		_defaultMaterial.push_back(material);
 	}
@@ -35,29 +44,31 @@ void ModelColor::Init(int modelHandle)
 	_flickerTextureHandle = ResourceServer::LoadGraph("GirlTexWhite","res/Character/cg_player_girl/FlickerTexture.png");
 }
 
-void ModelColor::SetTexture(int textureHandle)
-{
-}
-
-void ModelColor::SetEmissiveColor(COLOR_F color)
-{
-}
-
-void ModelColor::ChangeFlickerTexture(bool b)
+// 白点滅処理
+// 以下の処理を繰り返して白点滅を行う
+// 1.テクスチャを白い画像に差し替え、エミッシブカラーを白にする
+// 2.元に戻す
+// @param activateFlicker: 白点滅状態の変更（true:1の状態にする, false:2の状態にする）
+void ModelColor::ChangeFlickerTexture(bool activateFlicker)
 {
 	for (auto itr = _defaultMaterial.begin(); itr != _defaultMaterial.end(); ++itr)
 	{
 		int nextTextureHandle;
 		COLOR_F nextColor;
-		if (b) {
+		// 有効化
+		if (activateFlicker) {
+			// テクスチャとエミッシブカラーを白に差し替え
 			nextTextureHandle = _flickerTextureHandle;
 			nextColor = _flickerEmissiveColor;
 		}
+		// 無効化
 		else {
+			// テクスチャとエミッシブカラーを元に戻す
 			nextTextureHandle = (*itr)->textureHandle;
-			nextColor = (*itr)->color;
+			nextColor = (*itr)->emiColor;
 		}
-		MV1SetMaterialEmiColor(_modelHandle, (*itr)->index, nextColor);
+		// モデルのマテリアルにテクスチャとエミッシブカラーを設定する
 		MV1SetTextureGraphHandle(_modelHandle, (*itr)->index, nextTextureHandle, FALSE);
+		MV1SetMaterialEmiColor(_modelHandle, (*itr)->index, nextColor);
 	}
 }
