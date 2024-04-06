@@ -1,4 +1,13 @@
+//----------------------------------------------------------------------
+// @filename ModePause.cpp
+// ＠date: 2023/12/25
+// ＠author: saito ko
+// @explanation
+// 音量設定や振動設定、操作説明画面、ゲーム終了を選択するポーズ画面のクラス
+//----------------------------------------------------------------------
 #include "ModePause.h"
+
+const unsigned short ModePause::vertex[6]{ 0,1,2,2,1,3 };
 
 bool ModePause::Initialize() {
 	if (!base::Initialize()) { return false; }
@@ -13,6 +22,7 @@ bool ModePause::Initialize() {
 	_handleMap["back"] = ResourceServer::LoadGraph("back","res/ModePause/UI_Menu.png");
 	_handleMap["check"] = ResourceServer::LoadGraph("check","res/ModePause/UI_Menu_Check.png");
 	_handleMap["checkBox"] = ResourceServer::LoadGraph("checkBox","res/ModePause/UI_Menu_Check_Box.png");
+	_handleMap["volumBarFrame"] = ResourceServer::LoadGraph("volumBarFrame", "res/ModePause/UI_Menu_Black_Gauge.png");
 	_handleMap["volumBar"] = ResourceServer::LoadGraph("volumBar","res/ModePause/UI_Menu_Pink_Gauge.png");
 	_handleMap["se"] = ResourceServer::LoadGraph("se","res/ModePause/UI_Menu_SE.png");
 	_handleMap["bgm"] = ResourceServer::LoadGraph("bgm","res/ModePause/UI_Menu_BGM.png");
@@ -29,7 +39,43 @@ bool ModePause::Initialize() {
 	_selectItem = 0;
 	_seVolum = global._soundServer->GetSeVolume();
 	_bgmVolum = global._soundServer->GetBgmVolume();
+
+	SetVertex();
 	return true;
+};
+
+void ModePause::SetVertex(){
+	int cx, cy;
+	GetGraphSize(_handleMap["volumBar"], &cx, &cy);
+	cx = cx / 2;
+	cy = cy / 2;
+	//     x,      y,    u,    v
+	float posTbl[][4] = {
+		{-cx,-cy,0.0f,0.0f},
+		{cx,-cy,1.0f,0.0f},
+		{-cx,cy,0.0f,1.0f},
+		{cx,cy,1.0f,1.0f}
+	};
+
+	VECTOR standardPos[2] = {VGet(641, 432, 0),VGet(630, 542, 0)};
+
+	for (int i = 0; i < 4; i++) {
+
+		VECTOR sePos = (VGet(posTbl[i][0], posTbl[i][1], 0));
+		VECTOR bgmPos = (VGet(posTbl[i][0], posTbl[i][1], 0));
+
+		_seGauge[i].pos = VAdd(standardPos[0], sePos);
+		_seGauge[i].u = posTbl[i][2];
+		_seGauge[i].v = posTbl[i][3];
+		_seGauge[i].dif = GetColorU8(255, 255, 255, 255);
+		_seGauge[i].rhw = 1.0f;
+
+		_bgmGauge[i].pos = VAdd(standardPos[1], bgmPos);
+		_bgmGauge[i].u = posTbl[i][2];
+		_bgmGauge[i].v = posTbl[i][3];
+		_bgmGauge[i].dif = GetColorU8(255, 255, 255, 255);
+		_bgmGauge[i].rhw = 1.0f;
+	}
 };
 
 bool ModePause::Terminate() {
@@ -50,7 +96,7 @@ void ModePause::SelectSetVolum(int& setVolum) {
 
 void ModePause::SelectSetVibration() {
 	if (_input->GetTrg(XINPUT_BUTTON_A)) {
-		_isVibration = 1 - _isVibration;
+		global.SetVibration();
 		global._soundServer->DirectPlay("SE_Press");
 	}
 };
@@ -76,6 +122,21 @@ void ModePause::SelectGameEnd() {
 	}
 };
 
+
+void ModePause::VertexProcess() {
+	int handleX, handleY;
+	GetGraphSize(_handleMap["volumBar"], &handleX, &handleY);
+	float seRatio = static_cast<float>(_seVolum) / 255;
+	float bgmRatio = static_cast<float>(_bgmVolum) / 255;
+
+	for (int i = 0; i < 2; i++) {
+		_seGauge[1 + 2 * i].pos.x = _seGauge[i * 2].pos.x + handleX * seRatio;
+		_seGauge[1 + 2 * i].u = seRatio;
+		_bgmGauge[1 + 2 * i].pos.x = _seGauge[2 * i].pos.x + handleX * bgmRatio;
+		_bgmGauge[1 + 2 * i].u = bgmRatio;
+	}
+};
+
 bool ModePause::Process() {
 	base::Process();
 	//オプション画面ではゲーム本編は実行しない
@@ -85,11 +146,11 @@ bool ModePause::Process() {
 	int count = 0;
 
 	//選択項目の切り替え
-	if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP)) {
+	if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP) || _input->GetTrg(XINPUT_BUTTON_STICK_UP)) {
 		count--;
 		global._soundServer->DirectPlay("SE_Select");
 	}
-	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN)) {
+	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN) || _input->GetTrg(XINPUT_BUTTON_STICK_DOWN)) {
 		count++;
 		global._soundServer->DirectPlay("SE_Select");
 	}
@@ -121,11 +182,15 @@ bool ModePause::Process() {
 		SelectGameEnd();
 		break;
 	}
+	// 音量の設定
+	global._soundServer->SetSeVolume(_seVolum);
+	global._soundServer->SetVoiceVolume(_seVolum);
+	global._soundServer->SetBgmVolume(_bgmVolum);
+	//頂点の更新
+	VertexProcess();
 
 	//オプションの終了
 	if (_input->GetTrg(XINPUT_BUTTON_START)) {
-		global._soundServer->SetSeVolume(_seVolum);
-		global._soundServer->SetBgmVolume(_bgmVolum);
 		ModeServer::GetInstance()->Del(this);
 	}
 	return true;
@@ -142,38 +207,42 @@ bool ModePause::Render() {
 	float handleX, handleY;
 
 	DrawGraph(0, 0, _handleMap["back"], true);
-	DrawGraph(1000, 550, _handleMap["checkBox"], true);
+	DrawGraph(800, 550, _handleMap["checkBox"], true);
+	if (global.GetVibration())  DrawGraph(800, 550, _handleMap["check"], true);
 
 	int length[] = { _seVolum,_bgmVolum };
 	GetGraphSizeF(_handleMap["volumBar"], &handleX, &handleY);
-	for (int i = 0; i < 2; i++) {
-		DrawExtendGraph(400, 380 + 110 * i, 400 + (handleX / 255 * length[i]), 380 + 110 * i + handleY, _handleMap["volumBar"],true);
+
+	VERTEX2D seGauge[4];
+	VERTEX2D bgmGauge[4];
+	float angle = -5 * DX_PI / 180;
+	MATRIX matrix = MGetRotZ(angle);
+	for(int i = 0 ; i < 4; i++){
+	    seGauge[i] = _seGauge[i];
+	    seGauge[i].pos = VTransform(_seGauge[i].pos,matrix);
+	    bgmGauge[i] = _bgmGauge[i];
+	    bgmGauge[i].pos = VTransform(_bgmGauge[i].pos, matrix);
 	}
 
-	int x = 180;
-	int y = 400;
+	VECTOR framePos[2] = { VGet(680, 380, 0),VGet(680, 490, 0) };
+	for(int i = 0 ; i < 2; i++){
+	    DrawRotaGraph(framePos[i].x,framePos[i].y,1.0f,angle, _handleMap["volumBarFrame"],true);
+	}
+
+	DrawPrimitiveIndexed2D(seGauge, 4, vertex, 6, DX_PRIMTYPE_TRIANGLELIST, _handleMap["volumBar"], true);
+	DrawPrimitiveIndexed2D(bgmGauge, 4, vertex, 6, DX_PRIMTYPE_TRIANGLELIST, _handleMap["volumBar"], true);
+
 
 	std::array<std::string,5> _itemList = { "se","bgm","vibration","gide","return" };
 
+	int selectItemX[5] ={260,280,370,320,920};
+	int selectItemY[5] = { 430,540,650,790,840 };
+
 	for (int i = 0; i < MAX_MODE; i++) {
-		int _selectedItems = 0;
 		float extRate = 1.0f;		
-		
 		if (_selectItem == i)  extRate = 1.1f; 
-		int length = 50;
-		switch (i) {
-		case 2:
-			//y -= 50;
-			GetGraphSizeF(_handleMap["check"], &handleX, &handleY);
-			if (_isVibration)  DrawGraph(980+handleX/2, y + handleY / 2 - 80,  _handleMap["check"], true);
-			break;
-		case 4:
-			x += 600;
-			break;
-		}
 		GetGraphSizeF(_handleMap[_itemList[i]], &handleX, &handleY);
-		DrawRotaGraph(x + handleX/2 , y + handleY/2 , extRate, 0.0f, _handleMap[_itemList[i]], true);
-		y += 100;
+		DrawRotaGraph(selectItemX[i], selectItemY[i], extRate, 0.0f, _handleMap[_itemList[i]], true);
 	}
 
 	return true;

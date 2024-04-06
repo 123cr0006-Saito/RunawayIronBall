@@ -1,16 +1,35 @@
+//----------------------------------------------------------------------
+// @filename CrystarRoof.cpp
+// ＠date: 2024/02/24
+// ＠author: saito ko
+// @explanation
+// クライスターの屋根部分を描画するためのクラス
+//----------------------------------------------------------------------
 #include "CrystarRoof.h"
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @param model モデルハンドル
+// @param parent 親モデルハンドル
+// @param frameName 屋根を配置する位置を検索するためのフレーム名
+// @return 無し
+//----------------------------------------------------------------------
 CrystarRoof::CrystarRoof(int model, int parent,std::string frameName) {
 	_model = model;
     _parent = parent;
 	_frame = MV1SearchFrame(parent,"Hip");
 	_joint = frameName;
+	Update();
 };
-
-CrystarRoof:: ~CrystarRoof() {
-
-};
-
-bool CrystarRoof::Updata(){
+//----------------------------------------------------------------------
+// @brief デストラクタ
+// @return 無し
+//----------------------------------------------------------------------
+CrystarRoof:: ~CrystarRoof() {};
+//----------------------------------------------------------------------
+// @brief 更新
+// @return 無し
+//----------------------------------------------------------------------
+bool CrystarRoof::Update(){
 	// 行列の初期化
 	MV1SetMatrix(_model, MGetIdent());
 
@@ -30,7 +49,10 @@ bool CrystarRoof::Updata(){
 	MV1SetMatrix(_model, MixMatrix);
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 描画
+// @return 無し
+//----------------------------------------------------------------------
 bool CrystarRoof::Render() {
 	MV1DrawModel(_model);
 	return true;

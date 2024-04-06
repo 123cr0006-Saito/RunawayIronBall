@@ -91,6 +91,10 @@
     <ClCompile Include="source\EffectManeger.cpp" />
     <ClCompile Include="source\Suppression.cpp" />
     <ClCompile Include="source\ModeBossBattle.cpp" />
+    <ClCompile Include="source\AnimationChain.cpp" />
+    <ClCompile Include="source\UIBossHp.cpp" />
+    <ClCompile Include="source\BoardParabola.cpp" />
+    <ClCompile Include="source\Afterglow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\IronBall.cpp" />
@@ -395,6 +399,10 @@
     <ClInclude Include="source\ModeBossBattle.h">
       <Filter>Mode</Filter>
     </ClInclude>
+    <ClInclude Include="source\AnimationChain.h" />
+    <ClInclude Include="source\UIBossHp.h" />
+    <ClInclude Include="source\BoardParabola.h" />
+    <ClInclude Include="source\Afterglow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CharacterBase.h">

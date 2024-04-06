@@ -4,9 +4,9 @@ namespace {
 	// ìSãÖÇÃSphereÉRÉäÉWÉáÉìÇÃîºåaÅiínñ Ç∆ÇÃîªíËópÅj
 	constexpr float IB_BODY_COLLISION_RADIUS = 50.0f;
 	// ìSãÖÇÃçUåÇSphereÉRÉäÉWÉáÉìÇÃîºåa
-	constexpr float IB_ATTACK_COLLISION_RADIUS = 100.0f;
+	constexpr float IB_ATTACK_COLLISION_RADIUS = 200.0f;
 	// çΩÇÃçUåÇCapsuleÉRÉäÉWÉáÉìÇÃîºåa
-	constexpr float CHAIN_COLLISION_RADIUS = 75.0f;
+	constexpr float CHAIN_COLLISION_RADIUS = 150.0f;
 }
 
 IronBall::IronBall()
@@ -60,6 +60,11 @@ IronBall::~IronBall()
 	_input = nullptr;
 	_parent = nullptr;
 	_parentPos = nullptr;
+	delete _cell; _cell = nullptr;
+	delete _chainCell; _chainCell = nullptr;
+	for (auto list : _afterglowList) {
+		delete list;
+	}
 }
 
 void IronBall::Init() {
@@ -119,6 +124,12 @@ void IronBall::Init() {
 	_chainCell = NEW Cell();
 	_chainCell->_obj = this;
 	_chainCell->_objType = OBJ_TYPE::PL_IB_CHAIN;
+
+
+	int afterglow = MV1SearchFrame(_iModelHandle, "left_eye02");
+	_afterglowList.push_back(NEW Afterglow(_iModelHandle, afterglow, 10, LoadGraph("res/Effect/afterglow.png"), 20));
+	afterglow = MV1SearchFrame(_iModelHandle, "right_eye02");
+	_afterglowList.push_back(NEW Afterglow(_iModelHandle, afterglow, 10, LoadGraph("res/Effect/afterglow.png"), 20));
 }
 
 
@@ -164,6 +175,11 @@ void IronBall::Process() {
 	}
 
 	AnimProcess();
+
+	// écåıÇÃèàóù
+	for (auto list : _afterglowList) {
+		list->Process();
+	}
 }
 
 void IronBall::MoveProcess()
@@ -338,6 +354,10 @@ void IronBall::AnimProcess()
 
 void IronBall::Render()
 {
+	// écåıÇÃï`âÊ
+	for (auto list : _afterglowList) {
+		list->Render();
+	}
 	// çΩÇÃï`âÊ
 	for (int i = 0; i < CHAIN_MAX; i++) {
 		// ÉÇÉfÉãÇ…ç¿ïWÇîΩâfÇ≥ÇπÇÈ
@@ -363,6 +383,12 @@ void IronBall::UpdateChainCollision()
 	_chainCapsuleCollision.down_pos = _cPos[CHAIN_MAX - 1];
 }
 
+void IronBall::SetEnabledAfterGlow(bool enable) {
+	for (auto list : _afterglowList) {
+		list->SetUpdate(enable);
+	}
+}
+
 void IronBall::SetPlayerModelHandle(int handle)
 {
 	_playerModelHandle = handle;
@@ -370,6 +396,16 @@ void IronBall::SetPlayerModelHandle(int handle)
 	_socketNo[0] = MV1SearchFrame(_playerModelHandle, "chain1");
 	_socketNo[1] = MV1SearchFrame(_playerModelHandle, "chain2");
 	_socketNo[2] = MV1SearchFrame(_playerModelHandle, "chain3");
+}
+
+void IronBall::SetParentPosPtr(VECTOR* pos)
+{
+	_parentPos = pos;
+
+	for (int i = 0; i < CHAIN_MAX; i++) {
+		_cPos[i] = VAdd(*_parentPos, VGet(0, 0, 10 * i));
+	}
+	_iPos = _cPos[CHAIN_MAX - 1];
 }
 
 void IronBall::DrawDebugInfo() {

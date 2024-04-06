@@ -1,22 +1,28 @@
+//----------------------------------------------------------------------
+// @filename ModeLoading.cpp
+// ＠date: 2024/03/06
+// ＠author: saito ko
+// @explanation
+// loading時のキャラクターや鉄球などの処理・描画を行うクラス
+//----------------------------------------------------------------------
 #include "ModeLoading.h"
-ModeLoading::ModeLoading(bool* flag) {
-	_chara = nullptr;
-	IsClear = flag;
-	SetUseASyncLoadFlag(true);
-	_chara = new LoadingPlayer();
-	SetUseASyncLoadFlag(false);
+#include "ModeScenario.h"
+bool ModeLoading::Initialize(){
+	_chara = NEW LoadingPlayer();
 	// 3Ｄ空間の画面の中心点を移動
 	int sizeX, sizeY, colorBit;
 	GetScreenState(&sizeX, &sizeY, &colorBit);
 	SetCameraScreenCenter(sizeX - 500, sizeY - 150);
-};
-
-bool ModeLoading::Initialize(){
+	global.ResourceLoad();
+	global.Init();
 	return true;
 };
 
 bool ModeLoading::Terminate(){
-	IsClear = nullptr;
+	// 3Ｄ空間の画面の中心点を移動
+	int sizeX, sizeY, colorBit;
+	GetScreenState(&sizeX, &sizeY, &colorBit);
+	SetCameraScreenCenter(sizeX / 2, sizeY / 2);
 	delete _chara; _chara = nullptr;
 	return true;
 };
@@ -26,16 +32,9 @@ bool ModeLoading::Process(){
 	ModeServer::GetInstance()->PauseProcessUnderLayer();
 	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
-	if ((*IsClear) && GetASyncLoadNum() <= 0) {
-		int time = 4 * 1000;
-		ModeServer::GetInstance()->Add(new ModeFade(time,true),1000,"FadeIn");
-		ModeServer::GetInstance()->Del(this);
-
-		// 3Ｄ空間の画面の中心点を移動
-		int sizeX, sizeY, colorBit;
-		GetScreenState(&sizeX, &sizeY, &colorBit);
-		SetCameraScreenCenter(sizeX / 2, sizeY / 2);
-
+	if (GetASyncLoadNum() <= 0 && !ModeServer::GetInstance()->Search("Fade")) {
+		ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario01.csv",	1), 50, "Scenario");
+		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000,this),1000,"Fade");
 	}
 
 	_chara->Process();

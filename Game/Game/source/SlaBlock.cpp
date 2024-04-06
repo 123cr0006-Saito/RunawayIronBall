@@ -1,12 +1,15 @@
+//----------------------------------------------------------------------
+// @filename SlaBlock.cpp
+// ＠date: 2023/12/14
+// ＠author: saito ko
+// @explanation
+// スラブロックの攻撃パターン1(岩)のクラス 1度だけプレイヤーの真上から落下攻撃を行います
+//----------------------------------------------------------------------
 #include "SlaBlock.h"
 
 int SlaBlock::_collisionFrame = -1;
 
-SlaBlock::SlaBlock() :EnemyBase::EnemyBase()
-{
-	//デバック時登録
-	//_model = ResourceServer::MV1LoadModel("res/katatumuri/snail.mv1");
-};
+SlaBlock::SlaBlock() :EnemyBase::EnemyBase(){};
 
 SlaBlock::~SlaBlock() {
 	delete _animManager;

@@ -12,14 +12,14 @@ int ResourceServer::Load(std::string key, std::string handleName) {
 	int value = 0;
 	int size = handleName.length();
 	std::string extension = handleName.substr(size - 3); //3文字分の拡張子を取得
-	if (extension == "png" || extension == "jpg" || extension == "peg") {
+	if (extension == "png" || extension == "jpg" || extension == "peg" || extension == "mp4") {
 		value = LoadGraph(key, handleName);
 	}
 	else if (extension == "efk" || extension == "efc") {
 		value = LoadEffekseerEffect(key, handleName);
 	}
 	else if (extension == "mv1") {
-		value = MV1LoadModel(key, handleName);
+		value = MV1LoadModel(key, handleName,false);
 	}
 	return value;
 };
@@ -207,7 +207,7 @@ int ResourceServer::LoadEffekseerEffect(std::string key_name, std::string handle
 	return value;
 };
 
-int ResourceServer::MV1LoadModel(std::string key_name, std::string model_name) {
+int ResourceServer::MV1LoadModel(std::string key_name, std::string model_name, bool duplicate) {
 	int value = 0;
 
 	auto itr = _modelOriginMap.find(key_name + "_Origin");
@@ -223,8 +223,11 @@ int ResourceServer::MV1LoadModel(std::string key_name, std::string model_name) {
 		if (originModel != -1) {
 			_modelOriginMap[key_name + "_Origin"] = originModel;
 			// オリジナルから複製
-			value = MV1DuplicateModel(originModel);
-			_modelMap[key_name].push_back(value);
+			if (duplicate)
+			{
+				value = MV1DuplicateModel(originModel);
+				_modelMap[key_name].push_back(value);
+			}
 		}
 	}
 
@@ -381,6 +384,13 @@ void ResourceServer::DeleteResourceAll() {
 		for (int i = 0; i < itr->second.size(); i++) {
 			::MV1DeleteModel(itr->second.at(i));
 		}
+	}
+
+	for (auto itr = _multMap.begin(); itr != _multMap.end(); ++itr) {
+		for (int i = 0; i < itr->second.AllNum; i++) {
+			DeleteGraph(itr->second.handle[i]);
+		}
+		delete[] itr->second.handle;
 	}
 
 	InitSoundMem();//音だけは読み込んだものをまとめて消せるのでこの関数で削除する

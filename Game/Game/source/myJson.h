@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename myJson.h
+// ＠date: 2024/01/18
+// ＠author: saito ko
+// @explanation
+// jsonファイルを読み込むクラス
+//----------------------------------------------------------------------
 #pragma once
 #include <nlohmann/json.hpp>
 #include <fstream>

@@ -7,17 +7,15 @@ House::House()
 
 House::~House()
 {
-	if (_modelHandle != -1) {
-		//MV1DeleteModel(_modelHandle);
-		//_modelHandle = -1;
-	}
 	SAFE_DELETE(_breakObj);
 }
 
-void House::Init(int modelHandle, std::string objName, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength)
+void House::Init(int modelHandle, std::string objName, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength, int hp, int exp, int suppression)
 {
 	BuildingBase::Init(modelHandle, objName,startPos, rotation, scale, obbLength);
-
+	_hp = hp;
+	_exp = exp;
+	_suppression = suppression;
 	_canBreak = true;
 	// îjâÛèàóùÉNÉâÉXÇÃèâä˙âª
 	_breakObj = NEW BreakObject();

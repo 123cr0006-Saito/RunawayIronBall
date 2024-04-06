@@ -1,4 +1,16 @@
+//----------------------------------------------------------------------
+// @filename RotationCamera.cpp
+// ＠date: 2024/03/13
+// ＠author: saito ko
+// @explanation
+// カメラを回転させる処理をするクラス
+//----------------------------------------------------------------------
 #include "RotationCamera.h"
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @param distance カメラと注視点の距離
+// @param targetPos 注視点の位置
+//----------------------------------------------------------------------
 RotationCamera::RotationCamera(float distance,VECTOR targetPos) : CameraBase() {
 	_pointDistance.z = -distance;
 	_targetPos = targetPos;

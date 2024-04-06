@@ -1,7 +1,16 @@
+//----------------------------------------------------------------------
+// @filename EnemyPool.cpp
+// ＠date: 2023/12/14
+// ＠author: saito ko
+// @explanation
+// エネミーの生成、管理を行うクラス
+//----------------------------------------------------------------------
 #include "EnemyPool.h"
-
 EnemyPool*  EnemyPool::_instance = nullptr;
-
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @param paramJsonFile パラメータのjsonファイル
+//----------------------------------------------------------------------
 EnemyPool::EnemyPool(std::string paramJsonFile){
 	_instance = this;
 	myJson json(paramJsonFile);
@@ -25,7 +34,10 @@ EnemyPool::EnemyPool(std::string paramJsonFile){
 	_enemy.clear();
 	_collisionManager = CollisionManager::GetInstance();
 };
-
+//----------------------------------------------------------------------
+// @brief デストラクタ
+// ＠return なし
+//----------------------------------------------------------------------
 EnemyPool::~EnemyPool() {
 	DeleteEnemy();
 	_enemyParametersMap.clear();
@@ -33,7 +45,10 @@ EnemyPool::~EnemyPool() {
 	_instance = nullptr;
 	_collisionManager = nullptr;
 };
-
+//----------------------------------------------------------------------
+// @brief ファイルから敵の名前を読み込む
+// ＠return 読み込んだ敵の名前のリスト
+//----------------------------------------------------------------------
 std::vector<std::string> EnemyPool::LoadEnemyName(int stageNum) {
 	std::vector<std::string> nameList;
 	std::string filePath = "Data/LoadStageName/Enemy/Enemy0" + std::to_string(stageNum) + ".csv";
@@ -53,7 +68,11 @@ std::vector<std::string> EnemyPool::LoadEnemyName(int stageNum) {
 	}
 	return nameList;
 };
-
+//----------------------------------------------------------------------
+// @brief 敵の生成
+// ＠param json 敵のパラメータのjsonファイル
+// ＠param stageNum ステージの番号
+//----------------------------------------------------------------------
 void EnemyPool::Create(myJson json, int stageNum){
 	DeleteEnemy();
 	//読み込む敵の名前のリスト
@@ -108,16 +127,24 @@ void EnemyPool::Create(myJson json, int stageNum){
 
 		}
 	}
-
+	//制圧値の追加
 	Suppression::GetInstance()->AddSuppression(suppression);
 };
-
+//----------------------------------------------------------------------
+// @brief 初期化
+// ＠return なし
+//----------------------------------------------------------------------
 void EnemyPool::Init(){
 	for (int i = 0; i < _enemy.size(); i++) {
 		_enemy[i]->Init(_enemyInitPos[i]);
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief データの読み込み
+// ＠param jsonFile 敵の座標が入ったのjsonファイル
+// ＠param loadName 読み込むデータの名前
+// ＠return 敵のデータ
+//----------------------------------------------------------------------
 std::vector<std::pair<std::string, VECTOR>> EnemyPool::LoadJsonData(myJson jsonFile, std::string  loadName) {
 	nlohmann::json loadEnemy = jsonFile._json.at(loadName);
 	std::vector<std::pair<std::string, VECTOR>> posList;
@@ -133,7 +160,10 @@ std::vector<std::pair<std::string, VECTOR>> EnemyPool::LoadJsonData(myJson jsonF
 	}
 	return posList;
 };
-
+//----------------------------------------------------------------------
+// @brief 敵の削除
+// ＠return なし
+//----------------------------------------------------------------------
 void EnemyPool::DeleteEnemy() {
 	for (auto&& enemy : _enemy) {
 			delete enemy;
@@ -160,7 +190,11 @@ EnemyBase* EnemyPool::Recicle() {
 		}
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief 更新
+// ＠param plAttack プレイヤーの攻撃が当たったかどうか
+// ＠return 成功したかどうか
+//----------------------------------------------------------------------
 bool EnemyPool::Process(bool plAttack){
 	for (auto&& enemy : _enemy) {
 		if (enemy->GetUse()) {
@@ -170,7 +204,10 @@ bool EnemyPool::Process(bool plAttack){
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 描画処理
+// ＠return 成功したかどうか
+//----------------------------------------------------------------------
 bool EnemyPool::Render() {
 	for (auto&& enemy : _enemy) {
 		if (enemy->GetUse()) {
@@ -179,7 +216,10 @@ bool EnemyPool::Render() {
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief インスタンスの取得
+// ＠return インスタンス
+//----------------------------------------------------------------------
 EnemyBase* EnemyPool::GetEnemy(int i) {
 	if (_enemy[i] != nullptr) {
 		return _enemy[i];

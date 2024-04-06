@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename TimeLimit.h
+// —date: 2024/02/27
+// —author: saito ko
+// @explanation
+// §ŒÀŠÔ‚ÌŠÇ—‚ğs‚¤ƒNƒ‰ƒX
+//----------------------------------------------------------------------
 #pragma once
 #include "dxlib.h"
 #include <math.h>
@@ -10,6 +17,8 @@ class TimeLimit
 	
 	float Process();
 	int SecondsToTime();
+	void Stop();
+	void Restart();
 	
 	static TimeLimit* _instance;
 	static TimeLimit* GetInstance() { return _instance; }
@@ -25,5 +34,7 @@ protected:
 	float _startTime,_timeLimit;
 	float _setTime;
 	float _remainingTime;
+	int _stopTime;
+	bool _IsStop;
 };
 

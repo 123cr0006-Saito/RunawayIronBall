@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename ModeGame.h
+// ＠date: 2023/12/14
+// ＠author: saito ko
+// @explanation
+// ボスバトル以外のステージを管理するクラス
+//----------------------------------------------------------------------
 #pragma once
 #include "appframe.h"
 
@@ -29,6 +36,10 @@
 #include "EnemyPool.h"
 #include "EffectManeger.h"
 
+const float STAGE_ONE_WIDTH  = 17000.0f/2.0f;
+const float STAGE_TWO_WIDTH  = 20000.0f/2.0f;
+const float STAGE_THREE_WIDTH = 27000.0f/2.0f;
+
 class ModeGame : public ModeBase
 {
 	typedef ModeBase base;
@@ -43,6 +54,9 @@ class ModeGame : public ModeBase
 	struct ObjectParam {
 		std::string _name;
 		VECTOR _size;
+		int _hp;
+		int _exp;
+		int _suppression;
 		int isBreak;
 	};
 
@@ -54,20 +68,12 @@ public:
 	virtual bool Render();
 
 	void SetTime();
-	void DeleteObject();
 	std::vector<std::string> LoadObjectName(std::string fileName); // オブジェクトの名前を読み込む
 	bool LoadObjectParam(std::string fileName); // オブジェクトのパラメータを読み込む
 	bool LoadStage(std::string fileName);// ステージの読み込み 敵も含む
-	bool StageMutation();// ステージクリア処理
-	bool GateProcess();// ゴールゲートの処理
-	void NewStage();// ステージの初期化
-	void CreateTutorial();// チュートリアルの作成
-
-	int GetStageNum() { return _stageNum; };
-
-
-	//デバッグ用
 	std::vector<OBJECTDATA> LoadJsonObject(const myJson& json, std::string loadName);//引数 読み込みたいオブジェクトの名前
+	bool GateProcess();// ゴールゲートの処理
+	void CreateTutorial();// チュートリアルの作成	
 
 protected:
 
@@ -75,15 +81,13 @@ protected:
 
 	Camera* _camera;
 	Player* _player;
+	int _gameOverCnt;
+	bool transitionGameOver;
 
 	UIBase* ui[4];
 	DrawGauge* _gaugeUI[2];
 	int _gaugeHandle[4];// 0フレーム 3ゲージ
-	float nowParcent = 100;
 
-	TimeLimit* _timeLimit;
-
-	ScreenVibration* _sVib;
 	EnemyPool* _enemyPool;
 	Suppression* _suppression;
 
@@ -96,9 +100,7 @@ protected:
 	int _tile;
 	int _mountain;
 
-	int _effectSheet[30];
 	Gate* _gate;
-	int _stageNum;
 	ClassificationEffect* _classificationEffect;
 	EffectManeger* _effectManeger;
 	OBB obb;
@@ -114,8 +116,8 @@ protected:
 
 	Light* _light;
 
+	TimeLimit* _timeLimit;
+
 	// ステージ読み込み用変数
 	bool IsTutorial;
-	bool IsLoading;
-	std::thread* LoadFunctionThread;
 };

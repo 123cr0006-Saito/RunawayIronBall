@@ -1,10 +1,21 @@
+//----------------------------------------------------------------------
+// @filename ModeFade.cpp
+// ＠date: 2024/02/29
+// ＠author: saito ko
+// @explanation
+// ステージ遷移時にフェードイン、フェードアウトを行うためのクラス
+//----------------------------------------------------------------------
 #include "ModeFade.h"
-
-ModeFade::ModeFade(int time,bool FadeIn) {
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @param time フェード時間
+// @param isFadeIn フェードインかフェードアウトか
+//----------------------------------------------------------------------
+ModeFade::ModeFade(int time,bool isFadeIn) {
 	_currentTime = GetNowCount();
 	_fadeTime = time;
-	_isFadeIn = FadeIn;
-	if (FadeIn) {
+	_isFadeIn = isFadeIn;
+	if (isFadeIn) {
 		_alphaFade = 255;
 	}
 	else {

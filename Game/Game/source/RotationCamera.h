@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename RotationCamera.h
+// —date: 2024/03/13
+// —author: saito ko
+// @explanation
+// ƒJƒƒ‰‚ğ‰ñ“]‚³‚¹‚éˆ—‚ğ‚·‚éƒNƒ‰ƒX
+//----------------------------------------------------------------------
 #pragma once
 #include "CameraBase.h"
 class RotationCamera : 	public CameraBase

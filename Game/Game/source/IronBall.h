@@ -1,6 +1,7 @@
 #pragma once
 #include "appframe.h"
 #include "ObjectBase.h"
+#include "Afterglow.h"
 
 #define CHAIN_MAX 12
 
@@ -13,7 +14,7 @@ class IronBall : public ObjectBase
 {
 public:
 	IronBall();
-	~IronBall();
+	virtual ~IronBall();
 
 	void Init();
 	void Process();
@@ -36,10 +37,12 @@ public:
 	void SetEnabledAttackCollision(bool state) { _enabledAttackCollision = state; }
 
 	Sphere GetIBCollision() { return _ibAttackSphereCollision; }
+	Sphere GetIBBodyCollision() { return _ibBodySphereCollision; }
 	Capsule GetChainCollision() { return _chainCapsuleCollision; }
 	void UpdateIBCollision();
 	void UpdateChainCollision();
-
+	// サイトウが作成しました。
+	void SetEnabledAfterGlow(bool enable);// 目の残光を表示するかどうかを設定
 
 	// このオブジェクトを保有している親オブジェクト関連の関数
 	// プレイヤーのモデルハンドルをセット
@@ -48,7 +51,7 @@ public:
 
 	void SetParentInstance(ObjectBase* parent) { _parent = parent; }
 	ObjectBase* GetParentInstance() { return _parent; }
-	void SetParentPosPtr(VECTOR* pos) { _parentPos = pos; }
+	void SetParentPosPtr(VECTOR* pos);
 	VECTOR* GetParentPosPtr() { return _parentPos; }
 
 	// デバッグ情報の表示
@@ -114,7 +117,5 @@ private:
 
 	int _playerModelHandle;
 
-	//-------------------
-	// 齋藤が作成した変数です。
-	std::map<int, std::pair<int, float>> _powerAndScale;//攻撃力と拡大率を格納したコンテナです。
+	std::vector<Afterglow*> _afterglowList;
 };

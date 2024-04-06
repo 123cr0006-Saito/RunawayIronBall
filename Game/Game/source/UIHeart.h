@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename UIHeart.h
+// ＠date: 2023/12/25
+// ＠author: saito ko
+// @explanation
+// プレイヤーHPのUIを表示するクラス
+//----------------------------------------------------------------------
 #pragma once
 #include "UIBase.h"
 #include "Player.h"
@@ -5,7 +12,6 @@
 class UIHeart : public UIBase
 {
 public:
-
 	UIHeart(VECTOR pos, std::string handleName);
 	UIHeart(VECTOR pos, std::string handleName, int AllNum, int XNum, int YNum, int XSize, int YSize, int* HandleBuf);
 	UIHeart(VECTOR pos, int size, int* handle,int damageHandleNum);
