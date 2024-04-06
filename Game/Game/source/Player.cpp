@@ -501,7 +501,7 @@ bool Player::Process(float camAngleY)
 			_cntToStartRecoveryStamina = 90;
 
 			// スタミナが0になったら回転攻撃を解除しする
-			if (_stamina < 0.0f) {
+			if (_stamina <= 0.0f) {
 				_stamina = 0.0f;
 				// 疲れ状態にする
 				_isTired = true;
@@ -578,7 +578,7 @@ bool Player::Process(float camAngleY)
 					_isRecoveringStamina = false;
 					_cntToStartRecoveryStamina = 90;
 					_stamina -= AVOIDANCE_STAMINA_DECREASE;
-					if (_stamina < 0.0f) {
+					if (_stamina <= 0.0f) {
 						_stamina = 0.0f;
 						_isTired = true;
 					}
