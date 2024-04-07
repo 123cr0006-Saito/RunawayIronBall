@@ -314,7 +314,7 @@ bool Player::Init(int modelHandle, VECTOR pos)
 	_ironBall = NEW IronBall();
 	_ironBall->Init();
 	_ironBall->SetParentInstance(this);
-	_ironBall->SetPlayerModelHandle(_modelHandle);
+	_ironBall->SetParentModelHandle(_modelHandle);
 	// “S‹…‚ÌˆÚ“®ó‘Ô‚ðu’Ç]v‚ÉÝ’è
 	_ironBall->SetMoveState(IB_MOVE_STATE::FOLLOWING);
 
