@@ -1,41 +1,46 @@
 #include "House.h"
 
-House::House() :BuildingBase::BuildingBase() {
-	vDiffToCenter = VGet(0.0f, 0.0f, 0.0f);
+House::House()
+{
+	_breakObj = nullptr;
 }
 
 House::~House()
 {
+	SAFE_DELETE(_breakObj);
 }
 
-bool House::Init(int modelHandle, VECTOR startPos)
+void House::Init(int modelHandle, std::string objName, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength, int hp, int exp, int suppression)
 {
-	if (!base::Init(modelHandle, startPos)){ return false;}
-
-	vDiffToCenter = VGet(0.0f, -250.0f, 0.0f);
-	obb.pos = VSub(_pos, vDiffToCenter);
-	obb.length[0] = 500.0f;
-	obb.length[1] = 500.0f;
-	obb.length[2] = 500.0f;
-
-	return true;
+	BuildingBase::Init(modelHandle, objName,startPos, rotation, scale, obbLength);
+	_hp = hp;
+	_exp = exp;
+	_suppression = suppression;
+	_canBreak = true;
+	// ”j‰óˆ—ƒNƒ‰ƒX‚Ì‰Šú‰»
+	_breakObj = NEW BreakObject();
+	_breakObj->Init(_modelHandle);
 }
 
-bool House::Process()
+void House::Process()
 {
-	if(!base::Process()) { return false; }
-	return true;
+	_breakObj->Process();
 }
 
-bool House::Render()
+void House::SetHit(VECTOR vDir)
 {
-	if (!base::Render()) { return false; }	
-	return true;
+	// ”j‰óˆ—‚ÌŠJŽn
+	ActivateBreakObject(true, vDir);
 }
 
-bool House::DrawDebugInfo()
+void House::ActivateBreakObject(bool activate, VECTOR vDir)
 {
-	if (!base::DrawDebugInfo()) { return false; }
-	obb.Render(GetColor(255, 255, 255));
-	return true;
+	_breakObj->Activate(activate, vDir);
+	SetUseCollision(false);
+}
+
+void House::DrawDebugInfo()
+{
+	BuildingBase::DrawDebugInfo();
+	_breakObj->DrawDebugInfo();
 }

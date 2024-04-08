@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename ScreenVibration.h
+// —date: 2023/12/15
+// —author: saito ko
+// @explanation
+// ‰æ–Êã‚Å‚ÌƒJƒƒ‰‚ªŒ©‚Ä‚¢‚é‰f‘œ‚Ì’†SÀ•W‚ğ‚¸‚ç‚·ˆ—s‚¤ƒNƒ‰ƒX
+//----------------------------------------------------------------------
 #pragma once
 #include "dxlib.h"
 #include <math.h>
@@ -8,6 +15,8 @@ public:
 	ScreenVibration();
 	~ScreenVibration();
 	void SetVibration(float x, float y, float time);//‰æ–ÊU“®
+	void SetVibrationX(float x, float time);
+	void SetVibrationY(float y, float time);
 	void UpdateScreenVibration();
 	
 	static ScreenVibration* _instance;
@@ -23,8 +32,8 @@ public:
 
 protected:
 	//U“®—p‚Ì•Ï”
-	float vibration_x,vibration_y;
-	float max_x, max_y;
-	float time;
-	bool use_flag;
+	float vibration_x,vibration_y;//U“®—Ê
+	float max_x, max_y;//U“®‚ÌÅ‘å’l
+	float time;//U“®ŠÔ
+	bool use_flag;//U“®’†‚©‚Ç‚¤‚©
 };

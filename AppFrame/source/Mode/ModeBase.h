@@ -2,6 +2,8 @@
 #include "../System/Header/Input/XInput.h"
 #include "../System/Header/Function/Fps.h"
 #include "../System/Header/Effect/Effect.h"
+#include "../Application/Global.h"
+
 #include <math.h>
 #include <string>
 class ModeServer;

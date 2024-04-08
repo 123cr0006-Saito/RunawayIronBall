@@ -1,5 +1,15 @@
+//----------------------------------------------------------------------
+// @filename ModeInstructions.cpp
+// ＠date: 2024/01/31
+// ＠author: saito ko
+// @explanation
+// ポーズ画面から操作説明画面を表示するクラス
+//----------------------------------------------------------------------
 #include "ModeInstructions.h"
-
+//----------------------------------------------------------------------
+// @brief 初期化処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool ModeInstructions::Initialize() {
 	if (!base::Initialize()) { return false; }
 	_input = XInput::GetInstance();
@@ -7,31 +17,36 @@ bool ModeInstructions::Initialize() {
 	_listChoice = 0;
 	_listViewNum = 0;
 
-	//画像の読み込み
-	for (int i = 0; i < LIST_SIZE_MAX; i++) {
-		_handle[i].item = 0;
-		_handle[i].image = 0;
-		_handle[i].explanation = 0;
-	}
+	_frameHandle = ResourceServer::LoadGraph("InstructionFrame", "res/ModePause/Operation/Frame.png");
+	ResourceServer::LoadMultGraph("Tutorial", "res/Tutorial/Tutorial", ".png", 5,_imageHandle);
+	ResourceServer::LoadMultGraph("OperateItem", "res/ModePause/Operation/UI_Operation", ".png", 5, _itemHandle);
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 終了処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool ModeInstructions::Terminate(){
 	base::Terminate();
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 更新処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool ModeInstructions::Process() {
 	base::Process();
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->PauseProcessUnderLayer();
 	int count = 0;
 	//選択項目の移動
-	if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN)) {
+	if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN) || _input->GetTrg(XINPUT_BUTTON_STICK_DOWN)) {
 		count++;
+		global._soundServer->DirectPlay("SE_Select");
 	}
-	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP)) {
+	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP) || _input->GetTrg(XINPUT_BUTTON_STICK_UP)) {
 		count--;
+		global._soundServer->DirectPlay("SE_Select");
 	}
 	_listChoice += count;
 	_listChoice = (_listChoice + LIST_SIZE_MAX) % LIST_SIZE_MAX;
@@ -49,37 +64,26 @@ bool ModeInstructions::Process() {
 
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 描画処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool ModeInstructions::Render() {
-	int y = 0;
-	int handle_x, handle_y;
-	GetGraphSize(_handle[0].item, &handle_x, &handle_y);
-#ifdef NO_IMAGE
 
-	for (int i = 0; i < LIST_SIZE_MAX; i++) {
-		int color = GetColor(0, 10 * i, 0);
-		if (i >= _listViewNum && i < _listViewNum + _listViewMax) {
-			if (i == _listChoice) {
-				color = GetColor(255, 0, 255);
-				DrawBox(1000, 200, 1800, 500, GetColor(0, 0, 10 * i), true);//座標は雑に設定 画像が来てから微調整
-				DrawBox(1000, 700, 1800, 1000, GetColor(0, 10 * i, 0), true);//座標は雑に設定 画像が来てから微調整
-			}
-			DrawBox(50, y + 100, 350, y + 100 + 100, color, true);
-			y += 100; //handle_y + 100; // 100は隙間 仮画像がなかったためhandle_yをコメントアウト
-		}
-	}
+	DrawGraph(0,440,_frameHandle, true);
 
-#else
+	int handleX[5] = {280,340, 290, 350, 310};
+	int handleY[5] = {520 ,605,690,765,850};
+	
 	for (int i = 0; i < LIST_SIZE_MAX; i++) {
-		if (i >= _listViewNum && i < _listViewNum + _listViewMax) {
-			DrawGraph(50, y, _handle[i].item, true);
-			if (i == _listChoice) {
-				DrawGraph(1000, 200, _handle[i].image, true);//座標は雑に設定 画像が来てから微調整
-				DrawGraph(1000, 700, _handle[i].explanation, true);//座標は雑に設定 画像が来てから微調整
-			}
-			y += /*handle_y + */100;// 100は隙間 仮画像がなかったためhandle_yをコメントアウト
+		float Extrate = 1.0f;
+		
+		if (i == _listChoice) {
+			DrawGraph(400, 150, _imageHandle[i], true);//座標は雑に設定 画像が来てから微調整
+			Extrate = 1.1f;
 		}
+		DrawRotaGraph(handleX[i], handleY[i], Extrate, 0.0f, _itemHandle[i], true);
 	}
-#endif
+	
 	return true;
 };

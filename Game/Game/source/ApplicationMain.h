@@ -15,7 +15,5 @@ public:
 
 protected:
 	XInput* _input;
-	Vibration* _vibration;
-
 	Fps* _fpsController;
 }; 

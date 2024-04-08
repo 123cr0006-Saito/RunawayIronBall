@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename bone.h
+// ＠date: 2023/12/30
+// ＠author: saito ko
+// @explanation
+// キャラクターの髪の毛やリボンなどをboneを物理演算で動かすためのクラス
+//----------------------------------------------------------------------
 #pragma once
 #include <vector>
 #include "dxlib.h"
@@ -10,7 +17,7 @@ public:
 	~bone();
 	void SetMain(Vector3D* pos_list);//boneの位置をセットする
 	void SetBoneDir(Vector3D world_dir_vec, Vector3D boon_pos, int target_frame, int parent_frame, MATRIX trans_mat, Vector3D dir_parent);;
-	void SetDebugDraw() { _transFlag = 1 - _transFlag; };//;透過するかどうか
+	void SetDebugDraw() { _isTrans = 1 - _isTrans; };//;透過するかどうか
 	void DebugProcess(int transNum);//透過フラグが立っていたらboneのフレームを透過　透過したいフレームと連携していなかった場合引数で指定
 	void DebugRender();//透過されていた場合デバッグ表示
 
@@ -27,19 +34,20 @@ private:
 	std::vector<int> _frameList;//フレームの番号リスト
 
 	//デバッグ表示
-	bool _transFlag;//表示するかしないか
-	bool _oldTransFlag;
+	bool _isTrans;//表示するかしないか
+	bool _oldIsTrans;
 
 	// ↓ ここから下は物理演算で使う変数や関数
 public:
-	Vector3D* _massPosList; // 質点の座標リスト
-	Vector3D* _massAccelList; // 質点の速度リスト
-
+	void SetGravity(std::string end, std::string start);
 	void UpdatePosAndAccel(double _elapsedTime);
 	Vector3D ForceWorksToMassPoint(int i, Vector3D* posList, Vector3D* accelList); //質点に働く力を計算 F=ma
 	bool Process();
 
 	void PositionReset();
+
+	Vector3D* _massPosList; // 質点の座標リスト
+	Vector3D* _massAccelList; // 質点の速度リスト
 
 private:
 
@@ -53,7 +61,7 @@ private:
 	static const double _processInterval; //処理の細分化の間隔
 
 	float* _naturalCorrectionFactor; //髪の毛の自然体の長さを出すときに使用する補正係数
-	static const Vector3D _gravityDir;//重力の方向 
+	Vector3D _gravityDir;//重力の方向 
 
 	int _massPointSize; //質点数
 	std::vector<float> _springList; // ばね定数のリスト
