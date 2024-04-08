@@ -1,5 +1,5 @@
 //----------------------------------------------------------------------
-// @filename AnimationManager.cpp
+// @filename AnimationManager.h
 // Åódate: 2024/04/01
 // Åóauthor: Morozumi Hiroya
 // @explanation
