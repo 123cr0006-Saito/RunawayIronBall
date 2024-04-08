@@ -4,12 +4,15 @@
 // ＠author: Morozumi Hiroya
 // @explanation
 // 各キャラクターのモーションリストを管理するクラス
+// AnimationManagerクラス及びFrameDataクラスの初期化処理で必要な情報を管理する
+// "Data/MotionList/MotionList_〇〇.csv" から、各キャラクターのモーション一覧を読み込む（○○の部分にはキャラクター名が入る）
 //----------------------------------------------------------------------
 #pragma once
 #include <vector>
 #include <string>
 #include <map>
 
+// モーション名とループ回数のペア
 typedef std::pair<std::string, int> MotionNamePair;
 typedef std::string CHARA_NAME;
 

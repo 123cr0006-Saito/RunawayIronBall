@@ -4,6 +4,7 @@
 // ＠author: Morozumi Hiroya
 // @explanation
 // 各キャラクターのモーションリストを管理するクラス
+// AnimationManagerクラス及びFrameDataクラスの初期化処理で必要な情報を管理する
 //----------------------------------------------------------------------
 #include "MotionList.h"
 #include "appframe.h"
