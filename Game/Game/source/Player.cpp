@@ -112,7 +112,7 @@ Player::Player()
 
 	global._oldExp = global.GetAllExp();
 
-
+	_nowExp = 0;
 	_nowLevel = 0;
 	_maxLevel = 0;
 	global.SetOldExp(global.GetAllExp());
