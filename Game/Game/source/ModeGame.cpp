@@ -519,7 +519,7 @@ bool ModeGame::Render() {
 		for (auto itr = _uObj.begin(); itr != _uObj.end(); ++itr) {
 			(*itr)->DrawDebugInfo();
 		}
-		_collisionManager->DrawAreaIndex();
+		_collisionManager->DrawSegmentIndex();
 	}
 	// ゲートのインスタンスがあった場合描画
 	if (_gate != nullptr) {
