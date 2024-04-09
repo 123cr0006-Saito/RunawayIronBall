@@ -10,7 +10,7 @@
 
 namespace {
 	// プレイヤーからの攻撃判定を無効化するフレーム数
-	constexpr int INVINCIBLE_CNT_MAX = 45; 
+	constexpr int INVINCIBLE_CNT_MAX = 30; 
 }
 
 Tower::Tower() : ObjectBase::ObjectBase()
