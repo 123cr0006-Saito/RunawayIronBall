@@ -64,7 +64,7 @@ void Tower::Init(std::vector<int> modelHandle, VECTOR startPos, VECTOR rotation,
 			tmpPos = VTransform(vOrigin, m);
 		}
 		
-		tp->Init(modelHandle[i], tmpPos);
+		tp->Init(modelHandle[i], tmpPos, rotation, scale);
 		_towerParts.push_back(tp);
 	}
 
