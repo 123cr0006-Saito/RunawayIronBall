@@ -59,9 +59,8 @@ bool Global::ResourceLoad() {
 	ResourceServer::Load("CrystarRoof_Glass", "res/Enemy/Cg_Enemy_Crystar_Iron/Cg_Crystar_Roof_Iron.mv1");
 	ResourceServer::Load("CrystarRoof_Iron", "res/Enemy/Cg_Enemy_Crystar_Iron/Cg_Helmet_Enemy_Crystar_Iron.mv1");
 	// Object
-	ResourceServer::Load("Tower01", "res/Building/CG_OBJ_Tower/Tower_Under.mv1");
-	ResourceServer::Load("Tower02", "res/Building/CG_OBJ_Tower/Tower_Under.mv1");
-	ResourceServer::Load("Tower03", "res/Building/CG_OBJ_Tower/Tower_Top.mv1");
+	ResourceServer::Load("Tower_Under", "res/Building/CG_OBJ_Tower/Tower_Under.mv1");
+	ResourceServer::Load("Tower_Top", "res/Building/CG_OBJ_Tower/Tower_Top.mv1");
 	ResourceServer::Load("CG_OBJ_Asphalt", "res/Building/CG_OBJ_Asphalt/CG_OBJ_Asphalt.mv1");
 	ResourceServer::Load("CG_OBJ_Asphalt_Cross", "res/Building/CG_OBJ_Asphalt_Cross/CG_OBJ_Asphalt_Cross.mv1");
 	ResourceServer::Load("CG_OBJ_Dirt", "res/Building/CG_OBJ_Dirt/CG_OBJ_Dirt.mv1");
