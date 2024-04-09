@@ -1,7 +1,15 @@
+//----------------------------------------------------------------------
+// @filename Tower.cpp
+// ＠date: 2024/04/01
+// ＠author: Morozumi Hiroya
+// @explanation
+// タワーオブジェクトの制御・描画を行うクラス
+// 1つのタワーオブジェクトは、複数のTowerPartsクラスから構成される
+//----------------------------------------------------------------------
 #include "Tower.h"
 
-
 namespace {
+	// 落下処理のカウント
 	constexpr int FALL_CNT_MAX = 30; 
 }
 
@@ -30,7 +38,7 @@ Tower::~Tower()
 	_towerParts.clear();
 }
 
-void Tower::Init(std::array<int, 3> modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale)
+void Tower::Init(std::vector<int> modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale)
 {
 	_pos = startPos;
 	_sphereCollision.centerPos = _pos;
@@ -38,8 +46,8 @@ void Tower::Init(std::array<int, 3> modelHandle, VECTOR startPos, VECTOR rotatio
 	_cell->_objType = OBJ_TYPE::TWR;
 	_collisionManager->UpdateCell(_cell);
 
-
-	for (int i = 0; i < 3; i++) {
+	_partsNum = modelHandle.size();
+	for (int i = 0; i < _partsNum; i++) {
 		TowerParts* tp = NEW TowerParts();
 		VECTOR tmpPos = VGet(0.0f, 0.0f, 0.0f);
 		if (i == 0) {
@@ -55,7 +63,7 @@ void Tower::Init(std::array<int, 3> modelHandle, VECTOR startPos, VECTOR rotatio
 		_towerParts.push_back(tp);
 	}
 
-	_partsNum = _towerParts.size();
+	
 }
 
 void Tower::Process()

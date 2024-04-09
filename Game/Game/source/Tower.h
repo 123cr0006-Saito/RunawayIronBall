@@ -1,3 +1,11 @@
+//----------------------------------------------------------------------
+// @filename Tower.cpp
+// ＠date: 2024/04/01
+// ＠author: Morozumi Hiroya
+// @explanation
+// タワーオブジェクトの制御・描画を行うクラス
+// 1つのタワーオブジェクトは、複数のTowerPartsクラスから構成される
+//----------------------------------------------------------------------
 #pragma once
 #include "TowerParts.h"
 #include "ObjectBase.h"
@@ -9,7 +17,7 @@ public:
 	virtual ~Tower();
 
 
-	void Init(std::array<int, 3> modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale);
+	void Init(std::vector<int> modelHandle, VECTOR startPos, VECTOR rotation, VECTOR scale);
 	void Process();
 	void Render();
 

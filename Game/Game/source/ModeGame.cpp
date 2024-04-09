@@ -261,19 +261,18 @@ bool ModeGame::LoadStage(std::string fileName) {
 	std::vector<ModeGame::OBJECTDATA> towerData = LoadJsonObject(json, "Tower");
 	for (auto&& towerParam : towerData) {
 
-		std::array<int, 3> towerModelHandle;
-		towerModelHandle[0] = ResourceServer::MV1LoadModel("Tower01", "res/Building/CG_OBJ_Tower/Tower_Under.mv1");
-		towerModelHandle[1] = ResourceServer::MV1LoadModel("Tower02", "res/Building/CG_OBJ_Tower/Tower_Under.mv1");
-		towerModelHandle[2] = ResourceServer::MV1LoadModel("Tower03", "res/Building/CG_OBJ_Tower/Tower_Top.mv1");
+		std::vector<int> towerModelHandle;
+		towerModelHandle.push_back(ResourceServer::MV1LoadModel("Tower_Under", "res/Building/CG_OBJ_Tower/Tower_Under.mv1"));
+		towerModelHandle.push_back(ResourceServer::MV1LoadModel("Tower_Under", "res/Building/CG_OBJ_Tower/Tower_Under.mv1"));
+		towerModelHandle.push_back(ResourceServer::MV1LoadModel("Tower_Top", "res/Building/CG_OBJ_Tower/Tower_Top.mv1"));
 
 		Tower* tower = NEW Tower();
 		tower->Init(towerModelHandle, towerParam._pos, towerParam._rotate, towerParam._scale);
 
 		_tower.push_back(tower);
 	}
-	_objectName.push_back("Tower01");
-	_objectName.push_back("Tower02");
-	_objectName.push_back("Tower03");
+	_objectName.push_back("Tower_Under");
+	_objectName.push_back("Tower_Top");
 
 	std::string buildingName = "Building";
 	std::vector<std::string> objectName = LoadObjectName(buildingName);
