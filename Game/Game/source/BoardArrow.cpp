@@ -36,7 +36,7 @@ BoardArrow::BoardArrow(std::string name,float length, int animMax):
 	// ècÇÃí∑Ç≥
 	_length = length;
 	float posListX[VERTEX_MAX] = { -Width, Width, -Width, Width, -Width, Width, -Width, Width};
-	float posListZ[VERTEX_MAX] = { _length, _length, _length, _length, _length, _length, 0.0f, 0.0f};
+	float posListZ[VERTEX_MAX] = { 0.0f, 0.0f,_length, _length, _length, _length, _length, _length};
 	// í∏ì_ÇÃê›íË
 	for (int i = 0; i < VERTEX_MAX; i++) {
 		_originPos[i] = VGet(posListX[i], 50, posListZ[i]);
@@ -62,11 +62,11 @@ void BoardArrow::UpdateVertex() {
 	float Width = 50.0f;
 	float ratio = static_cast<float>(_animCount) / _animMax;
 	for (int i = 0; i < 2; i++) {
-		VECTOR dirVec = _originPos[i];
+		VECTOR dirVec = _originPos[i+6];
 		_originPos[i + 2].z = VScale(dirVec, ratio).z;
 		_originPos[i + 4].z = VScale(dirVec, ratio).z;
-		vertex[i].v = 1.0f - ratio;
-		vertex[i+6].v = 1.0f - ratio;
+		vertex[i].v = ratio;
+		vertex[i+6].v = ratio;
 	}
 };
 //----------------------------------------------------------------------
@@ -117,6 +117,8 @@ bool BoardArrow::Process(VECTOR pos, VECTOR dirVec) {
 // @return ê¨å˜ÇµÇΩÇ©Ç«Ç§Ç©
 //----------------------------------------------------------------------
 bool BoardArrow::Render() {
+	SetUseBackCulling(false);
 	DrawPolygonIndexed3D(vertex, VERTEX_MAX, vertexList, 4, _handle, true);
+	SetUseBackCulling(true);
 	return true;
 };

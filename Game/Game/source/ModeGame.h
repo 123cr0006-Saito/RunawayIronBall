@@ -32,6 +32,7 @@
 #include "Fog.h"
 #include "Light.h"
 #include "Gate.h"
+#include "BoardArrow.h"
 #include "ClassificationEffect.h"
 #include "EnemyPool.h"
 #include "EffectManeger.h"
@@ -107,6 +108,7 @@ protected:
 	Camera* _camera;// カメラクラス
 	Light* _light;// ライトクラス
 	Fog* _fog;// フォグクラス
+	BoardArrow* _boardArrow; //ゴールゲートを指す矢印クラス
 	ClassificationEffect* _classificationEffect;// エフェクト分類クラス
 	EffectManeger* _effectManeger;// エフェクト管理クラス
 	TimeLimit* _timeLimit;// 制限時間クラス

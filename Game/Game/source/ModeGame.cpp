@@ -25,6 +25,7 @@ bool ModeGame::Initialize() {
 	_collisionManager->Init();
 
 	_gate = nullptr;
+	_boardArrow = nullptr;
 	IsTutorial = false;
 
 	_light = NEW Light("LightData");
@@ -113,6 +114,9 @@ bool ModeGame::Terminate() {
 
 	if (_gate != nullptr) {
 		delete _gate;
+	}
+	if (_boardArrow != nullptr) {
+		delete _boardArrow;
 	}
 
 	for (int i = 0; i < 4; i++) {
@@ -410,10 +414,10 @@ bool ModeGame::GateProcess() {
 			}
 			_gate = NEW Gate(pos, 300, handle, 43, time, 1000);
 			ModeServer::GetInstance()->Add(NEW ModeZoomCamera(pos), 10, "Camera");
+			_boardArrow = NEW BoardArrow("res/Effect/yajirusi.png",200,120);
 		}
 		// ƒQ[ƒg‚Ìˆ—
 		_gate->Process();
-
 		VECTOR pPos = _player->GetPosition();
 		float pR = _player->GetCollision().r;
 		VECTOR gPos = _gate->GetPos();
@@ -425,6 +429,7 @@ bool ModeGame::GateProcess() {
 			ModeServer::GetInstance()->Del(this);
 			ModeServer::GetInstance()->Add(NEW ModeClear(_timeLimit->GetElapsedTime(),_timeLimit->GetStartTime()),100,"Clear");	
 		}
+		_boardArrow->Process(pPos,VSub(gPos,pPos));
 	}
 	return true;
 };
@@ -524,6 +529,10 @@ bool ModeGame::Render() {
 	// ƒQ[ƒg‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ª‚ ‚Á‚½ê‡•`‰æ
 	if (_gate != nullptr) {
 		_gate->Draw();
+	}
+	// –îˆó‚Ì•`‰æ
+	if (_boardArrow != nullptr) {
+		_boardArrow->Render();
 	}
 	
 	SetUseZBuffer3D(FALSE);
