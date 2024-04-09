@@ -1,3 +1,11 @@
+//----------------------------------------------------------------------
+// @filename TowerParts.h
+// ＠date: 2024/04/01
+// ＠author: Morozumi Hiroya
+// @explanation
+// タワーパーツの制御を行うクラス
+// 1つのタワーオブジェクトは、複数のTowerPartsクラスから構成される
+//----------------------------------------------------------------------
 #pragma once
 #include "appframe.h"
 #include "ObjectBase.h"
@@ -5,7 +13,6 @@
 class TowerParts : public ObjectBase
 {
 public:
-	friend class Tower;
 
 	TowerParts();
 	virtual ~TowerParts();
@@ -22,17 +29,12 @@ public:
 
 
 
-	void SetUse(bool use) {
-		_use = use;
-	}
+	void SetUse(bool use) { _use = use; }
+	bool GetUse() { return _use; }
 
-	bool GetUse() {
-		return _use;
-	}
+	int GetModelHandle() { return _modelHandle; }
 
-	VECTOR GetPos() {
-		return _pos;
-	}
+	VECTOR GetPos() { return _pos; }
 
 	void SetUseCollision(bool useCollision) {
 		_useCollision = useCollision;
@@ -76,6 +78,10 @@ protected:
 protected:
 	bool _use;
 
+	int _modelHandle;
+	VECTOR _pos;
+	VECTOR _vRot;
+
 	bool _useCollision;
 
 	bool _blast;
@@ -88,9 +94,7 @@ protected:
 	VECTOR _fallEndPos;
 
 
-	int _modelHandle;
-	VECTOR _pos;
-	VECTOR _vRot;
+
 
 	Sphere _sphereCollision;
 };

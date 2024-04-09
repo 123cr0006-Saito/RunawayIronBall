@@ -60,7 +60,7 @@ void Tower::Init(std::vector<int> modelHandle, VECTOR startPos, VECTOR rotation,
 		// それ以外のパーツは、一つ下のパーツのソケット（ジョイント）座標に配置する
 		else {
 			VECTOR vOrigin = VGet(0.0f, 0.0f, 0.0f);
-			MATRIX m = MV1GetFrameLocalWorldMatrix(_towerParts[i - 1]->_modelHandle, 1);
+			MATRIX m = MV1GetFrameLocalWorldMatrix(_towerParts[i - 1]->GetModelHandle(), 1);
 			tmpPos = VTransform(vOrigin, m);
 		}
 		
@@ -138,7 +138,7 @@ void Tower::SetBlast(VECTOR vDir)
 			// それ以外のパーツは落下処理
 			else {
 				// 一つ下のパーツの吹き飛ばし前の座標を、落下終了後の座標として設定
-				_towerParts[i]->SetFalling(_towerParts[i - 1]->_pos);
+				_towerParts[i]->SetFalling(_towerParts[i - 1]->GetPos());
 			}
 		}
 		_bottomIndex++;
