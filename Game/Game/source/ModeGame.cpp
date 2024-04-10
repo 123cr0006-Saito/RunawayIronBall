@@ -292,7 +292,7 @@ bool ModeGame::LoadStage(std::string fileName) {
 			int objHandle = ResourceServer::MV1LoadModel(modelName, modelPath);
 			if ((*itr).isBreak == 1) {
 				// 壊れるオブジェクト
-				House* building = NEW House();
+				BreakableBuilding* building = NEW BreakableBuilding();
 				building->Init(objHandle, nameList,object._pos, object._rotate, object._scale, (*itr)._size,(*itr)._hp, (*itr)._exp,(*itr)._suppression);
 				_house.push_back(building);
 			}

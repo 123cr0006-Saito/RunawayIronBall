@@ -24,7 +24,7 @@
 
 #include "ScreenVibration.h"
 #include "BuildingBase.h"
-#include "House.h"
+#include "BreakableBuilding.h"
 #include "Tower.h"
 #include "Floor.h"
 #include "UnbreakableObject.h"
@@ -93,7 +93,7 @@ protected:
 	EnemyPool* _enemyPool;// 敵
 	Floor* _floor;// 床
 	Gate* _gate;// ゴールゲート
-	std::vector<House*> _house;// 家
+	std::vector<BreakableBuilding*> _house;// 家
 	std::vector<Tower*> _tower;// 塔
 	std::vector<UnbreakableObject*> _uObj;// 破壊不可能オブジェクト
 	// ステージ読み込み用変数

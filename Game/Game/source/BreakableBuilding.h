@@ -4,11 +4,11 @@
 #include "BreakObject.h"
 
 
-class House : public BuildingBase
+class BreakableBuilding : public BuildingBase
 {
 public:
-	House();
-	virtual ~House();
+	BreakableBuilding();
+	virtual ~BreakableBuilding();
 
 	void Init(int modelHandle,std::string objName, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength, int hp, int exp,int suppression);
 	void Process() override;

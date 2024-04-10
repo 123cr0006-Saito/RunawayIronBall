@@ -1,16 +1,16 @@
-#include "House.h"
+#include "BreakableBuilding.h"
 
-House::House()
+BreakableBuilding::BreakableBuilding()
 {
 	_breakObj = nullptr;
 }
 
-House::~House()
+BreakableBuilding::~BreakableBuilding()
 {
 	SAFE_DELETE(_breakObj);
 }
 
-void House::Init(int modelHandle, std::string objName, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength, int hp, int exp, int suppression)
+void BreakableBuilding::Init(int modelHandle, std::string objName, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength, int hp, int exp, int suppression)
 {
 	BuildingBase::Init(modelHandle, objName,startPos, rotation, scale, obbLength);
 	_hp = hp;
@@ -22,24 +22,24 @@ void House::Init(int modelHandle, std::string objName, VECTOR startPos, VECTOR r
 	_breakObj->Init(_modelHandle);
 }
 
-void House::Process()
+void BreakableBuilding::Process()
 {
 	_breakObj->Process();
 }
 
-void House::SetHit(VECTOR vDir)
+void BreakableBuilding::SetHit(VECTOR vDir)
 {
 	// ”j‰óˆ—‚ÌŠJŽn
 	ActivateBreakObject(true, vDir);
 }
 
-void House::ActivateBreakObject(bool activate, VECTOR vDir)
+void BreakableBuilding::ActivateBreakObject(bool activate, VECTOR vDir)
 {
 	_breakObj->Activate(activate, vDir);
 	SetUseCollision(false);
 }
 
-void House::DrawDebugInfo()
+void BreakableBuilding::DrawDebugInfo()
 {
 	BuildingBase::DrawDebugInfo();
 	_breakObj->DrawDebugInfo();

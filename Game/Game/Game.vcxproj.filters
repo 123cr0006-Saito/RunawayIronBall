@@ -39,7 +39,7 @@
     <ClCompile Include="source\SlaBlockPattern2.cpp" />
     <ClCompile Include="source\CrystarPattern4.cpp" />
     <ClCompile Include="source\EnemyPool.cpp" />
-    <ClCompile Include="source\House.cpp" />
+    <ClCompile Include="source\BreakableBuilding.cpp" />
     <ClCompile Include="source\myJson.cpp" />
     <ClCompile Include="source\bone.cpp" />
     <ClCompile Include="source\BreakObject.cpp" />
@@ -167,7 +167,7 @@
     <ClInclude Include="source\CrystarPattern4.h" />
     <ClInclude Include="source\EnemyPool.h" />
     <ClInclude Include="source\EnemyStract.h" />
-    <ClInclude Include="source\House.h" />
+    <ClInclude Include="source\BreakableBuilding.h" />
     <ClInclude Include="source\myJson.h" />
     <ClInclude Include="source\bone.h" />
     <ClInclude Include="source\BreakObject.h" />
