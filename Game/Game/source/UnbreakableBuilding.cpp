@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename UnbreakableBuilding.cpp
+// ＠date: 2024/04/01
+// ＠author: Morozumi Hiroya
+// @explanation
+// 破壊不可能な建物のクラス
+//----------------------------------------------------------------------
 #include "UnbreakableBuilding.h"
 
 UnbreakableBuilding::UnbreakableBuilding()
@@ -10,19 +17,21 @@ UnbreakableBuilding::~UnbreakableBuilding()
 {
 }
 
+// 初期化処理
 void UnbreakableBuilding::Init(int modelHandle, std::string objName, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength)
 {
-	BuildingBase::Init(modelHandle,  objName, startPos, rotation, scale, obbLength);
+	// 基底クラスの初期化処理
+	BuildingBase::Init(modelHandle, objName, startPos, rotation, scale, obbLength);
+	// 破壊不可能状態にする
 	_canBreak = false;
-	 _hp = 0;
-	 _exp = 0; 
-	 _suppression = 0; 
 }
 
+// 更新処理
 void UnbreakableBuilding::Process()
 {
 }
 
+// デバッグ情報の表示
 void UnbreakableBuilding::DrawDebugInfo()
 {
 	BuildingBase::DrawDebugInfo();

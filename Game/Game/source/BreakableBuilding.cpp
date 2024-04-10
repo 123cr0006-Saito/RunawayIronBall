@@ -20,11 +20,17 @@ BreakableBuilding::~BreakableBuilding()
 // 初期化処理
 void BreakableBuilding::Init(int modelHandle, std::string objName, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength, int hp, int exp, int suppression)
 {
+	// 基底クラスの初期化処理
 	BuildingBase::Init(modelHandle, objName,startPos, rotation, scale, obbLength);
+
+	// HP、経験値、制圧値の設定
 	_hp = hp;
 	_exp = exp;
 	_suppression = suppression;
+
+	// 破壊可能状態にする
 	_canBreak = true;
+
 	// 破壊処理クラスの初期化
 	_breakModelParts = NEW BreakModelParts();
 	_breakModelParts->Init(_modelHandle);
