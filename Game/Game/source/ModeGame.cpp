@@ -298,7 +298,7 @@ bool ModeGame::LoadStage(std::string fileName) {
 			}
 			else {
 				// 壊れないオブジェクト
-				UnbreakableObject* uObj = NEW UnbreakableObject();
+				UnbreakableBuilding* uObj = NEW UnbreakableBuilding();
 				uObj->Init(objHandle, nameList,object._pos, object._rotate, object._scale, (*itr)._size);
 				_uObj.push_back(uObj);
 			}

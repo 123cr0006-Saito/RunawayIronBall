@@ -249,7 +249,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="source\RotationCamera.h" />
     <ClInclude Include="source\CameraBase.h" />
-    <ClCompile Include="source\UnbreakableObject.cpp" />
+    <ClCompile Include="source\UnbreakableBuilding.cpp" />
     <ClInclude Include="source\UIBossHp.h" />
   </ItemGroup>
   <ItemGroup>
@@ -321,7 +321,7 @@
     <ClInclude Include="source\UITimeLimit.h" />
     <ClInclude Include="source\Suppression.h" />
     <ClInclude Include="source\TargetZoomCamera.h" />
-    <ClInclude Include="source\UnbreakableObject.h" />
+    <ClInclude Include="source\UnbreakableBuilding.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Game.rc" />

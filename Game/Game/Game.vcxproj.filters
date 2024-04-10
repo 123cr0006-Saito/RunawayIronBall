@@ -95,6 +95,9 @@
     <ClCompile Include="source\UIBossHp.cpp" />
     <ClCompile Include="source\BoardParabola.cpp" />
     <ClCompile Include="source\Afterglow.cpp" />
+    <ClCompile Include="source\UnbreakableBuilding.cpp">
+      <Filter>Building</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\IronBall.cpp" />
@@ -119,7 +122,6 @@
       <Filter>Mode</Filter>
     </ClCompile>
     <ClCompile Include="source\TargetZoomCamera.cpp" />
-    <ClCompile Include="source\UnbreakableObject.cpp" />
     <ClCompile Include="source\ModeRotationCamera.cpp" />
     <ClCompile Include="source\ModeZoomCamera.cpp" />
     <ClCompile Include="source\ModeTutorial.cpp" />
@@ -403,6 +405,9 @@
     <ClInclude Include="source\UIBossHp.h" />
     <ClInclude Include="source\BoardParabola.h" />
     <ClInclude Include="source\Afterglow.h" />
+    <ClInclude Include="source\UnbreakableBuilding.h">
+      <Filter>Building</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CharacterBase.h">
@@ -606,7 +611,6 @@
       <UniqueIdentifier>{83bca989-3fef-431d-bc70-e6602cf6729d}</UniqueIdentifier>
     </Filter>
     <ClInclude Include="source\TargetZoomCamera.h" />
-    <ClInclude Include="source\UnbreakableObject.h" />
     <ClInclude Include="source\ModeRotationCamera.h" />
     <ClInclude Include="source\ModeZoomCamera.h" />
   </ItemGroup>

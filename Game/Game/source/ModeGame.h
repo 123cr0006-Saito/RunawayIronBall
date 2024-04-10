@@ -27,7 +27,7 @@
 #include "BreakableBuilding.h"
 #include "Tower.h"
 #include "Floor.h"
-#include "UnbreakableObject.h"
+#include "UnbreakableBuilding.h"
 
 #include "Fog.h"
 #include "Light.h"
@@ -95,7 +95,7 @@ protected:
 	Gate* _gate;// ゴールゲート
 	std::vector<BreakableBuilding*> _house;// 家
 	std::vector<Tower*> _tower;// 塔
-	std::vector<UnbreakableObject*> _uObj;// 破壊不可能オブジェクト
+	std::vector<UnbreakableBuilding*> _uObj;// 破壊不可能オブジェクト
 	// ステージ読み込み用変数
 	std::vector<ObjectParam>_objectParam;// オブジェクトのパラメータ
 	std::vector<std::string>  _objectName;// オブジェクトの名前
