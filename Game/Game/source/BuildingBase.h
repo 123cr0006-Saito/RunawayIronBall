@@ -8,7 +8,6 @@
 #pragma once
 #include "appframe.h"
 #include "ObjectBase.h"
-#include "BreakObject.h"
 
 class BuildingBase : public ObjectBase
 {

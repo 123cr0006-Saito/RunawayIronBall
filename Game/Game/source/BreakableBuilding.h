@@ -1,7 +1,7 @@
 #pragma once
 #include "appframe.h"
 #include "BuildingBase.h"
-#include "BreakObject.h"
+#include "BreakModelParts.h"
 
 
 class BreakableBuilding : public BuildingBase
@@ -24,5 +24,5 @@ protected:
 	void ActivateBreakObject(bool activate, VECTOR vDir = VGet(0.0f, 0.0f, 0.0f));
 
 	// ”j‰óˆ—ƒNƒ‰ƒX
-	BreakObject* _breakObj;
+	BreakModelParts* _breakObj;
 };

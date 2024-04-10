@@ -207,7 +207,7 @@
     <ClCompile Include="source\BreakableBuilding.cpp" />
     <ClCompile Include="source\myJson.cpp" />
     <ClCompile Include="source\bone.cpp" />
-    <ClCompile Include="source\BreakObject.cpp" />
+    <ClCompile Include="source\BreakModelParts.cpp" />
     <ClCompile Include="source\BuildingBase.cpp" />
     <ClCompile Include="source\CharacterBase.cpp" />
     <ClCompile Include="source\CrystarPattern3.cpp" />
@@ -295,7 +295,7 @@
     <ClInclude Include="source\BreakableBuilding.h" />
     <ClInclude Include="source\myJson.h" />
     <ClInclude Include="source\bone.h" />
-    <ClInclude Include="source\BreakObject.h" />
+    <ClInclude Include="source\BreakModelParts.h" />
     <ClInclude Include="source\BuildingBase.h" />
     <ClInclude Include="source\CharacterBase.h" />
     <ClInclude Include="source\CrystarPattern3.h" />

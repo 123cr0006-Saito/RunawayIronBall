@@ -18,7 +18,7 @@ void BreakableBuilding::Init(int modelHandle, std::string objName, VECTOR startP
 	_suppression = suppression;
 	_canBreak = true;
 	// ”j‰óˆ—ƒNƒ‰ƒX‚Ì‰Šú‰»
-	_breakObj = NEW BreakObject();
+	_breakObj = NEW BreakModelParts();
 	_breakObj->Init(_modelHandle);
 }
 
