@@ -1,15 +1,23 @@
+//----------------------------------------------------------------------
+// @filename BreakableBuilding.cpp
+// ＠date: 2024/04/01
+// ＠author: Morozumi Hiroya
+// @explanation
+// 破壊可能な建物のクラス
+//----------------------------------------------------------------------
 #include "BreakableBuilding.h"
 
 BreakableBuilding::BreakableBuilding()
 {
-	_breakObj = nullptr;
+	_breakModelParts = nullptr;
 }
 
 BreakableBuilding::~BreakableBuilding()
 {
-	SAFE_DELETE(_breakObj);
+	SAFE_DELETE(_breakModelParts);
 }
 
+// 初期化処理
 void BreakableBuilding::Init(int modelHandle, std::string objName, VECTOR startPos, VECTOR rotation, VECTOR scale, VECTOR obbLength, int hp, int exp, int suppression)
 {
 	BuildingBase::Init(modelHandle, objName,startPos, rotation, scale, obbLength);
@@ -18,29 +26,35 @@ void BreakableBuilding::Init(int modelHandle, std::string objName, VECTOR startP
 	_suppression = suppression;
 	_canBreak = true;
 	// 破壊処理クラスの初期化
-	_breakObj = NEW BreakModelParts();
-	_breakObj->Init(_modelHandle);
+	_breakModelParts = NEW BreakModelParts();
+	_breakModelParts->Init(_modelHandle);
 }
 
+// 更新処理
 void BreakableBuilding::Process()
 {
-	_breakObj->Process();
+	// 破壊処理
+	// 有効状態かどうかの判定はBreakModelPartsクラス内で行う
+	_breakModelParts->Process();
 }
 
+// 被ダメージ設定
 void BreakableBuilding::SetHit(VECTOR vDir)
 {
 	// 破壊処理の開始
 	ActivateBreakObject(true, vDir);
 }
 
+// 破壊処理の有効化
 void BreakableBuilding::ActivateBreakObject(bool activate, VECTOR vDir)
 {
-	_breakObj->Activate(activate, vDir);
+	_breakModelParts->Activate(activate, vDir);
 	SetUseCollision(false);
 }
 
+// デバッグ情報の表示
 void BreakableBuilding::DrawDebugInfo()
 {
 	BuildingBase::DrawDebugInfo();
-	_breakObj->DrawDebugInfo();
+	_breakModelParts->DrawDebugInfo();
 }
