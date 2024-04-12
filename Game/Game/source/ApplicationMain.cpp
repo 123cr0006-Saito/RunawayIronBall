@@ -38,6 +38,7 @@ bool ApplicationMain::Input() {
 bool ApplicationMain::Process() {
 	base::Process();
 	_fpsController->WaitFps();
+	global._timer->TimeElapsed();
 	return true;
 }
 

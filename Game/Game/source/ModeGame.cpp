@@ -326,10 +326,7 @@ bool ModeGame::Process() {
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->PauseProcessUnderLayer();
 
-
 	bool enabledIBAttackCollision = _player->GetEnabledIBAttackCollision();
-
-	global._timer->TimeElapsed();
 
 	_player->Process(_camera->GetCamY());
 	_enemyPool->Process(enabledIBAttackCollision);
