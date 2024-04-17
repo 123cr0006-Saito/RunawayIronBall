@@ -110,7 +110,7 @@ void Boss::CheckHitBossAndStake()
 				_ironBall->SetKnockBack(vDir, 30.0f);
 			}
 			// 杭にダメージを与える
-			SetDamageStake(20);
+			SetDamageStake(14);
 			global._soundServer->DirectPlay("House_Iron_Hit");
 		}
 	}

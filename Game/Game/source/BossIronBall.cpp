@@ -27,27 +27,27 @@ namespace {
 	// 溜め時間
 	constexpr int RU_CHARGE_CNT = 60;
 	// 突進を行うフレーム数
-	constexpr int RU_ATTACK_CNT = 60;
+	constexpr int RU_ATTACK_CNT = 30;
 	// 突進での移動距離
-	constexpr float RU_MOVE_DISTANCE = 3500.0f;
+	constexpr float RU_MOVE_DISTANCE = 3700.0f;
 	// 突進後の硬直時間（通常時）
-	constexpr int RU_STIFFEN_CNT = 120;
+	constexpr int RU_STIFFEN_CNT = 180;
 	// 突進後の硬直時間（強化時）
-	constexpr int RU_STIFFEN_CNT_ENHANCED = 180;
+	constexpr int RU_STIFFEN_CNT_ENHANCED = 90;
 
 	// 落下攻撃
 	// 飛び上がってから、最高地点に到達するまでのフレーム数
-	constexpr int DR_REACH_HIGHEST_CNT = 90;
+	constexpr int DR_REACH_HIGHEST_CNT = 60;
 	// 最高地点に到達してから、地面に着地するまでのフレーム数
-	constexpr int DR_REACH_GROUND_CNT = 30;
+	constexpr int DR_REACH_GROUND_CNT = 20;
 	// 地面に着地後の硬直時間（通常時）
-	constexpr int DR_STIFFEN_CNT = 60;
+	constexpr int DR_STIFFEN_CNT = 90;
 	// 地面に着地後の硬直時間（強化状態時）
-	constexpr int DR_STIFFEN_CNT_ENHANCED = 180;
+	constexpr int DR_STIFFEN_CNT_ENHANCED = 60;
 
 	// 回転攻撃
 	// 回転開始前に杭の付近に到達するまでのフレーム数
-	constexpr int RO_REACH_STAKE_CNT = 60;
+	constexpr int RO_REACH_STAKE_CNT = 180;
 	// 回転方向
 	constexpr float RO_ROTATION_DIR = -1.0f; // 反時計回り
 	// 1フレームあたりの回転角	最小値
@@ -57,10 +57,10 @@ namespace {
 	// 回転半径の最小値
 	constexpr float RO_ROTAION_RADIUS_MIN = 500.0f;
 	// 回転半径の最大値
-	constexpr float RO_ROTAION_RADIUS_MAX = 2800.0f;
+	constexpr float RO_ROTAION_RADIUS_MAX = 3100.0f;
 
 	// 最大速度に到達するまでのフレーム数
-	constexpr int RO_ACCELERATION_CNT_MAX = 180;
+	constexpr int RO_ACCELERATION_CNT_MAX = 600;
 	// 最大速度を維持するフレーム数
 	constexpr int RO_MAINTAIN_MAXSPEED_CNT = 210;
 	// 最大速度から、速度0まで減速しきるまでのフレーム数
@@ -70,11 +70,11 @@ namespace {
 
 	// ノックバック
 	// ガラス状態でのノックバック速度倍率
-	constexpr float KB_SPEED_RATE_GLASS = 3.0f;
+	constexpr float KB_SPEED_RATE_GLASS = 20.0f;
 
 	// ハードノックバック
 	// 杭に到達するまでのフレーム数
-	constexpr int HK_REACH_STAKE_CNT = 45;
+	constexpr int HK_REACH_STAKE_CNT = 90;
 	// 杭にあたり跳ね返りを行うフレーム数
 	constexpr int HK_BOUNCE_CNT = 45;
 	// 跳ね返り距離
