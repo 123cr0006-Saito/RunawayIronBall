@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename EnemyBase.h
+// ＠date: 2023/12/14
+// ＠author: saito ko
+// @explanation
+// エネミーの基本行動や共通の変数が書かれた基底クラス
+//----------------------------------------------------------------------
 #pragma once
 #include "appframe.h"
 #include "Player.h"
@@ -13,6 +20,8 @@
 class ObjectBase;
 
 #define EN_MOTION_CHANGE 0
+#define EN_KNOCKBACK_MIN    5
+#define EN_KNOCKBACK_MAX 30
 
 //エネミー各種のもとになるクラス
 class EnemyBase : public ObjectBase
@@ -129,7 +138,3 @@ protected:
 	FrameData* _frameData;
 
 };
-
-//敵のような多量のvector配列を持つときのeraseは最後の要素と交換してからerase使用
-//処理時間が半減します。
-//敵だったら配列の中身がバラバラになっても大丈夫でしょう・・・

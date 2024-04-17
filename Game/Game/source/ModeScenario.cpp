@@ -1,14 +1,26 @@
+//----------------------------------------------------------------------
+// @filename ModeScenario.cpp
+// ＠date: 2024/02/20
+// ＠author: saito ko
+// @explanation
+// シナリオを再生するクラス
+//----------------------------------------------------------------------
 #include "ModeScenario.h"
 #include "ModeFadeComeBack.h"
 #include "ModeMovie.h"
 #include "ModeGame.h"
+#include "ModeBossBattle.h"
 
 bool ModeScenario::IsLoadHandle = false;
 std::unordered_map<int, int> ModeScenario::_charaHandleMap;
 std::unordered_map<int, std::string> ModeScenario::_nameHandleMap;
 std::unordered_map<int, int> ModeScenario::_backGroundHandleMap;
 std::unordered_map<int, int> ModeScenario::_textBoxHandle;
-
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @param scenarioFile シナリオのデータが入ったファイルのパス
+// @param scenarioNum シナリオの番号
+//----------------------------------------------------------------------
 ModeScenario::ModeScenario(std::string scenarioFile,int scenarioNum) {
 	_scenarioNum = scenarioNum;
 	LoadOnceHandleData();
@@ -30,6 +42,8 @@ ModeScenario::ModeScenario(std::string scenarioFile,int scenarioNum) {
 			c += FindString(&data[c], ',', &data[size]); c++; c += GetDecNum(&data[c], &scenario.nameHandle);
 			// 背景の番号を取得する
 			c += FindString(&data[c], ',', &data[size]); c++; c += GetDecNum(&data[c], &scenario.backGroundHandle);
+			// 背景の番号を取得する
+			c += FindString(&data[c], ',', &data[size]); c++; c += GetDecNum(&data[c], &scenario.textBoxHandle);
 			// 改行などスキップ
 			c += 2;
 			_scenarioData.push_back(scenario);
@@ -42,7 +56,10 @@ ModeScenario::ModeScenario(std::string scenarioFile,int scenarioNum) {
 	}
 #endif
 };
-
+//----------------------------------------------------------------------
+// @brief ハンドルの読み込み
+// @return 成功しているかどうか
+//----------------------------------------------------------------------
 bool ModeScenario::LoadOnceHandleData() {
 	//読み込みが終わっている状態
 	if (IsLoadHandle) {return true;}
@@ -149,7 +166,10 @@ bool ModeScenario::LoadOnceHandleData() {
 
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 初期化処理
+// @return 成功しているかどうか
+//----------------------------------------------------------------------
 bool ModeScenario::Initialize(){
 	if (!base::Initialize()) { return false; }
 	_nowTextByte = 0;
@@ -162,10 +182,13 @@ bool ModeScenario::Initialize(){
 	GetGraphSize(_charaHandleMap[_scenarioData.at(_nowTextLine).charaHandle], &_handleX, &_handleY);
 	_textFontHandle = CreateFontToHandle("メイリオ", 32, 3, DX_FONTTYPE_ANTIALIASING_EDGE_8X8);
 	_nameFontHandle = CreateFontToHandle("メイリオ", 64, 3, DX_FONTTYPE_ANTIALIASING_EDGE_8X8);
-
+	_skipHandle = ResourceServer::LoadGraph("Skip", "res/ModeScenario/Skip/UI_Skip.png");
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 削除処理
+// @return 成功しているかどうか
+//----------------------------------------------------------------------
 bool ModeScenario::Terminate(){
 	base::Terminate();
 	_scenarioData.clear();
@@ -177,7 +200,10 @@ bool ModeScenario::Terminate(){
 	ChangeFont("MSゴシック");
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief シナリオの番号で固有のmodeを作成する
+// @return 無し
+//----------------------------------------------------------------------
 void  ModeScenario::ScenarioUniqueProcess(){
 	switch(_scenarioNum){
 	case 1 :
@@ -185,13 +211,17 @@ void  ModeScenario::ScenarioUniqueProcess(){
 		ModeServer::GetInstance()->Add(NEW ModeGame(), 1, "Game");
 		break;
 	case 2:
+		ModeServer::GetInstance()->Add(NEW ModeBossBattle(), 1, "BossBattle");
 		break;
 	case 3:
 		ModeServer::GetInstance()->Add(NEW ModeMovie(), 10, "Movie");
 		break;
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief 更新処理
+// @return 成功しているかどうか
+//----------------------------------------------------------------------
 bool ModeScenario::Process(){
 	base::Process();
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
@@ -211,58 +241,62 @@ bool ModeScenario::Process(){
 		_currentTime = GetNowCount();
 	}
 
+	if (_nowTextLine >= (_scenarioData.size() - 1) && _input->GetTrg(XINPUT_BUTTON_A) || _input->GetTrg(XINPUT_BUTTON_START)) {
+		ScenarioUniqueProcess();
+		if (!ModeServer::GetInstance()->Search("ScenarioFade")) {
+			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1500, this), 1000, "ScenarioFade");
+		}
+	}
+
 	// 次のラインに行く
-	if (_nowTextByte >= _scenarioData.at(_nowTextLine).text.length()) {
+	if (_nowTextByte >= _scenarioData.at(_nowTextLine).text.length() && _nowTextLine < (_scenarioData.size() - 1) ) {
 		if (_input->GetTrg(XINPUT_BUTTON_A)) {
 			_nowTextLine++;
 			_nowTextByte = 0;
 			_currentTime = GetNowCount();
-			if (_nowTextLine < _scenarioData.size()) {
-				std::string voiceName = _scenarioData.at(_nowTextLine).voiceData;
-				if (voiceName != "") {
-					global._soundServer->DirectPlay(voiceName);
-				}
+			std::string voiceName = _scenarioData.at(_nowTextLine).voiceData;
+			if (voiceName != "") {
+				global._soundServer->DirectPlay(voiceName);
 			}
 		}
-	}
-
-	// シナリオをすべて描画し終えた スキップするときは自分より上のレイヤーがないか確認する
-	if (_nowTextLine >= _scenarioData.size() || _input->GetTrg(XINPUT_BUTTON_START) && !ModeServer::GetInstance()->IsAboutLayer(this)) {
-		_nowTextLine = _scenarioData.size()-1;
-		ScenarioUniqueProcess();
-		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(1000,this), 1000, "Fade");
 	}
 	
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 文字が半角か全角かを判定する
+// @param text 文字列
+// @param byte 文字の位置
+// @return 半角か全角か
+//----------------------------------------------------------------------
 bool ModeScenario::SearchLetter(std::string text, int byte) {
 	if (0x00 <= text.at(byte) && text.at(byte) <= 0x7f) {
 		return true;
 	}
 	return false;
 };
-
+//----------------------------------------------------------------------
+// @brief 描画処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool ModeScenario::Render() {
 	base::Render();
 	int x, y;
 
 	// 背景の描画
 	DrawGraph(0, 0, _backGroundHandleMap[_scenarioData.at(_nowTextLine).backGroundHandle], true);
-
 	// キャラクターの描画
 	DrawGraph(0, 1080 - _handleY, _charaHandleMap[_scenarioData.at(_nowTextLine).charaHandle], true);
-
 	//テキストボックスの描画
 	GetGraphSize(_textBoxHandle[0], &x, &y);
 	DrawGraph(_handleX, 1080 - _handleY/2,  _textBoxHandle[0],true);
-
 	// 名前の描画
 	DrawStringToHandle(_handleX + x / 6, 1080 - y - 100,  _nameHandleMap[_scenarioData.at(_nowTextLine).nameHandle].c_str(), GetColor(255, 255, 255), _nameFontHandle);
-
 	// 文字列の描画
 	std::string copy = _scenarioData.at(_nowTextLine).text.substr(0, _nowTextByte);
 	DrawStringToHandle(_handleX + x / 5, 1080 - y,  copy.c_str(), GetColor(255, 255, 255),_textFontHandle);
-
+	// スキップボタンの描画
+	GetGraphSize(_skipHandle, &x, &y);
+	DrawGraph(1920 - x, 1080 - y, _skipHandle, true);
 	return true;
 };

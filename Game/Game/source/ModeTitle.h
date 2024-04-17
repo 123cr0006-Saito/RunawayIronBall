@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename ModeTitle.h
+// ＠date: 2023/12/25
+// ＠author: saito ko
+// @explanation
+// タイトル画面の処理を行うクラス
+//----------------------------------------------------------------------
 #pragma once
 #include "appframe.h"
 #include "ModeScenario.h"
@@ -28,7 +35,6 @@ protected:
 	int _modeCount;//今選択されている項目の番号
 	std::unordered_map<std::string, int> _handleMap;//タイトルで使用する画像ハンドルのマップ
 	bool _IsGameStart;//ゲームを開始したかどうか
-	//-----------------
 	//タイトルが割れる処理の変数
 	int _modelHandle;//割れるモデルのハンドル
 	int _frameSize;//割れるモデルのフレーム数

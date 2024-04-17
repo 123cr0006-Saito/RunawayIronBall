@@ -7,7 +7,11 @@ Global::Global() {
 	_soundServer = new SoundServer();
 	_timer->Start();
 	exit_count = false;
-	Init();
+	_stageNum = 1;
+	_allExp = 0;
+	_oldExp = 0;
+	IsVibration = 1; 
+	SoundLoad();
 };
 
 Global::~Global() {
@@ -16,7 +20,9 @@ Global::~Global() {
 };
 
 bool Global::Init() {
-	SoundLoad();
+	_stageNum = 1;
+	_allExp = 0;
+	_oldExp = 0;
 	return true;
 };
 
@@ -38,6 +44,9 @@ bool Global::ResourceLoad() {
 	ResourceServer::Load("Player", "res/Character/cg_player_girl/Cg_Player_Girl.mv1");
 	ResourceServer::Load("IronBall", "res/Character/Cg_Iron_Ball/Cg_Iron_Ball.mv1");
 	ResourceServer::Load("Chain", "res/Chain/Cg_Chain.mv1");
+	ResourceServer::Load("LoadingPlayer", "res/Character/Loading/Cg_Player_Girl.mv1");
+	ResourceServer::Load("LoadingIronBall", "res/Character/Loading/Cg_Iron_Ball.mv1");
+	ResourceServer::Load("LoadingChain", "res/Character/Loading/Cg_Chain.mv1");
 	ResourceServer::Load("CryStar_Glass", "res/Enemy/Cg_Enemy_Crystar_Glass/Cg_Crystar_Glass.mv1");
 	ResourceServer::Load("CryStar_Rock", "res/Enemy/Cg_Enemy_Crystar_Rock/Cg_Crystar_Rock.mv1");
 	ResourceServer::Load("CryStar_Iron", "res/Enemy/Cg_Enemy_Crystar_Iron/Cg_Crystar_Iron.mv1");
@@ -50,9 +59,8 @@ bool Global::ResourceLoad() {
 	ResourceServer::Load("CrystarRoof_Glass", "res/Enemy/Cg_Enemy_Crystar_Iron/Cg_Crystar_Roof_Iron.mv1");
 	ResourceServer::Load("CrystarRoof_Iron", "res/Enemy/Cg_Enemy_Crystar_Iron/Cg_Helmet_Enemy_Crystar_Iron.mv1");
 	// Object
-	ResourceServer::Load("Tower01", "res/Building/CG_OBJ_Tower/Tower_Under.mv1");
-	ResourceServer::Load("Tower02", "res/Building/CG_OBJ_Tower/Tower_Under.mv1");
-	ResourceServer::Load("Tower03", "res/Building/CG_OBJ_Tower/Tower_Top.mv1");
+	ResourceServer::Load("Tower_Under", "res/Building/CG_OBJ_Tower/Tower_Under.mv1");
+	ResourceServer::Load("Tower_Top", "res/Building/CG_OBJ_Tower/Tower_Top.mv1");
 	ResourceServer::Load("CG_OBJ_Asphalt", "res/Building/CG_OBJ_Asphalt/CG_OBJ_Asphalt.mv1");
 	ResourceServer::Load("CG_OBJ_Asphalt_Cross", "res/Building/CG_OBJ_Asphalt_Cross/CG_OBJ_Asphalt_Cross.mv1");
 	ResourceServer::Load("CG_OBJ_Dirt", "res/Building/CG_OBJ_Dirt/CG_OBJ_Dirt.mv1");
@@ -113,6 +121,7 @@ bool Global::ResourceLoad() {
 	ResourceServer::Load("return", "res/ModePause/UI_Menu_Back.png");
 	ResourceServer::Load("InstructionFrame", "res/ModePause/Operation/Frame.png");
 	ResourceServer::Load("Operation", "res/ModePause/Operation/UI_Menu_Operation.png");
+	ResourceServer::Load("Skip", "res/ModeScenario/Skip/UI_Skip.png");
 	ResourceServer::LoadMultGraph("Tutorial", "res/Tutorial/Tutorial", ".png", 5);
 	ResourceServer::LoadMultGraph("OperateItem", "res/ModePause/Operation/UI_Operation", ".png", 5);
 	// GameOver
@@ -150,6 +159,7 @@ bool Global::SoundLoad() {
 	_soundServer->Add("Stage01", new SoundItemBGM("Sound/BGM/BGM_Stage_01.wav"));
 	_soundServer->Add("Stage02", new SoundItemBGM("Sound/BGM/BGM_Stage_02.wav"));
 	_soundServer->Add("Stage03", new SoundItemBGM("Sound/BGM/BGM_Stage_03.wav"));
+	_soundServer->Add("Stage04", new SoundItemBGM("Sound/BGM/BGM_Stage_Boss.wav"));
 	_soundServer->Add("B_Scenario", new SoundItemBGM("Sound/BGM/BGM_Scenario_01.wav"));
 	_soundServer->Add("Result", new SoundItemBGM("Sound/BGM/BGM_Result.wav"));
 	//SE

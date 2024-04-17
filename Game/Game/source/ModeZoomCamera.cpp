@@ -1,12 +1,26 @@
+//----------------------------------------------------------------------
+// @filename ModeZoomCamera.cpp
+// ＠date: 2024/03/09
+// ＠author: saito ko
+// @explanation
+// ゲート表示時にカメラを移動させるクラス
+//----------------------------------------------------------------------
 #include "ModeZoomCamera.h"
-
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @param pos カメラの位置
+// @return 無し
+//----------------------------------------------------------------------
 ModeZoomCamera::ModeZoomCamera(VECTOR pos) {
 	_pos = pos;
 	_camera = nullptr;
 	_time = 0;
 	_currentTime = 0;
 };
-
+//----------------------------------------------------------------------
+// @brief 初期化処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool ModeZoomCamera::Initialize(){
 	int time = 5 * 1000;
 	_time = time + 2000; // 移動時間に2秒追加
@@ -26,19 +40,25 @@ bool ModeZoomCamera::Initialize(){
 	_camera = NEW TargetZoomCamera(targetPos,nextCameraPos,nowDirVec,nextDirVec,time);
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 終了処理
+// @return 成功しているか	
+//----------------------------------------------------------------------
 bool ModeZoomCamera::Terminate() {
 	delete _camera; _camera = nullptr;
 	return true;
 }
-
+//----------------------------------------------------------------------
+// @brief 更新処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool ModeZoomCamera::Process() {
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->PauseProcessUnderLayer();
 
 	int nowTime = GetNowCount() - _currentTime;
 	_camera->Process();
-
+	// 時間経過で削除
 	if (nowTime >= _time) {
 		ModeServer::GetInstance()->Del(this);
 	}

@@ -43,7 +43,9 @@ void Effect::ScreenVibration() {
 				vibration_y = rand() % (int)ceil(max_y) - ceil(max_y / 2);
 			}
 		}
-		SetCameraScreenCenter((Effect::DispSizeW() / 2) + vibration_x, (Effect::DispSizeH() / 2) + vibration_y);
+		int windowX, windowY, windowDepth;
+		GetScreenState(&windowX, &windowY, &windowDepth);
+		SetCameraScreenCenter((windowX / 2) + vibration_x, (windowY / 2) + vibration_y);
 	}
 };
 

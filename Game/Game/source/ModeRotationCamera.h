@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename ModeRotationCamera.cpp
+// ＠date: 2024/03/09
+// ＠author: saito ko
+// @explanation
+// ステージ開始時のカメラの回転処理を行うクラス
+//----------------------------------------------------------------------
 #pragma once
 #include "appframe.h"
 #include "RotationCamera.h"
@@ -12,9 +19,10 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 protected:
-	int _handle;
-	int _stageNum;
-	RotationCamera* _camera;
-	int _currentTime;
+	XInput* _input;// 入力クラス
+	int _handle;// ステージの名前の画像ハンドル
+	int _stageNum;// ステージの番号
+	RotationCamera* _camera;// カメラクラス
+	int _currentTime;// 現在の時間
 };
 

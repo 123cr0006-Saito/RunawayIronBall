@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename Player.h
+// ＠date: 2024/04/01
+// ＠author: Morozumi Hiroya
+// @explanation
+// プレイヤーキャラクターの制御・描画を行うクラス
+//----------------------------------------------------------------------
 #pragma once
 #include "appframe.h"
 #include "CharacterBase.h"
@@ -42,17 +49,26 @@ private:
 		HIT,
 		WIN,
 	};
-
+	struct LevelData {
+		int power;
+		float magnification;
+		int stamina;
+	};
 public:
 	Player();
 	~Player() override;
 
 	bool Init(int modelHandle, VECTOR pos) override;
+	// 鉄球の初期位置を設定する
+	void InitIBPos();
 	bool Process(float camAngleY);
+	// アニメーションの処理
 	bool AnimationProcess();
 	bool BlastOffProcess();
+	// モデルの描画処理
 	bool Render() override;
 
+	void SetPos(VECTOR pos) override { CharacterBase::SetPos(pos); UpdateCollision(); };
 
 	int GetHP() { return _hp; }
 	void MaxHeal() { _hp = 4; }
@@ -62,58 +78,45 @@ public:
 
 	void SetDamage();
 
-
-	// キャラモデルの点滅処理
-	void FlickerProcess();
-
-
-
 	float GetStamina() { return _stamina; }
 	float GetStaminaMax() { return _staminaMax; }
 	float GetStaminaRate() { return _stamina / _staminaMax; }
 
-
-
-
-
 	void SetBone();//齋藤が作った関数です。 boneのフレームを探すために使用する関数です。後でjsonでの読み込みにするかもしれません。
 	//↓齋藤が作った関数です。どこにjson読み込みをどこに書けばよいのかわからなかったので、コンストラクタの次に呼び出す関数として実装しました。
-	void SetNextExp(std::string FileName);//経験値データの読み込み
 	bool HealHp();
-	bool  UpdateExp();//経験値が越えていた時、レベルを上げる。
+	bool UpdateExp();//経験値が越えていた時、レベルを上げる。
 	int GetNowLevel() { return _nowLevel; };
 	void SetExp(int getExp) { _nowExp += getExp; };
 	//経験値UIで使用しています。
 	int GetNowExp() { return _nowExp; }
 	int GetNextExp() { return _nextLevel[_nowLevel]; }
 
-
-	void SetPowerScale(std::string FileName);//ファイル読み込みでレベルに合わせた攻撃力と拡大率を取得
+	void SetLevel(int allExp);
+	void SetLevelParam(std::string FileName);//ファイル読み込みでレベルに合わせた攻撃力と拡大率を取得
 	bool UpdateLevel();// レベルアップ時に攻撃力と拡大率を設定
 	int GetPower() { return _power; }//ノックバック用の力を返します。
 
-
-
 	void UpdateBone();
+	// 当たり判定の更新処理
 	void UpdateCollision();
 
 	Capsule GetCollision() { return _capsuleCollision; };
 	Sphere GetIBCollision() { return _ironBall->GetIBCollision(); };
+	Sphere GetIBBodyCollision() { return _ironBall->GetIBBodyCollision(); };
 	VECTOR GetIBPos() { return _ironBall->GetBallPosition(); };
 	void SetIBPos(VECTOR pos) { _ironBall->SetBallPosition(pos); };
 
+	Capsule GetChainCollision() { return _ironBall->GetChainCollision(); };
+
 	void SetBlastOffPower(VECTOR dir, float power) { _blastOffDir = dir; _blastOffPower = power; };
-
-
-
-	VECTOR GetRightHandPos();
 
 	VECTOR* GetIBPosPtr() { return _ironBall->GetBallPosPtr(); }
 
 
 	bool GetEnabledIBAttackCollision() { return _ironBall->GetEnabledAttackCollision(); }
 
-	// フレームデータのコマンドをチェックする
+	// フレームデータの実行コマンドをチェックする
 	void CheckFrameDataCommand();
 
 	static Player* GetInstance() { return _instance; }
@@ -194,9 +197,6 @@ private:
 	float _blastOffPower;
 
 
-	int _rightHandFrameIndex;
-
-
 
 
 	// 被ダメージ時のモデル点滅処理を行うクラス
@@ -208,12 +208,12 @@ private:
 	//齋藤が書きました。
 	std::vector<bone*> _bone;
 	int _nowLevel;//現在のレベルが入ります。
-	int _nowExp; //現在持っている経験値を格納します。
+	
 	int _maxLevel;//レベルの最大値
+	int _nowExp;//現在の経験値
 	std::map<int, int> _nextLevel;// first 現在のレベル  second  次のレベルが上がるまでの経験値
-
 	int _power;//吹っ飛ばす力です。
-	std::map<int, std::pair<int, float>> _powerAndScale;//攻撃力と拡大率を格納したコンテナです。
+	std::map<int, LevelData> _levelParam;//攻撃力と拡大率を格納したコンテナです。
 	//------------
 
 

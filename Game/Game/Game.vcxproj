@@ -155,6 +155,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="source\Afterglow.cpp" />
+    <ClCompile Include="source\BoardParabola.cpp" />
+    <ClCompile Include="source\AnimationChain.cpp" />
     <ClCompile Include="source\ModeMovie.cpp" />
     <ClCompile Include="source\Fog.cpp" />
     <ClCompile Include="source\ModeBossBattle.cpp" />
@@ -201,10 +204,10 @@
     <ClCompile Include="source\SlaBlockPattern2.cpp" />
     <ClCompile Include="source\CrystarPattern4.cpp" />
     <ClCompile Include="source\EnemyPool.cpp" />
-    <ClCompile Include="source\House.cpp" />
+    <ClCompile Include="source\BreakableBuilding.cpp" />
     <ClCompile Include="source\myJson.cpp" />
     <ClCompile Include="source\bone.cpp" />
-    <ClCompile Include="source\BreakObject.cpp" />
+    <ClCompile Include="source\BreakModelParts.cpp" />
     <ClCompile Include="source\BuildingBase.cpp" />
     <ClCompile Include="source\CharacterBase.cpp" />
     <ClCompile Include="source\CrystarPattern3.cpp" />
@@ -230,8 +233,12 @@
     <ClCompile Include="source\UITimeLimit.cpp" />
     <ClCompile Include="source\Suppression.cpp" />
     <ClCompile Include="source\TargetZoomCamera.cpp" />
+    <ClCompile Include="source\UIBossHp.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\Afterglow.h" />
+    <ClInclude Include="source\BoardParabola.h" />
+    <ClInclude Include="source\AnimationChain.h" />
     <ClInclude Include="source\ModeMovie.h" />
     <ClInclude Include="source\Fog.h" />
     <ClInclude Include="source\ModeBossBattle.h" />
@@ -242,7 +249,8 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="source\RotationCamera.h" />
     <ClInclude Include="source\CameraBase.h" />
-    <ClCompile Include="source\UnbreakableObject.cpp" />
+    <ClCompile Include="source\UnbreakableBuilding.cpp" />
+    <ClInclude Include="source\UIBossHp.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\Heart.h" />
@@ -284,10 +292,10 @@
     <ClInclude Include="source\CrystarPattern4.h" />
     <ClInclude Include="source\EnemyPool.h" />
     <ClInclude Include="source\EnemyStract.h" />
-    <ClInclude Include="source\House.h" />
+    <ClInclude Include="source\BreakableBuilding.h" />
     <ClInclude Include="source\myJson.h" />
     <ClInclude Include="source\bone.h" />
-    <ClInclude Include="source\BreakObject.h" />
+    <ClInclude Include="source\BreakModelParts.h" />
     <ClInclude Include="source\BuildingBase.h" />
     <ClInclude Include="source\CharacterBase.h" />
     <ClInclude Include="source\CrystarPattern3.h" />
@@ -313,7 +321,7 @@
     <ClInclude Include="source\UITimeLimit.h" />
     <ClInclude Include="source\Suppression.h" />
     <ClInclude Include="source\TargetZoomCamera.h" />
-    <ClInclude Include="source\UnbreakableObject.h" />
+    <ClInclude Include="source\UnbreakableBuilding.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Game.rc" />

@@ -1,5 +1,20 @@
+//----------------------------------------------------------------------
+// @filename ModeFadeComeBack.cpp
+// ＠date: 2024/03/02
+// ＠author: saito ko
+// @explanation
+// ステージ遷移時にフェードイン、フェードアウトを行うためのクラス
+// ModeFadeと違う点は常にフェードインしてからフェードアウトし、
+// 指定のモードを削除しながら遷移する
+//----------------------------------------------------------------------
 #include "ModeFadeComeBack.h"
-
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @param Time フェード時間
+// @param modeName レイヤーを変更するモード名
+// @param layer 指定したモードのレイヤーをこの値に変更
+// @param IsProcessSkip フェード時プロセスをスキップするかどうか
+//----------------------------------------------------------------------
 ModeFadeComeBack::ModeFadeComeBack(int Time, std::string modeName, int layer, bool IsProcessSkip) :ModeFade(Time, false) {
 	_fadeEnd = 255;
 	_fadeStart = 0;
@@ -8,7 +23,12 @@ ModeFadeComeBack::ModeFadeComeBack(int Time, std::string modeName, int layer, bo
 	_changeModeName = modeName;
 	_IsProcessSkip = IsProcessSkip;
 };
-
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @param Time フェード時間
+// @param mode 削除するモード名
+// @param IsProcessSkip フェード時プロセスをスキップするかどうか
+//----------------------------------------------------------------------
 ModeFadeComeBack::ModeFadeComeBack(int Time, ModeBase* mode, bool IsProcessSkip) :ModeFade(Time,false){
 	_fadeEnd = 255;
     _fadeStart = 0;
@@ -17,7 +37,14 @@ ModeFadeComeBack::ModeFadeComeBack(int Time, ModeBase* mode, bool IsProcessSkip)
 	_changeModeName = "";
 	_IsProcessSkip = IsProcessSkip;
 };
-
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @param Time フェード時間
+// @param mode 削除するモード名
+// // @param modeName レイヤーを変更するモード名
+// @param layer 指定したモードのレイヤーをこの値に変更
+// @param IsProcessSkip フェード時プロセスをスキップするかどうか
+//----------------------------------------------------------------------
 ModeFadeComeBack::ModeFadeComeBack(int Time, ModeBase* mode, std::string modeName, int layer, bool IsProcessSkip) :ModeFade(Time, false) {
 	_fadeEnd = 255;
 	_fadeStart = 0;
@@ -26,28 +53,38 @@ ModeFadeComeBack::ModeFadeComeBack(int Time, ModeBase* mode, std::string modeNam
 	_changeModeName = modeName;
 	_IsProcessSkip = IsProcessSkip;
 };
-
+//----------------------------------------------------------------------
+// @brief 初期化
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool ModeFadeComeBack::Initialize(){
 	if (!base::Initialize()) { return false; }
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 終了処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool ModeFadeComeBack::Terminate(){
 	base::Terminate();
 	_deleteMode = nullptr;
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 更新処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool ModeFadeComeBack::Process(){
 	base::Process();
+	// プロセスをスキップする場合
 	if(_IsProcessSkip){
 	   ModeServer::GetInstance()->SkipProcessUnderLayer();
 	}
 	ModeServer::GetInstance()->PauseProcessUnderLayer();
 	int nowTime = GetNowCount() - _currentTime;
-
+	// フェード処理
 	_alphaFade = Easing::Linear(nowTime, _fadeStart, _fadeEnd, _fadeTime);
-
+	// フェード終了
 	if (_alphaFade >= 255) {
 		// 値の入れ替え
 		_alphaFade = _fadeEnd;
@@ -62,7 +99,7 @@ bool ModeFadeComeBack::Process(){
 		   ModeServer::GetInstance()->Del(_deleteMode);
 	    }
 		// レイヤーを変更する場合
-		else if(_changeModeName != ""){
+		if(_changeModeName != ""){
 			ModeServer::GetInstance()->ChangeLayer(_changeModeName, _changeLayer);
 		}
 	}
@@ -73,7 +110,10 @@ bool ModeFadeComeBack::Process(){
 
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 描画処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool ModeFadeComeBack::Render() {
 	base::Render();
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, _alphaFade);

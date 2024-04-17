@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename ModeTitle.cpp
+// ＠date: 2023/12/25
+// ＠author: saito ko
+// @explanation
+// タイトル画面の処理を行うクラス
+//----------------------------------------------------------------------
 #include "AppFrame.h"
 #include "ApplicationMain.h"
 #include "ModeTitle.h"
@@ -5,13 +12,16 @@
 #include "ModeLoading.h"
 #include "ModePause.h"
 #include "math.h"
-
-
+//----------------------------------------------------------------------
+// @brief 初期化処理
+// ＠return 成功しているかどうか
+//----------------------------------------------------------------------
 bool ModeTitle::Initialize() {
 	if (!base::Initialize()) { return false; }
 
 	_input = XInput::GetInstance();
 	_modeCount = 0;
+	//画像の読み込み
 	_handleMap["BackGround"] = ResourceServer::LoadGraph("T_BackGround", _T("res/ModeTitle/title_base.png"));
 	_handleMap["Title"] = ResourceServer::LoadGraph("T_Title",_T("res/ModeTitle/UI_Title.png"));
 	_handleMap["Start"] = ResourceServer::LoadGraph("T_Start",_T("res/ModeTitle/UI_Start.png"));
@@ -52,7 +62,10 @@ bool ModeTitle::Initialize() {
 
 	return true;
 }
-
+//----------------------------------------------------------------------
+// @brief 終了処理
+// ＠return 成功しているか
+//----------------------------------------------------------------------
 bool ModeTitle::Terminate() {
 	base::Terminate();
 	delete[] _MoveVec;
@@ -61,31 +74,43 @@ bool ModeTitle::Terminate() {
 	_handleMap.clear();
 	return true;
 }
-
+//----------------------------------------------------------------------
+// @brief ゲーム開始処理
+// ＠return 無し
+//----------------------------------------------------------------------
 void ModeTitle::SelectGameStart() {
 	ModeServer::GetInstance()->Del(this);
 	ModeServer::GetInstance()->Add(NEW ModeLoading(),100,"Loading");
 };
-
+//----------------------------------------------------------------------
+// @brief オプション選択処理
+// ＠return 無し
+//----------------------------------------------------------------------
 void ModeTitle::SelectOption() {
 	ModeServer::GetInstance()->Add(NEW ModePause(), 10, "Pause");
 };
-
+//----------------------------------------------------------------------
+// @brief ゲーム終了処理
+// ＠return 無し
+//----------------------------------------------------------------------
 void ModeTitle::SelectGameEnd() {
 	if (_input->GetTrg(XINPUT_BUTTON_A)) {
 		global.exit_count = true;
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief 選択項目の更新処理
+// ＠return 無し
+//----------------------------------------------------------------------
 void ModeTitle::UpdateSelectItems(){
 	int count = 0;
 
 	//モード選択の切り替え
-	if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP)) {
+	if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP) || _input->GetTrg(XINPUT_BUTTON_STICK_UP)) {
 		count--;
 		global._soundServer->DirectPlay("SE_Select");
 	}
-	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN)) {
+	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN) || _input->GetTrg(XINPUT_BUTTON_STICK_DOWN)) {
 		count++;
 		global._soundServer->DirectPlay("SE_Select");
 	}
@@ -116,7 +141,10 @@ void ModeTitle::UpdateSelectItems(){
 		}
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief 画面が割れる演出とゲーム開始の更新処理
+// ＠return 無し
+//----------------------------------------------------------------------
 void ModeTitle::UpdateSelectToGameStart() {
 	int nowTime = GetNowCount() - _currentTime;
 	if (nowTime >= 1000) {
@@ -126,7 +154,10 @@ void ModeTitle::UpdateSelectToGameStart() {
 		}
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief 画面が割れる演出の処理
+// ＠return 無し
+//----------------------------------------------------------------------
 void ModeTitle::UpdateCrackedScreen(){
 	for (int i = 0; i < _frameSize; i++) {
 		MATRIX matrix = MGetIdent();
@@ -139,7 +170,10 @@ void ModeTitle::UpdateCrackedScreen(){
 		MV1SetFrameUserLocalMatrix(_modelHandle, i, matrix);
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief タイトル画面の描画処理
+// ＠return 無し
+//----------------------------------------------------------------------
 void ModeTitle::DrawTitleItems(){
 	DrawGraph(0, 0, _handleMap["BackGround"], true);
 	int handleX, handleY;
@@ -153,9 +187,9 @@ void ModeTitle::DrawTitleItems(){
 	DrawGraph(0, 1080 - handleY, _handleMap["Logo"], true);
 	//それぞれの項目の描画
 	
-	int centerX, centerY;
-	centerX = 1300;
-	centerY = 500;
+	int centerX;
+	int centerY[3] = { 550,720,910 };
+	centerX = 1200;
 
 	std::array<std::string,3> _handleNameList = { "Start","Option","Quit" };
 
@@ -164,35 +198,47 @@ void ModeTitle::DrawTitleItems(){
 		float extRate = 1.0f;
 		GetGraphSize(_handleMap[_handleNameList[handleNum]], &handleX, &handleY);
 		if (i == _modeCount) { extRate = 1.1f; }
-		DrawRotaGraph(centerX + handleX / 2, centerY + handleY / 2 + i * (100 + handleY / 2), extRate, 0.0f, _handleMap[_handleNameList[handleNum]], true);
+		DrawRotaGraph(centerX + handleX / 2, centerY[i], extRate, 0.0f, _handleMap[_handleNameList[handleNum]], true);
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief 割れる画面の描画処理
+// ＠return 無し
+//----------------------------------------------------------------------
 void ModeTitle::DrawCrackedScreen() {
 	MV1DrawModel(_modelHandle);
 };
-
+//----------------------------------------------------------------------
+// @brief 更新処理
+// ＠return 成功しているか
+//----------------------------------------------------------------------
 bool ModeTitle::Process() {
 	base::Process();
 	if (!_IsGameStart) {
+		//タイトル画面の更新
 		UpdateSelectItems();
 	}
 	else {
+		//割れる画面の更新
 		UpdateSelectToGameStart();
 	}
 
 	return true;
 }
-
+//----------------------------------------------------------------------
+// @brief 描画処理
+// ＠return 成功しているか
+//----------------------------------------------------------------------
 bool ModeTitle::Render() {
 	base::Render();
 	if (!_IsGameStart) {
+		//タイトル画面の描画
 		DrawTitleItems();
 	}
 	else {
+		//割れる画面の描画
 		DrawCrackedScreen();
 	}
-	clsDx();
 
 	return true;
 }

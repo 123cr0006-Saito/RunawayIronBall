@@ -1,3 +1,11 @@
+//----------------------------------------------------------------------
+// @filename AnimationManager.cpp
+// ＠date: 2024/04/01
+// ＠author: Morozumi Hiroya
+// @explanation
+// キャラクターのアニメーションを管理するクラス
+// AnimationItemを追加・削除し、アニメーションの管理を行う
+//----------------------------------------------------------------------
 #include "AnimationManager.h"
 
 std::map<CHARA_NAME, ANIM_MAP> AnimationManager::_allCharaAnimMap;
@@ -22,7 +30,11 @@ AnimationManager::~AnimationManager()
 	_targetAnimMap = nullptr;
 }
 
-
+// アニメーション情報用マップコンテナの初期設定を行う
+// 既に同じキャラクター名が登録されている場合は、同一のマップを使用する
+// @param charaName キャラクター名
+// @param modelHandle モデルハンドル
+// @param fileName モーションリストファイル名
 void AnimationManager::InitMap(CHARA_NAME charaName, int modelHandle, std::string fileName)
 {
 	auto itr = _allCharaAnimMap.find(charaName);
@@ -74,6 +86,11 @@ void AnimationManager::InitMap(CHARA_NAME charaName, int modelHandle, std::strin
 	_modelHandle = modelHandle;
 }
 
+// アニメーション情報用マップコンテナの初期設定を行う
+// 既に同じキャラクター名が登録されている場合は、同一のマップを使用する
+// @param charaName キャラクター名
+// @param modelHandle モデルハンドル
+// @param motionList モーション名の配列
 void AnimationManager::InitMap(CHARA_NAME charaName, int modelHandle, const std::vector<MotionNamePair>& motionList)
 {
 	auto itr = _allCharaAnimMap.find(charaName);
@@ -97,24 +114,10 @@ void AnimationManager::InitMap(CHARA_NAME charaName, int modelHandle, const std:
 	_modelHandle = modelHandle;
 }
 
-// ANIMATION_INFO型のアニメーション情報の初期設定を行う
-void AnimationManager::SetupAnimationInfo(int statusNo, int animIndex, int loopTimes)
-{
-	// 引数statusNoに対応するアニメーション情報が存在するか調べる
-	auto itr = (*_targetAnimMap).find(statusNo);
-	// アニメーション情報が存在しない場合のみ、アニメーション情報を追加する
-	if (itr == (*_targetAnimMap).end()) {
-		ANIMATION_INFO info;
-		info.animIndex = animIndex;
-		info.loopTimes = loopTimes;
-		(*_targetAnimMap)[statusNo] = info;
-	}
-
-}
-
 // アニメーションアイテムを追加する
 void AnimationManager::AddAnimationItem(int statusNo)
 {
+	// 引数statusNoに対応するアニメーション情報が存在するか調べる
 	auto itr = (*_targetAnimMap).find(statusNo);
 	// アニメーション情報が存在する場合
 	if (itr != (*_targetAnimMap).end())
@@ -137,14 +140,14 @@ void AnimationManager::Process(int statusNo)
 {
 	// 再生するアニメーションが変わった場合
 	if (_animNo != statusNo) {
-		// アタッチされているアニメーションに閉じ時間を設定する
+		// アタッチされているアニメーションに閉じ時間を設定する（モーションブレンド用）
 		for (auto itrItem = _animContainer.begin(); itrItem != _animContainer.end();)
 		{
 			// モーションを3つ以上ブレンドしないために、古いアニメーションを削除する
 			if ((*itrItem)->_stateNo != _animNo) {
 				// アニメーションをデタッチする
 				MV1DetachAnim(_modelHandle, (*itrItem)->_attachIndex);
-				// このアニメーションを削除
+				// このアニメーションアイテムを削除
 				delete (*itrItem);
 				itrItem = _animContainer.erase(itrItem);
 				continue;
@@ -164,9 +167,10 @@ void AnimationManager::Process(int statusNo)
 		AddAnimationItem(statusNo);
 	}
 
-	// 最後に追加されたアニメーションアイテムの再生時間を取得する
+	// 最後に追加された（最新の）アニメーションアイテムの再生時間を取得する
 	_playTime = _latestAnimItem->_playTime;
 
+	// アニメーションの再生時間を進める
 	for (auto itrItem = _animContainer.begin(); itrItem != _animContainer.end(); )
 	{
 		// 再生時間をセットする
@@ -178,14 +182,16 @@ void AnimationManager::Process(int statusNo)
 			// 再生時間を進める
 			(*itrItem)->_playTime += 1.0f;
 
+			// アニメーション再生開始時のモーションブレンド
 			if((*itrItem)->_openTime < (*itrItem)->_openTotalTime){
-				// ブレンド率を変更する
 				(*itrItem)->_openTime += 1.0f;
+				// ブレンド率を変更する
 				MV1SetAttachAnimBlendRate(_modelHandle, (*itrItem)->_attachIndex, (*itrItem)->_openTime / (*itrItem)->_openTotalTime);
 			}
 			
 			// 再生時間がアニメーションの総再生時間に達したら再生時間を０に戻す
 			if ((*itrItem)->_playTime > (*itrItem)->_totalTime) {
+				// ループ再生をする場合
 				if ((*itrItem)->_loopCnt > 1 || (*itrItem)->_loopCnt == 0) {
 					if ((*itrItem)->_loopCnt > 1) {
 						(*itrItem)->_loopCnt--;
@@ -193,12 +199,15 @@ void AnimationManager::Process(int statusNo)
 					// 再生時間を0に戻す
 					(*itrItem)->_playTime = 0.0f;
 				}
+				// ループ再生をしない場合
 				else {
 					(*itrItem)->_playTime = (*itrItem)->_totalTime;
 				}
 			}
 		}
 		else {
+			// アニメーション終了時のモーションブレンド
+
 			// 閉じ時間を減らす
 			(*itrItem)->_closeTime -= 1.f;
 
@@ -206,7 +215,7 @@ void AnimationManager::Process(int statusNo)
 			if ((*itrItem)->_closeTime <= 0.f) {
 				// アニメーションをデタッチする
 				MV1DetachAnim(_modelHandle, (*itrItem)->_attachIndex);
-				// このアニメーションを削除
+				// このアニメーションアイテムを削除
 				delete (*itrItem);
 				itrItem = _animContainer.erase(itrItem);
 				continue;

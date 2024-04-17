@@ -87,7 +87,7 @@ int FindString(const char* p, const char find, const void* last)
 int SkipSpace(const char* p, const void* last)
 {
 	int c = 0;
-	while (p[c] != '\0' && p[c] <= ' ' && (!last || &p[c] < last)) { c++; }
+	while (p[c] != '\0' && p[c] != '\r\n' && p[c] <= ' ' && (!last || &p[c] < last)) { c++; }
 	return c;
 }
 
