@@ -18,7 +18,6 @@
 //----------------------------------------------------------------------
 bool ModeTitle::Initialize() {
 	if (!base::Initialize()) { return false; }
-
 	_input = XInput::GetInstance();
 	_modeCount = 0;
 	//‰æ‘œ‚Ì“Ç‚İ‚İ
@@ -239,6 +238,5 @@ bool ModeTitle::Render() {
 		//Š„‚ê‚é‰æ–Ê‚Ì•`‰æ
 		DrawCrackedScreen();
 	}
-
 	return true;
 }

@@ -20,15 +20,16 @@
 //----------------------------------------------------------------------
 bool ModeGame::Initialize() {
 	if (!base::Initialize()) { return false; }
-
+	// コリジョンマネージャーの初期化
 	_collisionManager = NEW CollisionManager();
 	_collisionManager->Init();
-
+	// 初期化
 	_gate = nullptr;
 	_boardArrow = nullptr;
 	IsTutorial = false;
-
+	// ライトを設定
 	_light = NEW Light("LightData");
+	// タイムリミットの初期化
 	_timeLimit = NEW TimeLimit();
 	
 	int resolution = 8192;
@@ -56,7 +57,7 @@ bool ModeGame::Initialize() {
 
 	_suppression = NEW Suppression();
 
-	_enemyPool = NEW EnemyPool("res/JsonFile/EnemyData.json");
+	_enemyPool = NEW EnemyManeger("res/JsonFile/EnemyData.json");
 	_floor = NEW Floor();
 	_fog = NEW Fog();
 	// オブジェクトのデータの読み込み
@@ -251,45 +252,47 @@ std::vector<std::string> ModeGame::LoadObjectName(std::string fileName) {
 //----------------------------------------------------------------------
 bool ModeGame::LoadStage(std::string fileName) {
 	myJson json = myJson(fileName);
-	int j = 0;
-
+	// 敵の生成
 	_enemyPool->Create(json,global.GetStageNum());
-
+	// 床の生成
 	_floor->Create(json, global.GetStageNum());
 
 	// タワー
 	std::vector<ModeGame::OBJECTDATA> towerData = LoadJsonObject(json, "Tower");
 	for (auto&& towerParam : towerData) {
-
+		// モデルのハンドルをコピー
 		std::vector<int> towerModelHandle;
 		towerModelHandle.push_back(ResourceServer::MV1LoadModel("Tower_Under", "res/Building/CG_OBJ_Tower/Tower_Under.mv1"));
 		towerModelHandle.push_back(ResourceServer::MV1LoadModel("Tower_Under", "res/Building/CG_OBJ_Tower/Tower_Under.mv1"));
 		towerModelHandle.push_back(ResourceServer::MV1LoadModel("Tower_Top", "res/Building/CG_OBJ_Tower/Tower_Top.mv1"));
-
+		// タワーの生成
 		Tower* tower = NEW Tower();
 		tower->Init(towerModelHandle, towerParam._pos, towerParam._rotate, towerParam._scale);
-
 		_tower.push_back(tower);
 	}
+	// 削除用にオブジェクトの名前を追加
 	_objectName.push_back("Tower_Under");
 	_objectName.push_back("Tower_Top");
 
 	std::string buildingName = "Building";
+	// オブジェクトの名前を取得
 	std::vector<std::string> objectName = LoadObjectName(buildingName);
 	for (auto&& nameList : objectName) {
-
+		// パラメータリストと名前リストを比較して一致したらそのパラメータを取得
 		auto itr = std::find_if(_objectParam.begin(), _objectParam.end(), [=](ObjectParam temp)
 		{
 				return temp._name == nameList;
 		});
-
+		// jsonファイルからオブジェクトのデータを取得
 		std::vector<ModeGame::OBJECTDATA> objectData = LoadJsonObject(json, nameList);
 		std::string modelName = nameList;
 		_objectName.push_back(modelName);
 		Suppression::GetInstance()->AddSuppression((*itr)._suppression * objectData.size());
 		std::string modelPath = "res/Building/" + modelName + "/" + modelName + ".mv1";
+		// オブジェクトの生成
 		for (auto&& object : objectData) {
 			int objHandle = ResourceServer::MV1LoadModel(modelName, modelPath);
+			// 壊れるオブジェクトかどうか
 			if ((*itr).isBreak == 1) {
 				// 壊れるオブジェクト
 				BreakableBuilding* building = NEW BreakableBuilding();
@@ -325,7 +328,7 @@ bool ModeGame::Process() {
 	base::Process();
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->PauseProcessUnderLayer();
-
+	global._timer->TimeElapsed();
 	bool enabledIBAttackCollision = _player->GetEnabledIBAttackCollision();
 
 	_player->Process(_camera->GetCamY());
@@ -333,6 +336,15 @@ bool ModeGame::Process() {
 	_timeLimit->Process();
 	_fog->Process(global.GetStageNum());
 	_classificationEffect->Process();
+	VECTOR box_vec = ConvWorldPosToScreenPos(VAdd(_player->GetPosition(), VGet(0, 170, 0)));
+	float ratio = 1.0f - _camera->GetTargetDistance() / _camera->GetMaxLength();
+	_gaugeUI[0]->Process(box_vec, _player->GetStamina(), _player->GetStaminaMax(), ratio);
+	_gaugeUI[1]->Process(box_vec, 100, 100, ratio);
+	_collisionManager->Process();
+	_player->AnimationProcess();
+
+	_effectManeger->Update();
+	_camera->Process(_player->GetPosition(), _tile);
 	// プレイヤーがステージ範囲外に出たら戻す
 	VECTOR playerPos = _player->GetPosition();
 	float stageWidth[3] = {STAGE_ONE_WIDTH,STAGE_TWO_WIDTH,STAGE_THREE_WIDTH};
@@ -373,20 +385,6 @@ bool ModeGame::Process() {
 		}
 	}
 
-	VECTOR box_vec = ConvWorldPosToScreenPos(VAdd(_player->GetPosition(), VGet(0, 170, 0)));
-
-	float ratio = 1.0f - _camera->GetTargetDistance() / _camera->GetMaxLength();
-	_gaugeUI[0]->Process(box_vec, _player->GetStamina(), _player->GetStaminaMax(),ratio);
-	_gaugeUI[1]->Process(box_vec, 100, 100,ratio);
-
-	_collisionManager->Process();
-
-	_player->AnimationProcess();
-
-
-	_effectManeger->Update();
-	_camera->Process(_player->GetPosition(), _tile);
-
 	GateProcess();
 	CreateTutorial();
 
@@ -406,6 +404,7 @@ bool ModeGame::GateProcess() {
 			ResourceServer::LoadDivGraph("Gate", "res/TemporaryMaterials/FX_Hole_2D00_sheet.png", 43, 16, 3, 1200, 1200, handle);
 			float time = 1.0f / 60.0f * 1000.0f;
 			if (global.GetStageNum() == 3) {
+				// ステージ3のゲートの座標だけ違う
 				pos = VGet(-6787.0f, 300.0f, 7486.0);
 			}
 			_gate = NEW Gate(pos, 300, handle, 43, time, 1000);

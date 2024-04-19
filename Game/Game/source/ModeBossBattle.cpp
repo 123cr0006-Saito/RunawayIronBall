@@ -94,7 +94,7 @@ bool ModeBossBattle::Terminate() {
 
 bool ModeBossBattle::Process() {
 	base::Process();
-
+	global._timer->TimeElapsed();
 	_player->Process(_camera->GetCamY());
 
 	_boss->Process();

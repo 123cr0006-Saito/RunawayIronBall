@@ -11,7 +11,6 @@ Global::Global() {
 	_allExp = 0;
 	_oldExp = 0;
 	IsVibration = 1; 
-	SoundLoad();
 };
 
 Global::~Global() {
@@ -235,5 +234,7 @@ bool Global::SoundLoad() {
 	_soundServer->Add("SE_SLV_Falling", new SoundItemSE("Sound/SE/Enemy/SE_SLB_Falling.wav"));
 	_soundServer->Add("SE_SLV_Jump", new SoundItemSE("Sound/SE/Enemy/SE_SLB_Jump.wav"));
 	SetUseASyncLoadFlag(FALSE);
+
+
 	return true;
 }

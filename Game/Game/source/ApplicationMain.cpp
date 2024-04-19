@@ -12,6 +12,8 @@ ApplicationMain				g_oApplicationMain;
 
 bool ApplicationMain::Initialize(HINSTANCE hInstance) {
 	if (!base::Initialize(hInstance)) { return false; }
+	// 音声の読み込み
+	global.SoundLoad();
 	// モードの登録
 	ModeServer::GetInstance()->Add(NEW ModeTitle(), 1, "Title");
 	// コントローラーの初期化
@@ -38,7 +40,6 @@ bool ApplicationMain::Input() {
 bool ApplicationMain::Process() {
 	base::Process();
 	_fpsController->WaitFps();
-	global._timer->TimeElapsed();
 	return true;
 }
 

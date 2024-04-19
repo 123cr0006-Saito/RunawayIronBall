@@ -1,17 +1,17 @@
 //----------------------------------------------------------------------
-// @filename EnemyPool.cpp
+// @filename EnemyManeger.cpp
 // ＠date: 2023/12/14
 // ＠author: saito ko
 // @explanation
 // エネミーの生成、管理を行うクラス
 //----------------------------------------------------------------------
-#include "EnemyPool.h"
-EnemyPool*  EnemyPool::_instance = nullptr;
+#include "EnemyManeger.h"
+EnemyManeger*  EnemyManeger::_instance = nullptr;
 //----------------------------------------------------------------------
 // @brief コンストラクタ
 // @param paramJsonFile パラメータのjsonファイル
 //----------------------------------------------------------------------
-EnemyPool::EnemyPool(std::string paramJsonFile){
+EnemyManeger::EnemyManeger(std::string paramJsonFile){
 	_instance = this;
 	myJson json(paramJsonFile);
 	EnemyParam param;
@@ -38,7 +38,7 @@ EnemyPool::EnemyPool(std::string paramJsonFile){
 // @brief デストラクタ
 // ＠return なし
 //----------------------------------------------------------------------
-EnemyPool::~EnemyPool() {
+EnemyManeger::~EnemyManeger() {
 	DeleteEnemy();
 	_enemyParametersMap.clear();
 	_enemyInitPos.clear();
@@ -49,7 +49,7 @@ EnemyPool::~EnemyPool() {
 // @brief ファイルから敵の名前を読み込む
 // ＠return 読み込んだ敵の名前のリスト
 //----------------------------------------------------------------------
-std::vector<std::string> EnemyPool::LoadEnemyName(int stageNum) {
+std::vector<std::string> EnemyManeger::LoadEnemyName(int stageNum) {
 	std::vector<std::string> nameList;
 	std::string filePath = "Data/LoadStageName/Enemy/Enemy0" + std::to_string(stageNum) + ".csv";
 	// csvファイルを読み込む
@@ -73,7 +73,7 @@ std::vector<std::string> EnemyPool::LoadEnemyName(int stageNum) {
 // ＠param json 敵のパラメータのjsonファイル
 // ＠param stageNum ステージの番号
 //----------------------------------------------------------------------
-void EnemyPool::Create(myJson json, int stageNum){
+void EnemyManeger::Create(myJson json, int stageNum){
 	DeleteEnemy();
 	//読み込む敵の名前のリスト
 	int handle = 0;
@@ -134,7 +134,7 @@ void EnemyPool::Create(myJson json, int stageNum){
 // @brief 初期化
 // ＠return なし
 //----------------------------------------------------------------------
-void EnemyPool::Init(){
+void EnemyManeger::Init(){
 	for (int i = 0; i < _enemy.size(); i++) {
 		_enemy[i]->Init(_enemyInitPos[i]);
 	}
@@ -145,7 +145,7 @@ void EnemyPool::Init(){
 // ＠param loadName 読み込むデータの名前
 // ＠return 敵のデータ
 //----------------------------------------------------------------------
-std::vector<std::pair<std::string, VECTOR>> EnemyPool::LoadJsonData(myJson jsonFile, std::string  loadName) {
+std::vector<std::pair<std::string, VECTOR>> EnemyManeger::LoadJsonData(myJson jsonFile, std::string  loadName) {
 	nlohmann::json loadEnemy = jsonFile._json.at(loadName);
 	std::vector<std::pair<std::string, VECTOR>> posList;
 	for (auto& list : loadEnemy) {
@@ -164,7 +164,7 @@ std::vector<std::pair<std::string, VECTOR>> EnemyPool::LoadJsonData(myJson jsonF
 // @brief 敵の削除
 // ＠return なし
 //----------------------------------------------------------------------
-void EnemyPool::DeleteEnemy() {
+void EnemyManeger::DeleteEnemy() {
 	for (auto&& enemy : _enemy) {
 			delete enemy;
 	}
@@ -183,7 +183,7 @@ void EnemyPool::DeleteEnemy() {
 	ResourceServer::MV1DeleteModelAll("Chainguard");
 };
 
-EnemyBase* EnemyPool::Recicle() {
+EnemyBase* EnemyManeger::Recicle() {
 	for (int i = 0; i < _enemy.size() ; i++) {
 		if (_enemy[i]->GetUse() == false) {
 			return _enemy[i];
@@ -195,7 +195,7 @@ EnemyBase* EnemyPool::Recicle() {
 // ＠param plAttack プレイヤーの攻撃が当たったかどうか
 // ＠return 成功したかどうか
 //----------------------------------------------------------------------
-bool EnemyPool::Process(bool plAttack){
+bool EnemyManeger::Process(bool plAttack){
 	for (auto&& enemy : _enemy) {
 		if (enemy->GetUse()) {
 			enemy->Process(plAttack);
@@ -208,7 +208,7 @@ bool EnemyPool::Process(bool plAttack){
 // @brief 描画処理
 // ＠return 成功したかどうか
 //----------------------------------------------------------------------
-bool EnemyPool::Render() {
+bool EnemyManeger::Render() {
 	for (auto&& enemy : _enemy) {
 		if (enemy->GetUse()) {
 			enemy->Render();
@@ -220,7 +220,7 @@ bool EnemyPool::Render() {
 // @brief インスタンスの取得
 // ＠return インスタンス
 //----------------------------------------------------------------------
-EnemyBase* EnemyPool::GetEnemy(int i) {
+EnemyBase* EnemyManeger::GetEnemy(int i) {
 	if (_enemy[i] != nullptr) {
 		return _enemy[i];
 	}

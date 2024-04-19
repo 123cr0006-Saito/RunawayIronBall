@@ -18,7 +18,7 @@
 #include "Light.h"
 #include "Gate.h"
 #include "ClassificationEffect.h"
-#include "EnemyPool.h"
+#include "EnemyManeger.h"
 #include "EffectManeger.h"
 
 

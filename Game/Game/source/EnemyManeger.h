@@ -1,5 +1,5 @@
 //----------------------------------------------------------------------
-// @filename EnemyPool.cpp
+// @filename EnemyManeger.cpp
 // ＠date: 2023/12/14
 // ＠author: saito ko
 // @explanation
@@ -27,11 +27,11 @@
 
 #include "CollisionManager.h"
 
-class EnemyPool
+class EnemyManeger
 {
 public:
-	EnemyPool(std::string paramJsonFile);
-	~EnemyPool();
+	EnemyManeger(std::string paramJsonFile);
+	~EnemyManeger();
 
 	std::vector<std::string> LoadEnemyName(int stageNum);
 	void Create(myJson json,int stageNum);//敵の作成
@@ -44,8 +44,8 @@ public:
 	bool Process(bool plAttack);
 	bool Render();
 
-	static EnemyPool* GetInstance() { return _instance; }
-	static EnemyPool* _instance;
+	static EnemyManeger* GetInstance() { return _instance; }
+	static EnemyManeger* _instance;
 
 	std::vector<EnemyBase*> GetEnemyContainer() { return _enemy; }
 	EnemyBase* GetEnemy(int i);
@@ -55,7 +55,6 @@ private:
 	std::vector<EnemyBase*> _enemy;//敵のコンテナ
 	std::map<std::string, EnemyParam> _enemyParametersMap;//敵のパラメータ
 	std::vector<VECTOR> _enemyInitPos;//敵の初期位置
-
 	CollisionManager* _collisionManager;//当たり判定を管理するクラス
 };
 

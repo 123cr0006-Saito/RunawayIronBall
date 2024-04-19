@@ -38,7 +38,7 @@
     <ClCompile Include="source\ModePause.cpp" />
     <ClCompile Include="source\SlaBlockPattern2.cpp" />
     <ClCompile Include="source\CrystarPattern4.cpp" />
-    <ClCompile Include="source\EnemyPool.cpp" />
+    <ClCompile Include="source\EnemyManeger.cpp" />
     <ClCompile Include="source\myJson.cpp" />
     <ClCompile Include="source\bone.cpp" />
     <ClCompile Include="source\BuildingBase.cpp" />
@@ -170,7 +170,7 @@
     <ClInclude Include="source\ModePause.h" />
     <ClInclude Include="source\SlaBlockPattern2.h" />
     <ClInclude Include="source\CrystarPattern4.h" />
-    <ClInclude Include="source\EnemyPool.h" />
+    <ClInclude Include="source\EnemyManeger.h" />
     <ClInclude Include="source\EnemyStract.h" />
     <ClInclude Include="source\myJson.h" />
     <ClInclude Include="source\bone.h" />
@@ -266,9 +266,6 @@
       <Filter>Character\Player</Filter>
     </ClCompile>
     <ClCompile Include="source\BuildingBase.cpp">
-      <Filter>Building</Filter>
-    </ClCompile>
-    <ClCompile Include="source\House.cpp">
       <Filter>Building</Filter>
     </ClCompile>
     <ClCompile Include="source\Tower.cpp">
@@ -450,9 +447,6 @@
       <Filter>Character\Player</Filter>
     </ClInclude>
     <ClInclude Include="source\BuildingBase.h">
-      <Filter>Building</Filter>
-    </ClInclude>
-    <ClInclude Include="source\House.h">
       <Filter>Building</Filter>
     </ClInclude>
     <ClInclude Include="source\Tower.h">

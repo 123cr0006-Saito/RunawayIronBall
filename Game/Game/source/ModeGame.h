@@ -34,7 +34,7 @@
 #include "Gate.h"
 #include "BoardArrow.h"
 #include "ClassificationEffect.h"
-#include "EnemyPool.h"
+#include "EnemyManeger.h"
 #include "EffectManeger.h"
 
 const float STAGE_ONE_WIDTH  = 17000.0f/2.0f;
@@ -90,7 +90,7 @@ protected:
 	int _tile;// タイル
 	int _mountain;// 山
 	Player* _player;// プレイヤー
-	EnemyPool* _enemyPool;// 敵
+	EnemyManeger* _enemyPool;// 敵
 	Floor* _floor;// 床
 	Gate* _gate;// ゴールゲート
 	std::vector<BreakableBuilding*> _house;// 家

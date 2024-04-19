@@ -6,7 +6,7 @@
 // エネミーの基本行動や共通の変数が書かれた基底クラス
 //----------------------------------------------------------------------
 #include "EnemyBase.h"
-#include "EnemyPool.h"
+#include "EnemyManeger.h"
 //----------------------------------------------------------------------
 // @brief: コンストラクタ
 // @return: 無し
@@ -318,6 +318,7 @@ bool EnemyBase::ModeDead() {
 	_knockBackSpeedFrame--;
 	if (_knockBackSpeedFrame <= 0) {
 		_IsUse = false;
+		//エネミーをコリジョン判定から削除
 		_collisionManager->ReserveRemovementCell(_cell);
 	}
 	return true;
@@ -363,32 +364,40 @@ bool EnemyBase::SetGravity() {
 //----------------------------------------------------------------------
 void EnemyBase::SetKnockBackAndDamage(VECTOR vDir, float damage) {
 	if (_knockBackSpeedFrame <= 0) {
+		//初期化
 		InheritanceInit();
+		//ノックバック処理 
+		//方向ベクトルからエネミーの向きをダメージを与えたものの方向に回転をする
 		_rotation.y = atan2(vDir.x, vDir.z);
 		_hp -= damage;
 		_knockBackDir = vDir;
-		_knockBackSpeedFrame = damage - _weightExp;
-		if (_knockBackSpeedFrame < EN_KNOCKBACK_MIN) {
-			_knockBackSpeedFrame = EN_KNOCKBACK_MIN;
-		}
-		else if(_knockBackSpeedFrame > EN_KNOCKBACK_MAX) {
-			_knockBackSpeedFrame = EN_KNOCKBACK_MAX;
-		}
 		_currentTime = GetNowCount();
+		//エフェクトの生成
 		VECTOR effectPos = VAdd(VAdd(_pos, _diffeToCenter), VScale(vDir, -50));
-
 		int effectHandle[30];
 		ResourceServer::LoadMultGraph("HitEffect_Blue", "res/Effect/HitEffect_Blue/HitEffect_Blue", ".png", 30, effectHandle);
 		BoardPolygon* effect = NEW BoardPolygon(effectPos, GetCameraBillboardMatrix(), 200, effectHandle, 30, 0.5f / 60.0f * 1000.0f);
 		EffectManeger::GetInstance()->LoadEffect(effect);
 
-		_modeState = ENEMYTYPE::KNOCKBACK;
+		//ノックバックの速度を計算
+		int knockBackSpeedFrame = damage - _weightExp;
+		//死亡時
 		if (_hp <= 0) {
-			_knockBackSpeedFrame = damage - _weightExp;
-			_knockBackSpeedFrame = Math::Clamp(EN_KNOCKBACK_MIN, 300, _knockBackSpeedFrame);
+			//ノックバックの速度を制限
+			_knockBackSpeedFrame = Math::Clamp(EN_KNOCKBACK_OF_DEAT_MIN, EN_KNOCKBACK_OF_DEAT_MAX, knockBackSpeedFrame);
+			//制圧値を減算
 			Suppression::GetInstance()->SubSuppression(_suppression);
+			//プレイヤーの経験値を加算
 			_player->SetExp(_weightExp);
+			//エネミーを死亡状態にする
 			_modeState = ENEMYTYPE::DEAD;
+		}
+		//生存時
+		else {
+		    //ノックバックの速度を制限
+		    _knockBackSpeedFrame = Math::Clamp(EN_KNOCKBACK_MIN, EN_KNOCKBACK_MAX, knockBackSpeedFrame);
+			//ノックバックモードに移行
+		    _modeState = ENEMYTYPE::KNOCKBACK;
 		}
 	}
 };
@@ -396,9 +405,7 @@ void EnemyBase::SetKnockBackAndDamage(VECTOR vDir, float damage) {
 // @brief: フレームデータのコマンド処理
 // @return: 無し
 //----------------------------------------------------------------------
-void EnemyBase::CommandProcess() {
-
-};
+void EnemyBase::CommandProcess() {};
 //----------------------------------------------------------------------
 // @brief: エネミーの更新処理
 // @param: plAttack プレイヤーが攻撃しているかどうか
@@ -406,9 +413,7 @@ void EnemyBase::CommandProcess() {
 //----------------------------------------------------------------------
 bool EnemyBase::Process(bool plAttack) {
 	if (_IsUse) {
-
-		
-
+		//モード別処理
 		switch (_modeState) {
 		case ENEMYTYPE::SEARCH:
 			ModeSearch(plAttack);
@@ -429,13 +434,9 @@ bool EnemyBase::Process(bool plAttack) {
 			ModeDead();
 			break;
 		}
-
+		//重力処理
 		SetGravity();
-		//仮で作りました。後で消します。
-		if (_pos.y < 0) {
-			_pos.y = 0;
-		}
-
+	
 		//ノックバック中のけぞり処理 仮です
 		if (_modeState == ENEMYTYPE::KNOCKBACK) {
 			if (_pos.y > 0) {
@@ -449,9 +450,11 @@ bool EnemyBase::Process(bool plAttack) {
 				_rotation.x -= Math::DegToRad(2);
 			}
 		}
-		
+		//最終的なモデルの位置や角度を調整
 		SetState();
+		//個別処理
 		IndividualProcessing();
+		//コマンド処理
 		CommandProcess();
 	}
 
@@ -479,7 +482,7 @@ bool EnemyBase::IndividualRendering() {
 bool EnemyBase::Render() {
 	if (_model != 0) {   
 #ifdef _DEBUG
-	//	DebugRender();
+		DebugRender();
 #endif
 		MV1DrawModel(_model);
 		IndividualRendering();
