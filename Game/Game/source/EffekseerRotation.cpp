@@ -44,9 +44,7 @@ EffekseerRotation::EffekseerRotation(int handle, VECTOR* pos, float size, VECTOR
 //----------------------------------------------------------------------
 EffekseerRotation::~EffekseerRotation() {
 	for (int i = 0; i < _maxEffect; i++) {
-		if (IsEffekseer3DEffectPlaying(_playingEffectHandle[i]) != -1) {
-			StopEffekseer3DEffect(_playingEffectHandle[i]);
-		}
+		StopEffekseer3DEffect(_playingEffectHandle[i]);
 	}
 };
 //----------------------------------------------------------------------

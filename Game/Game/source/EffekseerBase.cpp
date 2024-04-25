@@ -68,9 +68,7 @@ EffekseerBase::EffekseerBase(int handle, VECTOR* pos, float size, float height, 
 // @return:Ç»Çµ
 //----------------------------------------------------------------------
 EffekseerBase::~EffekseerBase() {
-	if (IsEffekseer3DEffectPlaying(_playingEffectHandle) != -1) {
-		StopEffekseer3DEffect(_playingEffectHandle);
-	}
+	StopEffekseer3DEffect(_playingEffectHandle);
 };
 //----------------------------------------------------------------------
 // @breif:çXêVèàóù

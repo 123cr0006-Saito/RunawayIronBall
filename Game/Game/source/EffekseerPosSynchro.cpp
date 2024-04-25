@@ -63,9 +63,7 @@ _pos(pos)
 // @return ñ≥Çµ
 //----------------------------------------------------------------------
 EffekseerPosSynchro::~EffekseerPosSynchro() {
-	if (IsEffekseer3DEffectPlaying(_playingEffectHandle) != -1) {
-		StopEffekseer3DEffect(_playingEffectHandle);
-	}
+	StopEffekseer3DEffect(_playingEffectHandle);
 };
 //----------------------------------------------------------------------
 // @brief çXêVèàóù

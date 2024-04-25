@@ -402,14 +402,14 @@ bool ModeGame::GateProcess() {
 			VECTOR pos = VGet(0, 300, 0);
 			int handle[43];
 			ResourceServer::LoadDivGraph("Gate", "res/TemporaryMaterials/FX_Hole_2D00_sheet.png", 43, 16, 3, 1200, 1200, handle);
-			float time = 1.0f / 60.0f * 1000.0f;
+			float time = 4.0f / 60.0f * 1000.0f;
 			if (global.GetStageNum() == 3) {
 				// ステージ3のゲートの座標だけ違う
 				pos = VGet(-6787.0f, 300.0f, 7486.0);
 			}
 			_gate = NEW Gate(pos, 300, handle, 43, time, 1000);
 			ModeServer::GetInstance()->Add(NEW ModeZoomCamera(pos), 10, "Camera");
-			_boardArrow = NEW BoardArrow("res/Effect/yajirusi.png",200,120);
+			_boardArrow = NEW BoardArrow("res/Effect/arrow.png",200);
 		}
 		// ゲートの処理
 		_gate->Process();
