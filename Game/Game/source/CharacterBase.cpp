@@ -9,9 +9,6 @@ CharacterBase::CharacterBase()
 
 CharacterBase::~CharacterBase()
 {
-	if (_modelHandle != -1) {
-		MV1DeleteModel(_modelHandle);
-	}
 }
 
 bool CharacterBase::Init(int modelHandle, VECTOR pos)

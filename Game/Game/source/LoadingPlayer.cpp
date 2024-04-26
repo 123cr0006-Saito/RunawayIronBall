@@ -56,7 +56,6 @@ LoadingPlayer::LoadingPlayer(){
 // @return –³‚µ
 //----------------------------------------------------------------------
 LoadingPlayer::~LoadingPlayer() {
-	MV1DeleteModel(_modelHandle);
 	delete _chain; _chain = nullptr;
 	delete _modelColor; _modelColor = nullptr;
 };

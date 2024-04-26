@@ -38,8 +38,6 @@ LoadingChain::LoadingChain() {
 //----------------------------------------------------------------------
 LoadingChain::~LoadingChain() {
 	delete _modelColor; _modelColor = nullptr;
-	MV1DeleteModel(_cModelHandle);
-	MV1DeleteModel(_iModelHandle);
 };
 //----------------------------------------------------------------------
 // @brief: èâä˙âª
