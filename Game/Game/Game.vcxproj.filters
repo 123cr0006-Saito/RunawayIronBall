@@ -100,7 +100,9 @@
     <ClCompile Include="source\BreakModelParts.cpp">
       <Filter>Building</Filter>
     </ClCompile>
-    <ClCompile Include="AfterImage.cpp" />
+    <ClCompile Include="source\AfterImage.cpp">
+      <Filter>Character</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\IronBall.cpp" />
@@ -258,9 +260,6 @@
     <ClCompile Include="source\EnemyBase.cpp">
       <Filter>Character\Enemy</Filter>
     </ClCompile>
-    <ClCompile Include="source\EnemyPool.cpp">
-      <Filter>Character\Enemy</Filter>
-    </ClCompile>
     <ClCompile Include="source\Player.cpp">
       <Filter>Character\Player</Filter>
     </ClCompile>
@@ -407,7 +406,7 @@
     <ClInclude Include="source\BreakModelParts.h">
       <Filter>Building</Filter>
     </ClInclude>
-    <ClInclude Include="AfterImage.h">
+    <ClInclude Include="source\AfterImage.h">
       <Filter>Character</Filter>
     </ClInclude>
   </ItemGroup>
@@ -440,9 +439,6 @@
       <Filter>Character\Enemy</Filter>
     </ClInclude>
     <ClInclude Include="source\EnemyBase.h">
-      <Filter>Character\Enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="source\EnemyPool.h">
       <Filter>Character\Enemy</Filter>
     </ClInclude>
     <ClInclude Include="source\Player.h">
