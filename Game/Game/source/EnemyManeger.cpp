@@ -1,7 +1,7 @@
 //----------------------------------------------------------------------
 // @filename EnemyManeger.cpp
-// ＠date: 2023/12/14
-// ＠author: saito ko
+// @date: 2023/12/14
+// @author: saito ko
 // @explanation
 // エネミーの生成、管理を行うクラス
 //----------------------------------------------------------------------
@@ -36,7 +36,7 @@ EnemyManeger::EnemyManeger(std::string paramJsonFile){
 };
 //----------------------------------------------------------------------
 // @brief デストラクタ
-// ＠return なし
+// @return なし
 //----------------------------------------------------------------------
 EnemyManeger::~EnemyManeger() {
 	DeleteEnemy();
@@ -47,7 +47,7 @@ EnemyManeger::~EnemyManeger() {
 };
 //----------------------------------------------------------------------
 // @brief ファイルから敵の名前を読み込む
-// ＠return 読み込んだ敵の名前のリスト
+// @return 読み込んだ敵の名前のリスト
 //----------------------------------------------------------------------
 std::vector<std::string> EnemyManeger::LoadEnemyName(int stageNum) {
 	std::vector<std::string> nameList;
@@ -70,8 +70,8 @@ std::vector<std::string> EnemyManeger::LoadEnemyName(int stageNum) {
 };
 //----------------------------------------------------------------------
 // @brief 敵の生成
-// ＠param json 敵のパラメータのjsonファイル
-// ＠param stageNum ステージの番号
+// @param json 敵のパラメータのjsonファイル
+// @param stageNum ステージの番号
 //----------------------------------------------------------------------
 void EnemyManeger::Create(myJson json, int stageNum){
 	DeleteEnemy();
@@ -132,7 +132,7 @@ void EnemyManeger::Create(myJson json, int stageNum){
 };
 //----------------------------------------------------------------------
 // @brief 初期化
-// ＠return なし
+// @return なし
 //----------------------------------------------------------------------
 void EnemyManeger::Init(){
 	for (int i = 0; i < _enemy.size(); i++) {
@@ -141,9 +141,9 @@ void EnemyManeger::Init(){
 };
 //----------------------------------------------------------------------
 // @brief データの読み込み
-// ＠param jsonFile 敵の座標が入ったのjsonファイル
-// ＠param loadName 読み込むデータの名前
-// ＠return 敵のデータ
+// @param jsonFile 敵の座標が入ったのjsonファイル
+// @param loadName 読み込むデータの名前
+// @return 敵のデータ
 //----------------------------------------------------------------------
 std::vector<std::pair<std::string, VECTOR>> EnemyManeger::LoadJsonData(myJson jsonFile, std::string  loadName) {
 	nlohmann::json loadEnemy = jsonFile._json.at(loadName);
@@ -162,7 +162,7 @@ std::vector<std::pair<std::string, VECTOR>> EnemyManeger::LoadJsonData(myJson js
 };
 //----------------------------------------------------------------------
 // @brief 敵の削除
-// ＠return なし
+// @return なし
 //----------------------------------------------------------------------
 void EnemyManeger::DeleteEnemy() {
 	for (auto&& enemy : _enemy) {
@@ -192,8 +192,8 @@ EnemyBase* EnemyManeger::Recicle() {
 };
 //----------------------------------------------------------------------
 // @brief 更新
-// ＠param plAttack プレイヤーの攻撃が当たったかどうか
-// ＠return 成功したかどうか
+// @param plAttack プレイヤーの攻撃が当たったかどうか
+// @return 成功したかどうか
 //----------------------------------------------------------------------
 bool EnemyManeger::Process(bool plAttack){
 	for (auto&& enemy : _enemy) {
@@ -206,7 +206,7 @@ bool EnemyManeger::Process(bool plAttack){
 };
 //----------------------------------------------------------------------
 // @brief 描画処理
-// ＠return 成功したかどうか
+// @return 成功したかどうか
 //----------------------------------------------------------------------
 bool EnemyManeger::Render() {
 	for (auto&& enemy : _enemy) {
@@ -218,7 +218,7 @@ bool EnemyManeger::Render() {
 };
 //----------------------------------------------------------------------
 // @brief インスタンスの取得
-// ＠return インスタンス
+// @return インスタンス
 //----------------------------------------------------------------------
 EnemyBase* EnemyManeger::GetEnemy(int i) {
 	if (_enemy[i] != nullptr) {

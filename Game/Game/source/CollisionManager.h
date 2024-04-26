@@ -1,7 +1,7 @@
 //----------------------------------------------------------------------
 // @filename CollisionManager.h
-// —date: 2024/04/01
-// —author: Morozumi Hiroya
+// @date: 2024/04/01
+// @author: Morozumi Hiroya
 // 
 // @explanation
 // “–‚½‚è”»’èˆ—‚ÌŠÇ—‚ğs‚¤ƒNƒ‰ƒX

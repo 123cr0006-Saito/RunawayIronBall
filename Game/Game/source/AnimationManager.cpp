@@ -1,7 +1,7 @@
 //----------------------------------------------------------------------
 // @filename AnimationManager.cpp
-// ＠date: 2024/04/01
-// ＠author: Morozumi Hiroya
+// @date: 2024/04/01
+// @author: Morozumi Hiroya
 // @explanation
 // キャラクターのアニメーションを管理するクラス
 // AnimationItemを追加・削除し、アニメーションの管理を行う

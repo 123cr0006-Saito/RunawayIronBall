@@ -1,7 +1,7 @@
 //----------------------------------------------------------------------
 // @filename ScreenVibration.cpp
-// ＠date: 2023/12/15
-// ＠author: saito ko
+// @date: 2023/12/15
+// @author: saito ko
 // @explanation
 // 画面上でのカメラが見ている映像の中心座標をずらす処理行うクラス
 //----------------------------------------------------------------------
@@ -10,7 +10,7 @@
 ScreenVibration* ScreenVibration::_instance = nullptr;
 //----------------------------------------------------------------------
 // @brief コンストラクタ
-// ＠return 無し
+// @return 無し
 //----------------------------------------------------------------------
 ScreenVibration::ScreenVibration() {
 	_instance = this;
@@ -23,17 +23,17 @@ ScreenVibration::ScreenVibration() {
 };
 //----------------------------------------------------------------------
 // @brief デストラクタ
-// ＠return 無し
+// @return 無し
 //----------------------------------------------------------------------
 ScreenVibration::~ScreenVibration() {
 	_instance = nullptr;
 };
 //----------------------------------------------------------------------
 // @brief 揺れる最大の移動値と時間を設定
-// ＠param x x軸の最大移動値
-// ＠param y y軸の最大移動値
-// ＠param time 揺れる時間
-// ＠return 無し
+// @param x x軸の最大移動値
+// @param y y軸の最大移動値
+// @param time 揺れる時間
+// @return 無し
 //----------------------------------------------------------------------
 void ScreenVibration::SetVibration(float x, float y, float time) {
 		vibration_x = x;
@@ -45,9 +45,9 @@ void ScreenVibration::SetVibration(float x, float y, float time) {
 };
 //----------------------------------------------------------------------
 // @brief x軸の最大移動値と時間を設定
-// ＠param x x軸の最大移動値
-// ＠param time 揺れる時間
-// ＠return 無し
+// @param x x軸の最大移動値
+// @param time 揺れる時間
+// @return 無し
 //----------------------------------------------------------------------
 void ScreenVibration::SetVibrationX(float x, float time){
 	vibration_x = x;
@@ -57,9 +57,9 @@ void ScreenVibration::SetVibrationX(float x, float time){
 };
 //----------------------------------------------------------------------
 // @brief y軸の最大移動値と時間を設定
-// ＠param y y軸の最大移動値
-// ＠param time 揺れる時間
-// ＠return 無し
+// @param y y軸の最大移動値
+// @param time 揺れる時間
+// @return 無し
 //----------------------------------------------------------------------
 void ScreenVibration::SetVibrationY(float y, float time){
 	vibration_y = y;
@@ -69,7 +69,7 @@ void ScreenVibration::SetVibrationY(float y, float time){
 };
 //----------------------------------------------------------------------
 // @brief 画面を揺らす処理
-// ＠return 無し
+// @return 無し
 //----------------------------------------------------------------------
 void ScreenVibration::UpdateScreenVibration() {
 	if (use_flag) {

@@ -1,7 +1,7 @@
 //----------------------------------------------------------------------
 // @filename AfterImage.cpp
-// ＠date: 2024/04/26
-// ＠author: Morozumi Hiroya
+// @date: 2024/04/26
+// @author: Morozumi Hiroya
 // @explanation
 // キャラクターの残像表現を行うクラス
 // 半透明にしたモデルを複数体表示することで残像を表現する

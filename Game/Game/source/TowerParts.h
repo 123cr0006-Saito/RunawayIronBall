@@ -1,7 +1,7 @@
 //----------------------------------------------------------------------
 // @filename TowerParts.h
-// ＠date: 2024/04/01
-// ＠author: Morozumi Hiroya
+// @date: 2024/04/01
+// @author: Morozumi Hiroya
 // @explanation
 // タワーパーツの制御を行うクラス
 // 1つのタワーオブジェクトは、複数のTowerPartsクラスから構成される

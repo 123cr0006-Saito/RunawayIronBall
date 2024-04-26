@@ -1,7 +1,7 @@
 //----------------------------------------------------------------------
 // @filename MotionList.cpp
-// ＠date: 2024/04/01
-// ＠author: Morozumi Hiroya
+// @date: 2024/04/01
+// @author: Morozumi Hiroya
 // @explanation
 // 各キャラクターのモーションリストを管理するクラス
 // AnimationManagerクラス及びFrameDataクラスの初期化処理で必要な情報を管理する

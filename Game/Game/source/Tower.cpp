@@ -1,7 +1,7 @@
 //----------------------------------------------------------------------
 // @filename Tower.cpp
-// ＠date: 2024/04/01
-// ＠author: Morozumi Hiroya
+// @date: 2024/04/01
+// @author: Morozumi Hiroya
 // @explanation
 // タワーオブジェクトの制御・描画を行うクラス
 // 1つのタワーオブジェクトは、複数のTowerPartsクラスから構成される
