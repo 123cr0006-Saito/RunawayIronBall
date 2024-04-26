@@ -333,9 +333,6 @@ bool Player::Init(int modelHandle, VECTOR pos)
 
 	SetBone();
 
-
-
-
 	_instance = this;
 
 	_idleFightingRemainingCnt = 0;
@@ -351,7 +348,7 @@ bool Player::Init(int modelHandle, VECTOR pos)
 // 鉄球の初期位置を設定する
 void Player::InitIBPos()
 {
-	// 鉄球の位置はプレイヤーと鎖の連結位置をもとに設定するので、モデルの座標を更新する
+	// 鉄球の位置はプレイヤーと鎖の連結位置をもとに設定するので、一度プレイヤーのモデルの座標を更新する
 	MV1SetPosition(_modelHandle, _pos);
 	// 鉄球の初期位置を設定する
 	_ironBall->InitPosFromParent();
