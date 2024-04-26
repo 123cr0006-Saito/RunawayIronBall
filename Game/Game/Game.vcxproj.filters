@@ -57,7 +57,6 @@
     <ClCompile Include="source\UIBase.cpp" />
     <ClCompile Include="source\UIExpPoint.cpp" />
     <ClCompile Include="source\UIHeart.cpp" />
-    <ClCompile Include="source\EnemyPool.cpp" />
     <ClCompile Include="source\CrystarPattern4.cpp" />
     <ClCompile Include="source\SlaBlockPattern2.cpp" />
     <ClCompile Include="source\ScreenVibration.cpp" />
@@ -101,6 +100,7 @@
     <ClCompile Include="source\BreakModelParts.cpp">
       <Filter>Building</Filter>
     </ClCompile>
+    <ClCompile Include="AfterImage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\IronBall.cpp" />
@@ -191,7 +191,6 @@
     <ClInclude Include="source\UIExpPoint.h" />
     <ClInclude Include="source\UIHeart.h" />
     <ClInclude Include="source\EnemyStract.h" />
-    <ClInclude Include="source\EnemyPool.h" />
     <ClInclude Include="source\CrystarPattern4.h" />
     <ClInclude Include="source\SlaBlockPattern2.h" />
     <ClInclude Include="source\ScreenVibration.h" />
@@ -407,6 +406,9 @@
     </ClInclude>
     <ClInclude Include="source\BreakModelParts.h">
       <Filter>Building</Filter>
+    </ClInclude>
+    <ClInclude Include="AfterImage.h">
+      <Filter>Character</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
