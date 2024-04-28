@@ -22,6 +22,7 @@ bool ModeGameOver::Initialize() {
 	_handle["Give"] = ResourceServer::LoadGraph("Give","res/ModeGameOver/UI_Game_Over_Title_Back.png");
 	_selectItem = 0;
 	_selectEnd = false;
+	_currentTime = GetNowCount();
 	// ƒ‚ƒfƒ‹‚Ì“Ç‚Ýž‚Ý
 	_model = ResourceServer::MV1LoadModel("Player","res/Character/cg_player_girl/Cg_Player_Girl.mv1");
 	MV1SetPosition(_model, VGet(0, 0, 0));
@@ -70,10 +71,12 @@ void ModeGameOver::SelectProcess(){
 	if (_input->GetTrg(XINPUT_BUTTON_DPAD_LEFT) || _input->GetTrg(XINPUT_BUTTON_STICK_LEFT)) {
 		_selectItem = 1 - _selectItem;
 		global._soundServer->DirectPlay("SE_Select");
+		_currentTime = GetNowCount();
 	}
 	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_RIGHT) || _input->GetTrg(XINPUT_BUTTON_STICK_RIGHT)) {
 		_selectItem = 1 - _selectItem;
 		global._soundServer->DirectPlay("SE_Select");
+		_currentTime = GetNowCount();
 	}
 
 	if (_input->GetTrg(XINPUT_BUTTON_A) && !ModeServer::GetInstance()->Search("Fade")) {
@@ -123,7 +126,7 @@ bool ModeGameOver::Render() {
 	DrawRotaGraph(1920/2, 200, 1.0f, 0.0f, _handle[name[0]], true);
 	for (int i = 1; i < name.size(); i++) {
 		float extrate = 1.0f;
-		if (i == _selectItem + 1)extrate = 1.1f;
+		if (i == _selectItem + 1) extrate = 1.0f + 0.1f * sin(2.0f * DX_PI * (GetNowCount() - _currentTime) / 2000.0f);
 		DrawRotaGraph(ItemX[i-1], 800, extrate, 0.0f, _handle[name[i]], true);
 	}
 	

@@ -16,6 +16,7 @@ bool ModeInstructions::Initialize() {
 	//‰Šú‰»
 	_listChoice = 0;
 	_listViewNum = 0;
+	_currentTime = GetNowCount();
 
 	_frameHandle = ResourceServer::LoadGraph("InstructionFrame", "res/ModePause/Operation/Frame.png");
 	ResourceServer::LoadMultGraph("Tutorial", "res/Tutorial/Tutorial", ".png", 5,_imageHandle);
@@ -43,10 +44,12 @@ bool ModeInstructions::Process() {
 	if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN) || _input->GetTrg(XINPUT_BUTTON_STICK_DOWN)) {
 		count++;
 		global._soundServer->DirectPlay("SE_Select");
+		_currentTime = GetNowCount();
 	}
 	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP) || _input->GetTrg(XINPUT_BUTTON_STICK_UP)) {
 		count--;
 		global._soundServer->DirectPlay("SE_Select");
+		_currentTime = GetNowCount();
 	}
 	_listChoice += count;
 	_listChoice = (_listChoice + LIST_SIZE_MAX) % LIST_SIZE_MAX;
@@ -80,7 +83,7 @@ bool ModeInstructions::Render() {
 		
 		if (i == _listChoice) {
 			DrawGraph(400, 150, _imageHandle[i], true);//À•W‚ÍG‚Éİ’è ‰æ‘œ‚ª—ˆ‚Ä‚©‚ç”÷’²®
-			Extrate = 1.1f;
+			Extrate = 1.0f + 0.1f * sin(2.0f * DX_PI * (GetNowCount() - _currentTime) /2000.0f);
 		}
 		DrawRotaGraph(handleX[i], handleY[i], Extrate, 0.0f, _itemHandle[i], true);
 	}

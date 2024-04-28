@@ -37,7 +37,7 @@ bool ModePause::Initialize() {
 
 	//input‚ğì¬
 	_input = XInput::GetInstance();
-
+	_currentTime = GetNowCount();
 	//•Ï”‚Ì‰Šú‰»
 	_selectItem = 0;
 	_seVolum = global._soundServer->GetSeVolume();
@@ -178,10 +178,12 @@ bool ModePause::Process() {
 	if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP) || _input->GetTrg(XINPUT_BUTTON_STICK_UP)) {
 		count--;
 		global._soundServer->DirectPlay("SE_Select");
+		_currentTime = GetNowCount();
 	}
 	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN) || _input->GetTrg(XINPUT_BUTTON_STICK_DOWN)) {
 		count++;
 		global._soundServer->DirectPlay("SE_Select");
+		_currentTime = GetNowCount();
 	}
 
 	_selectItem += count;
@@ -271,7 +273,8 @@ bool ModePause::Render() {
 	//€–Ú‚Ì•`‰æ
 	for (int i = 0; i < MAX_MODE; i++) {
 		float extRate = 1.0f;		
-		if (_selectItem == i)  extRate = 1.1f; 
+		//if (_selectItem == i)  extRate = 1.1f; 	
+		if (i == _selectItem) { extRate = 1.0f + 0.1 * sin(2 * DX_PI * (float)(GetNowCount() - _currentTime) / 2000.0f); }
 		GetGraphSizeF(_handleMap[_itemList[i]], &handleX, &handleY);
 		DrawRotaGraph(selectItemX[i], selectItemY[i], extRate, 0.0f, _handleMap[_itemList[i]], true);
 	}

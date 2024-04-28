@@ -40,4 +40,5 @@ protected:
 	VERTEX2D _bgmGauge[4];// BGMのゲージの頂点データ
 	static const unsigned short vertex[6];// ポリゴンを描画する際の頂点の順番
 	std::unordered_map<std::string, int> _handleMap;// 画像ハンドルの管理コンテナ
+	int _currentTime;// 現在の時間
 };

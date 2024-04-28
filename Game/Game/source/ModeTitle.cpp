@@ -108,10 +108,12 @@ void ModeTitle::UpdateSelectItems(){
 	if (_input->GetTrg(XINPUT_BUTTON_DPAD_UP) || _input->GetTrg(XINPUT_BUTTON_STICK_UP)) {
 		count--;
 		global._soundServer->DirectPlay("SE_Select");
+		_currentTime = GetNowCount();
 	}
 	else if (_input->GetTrg(XINPUT_BUTTON_DPAD_DOWN) || _input->GetTrg(XINPUT_BUTTON_STICK_DOWN)) {
 		count++;
 		global._soundServer->DirectPlay("SE_Select");
+		_currentTime = GetNowCount();
 	}
 
 	_modeCount += count;
@@ -196,7 +198,7 @@ void ModeTitle::DrawTitleItems(){
 		int handleNum = i;
 		float extRate = 1.0f;
 		GetGraphSize(_handleMap[_handleNameList[handleNum]], &handleX, &handleY);
-		if (i == _modeCount) { extRate = 1.1f; }
+		if (i == _modeCount) { extRate = 1.0f + 0.1 * sin(2 * DX_PI * (float)(GetNowCount() - _currentTime) / 2000.0f); }
 		DrawRotaGraph(centerX + handleX / 2, centerY[i], extRate, 0.0f, _handleMap[_handleNameList[handleNum]], true);
 	}
 };

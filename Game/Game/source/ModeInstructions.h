@@ -31,5 +31,7 @@ protected:
 	int _frameHandle;//ƒtƒŒ[ƒ€‚Ì‰æ‘œ
 	int _itemHandle[5];//‘I‘ğ‚³‚ê‚½€–Ú‚Ì‰æ‘œ
 	int _imageHandle[5];//ÀÛ‚Ì‰æ–Ê‚Ì‰æ‘œ
+
+	int _currentTime;//Œ»İ‚ÌŠÔ
 };
 

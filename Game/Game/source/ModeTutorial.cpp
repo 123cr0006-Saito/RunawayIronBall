@@ -45,16 +45,17 @@ bool ModeTutorial::Terminate(){
 bool ModeTutorial::Process(){
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->PauseProcessUnderLayer();
+	if (!ModeServer::GetInstance()->IsAboutLayer(this)){
 	// ŽŸ‚Ì‰æ‘œ‚Ö
 	if (_input->GetTrg(XINPUT_BUTTON_A) ) {
-		if (_selectItem < _pageSize) {
-			_selectItem++;
-			if (_selectItem == _pageSize) {
-				ModeServer::GetInstance()->Del(this);
-			}
-		}
+	    	if (_selectItem < _pageSize) {
+	    		_selectItem++;
+	    		if (_selectItem == _pageSize) {
+	    			ModeServer::GetInstance()->Del(this);
+	    		}
+	    	}
+	    }
 	}
-
 	return true;
 };
 //----------------------------------------------------------------------
