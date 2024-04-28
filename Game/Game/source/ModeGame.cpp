@@ -534,7 +534,7 @@ bool ModeGame::Render() {
 
 	_effectManeger->Render();
 
-	if (!ModeServer::GetInstance()->IsAboutLayer(this)) {
+	if (!ModeServer::GetInstance()->Search("RotCamera") && !ModeServer::GetInstance()->Search("Camera")) {
 		for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
 			ui[i]->Draw();
 		}
