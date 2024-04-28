@@ -168,11 +168,9 @@
     <ClCompile Include="source\ModeFadeComeBack.cpp" />
     <ClCompile Include="source\RotationCamera.cpp" />
     <ClCompile Include="source\CameraBase.cpp" />
-    <ClCompile Include="source\Heart.cpp" />
     <ClCompile Include="source\EffekseerRotation.cpp" />
     <ClCompile Include="source\EffectBase.cpp" />
     <ClCompile Include="source\BoardArrow.cpp" />
-    <ClCompile Include="source\Chainguard.cpp" />
     <ClCompile Include="source\CollisionManager.cpp" />
     <ClCompile Include="source\LoadingChain.cpp" />
     <ClCompile Include="source\LoadingPlayer.cpp" />
@@ -203,7 +201,6 @@
     <ClCompile Include="source\ModelColor.cpp" />
     <ClCompile Include="source\ModePause.cpp" />
     <ClCompile Include="source\SlaBlockPattern2.cpp" />
-    <ClCompile Include="source\CrystarPattern4.cpp" />
     <ClCompile Include="source\EnemyManeger.cpp" />
     <ClCompile Include="source\BreakableBuilding.cpp" />
     <ClCompile Include="source\myJson.cpp" />
@@ -218,7 +215,6 @@
     <ClCompile Include="source\Camera.cpp" />
     <ClCompile Include="source\ApplicationMain.cpp" />
     <ClCompile Include="source\ModeGame.cpp" />
-    <ClCompile Include="source\ModeTest.cpp" />
     <ClCompile Include="source\ModeTitle.cpp" />
     <ClCompile Include="source\Player.cpp" />
     <ClCompile Include="source\IronBall.cpp" />
@@ -248,18 +244,15 @@
     <ClInclude Include="source\ModeZoomCamera.h" />
     <ClInclude Include="source\ModeRotationCamera.h" />
     <ClInclude Include="source\ModeFadeComeBack.h" />
-    <ClInclude Include="resource.h" />
     <ClInclude Include="source\RotationCamera.h" />
     <ClInclude Include="source\CameraBase.h" />
     <ClCompile Include="source\UnbreakableBuilding.cpp" />
     <ClInclude Include="source\UIBossHp.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\Heart.h" />
     <ClInclude Include="source\EffekseerRotation.h" />
     <ClInclude Include="source\EffectBase.h" />
     <ClInclude Include="source\BoardArrow.h" />
-    <ClInclude Include="source\Chainguard.h" />
     <ClInclude Include="source\Cell.h" />
     <ClInclude Include="source\CollisionManager.h" />
     <ClInclude Include="source\LoadingChain.h" />
@@ -291,7 +284,6 @@
     <ClInclude Include="source\ModelColor.h" />
     <ClInclude Include="source\ModePause.h" />
     <ClInclude Include="source\SlaBlockPattern2.h" />
-    <ClInclude Include="source\CrystarPattern4.h" />
     <ClInclude Include="source\EnemyManeger.h" />
     <ClInclude Include="source\EnemyStract.h" />
     <ClInclude Include="source\BreakableBuilding.h" />
@@ -307,7 +299,6 @@
     <ClInclude Include="source\Camera.h" />
     <ClInclude Include="source\ApplicationMain.h" />
     <ClInclude Include="source\ModeGame.h" />
-    <ClInclude Include="source\ModeTest.h" />
     <ClInclude Include="source\ModeTitle.h" />
     <ClInclude Include="source\Player.h" />
     <ClInclude Include="source\IronBall.h" />
@@ -324,9 +315,6 @@
     <ClInclude Include="source\Suppression.h" />
     <ClInclude Include="source\TargetZoomCamera.h" />
     <ClInclude Include="source\UnbreakableBuilding.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Game.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -13,7 +13,6 @@
 
 #include "Camera.h"
 #include "Player.h"
-#include "Heart.h"
 
 #include "UIBase.h"
 #include "UIExpPoint.h"

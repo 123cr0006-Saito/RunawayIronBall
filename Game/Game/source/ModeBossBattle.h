@@ -6,7 +6,6 @@
 
 #include "Camera.h"
 #include "Player.h"
-#include "Heart.h"
 
 #include "Boss.h"
 

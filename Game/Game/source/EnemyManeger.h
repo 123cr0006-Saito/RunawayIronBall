@@ -16,11 +16,10 @@
 #include "EnemyStract.h"
 #include "EnemyBase.h"
 #include "SlaBlock.h"
+#include "SlaBlockPattern2.h"
 #include "CrystarPattern1.h"
 #include "CrystarPattern2.h"
 #include "CrystarPattern3.h"
-#include "SlaBlockPattern2.h"
-#include "Chainguard.h"
 #include "Suppression.h"
 // create Å®model param 
 // init Å®pos

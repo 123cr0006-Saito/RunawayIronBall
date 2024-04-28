@@ -1,55 +1,33 @@
+//----------------------------------------------------------------------
+// @filename FrameData.cpp
+// @date: 2024/02/09
+// @author: saito ko
+// @explanation
+// キャラクターのモーションのフレームで実行するコマンドを管理するクラス
+//----------------------------------------------------------------------
 #include "FrameData.h"
 #include "ClassificationEffect.h"
 
 std::map<std::string, std::map<int, std::multimap<int, CommandParam>>>  FrameData::_kindFrameData;//キャラクターの種類別に持つデータ
-
-FrameData::FrameData(){
-
-};
-
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @return 無し
+//----------------------------------------------------------------------
+FrameData::FrameData(){};
+//----------------------------------------------------------------------
+// @brief デストラクタ
+// @return 無し
+//----------------------------------------------------------------------
 FrameData::~FrameData() {
 	_frameData.clear();
 	_kindFrameData.clear();
 };
-
-bool FrameData::LoadData(std::string kindName, std::vector<std::pair<int, std::string>> frameData) {
-	auto itr = _kindFrameData.find(kindName);
-	if (itr == _kindFrameData.end()) {
-		//パラメータを保存しておくリストを作成
-		for (auto it = frameData.begin(); it != frameData.end(); ++it) {
-			// ファイルパスの作成
-			std::string filePath = "Data/FrameData/" + kindName + "/" + it->second;
-			//ファイル読み込み
-			CFile csvFile(filePath);
-			//ファイルが開いた場合実行
-			std::multimap<int, CommandParam> paramList;
-			if (csvFile.Success()) {
-				int c = 0;
-				const char* p = (const char*)csvFile.Data();
-				int size = csvFile.Size();
-				int key = 0;
-				CommandParam param;
-				while (c < size) {
-					c += GetDecNum(&p[c], &key);//アニメーションフレームを検索
-					c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &param.first);//コマンドを検索
-					c += FindString(&p[c], ',', &p[size]); c++; c += GetFloatNum(&p[c], &param.second);//パラメータを検索
-					c += SkipSpace(&p[c], &p[size]); // 空白やコントロールコードをスキップする
-					paramList.insert(std::make_pair(key, param));//リストにため込む
-				}
-				//終わったので本リストに代入
-				_kindFrameData[kindName][it->first] = paramList;
-			}
-#ifdef _DEBUG
-			else {
-				std::string errar = filePath + "が開けませんでした。";
-				MessageBox(NULL, errar.c_str(), "ファイルが開けません", MB_OK);
-			}
-#endif
-		}
-	}
-	_frameData = _kindFrameData[kindName];
-	return true;
-}
+//----------------------------------------------------------------------
+// @brief フレームデータの読み込み
+// @param kindName キャラクターの種類
+// @param motionList モーションの名前が入ったリスト
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool FrameData::LoadData(std::string kindName, const std::vector<MotionNamePair>& motionList)
 {
 	auto itr = _kindFrameData.find(kindName);
@@ -91,9 +69,13 @@ bool FrameData::LoadData(std::string kindName, const std::vector<MotionNamePair>
 	}
 	_frameData = _kindFrameData[kindName];
 	return true;
-}
-;
-
+};
+//----------------------------------------------------------------------
+// @brief フレームデータの読み込み
+// @param state 現在のアニメーションの状態
+// @param animTime 現在のアニメーションのフレーム
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 void FrameData::Process(int state, int animTime) {
 	//コンテナの初期化
 	if (!_nextCommandList.empty()) {

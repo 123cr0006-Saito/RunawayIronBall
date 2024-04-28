@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename FrameData.h
+// @date: 2024/02/09
+// @author: saito ko
+// @explanation
+// キャラクターのモーションのフレームで実行するコマンドを管理するクラス
+//----------------------------------------------------------------------
 #pragma once
 #include "appframe.h"
 #include <map>
@@ -18,8 +25,6 @@ public:
 
 	FrameData();
 	~FrameData();
-
-	bool LoadData(std::string, std::vector<std::pair<int, std::string>> frameData);
 
 	bool LoadData(std::string kindName, const std::vector<MotionNamePair>& motionList);
 
