@@ -54,9 +54,9 @@ bool ModeRotationCamera::Process() {
 
 	int endTime = 10 * 1000;
 	int nowTime = GetNowCount() - _currentTime;
-	if (nowTime > endTime) {
+	if (_input->GetTrg(XINPUT_BUTTON_START) || nowTime > endTime) {
 		bool SearchFade = ModeServer::GetInstance()->Search("Fade");
-		if (!SearchFade || _input->GetTrg(XINPUT_BUTTON_START)) {
+		if (!SearchFade) {
 			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(3000, this), 100, "Fade");
 		}
 	}
