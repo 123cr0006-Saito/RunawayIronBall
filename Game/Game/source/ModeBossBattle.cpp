@@ -4,6 +4,7 @@
 // @author: Morozumi Hiroya
 // @explanation
 // ボスバトルモードの制御を行うクラス
+// UI部分はSaitoが担当
 //----------------------------------------------------------------------
 #include "ModeBossBattle.h"
 #include "ModeZoomCamera.h"
@@ -278,6 +279,11 @@ bool ModeBossBattle::Process() {
 			}
 		}
 	}
+
+
+	// ------------------------------------
+	// Saitoが担当
+
 	VECTOR p = _boss->GetIBPosition();
 	if(!ModeServer::GetInstance()->Search("Fade") && p.y < -5000) {
 		ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(2500, this,  50), 100, "Fade");
@@ -305,6 +311,8 @@ bool ModeBossBattle::Process() {
 	float ratio = 1.0f - _camera->GetTargetDistance() / _camera->GetMaxLength();
 	_gaugeUI[0]->Process(box_vec, _player->GetStamina(), _player->GetStaminaMax(), ratio);
 	_gaugeUI[1]->Process(box_vec, 100, 100, ratio);
+
+	//------------------------------------
 
 	_collisionManager->Process();
 

@@ -4,6 +4,7 @@
 // @author: Morozumi Hiroya
 // @explanation
 // ボスの制御を行うクラス
+// ボス鉄球の制御は、BossIronBallクラスで行う
 //----------------------------------------------------------------------
 #pragma once
 #include "appframe.h"

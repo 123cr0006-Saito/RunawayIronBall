@@ -4,6 +4,7 @@
 // @author: Morozumi Hiroya
 // @explanation
 // ボスバトルモードの制御を行うクラス
+// UI部分はSaitoが担当
 //----------------------------------------------------------------------
 #pragma once
 #include "appframe.h"
