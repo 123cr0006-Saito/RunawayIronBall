@@ -1,7 +1,14 @@
+//----------------------------------------------------------------------
+// @filename Boss.cpp
+// @date: 2024/03/20
+// @author: Morozumi Hiroya
+// @explanation
+// ボスの制御を行うクラス
+//----------------------------------------------------------------------
 #include "Boss.h"
 
 namespace {
-	// 最大無敵時間
+	// 杭の最大無敵時間
 	constexpr int STAKE_INVINCIBLE_CNT_MAX = 60;
 }
 
@@ -33,33 +40,44 @@ Boss::~Boss()
 	_player = nullptr;
 }
 
+// モデルの読み込み
 void Boss::LoadModel()
 {
 	_stakeModelHandle = ResourceServer::MV1LoadModel("Stake", "res/Enemy/Cg_Enemy_Bossnake/CG_OBJ_Stake.mv1");
 	_ironBall->LoadModel();
 }
 
+// 初期化処理
 void Boss::Init(VECTOR polePos)
 {
+	//--------------------
+	// 杭の初期化
+
 	_stakePos = polePos;
 	MV1SetPosition(_stakeModelHandle, VAdd(_stakePos, VGet(0.0f, -200.0f, 0.0f)));
 
+	// 杭の当たり判定を設定
 	_stakeCapsuleCol.down_pos = _stakePos;
 	_stakeCapsuleCol.up = 500.0f;
 	_stakeCapsuleCol.up_pos = VAdd(_stakePos, VGet(0.0f, _stakeCapsuleCol.up, 0.0f));
 	_stakeCapsuleCol.r = 100.0f;
 
 	_stakeHp = 100;
+	//--------------------
 
+	// ボス鉄球の初期化
 	_ironBall->Init(&_stakePos);
 
+	// プレイヤーのインスタンスを取得
 	_player = Player::GetInstance();
 }
 
+// 更新処理
 void Boss::Process()
 {
 	_ironBall->Process();
 	if (!_isStakeBroken) {
+		// ボス鉄球と杭の当たり判定を行う
 		CheckHitBossAndStake();
 
 		// HPが半分以下になったら鉄球を強化状態にする
@@ -77,14 +95,19 @@ void Boss::Process()
 	}
 }
 
+// 描画処理
 void Boss::Render()
 {
+	// 杭の描画
+	// 杭が破壊されていない場合のみ描画する
 	if (!_isStakeBroken) {
 		MV1DrawModel(_stakeModelHandle);
 	}
+	// ボス鉄球の描画
 	_ironBall->Render();
 }
 
+// ボス鉄球と杭の当たり判定を行う
 void Boss::CheckHitBossAndStake()
 {
 	if(_ironBall->GetUseCollision() == false) { return; }
@@ -92,8 +115,10 @@ void Boss::CheckHitBossAndStake()
 	Sphere ibCol = _ironBall->GetIBCollision();
 	VECTOR shortestPos = VGet(0.0f, 0.0f, 0.0f);
 
+	// ボス鉄球と杭の当たり判定
 	if (Collision3D::SphereCapsuleCol(ibCol, _stakeCapsuleCol, &shortestPos))
 	{
+		// 押し出し処理
 		VECTOR vDir = VSub(ibCol.centerPos, shortestPos);
 		vDir = VNorm(vDir);
 		float length = _stakeCapsuleCol.r + ibCol.r + 20.0f;
@@ -116,6 +141,7 @@ void Boss::CheckHitBossAndStake()
 	}
 }
 
+// 杭のHPを減らす
 void Boss::SetDamageStake(int damage)
 {
 	if (!_isStakeInvincible) {
@@ -132,6 +158,7 @@ void Boss::SetDamageStake(int damage)
 	}
 }
 
+// デバッグ情報の表示
 void Boss::DrawDebugInfo()
 {
 	if (!_isStakeBroken) {

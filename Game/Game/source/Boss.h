@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename Boss.h
+// @date: 2024/03/20
+// @author: Morozumi Hiroya
+// @explanation
+// ボスの制御を行うクラス
+//----------------------------------------------------------------------
 #pragma once
 #include "appframe.h"
 #include "BossIronBall.h"
@@ -13,34 +20,49 @@ public:
 	Boss();
 	~Boss();
 
+	// モデルの読み込み
 	void LoadModel();
+	// 初期化処理
 	void Init(VECTOR polePos);
-
+	// 更新処理
 	void Process();
+	// 描画処理
 	void Render();
 
-
+	// 杭の座標を取得
 	VECTOR GetStakePosition() { return _stakePos; }
+	// ボス鉄球の座標を取得
 	VECTOR GetIBPosition() { return _ironBall->GetPosition(); }
-
+	// ボス鉄球の座標を設定
 	void SetIBPosition(VECTOR pos) { _ironBall->SetPosition(pos); }
+
+	// ガラス化状態かどうかを取得する
 	bool GetIsGlass() { return _ironBall->GetIsGlass(); }
 
+	// 杭が無敵状態かどうかを取得する
 	bool GetIsStakeInvincible() { return _isStakeInvincible; }
 
+	// 杭の当たり判定を取得する
 	Capsule GetStakeCollision() { return _stakeCapsuleCol; }
+	// ボス鉄球の当たり判定を取得する
 	Sphere GetIBCollision() { return _ironBall->GetIBCollision(); }
+	// ボス鉄球の鎖の当たり判定を取得する
 	Capsule GetChainCollision() { return _ironBall->GetChainCollision(); }
-	// 鉄球の回転攻撃かどうかを取得する
+
+	// ボス鉄球が回転攻撃かどうかを取得する
 	bool GetIsRotationAttack() { return _ironBall->GetIsRotationAttack(); }
 
+	// ボス鉄球がステージ上にあるかどうかを設定する
 	void SetOnStage(bool isOnStage) { _ironBall->SetOnStage(isOnStage); }
+	// ボス鉄球がステージ上にあるかどうかを取得する
 	bool GetOnStage() { return _ironBall->GetOnStage(); }
 
+	// ボス鉄球の無敵状態かどうかを取得する
 	bool GetIBInvincible() { return _ironBall->GetIsInvincible(); }
 
+	// ボス鉄球と杭の当たり判定を行う 
 	void CheckHitBossAndStake();
-
+	// ボス鉄球をノックバック状態にする
 	void SetIBKnockBack(VECTOR vDir, float speed) { _ironBall->SetKnockBack(vDir, speed); }
 	// 杭のHPを減らす
 	void SetDamageStake(int damage);
@@ -50,8 +72,10 @@ public:
 	// 杭の最大HPを取得
 	int GetStakeMaxHp() { return STAKE_MAX_HP; }
 
+	// 杭が破壊されたかどうかを取得
 	bool GetIsStakeBroken() { return _isStakeBroken; }
 
+	// ステージの半径を設定
 	void SetStageRadius(float radius) { _ironBall->SetStageRadius(radius); }
 
 	// デバッグ情報の表示
@@ -73,8 +97,9 @@ private:
 	// 杭が破壊されたかどうか
 	bool _isStakeBroken;
 
+	// 鉄球
 	BossIronBall* _ironBall;
 
-
+	// プレイヤー
 	Player* _player;
 };
