@@ -1,6 +1,12 @@
+//----------------------------------------------------------------------
+// @filename ModeBossBattle.h
+// @date: 2024/03/20
+// @author: Morozumi Hiroya
+// @explanation
+// ボスバトルモードの制御を行うクラス
+//----------------------------------------------------------------------
 #pragma once
 #include "appframe.h"
-
 
 #include "CollisionManager.h"
 
@@ -25,19 +31,6 @@
 class ModeBossBattle : public ModeBase
 {
 	typedef ModeBase base;
-
-	struct OBJECTDATA {
-		std::string _name;
-		VECTOR _pos;
-		VECTOR _rotate;
-		VECTOR _scale;
-	};
-
-	struct ObjectParam {
-		std::string _name;
-		VECTOR _size;
-		int isBreak;
-	};
 
 public:
 
@@ -67,12 +60,9 @@ protected:
 	int _effectSheet[30];
 	ClassificationEffect* _classificationEffect;
 	EffectManeger* _effectManeger;
-	OBB obb;
 
 	int _shadowHandle;
 
-	// デバッグ表示をするかどうか
-	bool _drawDebug = false;
 	Light* _light;
 
 };

@@ -1,5 +1,10 @@
-#include "AppFrame.h"
-#include "ApplicationMain.h"
+//----------------------------------------------------------------------
+// @filename ModeBossBattle.cpp
+// @date: 2024/03/20
+// @author: Morozumi Hiroya
+// @explanation
+// ボスバトルモードの制御を行うクラス
+//----------------------------------------------------------------------
 #include "ModeBossBattle.h"
 #include "ModeZoomCamera.h"
 #include "ModeRotationCamera.h"
