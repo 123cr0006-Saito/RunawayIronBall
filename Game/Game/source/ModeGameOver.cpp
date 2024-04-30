@@ -10,6 +10,7 @@
 #include "ModeTitle.h"
 #include "ModeGame.h"
 #include "ModeFadeComeBack.h"
+#include "ModeBossBattle.h"
 //----------------------------------------------------------------------
 // @brief ‰Šú‰»ˆ—
 // @return ¬Œ÷‚µ‚Ä‚¢‚é‚©‚Ç‚¤‚©
@@ -84,8 +85,14 @@ void ModeGameOver::SelectProcess(){
 		global._soundServer->DirectPlay("SE_Press");
 		if (_selectItem == 0) {
 			global.SetAllExp(global.GetOldExp());
-			ModeServer::GetInstance()->Add(NEW ModeGame(), 1, "Game");
-			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(3000, this), 100, "Fade");
+			if(global.GetStageNum() < 4){
+				ModeServer::GetInstance()->Add(NEW ModeGame(), 1, "Game");
+				ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(3000, this), 100, "Fade");
+			}
+			else {
+				ModeServer::GetInstance()->Add(NEW ModeBossBattle(), 1, "ModeBossBattle");
+				ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(3000, this), 100, "Fade");
+			}
 		}
 		else {
 			ModeServer::GetInstance()->Add(NEW ModeTitle(), 1, "Title");
