@@ -9,6 +9,7 @@
 #include "appframe.h"
 #include "ObjectBase.h"
 #include "Afterglow.h"
+#include "AfterImage.h"
 
 #define CHAIN_MAX 12
 
@@ -18,8 +19,6 @@ enum IB_MOVE_STATE {
 	FOLLOWING,
 	// ソケットへの配置状態
 	PUTTING_ON_SOCKET,
-	// 補間状態
-	INTERPOLATION,
 };
 class IronBall : public ObjectBase
 {
@@ -42,8 +41,6 @@ public:
 	void FollowingProcess();
 	// ソケットへの配置状態の処理
 	void PuttingOnSocketProcess();
-	// 補間状態の処理
-	void InterpolationProcess();
 	//----------------------------------------------------------------------
 
 	// アニメーションの更新処理
@@ -71,6 +68,9 @@ public:
 
 	// 移動状態を設定する
 	void SetMoveState(IB_MOVE_STATE state) { _moveState = state; }
+
+	// 残像を表示するかどうかを設定
+	void SetRenderAfterImage(bool enable) { _addAfterImage = enable; }
 
 	// サイトウが作成しました。
 	void SetEnabledAfterGlow(bool enable);// 目の残光を表示するかどうかを設定
@@ -142,6 +142,11 @@ private:
 	// 現在の再生時間
 	float _playTime;
 	//----------------------------------------------------------------------
+
+	// 残像クラス
+	AfterImage* _afterImage;
+	// 新しく残像を生成するかどうか
+	bool _addAfterImage;
 
 	// このオブジェクトを保有している親のオブジェクトへのポインタ
 	ObjectBase* _parent;

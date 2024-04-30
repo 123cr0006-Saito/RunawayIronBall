@@ -21,15 +21,20 @@ public:
 	// @param keyName: キー名（ResourceServerでのモデルデータの管理に使用する）
 	// @param modelName: モデルのパス
 	// @param afterImageNum: 同時に表示する残像の最大数
-	void Init(int parentModelHandle, std::string keyName, std::string modelName, int afterImageNum = 10);
+	// @param remainTime: 残像の持続時間
+	void Init(int parentModelHandle, std::string keyName, std::string modelName, int afterImageNum = 10, int remainTime = 10);
 
+	// 残像を追加する
+	void AddAfterImage();
 
-	void SetAfterImage(MATRIX parentMatrix);
-
+	// 更新処理
+	void Process();
 	
+	// 描画処理
 	void Render();
 
 private:	
+	// 残像モデルの情報
 	struct ModelInfo
 	{
 		// 使用フラグ
@@ -42,14 +47,19 @@ private:
 		
 		// モデルハンドル
 		int modelHandle;
-		// 透明度（0.0 ~ 1.0）
-		float alpha;
-
+		// ディフューズカラーのスケール値
+		// マテリアルのディフューズカラーに掛け合わせる値
+		// RGBA(0.0f ~ 1.0f)
+		COLOR_F difColorScale;
 		// ----------------------------------------
 	};
-
 	std::vector<ModelInfo*> _modelInfo;
-	int _afterImageNum;
 
+	// 親モデルのハンドル
 	int _parentModelHandle;
+
+	// 同時に表示する残像の最大数
+	int _afterImageNum;
+	// 残像の持続時間
+	int _remainTimeMax;
 };

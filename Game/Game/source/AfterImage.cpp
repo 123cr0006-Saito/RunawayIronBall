@@ -10,8 +10,11 @@
 
 AfterImage::AfterImage()
 {
-	_afterImageNum = 0;
+	_parentModelHandle = -1;
+
 	_modelInfo.clear();
+	_afterImageNum = 0;
+	_remainTimeMax = 0;
 }
 
 AfterImage::~AfterImage()
@@ -25,16 +28,21 @@ AfterImage::~AfterImage()
 }
 
 // 初期化処理
+// @param parentModelHandle: 親モデルのハンドル
 // @param keyName: キー名（ResourceServerでのモデルデータの管理に使用する）
 // @param modelName: モデルのパス
 // @param afterImageNum: 同時に表示する残像の最大数
-void AfterImage::Init(int parentModelHandle, std::string keyName, std::string modelName, int afterImageNum)
+// @param remainTime: 残像の持続時間
+void AfterImage::Init(int parentModelHandle, std::string keyName, std::string modelName, int afterImageNum, int remainTime)
 {
 	_parentModelHandle = parentModelHandle;
 
 	this->_afterImageNum = afterImageNum;
 	_modelInfo.resize(afterImageNum);
 
+	this->_remainTimeMax = remainTime;
+
+	// 残像モデル情報の初期化
 	for(int i = 0; i < _afterImageNum; i++) {
 		_modelInfo[i] = new ModelInfo();
 
@@ -42,39 +50,62 @@ void AfterImage::Init(int parentModelHandle, std::string keyName, std::string mo
 		_modelInfo[i]->remainTime = 0;
 
 		_modelInfo[i]->modelHandle = ResourceServer::MV1LoadModel(keyName, modelName);
-		_modelInfo[i]->alpha = 255;
+		_modelInfo[i]->difColorScale = GetColorF(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 }
 
-void AfterImage::SetAfterImage(MATRIX parentMatrix)
+// 残像を追加する
+// @param parentMatrix: 親モデルの行列
+void AfterImage::AddAfterImage()
 {
 	for(int i = 0; i < _afterImageNum; i++) {
+		// 使用していない要素を探す
 		if(_modelInfo[i]->use == false) {
+			// 残像の設定
 			_modelInfo[i]->use = true;
-			_modelInfo[i]->remainTime = 10;
-			_modelInfo[i]->alpha = 1;
+			_modelInfo[i]->remainTime = _remainTimeMax;
 
-			auto color = MV1GetDifColorScale(_parentModelHandle);
-			color.a = _modelInfo[i]->alpha;
-			MV1SetDifColorScale(_modelInfo[i]->modelHandle, color);
+			// 親モデルのディフューズカラーのスケール値を取得し、残像モデルに適応する
+			_modelInfo[i]->difColorScale = MV1GetDifColorScale(_parentModelHandle);
+			MV1SetDifColorScale(_modelInfo[i]->modelHandle, _modelInfo[i]->difColorScale);
 
-			MV1SetMatrix(_modelInfo[i]->modelHandle, parentMatrix);
+			// 親モデルの行列を残像モデルに適応する
+			MV1SetMatrix(_modelInfo[i]->modelHandle, MV1GetMatrix(_parentModelHandle));
 
 			break;
 		}
 	}
 }
 
+// 更新処理
+void AfterImage::Process()
+{
+	for (int i = 0; i < _afterImageNum; i++) {
+		if (_modelInfo[i]->use == true) {
+			// 残りカウントを減らす
+			_modelInfo[i]->remainTime--;
+
+			// 残りカウントが0以下になったら使用フラグをfalseにする
+			if (_modelInfo[i]->remainTime <= 0) {
+				_modelInfo[i]->use = false;
+			}
+			else {
+				// 残りカウントに応じて透明度を変更する
+				float alphaRate = (float)_modelInfo[i]->remainTime / (float)_remainTimeMax;
+				COLOR_F nextColor = _modelInfo[i]->difColorScale;
+				nextColor.a = _modelInfo[i]->difColorScale.a * alphaRate;
+				MV1SetDifColorScale(_modelInfo[i]->modelHandle, nextColor);
+			}
+		}
+	}
+}
+
+// 描画処理
 void AfterImage::Render()
 {
 	for(int i = 0; i < _afterImageNum; i++) {
 		if(_modelInfo[i]->use == true) {
 			MV1DrawModel(_modelInfo[i]->modelHandle);
-
-			_modelInfo[i]->remainTime--;
-			if(_modelInfo[i]->remainTime <= 0) {
-				_modelInfo[i]->use = false;
-			}
 		}
 	}
 }
