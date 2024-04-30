@@ -118,7 +118,7 @@ void IronBall::Init() {
 
 
 	_afterImage = NEW AfterImage();
-	_afterImage->Init(_iModelHandle, "IB_AfterImage", "res/Character/Cg_Iron_Ball/Cg_Iron_Ball.mv1", 10, 10);
+	_afterImage->Init(_iModelHandle, "IB_AfterImage", "res/Character/Cg_Iron_Ball/Cg_Iron_Ball.mv1", 5, 5);
 
 
 	int afterglow = MV1SearchFrame(_iModelHandle, "left_eye02");
