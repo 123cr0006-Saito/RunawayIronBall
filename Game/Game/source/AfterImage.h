@@ -25,7 +25,9 @@ public:
 	void Init(int parentModelHandle, std::string keyName, std::string modelName, int afterImageNum = 10, int remainTime = 10);
 
 	// 残像を追加する
-	void AddAfterImage();
+	// @param animIndex: アニメーションのインデックス（mv1ファイル内でのインデックス番号）（-1の場合はアニメーションを適応しない）
+	// @param playTime: アニメーションの再生時間
+	void AddAfterImage(int animIndex = -1, float playTime = 0);
 
 	// 更新処理
 	void Process();
@@ -47,10 +49,14 @@ private:
 		
 		// モデルハンドル
 		int modelHandle;
+
 		// ディフューズカラーのスケール値
 		// マテリアルのディフューズカラーに掛け合わせる値
 		// RGBA(0.0f ~ 1.0f)
 		COLOR_F difColorScale;
+
+		// アニメーションのアタッチインデックス番号
+		int attachIndex;
 		// ----------------------------------------
 	};
 	std::vector<ModelInfo*> _modelInfo;

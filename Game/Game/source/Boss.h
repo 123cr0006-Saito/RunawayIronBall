@@ -29,6 +29,8 @@ public:
 	void Process();
 	// •`‰æˆ—
 	void Render();
+	// c‘œ‚Ì•`‰æˆ—
+	void RenderAfterImage();
 
 	// Y‚ÌÀ•W‚ğæ“¾
 	VECTOR GetStakePosition() { return _stakePos; }

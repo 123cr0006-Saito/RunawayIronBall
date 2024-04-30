@@ -198,7 +198,7 @@ void IronBall::Process() {
 	_afterImage->Process();
 	// V‚µ‚­c‘œ‚ğ¶¬‚·‚éê‡
 	if (_addAfterImage) {
-		_afterImage->AddAfterImage();
+		_afterImage->AddAfterImage(0, _playTime);
 	}
 
 	// cŒõ‚Ìˆ—
@@ -348,7 +348,11 @@ void IronBall::Render()
 	// “S‹…‚Ì•`‰æ
 	MV1SetPosition(_iModelHandle, _iPos);
 	MV1DrawModel(_iModelHandle);
+}
 
+// c‘œ‚Ì•`‰æ
+void IronBall::RenderAfterImage()
+{
 	// c‘œ‚Ì•`‰æ
 	_afterImage->Render();
 }

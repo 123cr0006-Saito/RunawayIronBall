@@ -378,6 +378,9 @@ bool ModeBossBattle::Render() {
 
 	_effectManeger->Render();
 
+	_player->RenderAfterImage();
+	_boss->RenderAfterImage();
+
 	if (!ModeServer::GetInstance()->Search("RotCamera")) {
 	    for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
 	    	ui[i]->Draw();
