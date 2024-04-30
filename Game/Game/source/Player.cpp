@@ -53,17 +53,19 @@ namespace {
 	constexpr float STANIMA_RECOVERY_TIME = 120.0f;
 
 	// フレームデータのコマンド
-	constexpr unsigned int	C_P_CHANGE_MOTION							= 0;
-	constexpr unsigned int 	C_P_ENABLE_MOVE								= 1;
-	constexpr unsigned int 	C_P_MOVE_FORWARD							= 2;
-	constexpr unsigned int 	C_P_ACCEPT_COMBO_INPUT					= 3;
-	constexpr unsigned int 	C_P_CHECK_CHANGE_COMBO				= 4;
-	constexpr unsigned int 	C_P_CHECK_CHANGE_ATTACK_STATE		= 5;
-	constexpr unsigned int 	C_P_ENACLE_MOTION_CANCEL				= 6;
-	constexpr unsigned int 	C_P_SET_INVINCIBLE_CNT						= 7;
+	// CheckFrameDataCommand()で使用する
+	// 各コマンドの詳細は上記の関数内に記載
+	constexpr unsigned int	C_P_CHANGE_MOTION							= 0; // アニメーションを変更する
+	constexpr unsigned int 	C_P_ENABLE_MOVE								= 1; // 移動可能状態を変更する
+	constexpr unsigned int 	C_P_MOVE_FORWARD							= 2; // アニメーション内での正面方向への移動を設定する
+	constexpr unsigned int 	C_P_ACCEPT_COMBO_INPUT					= 3; // コンボの入力受付を開始する
+	constexpr unsigned int 	C_P_CHECK_CHANGE_COMBO				= 4; // コンボアニメーションの変更をチェックする
+	constexpr unsigned int 	C_P_CHECK_CHANGE_ATTACK_STATE		= 5; // 攻撃状態の変更をチェックする
+	constexpr unsigned int 	C_P_ENACLE_MOTION_CANCEL				= 6; // モーションキャンセル可能状態を変更する
+	constexpr unsigned int 	C_P_SET_INVINCIBLE_CNT						= 7; // 無敵状態を変更する
 
-	constexpr unsigned int 	C_P_ENABLE_IB_ATTACK_COLLISION		= 100;
-	constexpr unsigned int 	C_P_ENABLE_IB_FOLLOWING_MODE		= 101;
+	constexpr unsigned int 	C_P_ENABLE_IB_ATTACK_COLLISION		= 100; // 鉄球の攻撃判定を有効化/無効化する
+	constexpr unsigned int 	C_P_ENABLE_IB_FOLLOWING_MODE		= 101; // 鉄球の移動状態を変更する
 	constexpr unsigned int 	C_P_ENABLE_IB_INTERPOLATION			= 102;
 	constexpr unsigned int 	C_P_ENABLE_IB_AFTERGLOW = 103;
 }
