@@ -55,8 +55,9 @@ void AfterImage::Init(int parentModelHandle, std::string keyName, std::string mo
 }
 
 // 残像を追加する
-// @param parentMatrix: 親モデルの行列
-void AfterImage::AddAfterImage()
+// @param animIndex: アニメーションのインデックス（mv1ファイル内でのインデックス番号）（-1の場合はアニメーションを適応しない）
+// @param playTime: アニメーションの再生時間
+void AfterImage::AddAfterImage(int animIndex, float playTime)
 {
 	for(int i = 0; i < _afterImageNum; i++) {
 		// 使用していない要素を探す
@@ -71,6 +72,12 @@ void AfterImage::AddAfterImage()
 
 			// 親モデルの行列を残像モデルに適応する
 			MV1SetMatrix(_modelInfo[i]->modelHandle, MV1GetMatrix(_parentModelHandle));
+
+			// アニメーションの設定
+			if(animIndex != -1) {
+				_modelInfo[i]->attachIndex = MV1AttachAnim(_modelInfo[i]->modelHandle, animIndex);
+				MV1SetAttachAnimTime(_modelInfo[i]->modelHandle, _modelInfo[i]->attachIndex, playTime);
+			}
 
 			break;
 		}
@@ -88,6 +95,9 @@ void AfterImage::Process()
 			// 残りカウントが0以下になったら使用フラグをfalseにする
 			if (_modelInfo[i]->remainTime <= 0) {
 				_modelInfo[i]->use = false;
+
+				// アニメーションのデタッチ
+				MV1DetachAnim(_modelInfo[i]->modelHandle, _modelInfo[i]->attachIndex);
 			}
 			else {
 				// 残りカウントに応じて透明度を変更する
