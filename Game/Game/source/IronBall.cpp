@@ -45,6 +45,10 @@ IronBall::IronBall()
 	_animIndex = 0;
 	_animTotalTime = 0;
 	_playTime = 0;
+
+	_afterImage = nullptr;
+	_addAfterImage = false;
+
 	_lengthBetweenChains = 0;
 	_moveState = IB_MOVE_STATE::FOLLOWING;
 	_enabledAttackCollision = false;
@@ -60,6 +64,7 @@ IronBall::~IronBall()
 	_parent = nullptr;
 	delete _cell; _cell = nullptr;
 	delete _chainCell; _chainCell = nullptr;
+	delete _afterImage; _afterImage = nullptr;
 	for (auto list : _afterglowList) {
 		delete list;
 	}
@@ -110,6 +115,10 @@ void IronBall::Init() {
 	_chainCell = NEW Cell();
 	_chainCell->_obj = this;
 	_chainCell->_objType = OBJ_TYPE::PL_IB_CHAIN;
+
+
+	_afterImage = NEW AfterImage();
+	_afterImage->Init(_iModelHandle, "IB_AfterImage", "res/Character/Cg_Iron_Ball/Cg_Iron_Ball.mv1", 10, 10);
 
 
 	int afterglow = MV1SearchFrame(_iModelHandle, "left_eye02");
@@ -184,6 +193,13 @@ void IronBall::Process() {
 
 	// アニメーションの更新
 	AnimProcess();
+
+	// 残像の処理
+	_afterImage->Process();
+	// 新しく残像を生成する場合
+	if (_addAfterImage) {
+		_afterImage->AddAfterImage();
+	}
 
 	// 残光の処理
 	for (auto list : _afterglowList) {
@@ -371,6 +387,9 @@ void IronBall::Render()
 	// 鉄球の描画
 	MV1SetPosition(_iModelHandle, _iPos);
 	MV1DrawModel(_iModelHandle);
+
+	// 残像の描画
+	_afterImage->Render();
 }
 
 // 鉄球の当たり判定を更新
