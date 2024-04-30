@@ -107,6 +107,12 @@ void Boss::Render()
 	_ironBall->Render();
 }
 
+// 残像の描画処理
+void Boss::RenderAfterImage()
+{
+	_ironBall->RenderAfterImage();
+}
+
 // ボス鉄球と杭の当たり判定を行う
 void Boss::CheckHitBossAndStake()
 {

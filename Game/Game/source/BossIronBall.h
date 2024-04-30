@@ -8,6 +8,7 @@
 #pragma once
 #include "appframe.h"
 #include "Player.h"
+#include "AfterImage.h"
 
 class BossIronBall
 {
@@ -23,6 +24,8 @@ public:
 	void Process();
 	// 描画処理
 	void Render();
+	// 残像の描画処理
+	void RenderAfterImage();
 
 	// ガラス状態にする
 	void ChangeGlass();
@@ -285,6 +288,11 @@ private:
 	float _animTotalTime;
 	// 再生時間
 	float _playTime;
+
+	// 残像クラス
+	AfterImage* _afterImage;
+	// 新しく残像を生成するかどうか
+	bool _addAfterImage;
 
 	// SEを再生するかどうか
 	bool _playSound;

@@ -170,6 +170,9 @@ BossIronBall::BossIronBall()
 	_animTotalTime = 0.0f;
 	_playTime = 0.0f;
 
+	_afterImage = nullptr;
+	_addAfterImage = false;
+
 	_playSound = false;
 
 	_stageRadius = 0.0f;
@@ -180,6 +183,7 @@ BossIronBall::BossIronBall()
 BossIronBall::~BossIronBall()
 {
 	_stakePos = nullptr;
+	delete _afterImage; _afterImage = nullptr;
 	_player = nullptr;
 }
 
@@ -242,6 +246,9 @@ void BossIronBall::Init(VECTOR* stakePos)
 	_animTotalTime = MV1GetAttachAnimTotalTime(_ibModelHandle, _animIndex);
 	_playTime = 0.0f;
 	//--------------------------------
+
+	_afterImage = new AfterImage();
+	_afterImage->Init(_ibModelHandle, "BOSS_IB_AfterImage", "res/Enemy/Cg_Enemy_Bossnake/Cg_Enemy_Bossnake.mv1", 5, 5);
 
 	// プレイヤーのインスタンスを取得
 	_player = Player::GetInstance();
@@ -312,6 +319,13 @@ void BossIronBall::Process()
 	// アニメーションの更新処理
 	AnimationProcess();
 
+	// 残像の更新処理
+	_afterImage->Process();
+	// 新しく残像を生成する場合
+	if (_addAfterImage) {
+		_afterImage->AddAfterImage(0, _playTime);
+	}
+
 	_isHitStake = false;
 
 	// 鎖の更新処理
@@ -330,6 +344,12 @@ void BossIronBall::Render()
 	// 鉄球の描画
 	MV1SetPosition(_ibModelHandle, _ibPos);
 	MV1DrawModel(_ibModelHandle);
+}
+
+// 残像の描画処理
+void BossIronBall::RenderAfterImage()
+{
+	_afterImage->Render();
 }
 
 // ガラス状態にする
@@ -635,6 +655,9 @@ void BossIronBall::RushProcess()
 		if (_phaseCnt > RU_CHARGE_CNT) {
 			// 次のフェーズの設定
 
+			// 残像を追加する処理を有効化
+			_addAfterImage = true;
+
 			_playSound = true;
 
 			_phaseCnt = 0;
@@ -653,6 +676,7 @@ void BossIronBall::RushProcess()
 		}
 
 		if (_playSound) {
+			// SE再生
 			global._soundServer->DirectPlay("SE_BOSS_Rush");
 			_playSound = false;
 		}
@@ -660,6 +684,9 @@ void BossIronBall::RushProcess()
 		_phaseCnt++;
 		// 突進が終了したら次のフェーズへ
 		if (_phaseCnt > RU_ATTACK_CNT) {
+			// 残像を追加する処理を無効化
+			_addAfterImage = false;
+
 			ResetPhase();
 
 			// 強化状態の場合は連続攻撃
@@ -732,6 +759,9 @@ void BossIronBall::DropProcess()
 		if (_phaseCnt > DR_REACH_HIGHEST_CNT) {
 			// 次のフェーズの設定
 
+			// 残像を追加する処理を有効化
+			_addAfterImage = true;
+
 			_playSound = true;
 
 			// 移動前の座標を保存（プレイヤーの上空）
@@ -768,6 +798,10 @@ void BossIronBall::DropProcess()
 		_phaseCnt++;
 		// 着地が終了したら次のフェーズへ
 		if (_phaseCnt > DR_REACH_GROUND_CNT) {
+
+			// 残像を追加する処理を無効化
+			_addAfterImage = false;
+
 
 			ResetPhase();
 
@@ -852,6 +886,9 @@ void BossIronBall::RotationProcess()
 			// モデルの向きを杭の逆方向に設定
 			_ibModelDirState = IB_MODEL_DIR::STAKE_REVERSE;
 
+			// 残像を追加する処理を有効化
+			_addAfterImage = true;
+
 			// SE再生
 			global._soundServer->DirectPlay("SE_Boss_Stay");
 
@@ -893,6 +930,9 @@ void BossIronBall::RotationProcess()
 		// 減速が終了したら次のフェーズへ
 		if (_phaseCnt > RO_DECELERATION_CNT_MAX) {
 			_isRotationAttack = false;
+
+			// 残像を追加する処理を無効化
+			_addAfterImage = false;
 
 			ResetPhase();
 			// 硬直状態に遷移
