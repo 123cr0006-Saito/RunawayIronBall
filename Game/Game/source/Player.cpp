@@ -66,7 +66,7 @@ namespace {
 
 	constexpr unsigned int 	C_P_ENABLE_IB_ATTACK_COLLISION		= 100; // “S‹…‚ÌUŒ‚”»’è‚ð—LŒø‰»/–³Œø‰»‚·‚é
 	constexpr unsigned int 	C_P_ENABLE_IB_FOLLOWING_MODE		= 101; // “S‹…‚ÌˆÚ“®ó‘Ô‚ð•ÏX‚·‚é
-	constexpr unsigned int 	C_P_ENABLE_IB_INTERPOLATION			= 102;
+
 	constexpr unsigned int 	C_P_ENABLE_IB_AFTERGLOW = 103;
 }
 
@@ -827,9 +827,6 @@ void Player::CheckFrameDataCommand()
 			_ironBall->SetMoveState(nextState);
 			break;
 		}
-		case C_P_ENABLE_IB_INTERPOLATION:
-			_ironBall->SetMoveState(IB_MOVE_STATE::INTERPOLATION);
-			break;
 		case C_P_ENABLE_IB_AFTERGLOW:
 			_ironBall->SetEnabledAfterGlow(static_cast<bool>(param));
 			break;

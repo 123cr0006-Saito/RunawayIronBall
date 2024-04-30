@@ -19,8 +19,6 @@ enum IB_MOVE_STATE {
 	FOLLOWING,
 	// ソケットへの配置状態
 	PUTTING_ON_SOCKET,
-	// 補間状態
-	INTERPOLATION,
 };
 class IronBall : public ObjectBase
 {
@@ -43,8 +41,6 @@ public:
 	void FollowingProcess();
 	// ソケットへの配置状態の処理
 	void PuttingOnSocketProcess();
-	// 補間状態の処理
-	void InterpolationProcess();
 	//----------------------------------------------------------------------
 
 	// アニメーションの更新処理

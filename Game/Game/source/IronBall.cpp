@@ -218,9 +218,6 @@ void IronBall::MoveProcess()
 	case PUTTING_ON_SOCKET:
 		PuttingOnSocketProcess();
 		break;
-	case INTERPOLATION:
-		//InterpolationProcess();
-		break;
 	}
 }
 
@@ -296,58 +293,22 @@ void IronBall::PuttingOnSocketProcess()
 	float rad = Math::CalcVectorAngle(vBase, vTarget);
 	// 0番目と2番目（鉄球）の距離を計算する
 	float dist = VSize(vTarget);
+
 	vBase = VNorm(vBase);
+
+	// vBaseとvTargetの外積を求め、それを回転の軸とする
 	VECTOR vCross = VCross(vBase, vTarget);
+
+	// 鎖の位置を補間
 	const float chainNum = CHAIN_MAX - 1;
 	for (int i = 1; i < CHAIN_MAX; i++) {
-		VECTOR vTmp = VScale(vBase, dist * ((float)(i) / chainNum));
-		MATRIX mRot = MGetRotAxis(vCross, rad * ((float)(i) / chainNum));
-		vTmp = VTransform(vTmp, mRot);
-		_cPos[i] = VTransform(vTmp, MGetTranslate(_cPos[0]));
+		// 割合i/chainNumに応じて、位置の補間を行う
+		float rate = (float)(i) / chainNum;
 
-		if (_cPos[i].y < 0.0f) {
-			_cPos[i].y = 0.0f;
-		}
-	}
-}
-
-// 補間状態の処理
-void IronBall::InterpolationProcess()
-{
-	// 各ソケットへの配置
-	{
-		VECTOR vOrigin = VGet(0.0f, 0.0f, 0.0f);
-		MATRIX m = MGetIdent();
-
-		// 鎖と腕輪の連結点
-		m = MV1GetFrameLocalWorldMatrix(_parentModelHandle, _socketNo[0]);
-		_cPos[0] = VTransform(vOrigin, m);
-
-		// 1つ目
-		m = MV1GetFrameLocalWorldMatrix(_parentModelHandle, _socketNo[1]);
-		_cPos[1] = VTransform(vOrigin, m);
-
-		// 鉄球の位置
-		m = MV1GetFrameLocalWorldMatrix(_parentModelHandle, _socketNo[2]);
-
-		_cPos[CHAIN_MAX - 1] = VTransform(vOrigin, m);
-	}
-
-	// キャラの座標から見た一つ目の鎖を配置する方向
-	VECTOR vBase = VSub(_cPos[1], _cPos[0]);
-
-	// キャラの座標から見た鉄球を配置する方向
-	VECTOR vTarget = VSub(_cPos[CHAIN_MAX - 1], _cPos[0]);
-
-
-	float rad = Math::CalcVectorAngle(vBase, vTarget);
-	float dist = VSize(vTarget);
-	VECTOR vCross = VCross(vBase, vTarget);
-	const float chainNum = CHAIN_MAX - 1;
-	//rad /= chainNum;
-	for (int i = 1; i < CHAIN_MAX; i++) {
-		VECTOR vTmp = VScale(VNorm(vBase), dist * ((float)(i - 1) / chainNum));
-		MATRIX mRot = MGetRotAxis(vCross, rad * ((float)(i - 1) / chainNum));
+		// 0番目の鎖からの移動量を計算
+		VECTOR vTmp = VScale(vBase, dist * rate);
+		// 上の行で計算した位置をvCrossを軸に回転させる（回転前は0番目の鎖からvBase方向に一列に鎖が並んでいる状態）
+		MATRIX mRot = MGetRotAxis(vCross, rad * rate);
 		vTmp = VTransform(vTmp, mRot);
 		_cPos[i] = VTransform(vTmp, MGetTranslate(_cPos[0]));
 
