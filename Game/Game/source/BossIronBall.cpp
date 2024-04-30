@@ -14,7 +14,7 @@ namespace {
 	constexpr float BOSS_CHAIN_TOTAL_LENGTH = 3000.0f;
 
 
-	constexpr float SEARCH_RANGE[2] = { 2000.0f, 3000.0f };
+	constexpr float SEARCH_RANGE[2] = { 2000.0f, 4000.0f };
 
 	// --------- 
 
