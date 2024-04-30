@@ -647,6 +647,12 @@ bool Player::Render()
 	return true;
 }
 
+// c‘œ‚Ì•`‰æˆ—
+void Player::RenderAfterImage()
+{
+	_ironBall->RenderAfterImage();
+}
+
 // “–‚½‚è”»’è‚ÌXVˆ—
 void Player::UpdateCollision()
 {

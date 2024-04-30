@@ -348,7 +348,11 @@ void IronBall::Render()
 	// “S‹…‚Ì•`‰æ
 	MV1SetPosition(_iModelHandle, _iPos);
 	MV1DrawModel(_iModelHandle);
+}
 
+// c‘œ‚Ì•`‰æ
+void IronBall::RenderAfterImage()
+{
 	// c‘œ‚Ì•`‰æ
 	_afterImage->Render();
 }

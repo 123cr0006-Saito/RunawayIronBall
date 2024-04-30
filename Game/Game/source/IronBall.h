@@ -48,6 +48,8 @@ public:
 	void AnimProcess();
 	// •`‰æˆ—
 	void Render();
+	// c‘œ‚Ì•`‰æ
+	void RenderAfterImage();
 
 	VECTOR GetBallPosition() { return _iPos; }
 	void SetBallPosition(VECTOR pos) { _iPos = pos; }

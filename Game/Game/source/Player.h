@@ -68,6 +68,9 @@ public:
 	// ƒ‚ƒfƒ‹‚Ì•`‰æˆ—
 	bool Render() override;
 
+	// c‘œ‚Ì•`‰æ
+	void RenderAfterImage();
+
 	void SetPos(VECTOR pos) override { CharacterBase::SetPos(pos); UpdateCollision(); };
 
 	int GetHP() { return _hp; }
