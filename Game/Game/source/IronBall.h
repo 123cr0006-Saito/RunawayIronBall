@@ -70,7 +70,7 @@ public:
 	void SetMoveState(IB_MOVE_STATE state) { _moveState = state; }
 
 	// 残像を表示するかどうかを設定
-	void SetRenderAfterImage(bool enable) { _addAfterImage = enable; }
+	void SetAddAfterImage(bool enable) { _addAfterImage = enable; }
 
 	// サイトウが作成しました。
 	void SetEnabledAfterGlow(bool enable);// 目の残光を表示するかどうかを設定

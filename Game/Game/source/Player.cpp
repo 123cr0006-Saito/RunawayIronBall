@@ -55,19 +55,19 @@ namespace {
 	// フレームデータのコマンド
 	// CheckFrameDataCommand()で使用する
 	// 各コマンドの詳細は上記の関数内に記載
-	constexpr unsigned int	C_P_CHANGE_MOTION							= 0; // アニメーションを変更する
-	constexpr unsigned int 	C_P_ENABLE_MOVE								= 1; // 移動可能状態を変更する
-	constexpr unsigned int 	C_P_MOVE_FORWARD							= 2; // アニメーション内での正面方向への移動を設定する
-	constexpr unsigned int 	C_P_ACCEPT_COMBO_INPUT					= 3; // コンボの入力受付を開始する
-	constexpr unsigned int 	C_P_CHECK_CHANGE_COMBO				= 4; // コンボアニメーションの変更をチェックする
-	constexpr unsigned int 	C_P_CHECK_CHANGE_ATTACK_STATE		= 5; // 攻撃状態の変更をチェックする
-	constexpr unsigned int 	C_P_ENACLE_MOTION_CANCEL				= 6; // モーションキャンセル可能状態を変更する
-	constexpr unsigned int 	C_P_SET_INVINCIBLE_CNT						= 7; // 無敵状態を変更する
+	constexpr unsigned int C_P_CHANGE_MOTION							= 0; // アニメーションを変更する
+	constexpr unsigned int C_P_ENABLE_MOVE								= 1; // 移動可能状態を変更する
+	constexpr unsigned int C_P_MOVE_FORWARD							= 2; // アニメーション内での正面方向への移動を設定する
+	constexpr unsigned int C_P_ACCEPT_COMBO_INPUT				= 3; // コンボの入力受付を開始する
+	constexpr unsigned int C_P_CHECK_CHANGE_COMBO				= 4; // コンボアニメーションの変更をチェックする
+	constexpr unsigned int C_P_CHECK_CHANGE_ATTACK_STATE	= 5; // 攻撃状態の変更をチェックする
+	constexpr unsigned int C_P_ENACLE_MOTION_CANCEL				= 6; // モーションキャンセル可能状態を変更する
+	constexpr unsigned int C_P_SET_INVINCIBLE_CNT					= 7; // 無敵状態を変更する
 
-	constexpr unsigned int 	C_P_ENABLE_IB_ATTACK_COLLISION		= 100; // 鉄球の攻撃判定を有効化/無効化する
-	constexpr unsigned int 	C_P_ENABLE_IB_FOLLOWING_MODE		= 101; // 鉄球の移動状態を変更する
-
-	constexpr unsigned int 	C_P_ENABLE_IB_AFTERGLOW = 103;
+	constexpr unsigned int C_P_ENABLE_IB_ATTACK_COLLISION	= 100; // 鉄球の攻撃判定を有効化/無効化する
+	constexpr unsigned int C_P_ENABLE_IB_FOLLOWING_MODE		= 101; // 鉄球の移動状態を変更する
+	constexpr unsigned int C_P_ENABLE_IB_AFTERIMAGE				= 102; // 鉄球の残像を追加する処理の有効化/無効化する
+	constexpr unsigned int C_P_ENABLE_IB_AFTERGLOW = 103;
 }
 
 Player::Player()
@@ -827,6 +827,11 @@ void Player::CheckFrameDataCommand()
 			_ironBall->SetMoveState(nextState);
 			break;
 		}
+		// 鉄球の残像を追加する処理の有効化/無効化する
+		// @param param: 処理の有効化/無効化するフラグ
+		case C_P_ENABLE_IB_AFTERIMAGE:
+			_ironBall->SetAddAfterImage(static_cast<bool>(param));
+			break;
 		case C_P_ENABLE_IB_AFTERGLOW:
 			_ironBall->SetEnabledAfterGlow(static_cast<bool>(param));
 			break;
