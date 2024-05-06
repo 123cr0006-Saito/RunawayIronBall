@@ -1,6 +1,6 @@
 //----------------------------------------------------------------------
 // @filename AnimationManager.cpp
-// @date: 2024/04/01
+// @date: 2024/02/071
 // @author: Morozumi Hiroya
 // @explanation
 // キャラクターのアニメーションを管理するクラス

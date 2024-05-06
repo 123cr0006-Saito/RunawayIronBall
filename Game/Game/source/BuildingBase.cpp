@@ -1,6 +1,6 @@
 //----------------------------------------------------------------------
 // @filename BuildingBase.cpp
-// @date: 2024/04/01
+// @date: 2024/01/15
 // @author: Morozumi Hiroya
 // @explanation
 // 建物クラスの基底クラス

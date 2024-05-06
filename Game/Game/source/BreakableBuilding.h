@@ -1,6 +1,6 @@
 //----------------------------------------------------------------------
 // @filename BreakableBuilding.h
-// @date: 2024/04/01
+// @date: 2024/01/15
 // @author: Morozumi Hiroya
 // @explanation
 // ”j‰ó‰Â”\‚ÈŒš•¨‚ÌƒNƒ‰ƒX

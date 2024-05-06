@@ -1,6 +1,6 @@
 //----------------------------------------------------------------------
 // @filename UnbreakableBuilding.h
-// @date: 2024/04/01
+// @date: 2024/03/05
 // @author: Morozumi Hiroya
 // @explanation
 // 破壊不可能な建物のクラス
