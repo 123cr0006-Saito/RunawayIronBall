@@ -1,7 +1,6 @@
 #include "ApplicationMain.h"
 #include "ModeGame.h"
 #include "ModeClear.h"
-#include "ModeTest.h"
 #include "ModeTitle.h"
 #include "ModeGameOver.h"
 #include "ModeScenario.h"
