@@ -779,9 +779,9 @@ void BossIronBall::DropProcess()
 		// 着地処理
 		// SetDrop()実行時に、プレイヤーがいた座標に落下攻撃を行う
 		VECTOR v = VGet(0.0f, 0.0f, 0.0f);
-		v.x = Easing::EasingOutElastic(_phaseCnt, _posBeforeMoving.x, _targetPos.x, DR_REACH_GROUND_CNT);
-		v.y = Easing::EasingOutElastic(_phaseCnt, _posBeforeMoving.y, _targetPos.y, DR_REACH_GROUND_CNT);
-		v.z = Easing::EasingOutElastic(_phaseCnt, _posBeforeMoving.z, _targetPos.z, DR_REACH_GROUND_CNT);
+		v.x = Easing::OutElastic(_phaseCnt, _posBeforeMoving.x, _targetPos.x, DR_REACH_GROUND_CNT);
+		v.y = Easing::OutElastic(_phaseCnt, _posBeforeMoving.y, _targetPos.y, DR_REACH_GROUND_CNT);
+		v.z = Easing::OutElastic(_phaseCnt, _posBeforeMoving.z, _targetPos.z, DR_REACH_GROUND_CNT);
 		_ibPos = v;
 
 		// 前に設定した_ibModelNextForwardDirを更新しないしないように設定 （フェーズ0終了時にプレイヤーがいた方向を向き続ける）
