@@ -371,9 +371,11 @@ bool ModeGame::Process() {
 		ModeServer::GetInstance()->Add(NEW ModePause(), 10, "Pause");
 	}
 
+#ifdef _DEBUG
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_BACK)) {
 		_drawDebug = !_drawDebug;
 	}
+#endif // _DEBUG
 
 	if (_player->GetHP() <= 0 || _timeLimit->GetTimeLimit() < 0) {
 		global._soundServer->BgmFadeOut(2000);
@@ -507,6 +509,8 @@ bool ModeGame::Render() {
 		}
 	}
 	// シャドウマップの描画を終了
+
+#ifdef _DEBUG
 	// デバッグ時の描画
 	if (_drawDebug) {
 		_player->DrawDebugInfo();
@@ -521,6 +525,8 @@ bool ModeGame::Render() {
 		}
 		_collisionManager->DrawSegmentIndex();
 	}
+#endif // _DEBUG
+
 	// ゲートのインスタンスがあった場合描画
 	if (_gate != nullptr) {
 		_gate->Draw();
