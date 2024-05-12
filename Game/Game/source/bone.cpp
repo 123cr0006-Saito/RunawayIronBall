@@ -14,8 +14,12 @@ const Vector3D bone::_orign(0, 0, 0);
 //10回だと鎖っぽくなる
 //100回以上がきれいに見える
 //今は大体150～170回
-const double bone::_processInterval = 0.0001;
 
+#ifdef EULER
+const double bone::_processInterval = 0.0001;
+#elif RUNGE_KUTTA
+const double bone::_processInterval = 0.0007;
+#endif
 //----------------------------------------------------------------------
 // @brief コンストラクタ
 // @param Model モデルハンドル
@@ -230,7 +234,11 @@ bool bone::Process() {
 		//1フレームを_processIntervalで差分化する
 		if (_elapsedTime < _processInterval)break;
 		_elapsedTime -= _processInterval;
-		UpdatePosAndAccel(_processInterval);
+#ifdef EULER
+		UpdatePosAndAccelByEuler(_processInterval);
+#elif RUNGE_KUTTA
+		UpdatePosAndAccelByRungeKutta(_processInterval);
+#endif
 	}
 	// ボーンの位置を更新
 	SetMain(_massPosList);
@@ -251,13 +259,12 @@ void bone::SetGravity(std::string end, std::string start) {
 	VECTOR dirVec = VSub(spinePos, headPos);
 	_gravityDir = VNorm(VScale(dirVec, -1));
 };
-
 //----------------------------------------------------------------------
 // @brief オイラー法によるboneの位置と加速度の更新
 // @param _elapsedTime 差分化した時間
 // @return なし
 // ----------------------------------------------------------------------
-void bone::UpdatePosAndAccel(double _elapsedTime) {
+void bone::UpdatePosAndAccelByEuler(double _elapsedTime) {
 	//時間で処理を細分化し少しずつ答えに近づけていく
 	Vector3D* newPosList = NEW Vector3D[_massPointSize];
 	Vector3D* newAccelList = NEW Vector3D[_massPointSize];
@@ -284,6 +291,75 @@ void bone::UpdatePosAndAccel(double _elapsedTime) {
 	delete[] newPosList;
 	delete[] newAccelList;
 };
+//----------------------------------------------------------------------
+// @brief ルンゲクッタ法によるboneの位置と加速度の更新
+// @param _elapsedTime 差分化した時間
+// @return なし
+// ----------------------------------------------------------------------
+void bone::UpdatePosAndAccelByRungeKutta(double _elapsedTime) {
+	//時間で処理を細分化し少しずつ答えに近づけていく
+	Vector3D* keepPosList = NEW Vector3D[_massPointSize];
+	Vector3D* keepAccelList = NEW Vector3D[_massPointSize];
+
+	Vector3D** posK = NEW Vector3D * [4];
+	Vector3D** accelK = NEW Vector3D * [4];
+	for (int i = 0; i < 4; i++) {
+		posK[i] = NEW Vector3D[_massPointSize];
+		accelK[i] = NEW Vector3D[_massPointSize];
+	}
+
+	// 4次のルンゲクッタ法
+	//k1,k2,k3,k4を求めて、それらを使って位置と速度を更新する
+
+	//k1を求める
+	for (int i = 0; i < _massPointSize; i++) {
+		accelK[0][i] = ForceWorksToMassPoint(i, _massPosList, _massAccelList) / _massWeight[i];
+		posK[0][i] = _massAccelList[i];
+		keepAccelList[i] = _massAccelList[i] + accelK[0][i] * _elapsedTime / 2;
+		keepPosList[i] = _massPosList[i] + posK[0][i] * _elapsedTime / 2;
+	}
+
+	//k2を求める
+	for (int i = 0; i < _massPointSize; i++) {
+		accelK[1][i] = ForceWorksToMassPoint(i, keepPosList, keepAccelList) / _massWeight[i];
+		posK[1][i] = keepAccelList[i];
+		keepAccelList[i] = _massAccelList[i] + accelK[1][i] * _elapsedTime / 2;
+		keepPosList[i] = _massPosList[i] + posK[1][i] * _elapsedTime / 2;
+	}
+
+	//k3を求める
+	for (int i = 0; i < _massPointSize; i++) {
+		accelK[2][i] = ForceWorksToMassPoint(i, keepPosList, keepAccelList) / _massWeight[i];
+		posK[2][i] = keepAccelList[i];
+		keepAccelList[i] = _massAccelList[i] + accelK[2][i] * _elapsedTime;
+		keepPosList[i] = _massPosList[i] + posK[2][i] * _elapsedTime;
+	}
+
+	//k4を求める
+	for (int i = 0; i < _massPointSize; i++) {
+		accelK[3][i] = ForceWorksToMassPoint(i, keepPosList, keepAccelList) / _massWeight[i];
+		posK[3][i] = keepAccelList[i];
+	}
+
+	// 速度と位置の更新
+	for (int i = 0; i < _massPointSize; i++) {
+		//速度を出す   
+		_massAccelList[i] = _massAccelList[i] + (_elapsedTime * (accelK[0][i] + 2 * accelK[1][i] + 2 * accelK[2][i] + accelK[3][i]) / 6);
+		//位置の更新   
+		_massPosList[i] = _massPosList[i] + (_elapsedTime * (posK[0][i] + 2 * posK[1][i] + 2 * posK[2][i] + posK[3][i]) / 6);
+	}
+
+	//付け根の位置は固定
+	_massPosList[0] = MV1GetFramePosition(*_model, _frameList[1]);
+
+	delete[] keepPosList;
+	delete[] keepAccelList;
+	for (int i = 0; i < 4; i++) {
+		delete[] posK[i];
+		delete[] accelK[i];
+	}
+
+}
 //----------------------------------------------------------------------
 // @brief ばねのつり合い、重力、抵抗力から力を求める
 // @param i 質点の番号

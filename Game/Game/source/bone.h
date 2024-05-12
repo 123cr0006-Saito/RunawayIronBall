@@ -10,6 +10,10 @@
 #include "dxlib.h"
 #include "appframe.h"
 #include "myJson.h"
+
+#define EULER 0
+//#define RUNGE_KUTTA 1
+
 class bone
 {
 public:
@@ -40,7 +44,8 @@ private:
 	// « ‚±‚±‚©‚ç‰º‚Í•¨—‰‰Z‚Åg‚¤•Ï”‚âŠÖ”
 public:
 	void SetGravity(std::string end, std::string start);
-	void UpdatePosAndAccel(double _elapsedTime);
+	void UpdatePosAndAccelByEuler(double _elapsedTime);
+	void UpdatePosAndAccelByRungeKutta(double _elapsedTime);
 	Vector3D ForceWorksToMassPoint(int i, Vector3D* posList, Vector3D* accelList); //¿“_‚É“­‚­—Í‚ğŒvZ F=ma
 	bool Process();
 
