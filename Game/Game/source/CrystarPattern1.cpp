@@ -1,23 +1,40 @@
+//----------------------------------------------------------------------
+// @filename CrystarPattern1.cpp
+// @date: 2024/01/15
+// @author: saito ko
+// @explanation
+// 一番弱いクライスターのパターン1(ガラス)のクラス 突進攻撃をします
+//----------------------------------------------------------------------
 #include "CrystarPattern1.h"
 #include "CrystarPattern2.h"
 
 int CrystarPattern1::_collisionFrame = -1;
-
-CrystarPattern1::CrystarPattern1() :EnemyBase::EnemyBase() {
-
-};
-
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @return 無し
+//----------------------------------------------------------------------
+CrystarPattern1::CrystarPattern1() :EnemyBase::EnemyBase() {};
+//----------------------------------------------------------------------
+// @brief デストラクタ
+// @return 無し
+//----------------------------------------------------------------------
 CrystarPattern1::~CrystarPattern1() {
 	delete _frameData;
     delete _animManager;
 	delete _roof;
 };
-
+//----------------------------------------------------------------------
+// @brief エネミーの固有変数の初期化
+// @return 無し
+//----------------------------------------------------------------------
 void CrystarPattern1::InheritanceInit() {
 	//個別でセットするもの
 	_animState = ANIMSTATE::IDLE;
 };
-
+//----------------------------------------------------------------------
+// @brief アニメーションマネージャーとフレームデータ・クライスターの屋根の初期化
+// @return 無し
+//----------------------------------------------------------------------
 void CrystarPattern1::AnimInit() {
 
 	_roof = NEW CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof_glsss","res/Enemy/Cg_Enemy_Crystar_Glass/Cg_Crystar_Roof_Glass.mv1"), _model, "joint1");
@@ -36,7 +53,10 @@ void CrystarPattern1::AnimInit() {
 		_collisionFrame = MV1SearchFrame(_model, "Hip");
 	}
 }
-
+//----------------------------------------------------------------------
+// @brief フレームデータでのコマンド処理
+// @return 無し
+//----------------------------------------------------------------------
 void CrystarPattern1::CommandProcess() {
 	std::vector<CommandParam> commandParam = _frameData->GetCommandData();
 
@@ -53,7 +73,11 @@ void CrystarPattern1::CommandProcess() {
 		}
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief 初期化処理
+// @param pos 初期位置
+// @return 無し
+//----------------------------------------------------------------------
 void CrystarPattern1::Init(VECTOR pos) {
 	_IsUse = true;
 
@@ -75,7 +99,11 @@ void CrystarPattern1::Init(VECTOR pos) {
 
 	InheritanceInit();
 };
-
+//----------------------------------------------------------------------
+// @brief サーチ状態の更新処理
+// @param plAttack プレイヤーが攻撃しているかどうか
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool CrystarPattern1::ModeSearch(bool plAttack) {
 	switch (_searchState) {
 	case SEARCHTYPE::MOVE:
@@ -105,12 +133,11 @@ bool CrystarPattern1::ModeSearch(bool plAttack) {
 	else {
 		// プレイヤーが攻撃していないときは視界での検索
 		if (length <= _searchRange * _searchRange) {
-
 			MATRIX matrix = Math::MMultXYZ(0.0f, _rotation.y, 0.0f);
 			VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
 			VECTOR pla_dir = VNorm(dirVec);
 			float range_dir = Math::CalcVectorAngle(ene_dir, pla_dir);
-
+			// プレイヤーが視界に入ったら発見
 			if (range_dir <= _flontAngle) {
 				_modeState = ENEMYTYPE::DISCOVER;//状態を発見にする
 				_currentTime = GetNowCount();
@@ -121,7 +148,10 @@ bool CrystarPattern1::ModeSearch(bool plAttack) {
 
 	return true;
 }
-
+//----------------------------------------------------------------------
+// @brief 追跡状態の処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool CrystarPattern1::ModeDisCover() {
 	//移動処理
 	VECTOR move = VSub(_player->GetCollision().down_pos, _pos); move.y = 0.0f;//これをオンにするとy軸の移動がなくなる
@@ -146,9 +176,12 @@ bool CrystarPattern1::ModeDisCover() {
 
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief クールタイム時の処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool CrystarPattern1::ModeCoolTime() { 
-
+	// クールタイムが終わったら追跡に戻る
 	if (GetNowCount() - _currentTime >= _coolTime) {
 		_currentTime = GetNowCount();
 		_animState = ANIMSTATE::WALK;
@@ -156,7 +189,10 @@ bool CrystarPattern1::ModeCoolTime() {
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief ノックバック状態の処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool CrystarPattern1::ModeKnockBack() {
 	int nowTime = GetNowCount() - _currentTime;
 	float CoolTime = 3.0f * 1000; //硬直時間
@@ -172,14 +208,20 @@ bool CrystarPattern1::ModeKnockBack() {
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief このクラスの固有の処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool CrystarPattern1::IndividualProcessing() {
-	_roof->Updata();
+	_roof->Update();
 	_animManager->Process(static_cast<int>(_animState));
 	_frameData->Process(static_cast<int>(_animState), _animManager->GetPlayTime());
 	return true;
 }
-
+//----------------------------------------------------------------------
+// @brief モデルの更新処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool CrystarPattern1::SetState() {
 	//最終的なモデルの位置や角度を調整
 	if (_model != 0) {
@@ -188,12 +230,18 @@ bool CrystarPattern1::SetState() {
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 固有の描画処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool CrystarPattern1::IndividualRendering() {
 	_roof->Render();
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief デバック用の描画処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool CrystarPattern1::DebugRender() {
 	DrawSphere3D(MV1GetFramePosition(_model, _collisionFrame), _r, 8, GetColor(0, 255, 0), GetColor(0, 0, 255), false);
 	return true;

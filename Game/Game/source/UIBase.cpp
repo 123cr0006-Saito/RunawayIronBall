@@ -1,36 +1,29 @@
+//----------------------------------------------------------------------
+// @filename UIBase.cpp
+// @date: 2023/12/19
+// @author: saito ko
+// @explanation
+// UIの基底クラス
+//----------------------------------------------------------------------
 #include "UIBase.h"
-
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @param pos 位置
+// @return 無し
+//----------------------------------------------------------------------
 UIBase::UIBase(VECTOR pos) {
 	_pos = pos;
 	_handleNum = 0;
 	_cx = 0;
 	_cy = 0;
 };
-
-UIBase::UIBase(VECTOR pos, std::string handleName) {
-	_handle = new int[1];
-	*_handle = ResourceServer::LoadGraph(handleName.c_str(),handleName.c_str());
-	_pos = pos;
-	_handleNum = 0;
-	float _x, _y;
-	GetGraphSizeF(_handle[_handleNum], &_x, &_y);
-	_cx = _x / 2;
-	_cy = _y / 2;
-};
-
-UIBase::UIBase(VECTOR pos, std::string handleName, int AllNum, int XNum, int YNum, int XSize, int YSize, int* HandleBuf) {
-	_handle = new int[AllNum];
-	ResourceServer::LoadDivGraph(handleName.c_str(), handleName.c_str(), AllNum, XNum, YNum, XSize, YSize, _handle);
-	_pos = pos;
-	_handleNum = 0;
-	float _x, _y;
-	GetGraphSizeF(_handle[_handleNum], &_x, &_y);
-	_cx = _x / 2;
-	_cy = _y / 2;
-};
-
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @param pos 位置
+// @param size ハンドルの数
+// @param handle ハンドル
 UIBase::UIBase(VECTOR pos, int size, int* handle) {
-	_handle = new int[size];
+	_handle = NEW int[size];
 	for (int i = 0; i < size; i++) {
 		_handle[i] = handle[i];
 	}
@@ -41,17 +34,26 @@ UIBase::UIBase(VECTOR pos, int size, int* handle) {
 	_cx = _x / 2;
 	_cy = _y / 2;
 };
-
+//----------------------------------------------------------------------
+// @brief デストラクタ
+// @return 無し
+//----------------------------------------------------------------------
 UIBase::~UIBase() {
 	if (_handle != nullptr) {
 		delete[] _handle; _handle = nullptr;
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief 更新処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool UIBase::Process() {
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 描画処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool UIBase::Draw() {
 	float _cx, _cy;
 	GetGraphSizeF(_handle[0], &_cx, &_cy);

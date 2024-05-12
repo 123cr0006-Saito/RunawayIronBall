@@ -1,4 +1,16 @@
+//----------------------------------------------------------------------
+// @filename Fog.cpp
+// @date: 2024/02/22
+// @author: saito ko
+// @explanation
+// プレイヤーが決められた範囲外に出るとフォグが発生するクラス
+//----------------------------------------------------------------------
 #include "Fog.h"
+#include "modegame.h"
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @return 無し
+//----------------------------------------------------------------------
 Fog::Fog(){
 	_player = Player::GetInstance();
 	SetFogColor(255,255,255);
@@ -7,19 +19,28 @@ Fog::Fog(){
 	_easingCount = 0;
 	IsFog= false;
 };
+//----------------------------------------------------------------------
+// @brief デストラクタ
+// @return 無し
+//----------------------------------------------------------------------
 Fog::~Fog(){
 	_player = nullptr;
 	if (IsFog) {
 		SetFogEnable(false);
 	}
 };
-
-void Fog::UpdateIsFog(){
+//----------------------------------------------------------------------
+// @brief フォグを行うかどうかを設定
+// @param stageNum ステージ番号
+// @return 無し
+//----------------------------------------------------------------------
+void Fog::UpdateIsFog(int stageNum){
 	
-
 	VECTOR pos = _player->GetPosition();
 	float length = VSquareSize(pos);
-	float fogLength = 27000 / 2.0f;
+
+	float stage_length[3] = { STAGE_ONE_WIDTH ,STAGE_TWO_WIDTH,STAGE_THREE_WIDTH };
+	float fogLength = stage_length[stageNum-1] - 400.0f;
 	if (length > fogLength * fogLength) {
 		if(IsFog == false){
 		IsFog = true;
@@ -36,10 +57,14 @@ void Fog::UpdateIsFog(){
 		}
 	}
 };
-
-void Fog::Process(){
+//----------------------------------------------------------------------
+// @brief フォグの処理
+// @param stageNum ステージ番号
+// @return 無し
+//----------------------------------------------------------------------
+void Fog::Process(int stageNum){
 	
-	UpdateIsFog();
+	UpdateIsFog(stageNum);
 	int easingTime = 60;
 
 	if(_easingCount < easingTime){

@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename EnemyManeger.cpp
+// @date: 2023/12/14
+// @author: saito ko
+// @explanation
+// エネミーの生成、管理を行うクラス
+//----------------------------------------------------------------------
 #pragma once
 //ObjectPool   今回は敵の初期データや配置など敵の種類によって
 // 読み込んだデータで配置したいのでテンプレートではなく個別に作ろうと思う
@@ -20,11 +27,11 @@
 
 #include "CollisionManager.h"
 
-class EnemyPool
+class EnemyManeger
 {
 public:
-	EnemyPool(std::string paramJsonFile);
-	~EnemyPool();
+	EnemyManeger(std::string paramJsonFile);
+	~EnemyManeger();
 
 	std::vector<std::string> LoadEnemyName(int stageNum);
 	void Create(myJson json,int stageNum);//敵の作成
@@ -37,18 +44,17 @@ public:
 	bool Process(bool plAttack);
 	bool Render();
 
-	static EnemyPool* GetInstance() { return _instance; }
-	static EnemyPool* _instance;
+	static EnemyManeger* GetInstance() { return _instance; }
+	static EnemyManeger* _instance;
 
 	std::vector<EnemyBase*> GetEnemyContainer() { return _enemy; }
 	EnemyBase* GetEnemy(int i);
 	int GetSize() { return _enemy.size(); };
 
 private:
-	std::vector<EnemyBase*> _enemy;
-	std::map<std::string, EnemyParam> _enemyParametersMap;
-	std::vector<VECTOR> _enemyInitPos;
-
-	CollisionManager* _collisionManager;
+	std::vector<EnemyBase*> _enemy;//敵のコンテナ
+	std::map<std::string, EnemyParam> _enemyParametersMap;//敵のパラメータ
+	std::vector<VECTOR> _enemyInitPos;//敵の初期位置
+	CollisionManager* _collisionManager;//当たり判定を管理するクラス
 };
 

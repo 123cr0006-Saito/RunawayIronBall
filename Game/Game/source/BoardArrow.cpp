@@ -1,63 +1,97 @@
+//----------------------------------------------------------------------
+// @filename BoardArrow.cpp
+// @date: 2024/02/01
+// @author: saito ko
+// @explanation
+// 指定の方向に矢印を描画するクラス
+//----------------------------------------------------------------------
 #include "BoardArrow.h"
-
-BoardArrow::BoardArrow(std::string name) :
-_handle(LoadGraph(name.c_str()))
+const unsigned short ::BoardArrow::vertexList[6] = {0,1,2,2,1,3};
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @param name: ファイル名
+// @param length: 矢印の長さ
+// @return なし
+//----------------------------------------------------------------------
+BoardArrow::BoardArrow(std::string name,float length):
+	_handle(ResourceServer::LoadGraph("Arrow", name.c_str()))
 {
-	int count = 0;
-	for (int i = 0; i < VERTEX_MAX * (ONE_ROW_POLYGON_MAX/2)+2; i++) {
-	//	vertex[i].dif = GetColorU8(0, 0, 125, 100);
-		vertex[i].dif = GetColorU8(200, 255, 255, 100);
-		
-		vertex[i].norm = VGet(0.0f,1.0f,0.0f);
+	// 初期化
+	// uvリスト
+	float uvList[VERTEX_MAX][2] = {
+		{0.0f,0.0f},
+		{0.0f,1.0f},
+		{1.0f,0.0f},
+		{1.0f,1.0f}
+	};
+	
+	// 横の長さ
+	float Width = 50.0f;
+	// 縦の長さ
+	_length = length;
+	float posListX[VERTEX_MAX] = { -Width, Width, -Width, Width};
+	float posListZ[VERTEX_MAX] = { 0.0f, 0.0f,_length, _length};
+	// 頂点の設定
+	for (int i = 0; i < VERTEX_MAX; i++) {
+		_originPos[i] = VGet(posListX[i], 0, posListZ[i]);
+		vertex[i].norm = VGet(0,1,0);
+		vertex[i].dif = GetColorU8(255, 0, 0, 255);
 		vertex[i].spc = GetColorU8(0, 0, 0, 0);
-		count++;
-	}
-
-	float uvPos = 0;
-	for (int i = 0; i <= ONE_ROW_POLYGON_MAX; i++) {
-		vertex[i * 2].u = uvPos / ONE_ROW_POLYGON_MAX;
-		vertex[i * 2].v = 0;
-		vertex[i * 2 + 1].u = uvPos / ONE_ROW_POLYGON_MAX ;
-		vertex[i * 2 + 1].v = 1.0f;
-		uvPos++;
-	}
-
-	for (int i = 0; i < ONE_ROW_POLYGON_MAX; i++) {
-		vertexOrder[i * 6] = 0 + 2 * i;
-		vertexOrder[i * 6 + 1] = 2 + 2 * i;
-		vertexOrder[i * 6 + 2] = 1 + 2 * i;
-		vertexOrder[i * 6 + 3] = 1 + 2 * i;
-		vertexOrder[i * 6 + 4] = 2 + 2 * i;
-		vertexOrder[i * 6 + 5] = 3 + 2 * i;
+		vertex[i].u = uvList[i][0];
+		vertex[i].v = uvList[i][1];
+		vertex[i].su = 0.0f;
+		vertex[i].sv = 0.0f;
 	}
 };
-
-BoardArrow::~BoardArrow() {
-};
-
-bool BoardArrow::Update(VECTOR pos,float dirY,float length, float katamuki) {
-	MATRIX matrix = MGetRotY(dirY);
-	float harfLength = length / 2;
-	float Length = -harfLength;
-
-	for (int i = 0; i <= ONE_ROW_POLYGON_MAX;i++) {
-		float okuyuki = (Length + harfLength) * -1;
-		vertex[i * 2].pos.x = 50;
-		vertex[i * 2].pos.y = -katamuki * pow(Length, 2) + katamuki * pow(harfLength, 2);
-		vertex[i * 2].pos.z = okuyuki;
-		vertex[i * 2].pos = VTransform(vertex[i * 2].pos, matrix);
-		vertex[i * 2].pos = VAdd(pos, vertex[i * 2].pos);
-		vertex[i * 2 +1].pos.x = -50;
-		vertex[i * 2 +1].pos.y = -katamuki * pow(Length, 2) + katamuki * pow(harfLength, 2);
-		vertex[i * 2 +1].pos.z = okuyuki;
-		vertex[i * 2 +1].pos = VTransform(vertex[i * 2 + 1].pos, matrix);
-		vertex[i * 2 + 1].pos = VAdd(pos, vertex[i * 2 + 1].pos);
-		Length += length / ONE_ROW_POLYGON_MAX;
+//----------------------------------------------------------------------
+// @brief デストラクタ
+// @return なし
+//----------------------------------------------------------------------
+BoardArrow::~BoardArrow() {};
+//----------------------------------------------------------------------
+// @brief 更新処理
+// @param pos: 座標
+// @param dirY: y軸の回転角度
+// @return 成功したかどうか
+//----------------------------------------------------------------------
+bool BoardArrow::Process(VECTOR pos, float dirY) {
+	// 頂点の位置を設定
+	for (int i = 0; i < VERTEX_MAX; i++) {
+		MATRIX matrix = MGetTranslate(_originPos[i]);
+		matrix = MMult(matrix, MGetScale(VScale(VGet(1, 1, 1), 1 + 0.25 * sin(2 * DX_PI * GetNowCount() / 2000))));
+		matrix = MMult(matrix, MGetRotY(dirY));
+		vertex[i].pos = VAdd(VAdd(pos, VGet(0, 100, 50)), VTransform(VGet(1, 1, 1), matrix));
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 更新処理
+// @param pos: 座標
+// @param dirVec: 方向ベクトル
+// @return 成功したかどうか
+//----------------------------------------------------------------------
+bool BoardArrow::Process(VECTOR pos, VECTOR dirVec) {
+	// 方向ベクトルから角度を出し、y軸行列で回転させる
+	float dirY = atan2(dirVec.x, dirVec.z);
+	// 頂点の位置を設定
+	for (int i = 0; i < VERTEX_MAX; i++) {
+		MATRIX matrix = MGetTranslate(_originPos[i]);
+		matrix = MMult(matrix, MGetScale(VScale(VGet(1, 1, 1), 1 + 0.25 * sin(2 * DX_PI * GetNowCount() / 2000))));
+		matrix = MMult(matrix, MGetRotY(dirY));
+		vertex[i].pos = VAdd(VAdd(pos,VGet(0,100,0)), VTransform(VGet(1, 1, 1), matrix));
+	}
+	return true;
+};
+//----------------------------------------------------------------------
+// @brief 描画処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool BoardArrow::Render() {
-	DrawPolygonIndexed3D(vertex, VERTEX_MAX/2 * ONE_ROW_POLYGON_MAX  + 2, vertexOrder, ONE_ROW_POLYGON_MAX * 2, _handle, true);
+	clsDx();
+	SetUseBackCulling(false);
+	SetUseLighting(false);
+	DrawPolygonIndexed3D(vertex, VERTEX_MAX, vertexList, 4, _handle, true);
+	SetUseLighting(true);
+	SetUseBackCulling(true);
 	return true;
 };

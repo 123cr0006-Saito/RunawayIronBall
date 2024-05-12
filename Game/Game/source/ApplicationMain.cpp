@@ -1,28 +1,23 @@
-
 #include "ApplicationMain.h"
 #include "ModeGame.h"
-#include "ModeTest.h"
+#include "ModeClear.h"
 #include "ModeTitle.h"
 #include "ModeGameOver.h"
 #include "ModeScenario.h"
+#include "ModeBossBattle.h"
 
 // 実体
 ApplicationMain				g_oApplicationMain;
 
 bool ApplicationMain::Initialize(HINSTANCE hInstance) {
 	if (!base::Initialize(hInstance)) { return false; }
-
+	// 音声の読み込み
+	global.SoundLoad();
 	// モードの登録
-	//ModeServer::GetInstance()->Add(NEW ModeTitle(), 1, "Title");
-	//ModeServer::GetInstance()->Add(NEW ModeGameOver(), 1, "Title");
-	//ModeServer::GetInstance()->Add(NEW ModeTest(), 1, "Game");
-	//ModeServer::GetInstance()->Add(NEW ModeScenario("Data/ScenarioData/Scenario01.csv"), 2, "Scenario");
-	ModeServer::GetInstance()->Add(NEW ModeGame(), 1, "Game");
-	
-
-	global.Init();
-
+	ModeServer::GetInstance()->Add(NEW ModeTitle(), 1, "Title");
+	// コントローラーの初期化
 	_input = NEW XInput(DX_INPUT_PAD1);
+	// FPSを安定させるためのクラスを初期化
 	_fpsController = NEW Fps();
 	return true;
 }
@@ -49,7 +44,6 @@ bool ApplicationMain::Process() {
 
 bool ApplicationMain::Render() {
 	base::Render();
-	_fpsController->DrawFps(0, 0);
 	return true;
 }
 

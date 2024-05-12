@@ -1,18 +1,23 @@
+//----------------------------------------------------------------------
+// @filename MotionList.cpp
+// @date: 2024/02/20
+// @author: Morozumi Hiroya
+// @explanation
+// 各キャラクターのモーションリストを管理するクラス
+// AnimationManagerクラス及びFrameDataクラスの初期化処理で必要な情報を管理する
+// "Data/MotionList/MotionList_〇〇.csv" から、各キャラクターのモーション一覧を読み込む（○○の部分にはキャラクター名が入る）
+//----------------------------------------------------------------------
 #include "MotionList.h"
 #include "appframe.h"
 
 std::map<CHARA_NAME, std::vector<MotionNamePair>> MotionList::_allCharaMotionList;
 
-MotionList::MotionList()
-{
-}
-
-MotionList::~MotionList()
-{
-}
-
+// モーションリストの読み込み
+// @param charaName: キャラクター名
+// @param fileName: モーションリストのファイル名
 void MotionList::Load(CHARA_NAME charaName, std::string fileName)
 {
+	// すでに該当するキャラクターのモーションリストが存在する場合は読み込まない
 	auto itr = _allCharaMotionList.find(charaName);
 	if (itr == _allCharaMotionList.end()) {
 		std::string filePath = "Data/MotionList/" + fileName;
@@ -50,17 +55,21 @@ void MotionList::Load(CHARA_NAME charaName, std::string fileName)
 	}
 }
 
+// モーションリストをすべて削除する
 void MotionList::DeleteAll()
 {
 	_allCharaMotionList.clear();
 }
 
+// 指定したキャラクターのモーションリストを取得する
+// @param charaName: キャラクター名
 std::vector<MotionNamePair>* MotionList::GetMotionList(CHARA_NAME charaName)
 {
+	// 指定したキャラクターのモーションリストが存在する場合
 	auto itr = _allCharaMotionList.find(charaName);
 	if (itr != _allCharaMotionList.end()) {
 		return &itr->second;
 	}
-
+	// 存在しない場合
 	return nullptr;
 }

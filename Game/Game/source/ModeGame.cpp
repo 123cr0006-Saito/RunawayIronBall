@@ -1,102 +1,109 @@
-#include "AppFrame.h"
-#include "ApplicationMain.h"
-#include "ModeTest.h"
+//----------------------------------------------------------------------
+// @filename ModeGame.cpp
+// @date: 2023/12/14
+// @author: saito ko
+// @explanation
+// ボスバトル以外のステージを管理するクラス
+//----------------------------------------------------------------------
+#include "ModeGame.h"
+#include "ModeClear.h"
+#include "ModePause.h"
+#include "ModeGameOver.h"
+#include "ModeLoading.h"
+#include "ModeFadeComeBack.h"
 #include "ModeZoomCamera.h"
 #include "ModeRotationCamera.h"
-
+#include "ModeTutorial.h"
+//----------------------------------------------------------------------
+// @brief 初期化処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool ModeGame::Initialize() {
 	if (!base::Initialize()) { return false; }
-
+	// コリジョンマネージャーの初期化
 	_collisionManager = NEW CollisionManager();
 	_collisionManager->Init();
-
+	// 初期化
 	_gate = nullptr;
-	_stageNum = 2;
-	IsLoading = true;
-	LoadFunctionThread = nullptr;
-
+	_boardArrow = nullptr;
+	IsTutorial = false;
+	// ライトを設定
 	_light = NEW Light("LightData");
+	// タイムリミットの初期化
 	_timeLimit = NEW TimeLimit();
-	_timeLimit->SetTimeLimit(12, 0);
 	
 	int resolution = 8192;
 	_shadowHandle = MakeShadowMap(resolution, resolution);
 	_skySphere = ResourceServer::Load("SkySpehe", "res/SkySphere/Skyspehre.mv1");
 	_tile = ResourceServer::Load("Tile", "res/Tile/Stage_Base_01.mv1");
+	_mountain = ResourceServer::Load("Mountain", "res/Mountain/Stage_mountain_02.mv1");
 	MV1SetPosition(_skySphere, VGet(0, 0, 0));
 	MV1SetScale(_skySphere, VScale(VGet(1,1,1),0.5f));
 	MV1SetPosition(_tile, VGet(0, 0, 0));
+	MV1SetPosition(_mountain, VGet(0, 0, 0));
 
 	int playerModelHandle = ResourceServer::MV1LoadModel("Player", "res/Character/cg_player_girl/Cg_Player_Girl.mv1");
 	_player = NEW Player();
 	_player->Init(playerModelHandle, VGet(0, 0, 0));
+	_player->SetLevel(global._allExp);
+	_gameOverCnt = 0;
+	transitionGameOver = false;
+
 	_camera = NEW Camera(_player->GetPosition());
 
 
 	_classificationEffect = NEW ClassificationEffect();
 	_effectManeger = NEW EffectManeger();
 
-	SetFogEnable(true);
-	
-	{
-		ResourceServer::LoadDivGraph("Gate", "res/TemporaryMaterials/FX_Hole_2D00_sheet.png", 43, 16, 3, 1200, 1200);
-		ResourceServer::Load("Player", "res/Character/cg_player_girl/Cg_Player_Girl.mv1");
-		ResourceServer::Load("IronBall", "res/Character/Cg_Iron_Ball/Cg_Iron_Ball.mv1");
-		ResourceServer::Load("Chain", "res/Chain/Cg_Chain.mv1");
-		ResourceServer::Load("GirlTexWhite", "res/Character/cg_player_girl/FlickerTexture.png");
-
-		ResourceServer::Load("FX_3D_Level_Up", "res/Effekseer/FX_3D_Level_Up/FX_3D_Level_Up.efkefc");
-		ResourceServer::Load("Stanp", "res/Effekseer/Attack/HorizontalThird.efkefc");
-		ResourceServer::Load("Rotation", "res/Effekseer/FX_3D_Rotate_2/FX_3D_Rotate.efkefc");
-		ResourceServer::Load("SlashR", "res/Effekseer/Slash/SlashRight.efkefc");
-		ResourceServer::Load("SlashL", "res/Effekseer/Slash/SlashLeft.efkefc");
-		ResourceServer::LoadMultGraph("split", "res/TemporaryMaterials/split/test", ".png", 30, _effectSheet);
-		ResourceServer::LoadDivGraph("Dust", "res/TemporaryMaterials/FX_Dust_2D.png", 44, 20, 3, 1000, 1000);
-		ResourceServer::LoadEffekseerEffect("Stanp", "res/Effekseer/Attack/HorizontalThird.efkefc");
-	}
-
 	_suppression = NEW Suppression();
 
-	_enemyPool = NEW EnemyPool("res/JsonFile/EnemyData.json");
+	_enemyPool = NEW EnemyManeger("res/JsonFile/EnemyData.json");
 	_floor = NEW Floor();
-
+	_fog = NEW Fog();
 	// オブジェクトのデータの読み込み
 	LoadObjectParam("BuildingtList.csv");
 	// ステージのデータの読み込み
-	std::string fileName = "Data/ObjectList/Stage_0" + std::to_string(_stageNum) + ".json";
+	std::string fileName = "Data/ObjectList/Stage_0" + std::to_string(global.GetStageNum()) + ".json";
 	LoadStage(fileName);
 
 	int size = 100;
 	int heartHandle[3];
-	ResourceServer::LoadMultGraph("Heart", "res/UI/UI_Heart", ".png", 3, heartHandle);
+	ResourceServer::LoadMultGraph("Heart", "res/UI/Heart/UI_Heart", ".png", 3, heartHandle);
 	ui[0] = NEW UIHeart(VGet(120, 20, 0), 3, heartHandle, 2);
 	ui[1] = NEW UIExpPoint(VGet(100, 150, 0));
-	ResourceServer::LoadMultGraph("Suppressiongauge", "res/TemporaryMaterials/SuppressionGauge/suppressiongauge", ".png", 3, heartHandle);
-	ui[2] = NEW UISuppressionGauge(VGet(700, 100, 0), 3, heartHandle);
-	ui[3] = NEW UITimeLimit(VGet(1600, 100, 0));
+	int suppressionHandle[3];
+	ResourceServer::LoadMultGraph("SuppressionGauge", "res/UI/SuppressionGauge/SuppressionGauge", ".png", 3, suppressionHandle);
+	ui[2] = NEW UISuppressionGauge(VGet(600, 100, 0), 3, suppressionHandle);
+	ui[3] = NEW UITimeLimit(VGet(1450, 30, 0));
 	_gaugeUI[0] = NEW DrawGauge(0, 3, size, true);
 	_gaugeUI[1] = NEW DrawGauge(0, 3, size, true);
-	_gaugeHandle[0] = ResourceServer::LoadGraph("Stamina03", _T("res/UI/UI_Stamina_03.png"));
-	_gaugeHandle[1] = ResourceServer::LoadGraph("Stamina02", _T("res/UI/UI_Stamina_02.png"));
-	_gaugeHandle[2] = ResourceServer::LoadGraph("Stamina01", _T("res/UI/UI_Stamina_01.png"));
-	_gaugeHandle[3] = ResourceServer::LoadGraph("Stamina04", _T("res/UI/UI_Stamina_04.png"));
-	_sVib = NEW ScreenVibration();
+	_gaugeHandle[0] = ResourceServer::LoadGraph("Stamina03", ("res/UI/Stamina/UI_Stamina_03.png"));
+	_gaugeHandle[1] = ResourceServer::LoadGraph("Stamina02", ("res/UI/Stamina/UI_Stamina_02.png"));
+	_gaugeHandle[2] = ResourceServer::LoadGraph("Stamina01", ("res/UI/Stamina/UI_Stamina_01.png"));
+	_gaugeHandle[3] = ResourceServer::LoadGraph("Stamina04", ("res/UI/Stamina/UI_Stamina_04.png"));
 
-	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(), 10, "camera");
+	int stageNum = global.GetStageNum();
+	if (stageNum < 4) {
+		int min[3] = { 15,15,15 };
+		TimeLimit::GetInstance()->SetTimeLimit(min[stageNum - 1], 0);
+	}
 
-	//global._soundServer->DirectPlay("Stage03");
-	global._soundServer->BgmFadeIn("Stage03", 2000);
+	TimeLimit::GetInstance()->Stop();
 
+	ModeServer::GetInstance()->Add(NEW ModeRotationCamera(global.GetStageNum()), 10, "RotCamera");
 
 	return true;
 }
-
+//----------------------------------------------------------------------
+// @brief 削除処理
+// @return 無し
+//----------------------------------------------------------------------
 bool ModeGame::Terminate() {
 	base::Terminate();
+	_suppression->ClearSuppression();
 	delete _collisionManager;
 	delete _camera;
 	delete _player;
-	delete _sVib;
 	delete _enemyPool;
 	delete _suppression;
 	delete _effectManeger;
@@ -104,15 +111,13 @@ bool ModeGame::Terminate() {
 	delete _light;
 	delete _timeLimit;
 	delete _floor;
-
-
-	if (LoadFunctionThread != nullptr) {
-		LoadFunctionThread->detach();
-		delete LoadFunctionThread; LoadFunctionThread = nullptr;
-	}
+	delete _fog;
 
 	if (_gate != nullptr) {
 		delete _gate;
+	}
+	if (_boardArrow != nullptr) {
+		delete _boardArrow;
 	}
 
 	for (int i = 0; i < 4; i++) {
@@ -135,39 +140,24 @@ bool ModeGame::Terminate() {
 		delete uObj;
 	}
 
-	return true;
-}
-
-void ModeGame::DeleteObject() {
-
-	if (_gate != nullptr) {
-		delete _gate; _gate = nullptr;
-	}
-
-	_enemyPool->DeleteEnemy();
-
-	_floor->Delete();
-
-	for (auto&& house : _house) {
-		delete house;
-	}
-	 
-	for (auto&& tower : _tower) {
-		delete tower;
-	}
-	 
-	for (auto&& uObj : _uObj) {
-		delete uObj;
-	}
-
 	_house.clear();
 	_tower.clear();
 	_uObj.clear();
 
-};
+	for (auto&& name : _objectName) {
+		ResourceServer::MV1DeleteModelAll(name);
+	}
 
-std::vector<ModeGame::OBJECTDATA> ModeGame::LoadJsonObject(nlohmann::json json, std::string loadName) {
-	nlohmann::json loadObject = json.at(loadName);
+	return true;
+}
+//----------------------------------------------------------------------
+// @brief Jsonファイルからオブジェクトの位置・拡大率・回転値の読み込み
+// @param json 読み込むjsonファイル
+// @param loadName データを読み込むオブジェクトの名前
+// @return 読み込んだデータ
+//----------------------------------------------------------------------
+std::vector<ModeGame::OBJECTDATA> ModeGame::LoadJsonObject(const myJson& json, std::string loadName) {
+	nlohmann::json loadObject = json._json.at(loadName);
 	std::vector<ModeGame::OBJECTDATA> _objectList;
 	for (auto& list : loadObject) {
 		OBJECTDATA object;
@@ -191,7 +181,11 @@ std::vector<ModeGame::OBJECTDATA> ModeGame::LoadJsonObject(nlohmann::json json, 
 	}
 	return _objectList;
 };
-
+//----------------------------------------------------------------------
+// @brief csvファイルからオブジェクトのパラメータを読み込む
+// @param fileName 読み込むファイル名
+// @return 読み込みが成功したかどうか
+//----------------------------------------------------------------------
 bool ModeGame::LoadObjectParam(std::string fileName) {
 	std::vector<ObjectParam> paramList;
 	std::string filePath = "Data/BuildingData/" + fileName;
@@ -212,8 +206,12 @@ bool ModeGame::LoadObjectParam(std::string fileName) {
 			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &y); // obbのYサイズを取得
 			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &z); // obbのZサイズを取得
 			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &objectParam.isBreak); // 破壊可能化
+			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &objectParam._hp); // 耐久力
+			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &objectParam._exp); // 獲得経験値
+			c += FindString(&p[c], ',', &p[size]); c++; c += GetDecNum(&p[c], &objectParam._suppression); // 獲得経験値
 			c += SkipSpace(&p[c], &p[size]); // 空白やコントロールコードをスキップする
 			objectParam._size = VGet(x, y, z);
+
 
 			_objectParam.push_back(objectParam);
 		}
@@ -223,10 +221,14 @@ bool ModeGame::LoadObjectParam(std::string fileName) {
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief csvファイルからオブジェクトの名前を読み込む
+// @param fileName 読み込むファイル名
+// @return 読み込んだデータ
+//----------------------------------------------------------------------
 std::vector<std::string> ModeGame::LoadObjectName(std::string fileName) {
 	std::vector<std::string> nameList;
-	std::string filePath = "Data/LoadStageName/" + fileName + "/"  + fileName + "0" + std::to_string(_stageNum) + ".csv";
+	std::string filePath = "Data/LoadStageName/" + fileName + "/"  + fileName + "0" + std::to_string(global.GetStageNum()) + ".csv";
 	// csvファイルを読み込む
 	CFile file(filePath);
 	// ファイルが開けた場合
@@ -243,296 +245,219 @@ std::vector<std::string> ModeGame::LoadObjectName(std::string fileName) {
 	}
 	return nameList;
 }
-
+//----------------------------------------------------------------------
+// @brief ステージのデータを読み込む
+// @param fileName 読み込むファイル名
+// @return 読み込みが成功したかどうか
+//----------------------------------------------------------------------
 bool ModeGame::LoadStage(std::string fileName) {
-	myJson json(fileName);
-	int j = 0;
-
-	_enemyPool->Create(json,_stageNum);
-
-	_floor->Create(json, _stageNum);
+	myJson json = myJson(fileName);
+	// 敵の生成
+	_enemyPool->Create(json,global.GetStageNum());
+	// 床の生成
+	_floor->Create(json, global.GetStageNum());
 
 	// タワー
-	for (int i = 0; i < 5; i++) {
-		VECTOR v = VGet(rand() % 8000, 0.0f, rand() % 8000);
-		v.x -= 4000.0f;
-		v.z -= 4000.0f;
-
-		std::array<int, 3> towerModelHandle;
-		towerModelHandle[0] = ResourceServer::MV1LoadModel("Tower01", "res/Building/CG_OBJ_Tower/Tower_Under.mv1");
-		towerModelHandle[1] = ResourceServer::MV1LoadModel("Tower02", "res/Building/CG_OBJ_Tower/Tower_Under.mv1");
-		towerModelHandle[2] = ResourceServer::MV1LoadModel("Tower03", "res/Building/CG_OBJ_Tower/Tower_Top.mv1");
-
+	std::vector<ModeGame::OBJECTDATA> towerData = LoadJsonObject(json, "Tower");
+	for (auto&& towerParam : towerData) {
+		// モデルのハンドルをコピー
+		std::vector<int> towerModelHandle;
+		towerModelHandle.push_back(ResourceServer::MV1LoadModel("Tower_Under", "res/Building/CG_OBJ_Tower/Tower_Under.mv1"));
+		towerModelHandle.push_back(ResourceServer::MV1LoadModel("Tower_Under", "res/Building/CG_OBJ_Tower/Tower_Under.mv1"));
+		towerModelHandle.push_back(ResourceServer::MV1LoadModel("Tower_Top", "res/Building/CG_OBJ_Tower/Tower_Top.mv1"));
+		// タワーの生成
 		Tower* tower = NEW Tower();
-		tower->Init(towerModelHandle, v, VGet(0, 0, 0), VGet(1, 1, 1));
-
+		tower->Init(towerModelHandle, towerParam._pos, towerParam._rotate, towerParam._scale);
 		_tower.push_back(tower);
 	}
+	// 削除用にオブジェクトの名前を追加
+	_objectName.push_back("Tower_Under");
+	_objectName.push_back("Tower_Top");
 
 	std::string buildingName = "Building";
+	// オブジェクトの名前を取得
 	std::vector<std::string> objectName = LoadObjectName(buildingName);
 	for (auto&& nameList : objectName) {
-
-		auto itr = std::find_if(_objectParam.begin(), _objectParam.end(), [&](ObjectParam temp)
+		// パラメータリストと名前リストを比較して一致したらそのパラメータを取得
+		auto itr = std::find_if(_objectParam.begin(), _objectParam.end(), [=](ObjectParam temp)
 		{
 				return temp._name == nameList;
 		});
-
-		std::vector<ModeGame::OBJECTDATA> objectData = LoadJsonObject(json._json, nameList);
-		std::string modelName = (*itr)._name;
+		// jsonファイルからオブジェクトのデータを取得
+		std::vector<ModeGame::OBJECTDATA> objectData = LoadJsonObject(json, nameList);
+		std::string modelName = nameList;
+		_objectName.push_back(modelName);
+		Suppression::GetInstance()->AddSuppression((*itr)._suppression * objectData.size());
 		std::string modelPath = "res/Building/" + modelName + "/" + modelName + ".mv1";
+		// オブジェクトの生成
 		for (auto&& object : objectData) {
 			int objHandle = ResourceServer::MV1LoadModel(modelName, modelPath);
+			// 壊れるオブジェクトかどうか
 			if ((*itr).isBreak == 1) {
 				// 壊れるオブジェクト
-				House* building = NEW House();
-				building->Init(objHandle, object._pos, object._rotate, object._scale, (*itr)._size);
+				BreakableBuilding* building = NEW BreakableBuilding();
+				building->Init(objHandle, nameList,object._pos, object._rotate, object._scale, (*itr)._size,(*itr)._hp, (*itr)._exp,(*itr)._suppression);
 				_house.push_back(building);
 			}
 			else {
 				// 壊れないオブジェクト
-				UnbreakableObject* uObj = NEW UnbreakableObject();
-				uObj->Init(objHandle, object._pos, object._rotate, object._scale, (*itr)._size);
+				UnbreakableBuilding* uObj = NEW UnbreakableBuilding();
+				uObj->Init(objHandle, nameList,object._pos, object._rotate, object._scale, (*itr)._size);
 				_uObj.push_back(uObj);
 			}
 		}
 	}
 
+	// プレイヤーの座標指定
+	nlohmann::json loadObject = json._json.at("Player_Start_Position");
+	VECTOR pos;
+	loadObject.at(0).at("translate").at("x").get_to(pos.x);
+	loadObject.at(0).at("translate").at("y").get_to(pos.z);
+	pos.y = 0;
+	 pos.x *= -1;
+	_player->SetPos(pos);
+	_player->InitIBPos();
+
 	return true;
 };
-
-bool ModeGame::StageMutation() {
-	// ロード開始
-	IsLoading = false;
-	// 中身がいらないものはdeleteする
-	DeleteObject();
-	// オブジェクトのデータの読み込み ファイル名は 1 から始まるので +1 する
-	std::string fileName = "Data/ObjectList/Stage_0" + std::to_string(_stageNum) + ".json";
-
-	 // 非同期読み込み設定
-	SetUseASyncLoadFlag(true);
-	LoadStage(fileName);
-	SetUseASyncLoadFlag(false);
-	// ロード終了
-
-	IsLoading = true;
-
-	// ロードスレッドを終了
-	LoadFunctionThread->detach();
-	delete LoadFunctionThread; LoadFunctionThread = nullptr;
-	return true;
-}
-float fogend = 3000.0f;
+//----------------------------------------------------------------------
+// @brief 更新処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool ModeGame::Process() {
 	base::Process();
-
-	SetFogStartEnd(1000.0f, fogend);
-	if(CheckHitKey(KEY_INPUT_DOWN)){
-		fogend -= 10.0f;
-	}
-	if (CheckHitKey(KEY_INPUT_UP)) {
-		fogend += 10.0f;
-	}
-
-	bool isAttackState = _player->GetEnabledIBAttackCollision();
-	bool isInvincible = _player->GetIsInvincible();
-	VECTOR pPos = _player->GetPosition();
-
-
-	Sphere ibSphere = _player->GetIBCollision();
-
-	int ibPower = _player->GetPower();
-
-
-	Capsule plCol = _player->GetCollision();
-	Sphere ibCol = _player->GetIBCollision();
-
+	ModeServer::GetInstance()->SkipProcessUnderLayer();
+	ModeServer::GetInstance()->PauseProcessUnderLayer();
 	global._timer->TimeElapsed();
-	_sVib->UpdateScreenVibration();
+	bool enabledIBAttackCollision = _player->GetEnabledIBAttackCollision();
 
 	_player->Process(_camera->GetCamY());
-	_enemyPool->Process(isAttackState);
+	_enemyPool->Process(enabledIBAttackCollision);
 	_timeLimit->Process();
+	_fog->Process(global.GetStageNum());
+	_classificationEffect->Process();
+	VECTOR box_vec = ConvWorldPosToScreenPos(VAdd(_player->GetPosition(), VGet(0, 170, 0)));
+	float ratio = 1.0f - _camera->GetTargetDistance() / _camera->GetMaxLength();
+	_gaugeUI[0]->Process(box_vec, _player->GetStamina(), _player->GetStaminaMax(), ratio);
+	_gaugeUI[1]->Process(box_vec, 100, 100, ratio);
+	_collisionManager->Process();
+	_player->AnimationProcess();
+
+	_effectManeger->Update();
+	_camera->Process(_player->GetPosition(), _tile);
+	// プレイヤーがステージ範囲外に出たら戻す
+	VECTOR playerPos = _player->GetPosition();
+	float stageWidth[3] = {STAGE_ONE_WIDTH,STAGE_TWO_WIDTH,STAGE_THREE_WIDTH};
+	float stageDistance = stageWidth[global.GetStageNum() - 1] ;
+	float playerDistance = VSquareSize(playerPos);
+	if(playerDistance > stageDistance * stageDistance){
+	    VECTOR vDir = VNorm(playerPos);
+	    _player->SetPos(VScale(vDir,stageDistance));
+	}
 
 	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
 		ui[i]->Process();
 	}
 
-
-
 	for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
 		(*itr)->Process();
-
-		if ((*itr)->GetUseCollision()) {
-			OBB houseObb = (*itr)->GetOBBCollision();
-
-			//if (Collision3D::OBBSphereCol(houseObb, ibSphere)) {
-			//	if (isAttackState) {
-			//		VECTOR vDir = VSub(houseObb.pos, pPos);
-			//		(*itr)->SetHit(vDir);
-			//		_player->SetExp(50);
-			//		global._soundServer->DirectPlay("OBJ_RockBreak");
-			//		continue;
-			//	}
-			//}
-
-			////エネミーがノックバック状態の時、建物にぶつかったら破壊する
-			//houseObb.pos.y = 0; houseObb.length[1] = 0; //平面での当たり判定のため建物のy軸の長さを0にする]
-			//int enemySize = _enemyPool->GetSize();
-			//for (int i = 0; i < enemySize; i++) {
-			//	EnemyBase* en = _enemyPool->GetEnemy(i);
-			//	if (!en) { continue; }
-			//	if (!en->GetUse()) { continue; }
-
-			//	ENEMYTYPE enState = en->GetEnemyState();
-
-			//	VECTOR enPos = en->GetCollisionPos(); enPos.y = 0;
-			//	VECTOR hitPos = VGet(0, 0, 0);
-			//	float enR = en->GetR();
-
-			//	if (Collision3D::OBBSphereCol(houseObb, enPos, enR, &hitPos)) {
-			//		if (enState == ENEMYTYPE::DEAD) {
-			//			VECTOR vDir = VSub(houseObb.pos, pPos);
-			//			(*itr)->SetHit(vDir);
-			//			global._soundServer->DirectPlay("OBJ_RockBreak");
-			//			continue;
-			//		}
-			//		else {
-			//			VECTOR dirVec = VSub(enPos, hitPos);
-			//			dirVec = VNorm(dirVec);
-			//			VECTOR movePos = VAdd(hitPos, VScale(dirVec, enR));
-			//			en->SetPos(movePos);
-			//		}
-			//	}
-			//}
-		}
 	}
 
 	for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
 		(*itr)->Process();
 	}
 
-	//int enemySize = _enemyPool->GetSize();
-	//for (int i = 0; i < enemySize; i++) {
-	//	EnemyBase* enemy = _enemyPool->GetEnemy(i);
-	//	if (!enemy) { continue; }
-	//	if (!enemy->GetUse()) { continue; }
-	//	if (isAttackState) {
-
-	//		VECTOR enPos = enemy->GetCollisionPos();
-	//		float enR = enemy->GetR();
-
-	//		if (Collision3D::SphereCol(ibSphere.centerPos, ibSphere.r, enPos, enR)) {
-	//			VECTOR vDir = VSub(enPos, pPos);
-	//			vDir = VNorm(vDir);
-	//			enemy->SetKnockBackAndDamage(vDir, ibPower);
-	//		}
-	//	}
-	//}
-
-
-
-
-
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_START)) {
-		//_enemyPool->Init();
-		//_player->SetDamage();
 		ModeServer::GetInstance()->Add(NEW ModePause(), 10, "Pause");
 	}
 
-	if (XInput::GetInstance()->GetKey(XINPUT_BUTTON_Y)) {
-		if (nowParcent > 0) {
-			nowParcent -= 1.0f / 120 * 100;
-		}
-	}
-	else {
-		if (nowParcent < 100) {
-			nowParcent += 1.0f / 120 * 100;
-		}
-	}
-
+#ifdef _DEBUG
 	if (XInput::GetInstance()->GetTrg(XINPUT_BUTTON_BACK)) {
 		_drawDebug = !_drawDebug;
-		//VECTOR pPos = _player->GetPosition();
-		//for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
-		//	
-		//	VECTOR hPos = (*itr)->GetPos();
-		//	VECTOR tmpDir = VSub(hPos, pPos);
-		//	tmpDir.y = 0.0f;
-		//	(*itr)->SetBlast(tmpDir);
-		//}
 	}
+#endif // _DEBUG
 
-	if (_player->GetHP() <= 0) {
+	if (_player->GetHP() <= 0 || _timeLimit->GetTimeLimit() < 0) {
 		global._soundServer->BgmFadeOut(2000);
-		ModeServer::GetInstance()->Del(this);
-		ModeServer::GetInstance()->Add(NEW ModeGameOver(), 1, "gameover");
+		_gameOverCnt++;	
+		if (!transitionGameOver && _gameOverCnt > 160) {
+			ModeServer::GetInstance()->Add(NEW ModeGameOver(), 0, "GameOver");
+			ModeServer::GetInstance()->Add(NEW ModeFadeComeBack(2000,this, "GameOver", 50), 100, "Fade");
+			transitionGameOver = true;
+		}
 	}
-
-	VECTOR box_vec = ConvWorldPosToScreenPos(VAdd(_player->GetPosition(), VGet(0, 170, 0)));
-
-	float ratio = 1.0f - _camera->GetTargetDistance() / _camera->GetMaxLength();
-	_gaugeUI[0]->Process(box_vec, _player->GetStamina(), _player->GetStaminaMax(),ratio);
-	_gaugeUI[1]->Process(box_vec, 100, 100,ratio);
-
-	_collisionManager->Process();
-
-	_player->AnimationProcess();
-
-
-	_effectManeger->Update();
-	_camera->Process(_player->GetPosition(), _tile);
 
 	GateProcess();
+	CreateTutorial();
 
 	return true;
 }
-
-
+//----------------------------------------------------------------------
+// @brief ゴールゲートの処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool ModeGame::GateProcess() {
-
-	//_suppression->SubSuppression(1);
-	if (_suppression->GetIsRatio() && _stageNum < 3 ) {
+	
+	if (_suppression->GetIsRatioBut20PercentLess() ) {
+		// ゲートの生成
 		if (_gate == nullptr) {
+			VECTOR pos = VGet(0, 300, 0);
 			int handle[43];
 			ResourceServer::LoadDivGraph("Gate", "res/TemporaryMaterials/FX_Hole_2D00_sheet.png", 43, 16, 3, 1200, 1200, handle);
-			float time = 1.0f / 60.0f * 1000.0f;
-			_gate = NEW Gate(VGet(0, 300, 0), 300, handle, 43, time, 1000);
-			ModeServer::GetInstance()->Add(NEW ModeZoomCamera(), 10, "Camera");
+			float time = 4.0f / 60.0f * 1000.0f;
+			if (global.GetStageNum() == 3) {
+				// ステージ3のゲートの座標だけ違う
+				pos = VGet(-6787.0f, 300.0f, 7486.0);
+			}
+			_gate = NEW Gate(pos, 300, handle, 43, time, 1000);
+			ModeServer::GetInstance()->Add(NEW ModeZoomCamera(pos), 10, "Camera");
+			_boardArrow = NEW BoardArrow("res/Effect/arrow.png",200);
 		}
+		// ゲートの処理
 		_gate->Process();
-
 		VECTOR pPos = _player->GetPosition();
 		float pR = _player->GetCollision().r;
 		VECTOR gPos = _gate->GetPos();
 		float gR = _gate->GetR();
 
 		// ゴールゲートの当たり判定
-		if (Collision3D::SphereCol(pPos, pR, gPos, gR)) {
-			// ここでリアルタイムレンダリングのアニメーションが入る
-			// それが終わったらフェードアウト　→　ローディング・評価（引数　時間）　→　ローディングが終わったら次のステージ
-			// 今はここにステージ繊維関数を追加
-			int time = 4 * 1000; // 4秒
-			_stageNum++;
-			ModeServer::GetInstance()->Add(NEW ModeLoading(&IsLoading), 100, "Loading");
-			LoadFunctionThread = NEW std::thread(&ModeGame::StageMutation, this);
-			
+		if (Collision3D::SphereCol(pPos, pR, gPos, gR) && !ModeServer::GetInstance()->Search("Clear")) {
+			global.AddStageNum();
+			ModeServer::GetInstance()->Del(this);
+			ModeServer::GetInstance()->Add(NEW ModeClear(_timeLimit->GetElapsedTime(),_timeLimit->GetStartTime()),100,"Clear");	
 		}
+		_boardArrow->Process(pPos,VSub(gPos,pPos));
 	}
 	return true;
-};// ゴールゲートの処理
-
-
-
+};
+//----------------------------------------------------------------------
+// @brief チュートリアルの生成
+// @return 無し
+//----------------------------------------------------------------------
+void ModeGame::CreateTutorial() {
+	if (!IsTutorial) {
+		IsTutorial = true;
+		if (global.GetStageNum() == 1) {
+			int tutorialHandle[5];
+			ResourceServer::LoadMultGraph("Tutorial", "res/Tutorial/Tutorial", ".png", 5, tutorialHandle);
+			ModeServer::GetInstance()->Add(NEW ModeTutorial(tutorialHandle, 5), 10, "Tutorial");
+		}
+	}
+};
+//----------------------------------------------------------------------
+// @brief 描画処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool ModeGame::Render() {
-	if (LoadFunctionThread)return true;
 
 	SetUseZBuffer3D(TRUE);
 	SetWriteZBuffer3D(TRUE);
 	SetUseBackCulling(TRUE);
 
 	MV1DrawModel(_skySphere);
-
+	if (global.GetStageNum() < 3) {
+		MV1DrawModel(_mountain);
+	}
 	// 描画に使用するシャドウマップを設定
 	SetUseShadowMap(0, _shadowHandle);
 	MV1DrawModel(_tile);
@@ -540,18 +465,8 @@ bool ModeGame::Render() {
 	// 描画に使用するシャドウマップの設定を解除
 	SetUseShadowMap(0, -1);
 
-
 	// ライト設定
 	SetUseLighting(TRUE);
-
-	// 0,0,0を中心に線を引く
-	{
-		float linelength = 1000.f;
-		VECTOR v = { 0, 0, 0 };
-		DrawLine3D(VAdd(v, VGet(-linelength, 0, 0)), VAdd(v, VGet(linelength, 0, 0)), GetColor(255, 0, 0));
-		DrawLine3D(VAdd(v, VGet(0, -linelength, 0)), VAdd(v, VGet(0, linelength, 0)), GetColor(0, 255, 0));
-		DrawLine3D(VAdd(v, VGet(0, 0, -linelength)), VAdd(v, VGet(0, 0, linelength)), GetColor(0, 0, 255));
-	}
 
 	//------------------------------------
 	// シャドウマップの設定　
@@ -581,13 +496,6 @@ bool ModeGame::Render() {
 
 		_player->Render();
 		_enemyPool->Render();
-		//_chain->DrawDebugInfo();
-
-		
-		//}
-		for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
-			(*itr)->Render();
-		}
 
 		for (auto itr = _tower.begin(); itr != _tower.end(); ++itr) {
 			(*itr)->Render();
@@ -596,9 +504,14 @@ bool ModeGame::Render() {
 		for (auto itr = _uObj.begin(); itr != _uObj.end(); ++itr) {
 			(*itr)->Render();
 		}
+		for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
+			(*itr)->Render();
+		}
 	}
+	// シャドウマップの描画を終了
 
-
+#ifdef _DEBUG
+	// デバッグ時の描画
 	if (_drawDebug) {
 		_player->DrawDebugInfo();
 		for (auto itr = _house.begin(); itr != _house.end(); ++itr) {
@@ -610,34 +523,36 @@ bool ModeGame::Render() {
 		for (auto itr = _uObj.begin(); itr != _uObj.end(); ++itr) {
 			(*itr)->DrawDebugInfo();
 		}
-		_collisionManager->DrawAreaIndex();
+		_collisionManager->DrawSegmentIndex();
 	}
+#endif // _DEBUG
 
+	// ゲートのインスタンスがあった場合描画
 	if (_gate != nullptr) {
 		_gate->Draw();
+	}
+	// 矢印の描画
+	if (_boardArrow != nullptr) {
+		_boardArrow->Render();
 	}
 	
 	SetUseZBuffer3D(FALSE);
 
 	_effectManeger->Render();
 
+	_player->RenderAfterImage();
 
-	//SetDrawBlendMode(DX_BLENDMODE_ADD, 255);
-	for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
-		ui[i]->Draw();
+	if (!ModeServer::GetInstance()->Search("RotCamera") && !ModeServer::GetInstance()->Search("Camera")) {
+		for (int i = 0; i < sizeof(ui) / sizeof(ui[0]); i++) {
+			ui[i]->Draw();
+		}
+
+		if (_player->GetStaminaRate() < 1.0f) {
+			int handleNum = floorf(_player->GetStaminaRate() * 100.0f / 33.4f);
+			_gaugeUI[1]->Draw(_gaugeHandle[handleNum]);
+			_gaugeUI[0]->Draw(_gaugeHandle[3]);
+		}
 	}
-
-	if (_player->GetStaminaRate() < 1.0f) {
-		int handleNum = floorf(_player->GetStaminaRate() * 100.0f / 33.4f);
-		_gaugeUI[1]->Draw(_gaugeHandle[handleNum]);
-		_gaugeUI[0]->Draw(_gaugeHandle[3]);
-	}
-
-
-	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-	//for (auto itr = _buildingBase.begin(); itr != _buildingBase.end(); ++itr) {
-	//	(*itr)->DrawDebugInfo();
-	//}
 
 	return true;
 }

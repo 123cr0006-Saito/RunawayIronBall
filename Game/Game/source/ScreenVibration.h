@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename ScreenVibration.h
+// @date: 2023/12/15
+// @author: saito ko
+// @explanation
+// 画面上でのカメラが見ている映像の中心座標をずらす処理行うクラス
+//----------------------------------------------------------------------
 #pragma once
 #include "dxlib.h"
 #include <math.h>
@@ -25,8 +32,8 @@ public:
 
 protected:
 	//振動用の変数
-	float vibration_x,vibration_y;
-	float max_x, max_y;
-	float time;
-	bool use_flag;
+	float vibration_x,vibration_y;//振動量
+	float max_x, max_y;//振動の最大値
+	float time;//振動時間
+	bool use_flag;//振動中かどうか
 };

@@ -38,11 +38,9 @@
     <ClCompile Include="source\ModePause.cpp" />
     <ClCompile Include="source\SlaBlockPattern2.cpp" />
     <ClCompile Include="source\CrystarPattern4.cpp" />
-    <ClCompile Include="source\EnemyPool.cpp" />
-    <ClCompile Include="source\House.cpp" />
+    <ClCompile Include="source\EnemyManeger.cpp" />
     <ClCompile Include="source\myJson.cpp" />
     <ClCompile Include="source\bone.cpp" />
-    <ClCompile Include="source\BreakObject.cpp" />
     <ClCompile Include="source\BuildingBase.cpp" />
     <ClCompile Include="source\CharacterBase.cpp" />
     <ClCompile Include="source\CrystarPattern3.cpp" />
@@ -55,6 +53,58 @@
     <ClCompile Include="source\ModeTest.cpp" />
     <ClCompile Include="source\ModeTitle.cpp" />
     <ClCompile Include="source\Player.cpp" />
+    <ClCompile Include="source\SlaBlock.cpp" />
+    <ClCompile Include="source\UIBase.cpp" />
+    <ClCompile Include="source\UIExpPoint.cpp" />
+    <ClCompile Include="source\UIHeart.cpp" />
+    <ClCompile Include="source\CrystarPattern4.cpp" />
+    <ClCompile Include="source\SlaBlockPattern2.cpp" />
+    <ClCompile Include="source\ScreenVibration.cpp" />
+    <ClCompile Include="source\BoardPolygon.cpp" />
+    <ClCompile Include="source\ModePause.cpp" />
+    <ClCompile Include="source\ModeInstructions.cpp" />
+    <ClCompile Include="source\AnimationItem.cpp" />
+    <ClCompile Include="source\AnimationManager.cpp" />
+    <ClCompile Include="source\Tower.cpp" />
+    <ClCompile Include="source\FrameData.cpp" />
+    <ClCompile Include="source\ModelColor.cpp" />
+    <ClCompile Include="source\TowerParts.cpp" />
+    <ClCompile Include="source\MotionList.cpp" />
+    <ClCompile Include="source\CrystarRoof.cpp" />
+    <ClCompile Include="source\CrystarPattern2.cpp" />
+    <ClCompile Include="source\CrystarPattern1.cpp" />
+    <ClCompile Include="source\ClassificationEffect.cpp" />
+    <ClCompile Include="source\EffekseerPosSynchro.cpp" />
+    <ClCompile Include="source\EffekseerBase.cpp" />
+    <ClCompile Include="source\UISuppressionGauge.cpp" />
+    <ClCompile Include="source\TimeLimit.cpp" />
+    <ClCompile Include="source\UITimeLimit.cpp" />
+    <ClCompile Include="source\Boss.cpp" />
+    <ClCompile Include="source\BoardPolygonDust.cpp" />
+    <ClCompile Include="source\PlaneEffectBase.cpp" />
+    <ClCompile Include="source\BossIronBall.cpp" />
+    <ClCompile Include="source\EffectBase.cpp" />
+    <ClCompile Include="source\EffectManeger.cpp" />
+    <ClCompile Include="source\Suppression.cpp" />
+    <ClCompile Include="source\ModeBossBattle.cpp" />
+    <ClCompile Include="source\AnimationChain.cpp" />
+    <ClCompile Include="source\UIBossHp.cpp" />
+    <ClCompile Include="source\BoardParabola.cpp" />
+    <ClCompile Include="source\Afterglow.cpp" />
+    <ClCompile Include="source\UnbreakableBuilding.cpp">
+      <Filter>Building</Filter>
+    </ClCompile>
+    <ClCompile Include="source\BreakableBuilding.cpp">
+      <Filter>Building</Filter>
+    </ClCompile>
+    <ClCompile Include="source\BreakModelParts.cpp">
+      <Filter>Building</Filter>
+    </ClCompile>
+    <ClCompile Include="source\AfterImage.cpp">
+      <Filter>Character</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="source\IronBall.cpp" />
     <ClCompile Include="source\ScreenVibration.cpp" />
     <ClCompile Include="source\SlaBlock.cpp" />
@@ -77,7 +127,6 @@
       <Filter>Mode</Filter>
     </ClCompile>
     <ClCompile Include="source\TargetZoomCamera.cpp" />
-    <ClCompile Include="source\UnbreakableObject.cpp" />
     <ClCompile Include="source\ModeRotationCamera.cpp" />
     <ClCompile Include="source\ModeZoomCamera.cpp" />
     <ClCompile Include="source\ModeTutorial.cpp" />
@@ -121,12 +170,10 @@
     <ClInclude Include="source\ModePause.h" />
     <ClInclude Include="source\SlaBlockPattern2.h" />
     <ClInclude Include="source\CrystarPattern4.h" />
-    <ClInclude Include="source\EnemyPool.h" />
+    <ClInclude Include="source\EnemyManeger.h" />
     <ClInclude Include="source\EnemyStract.h" />
-    <ClInclude Include="source\House.h" />
     <ClInclude Include="source\myJson.h" />
     <ClInclude Include="source\bone.h" />
-    <ClInclude Include="source\BreakObject.h" />
     <ClInclude Include="source\BuildingBase.h" />
     <ClInclude Include="source\CharacterBase.h" />
     <ClInclude Include="source\CrystarPattern3.h" />
@@ -139,6 +186,39 @@
     <ClInclude Include="source\ModeTest.h" />
     <ClInclude Include="source\ModeTitle.h" />
     <ClInclude Include="source\Player.h" />
+    <ClInclude Include="source\SlaBlock.h" />
+    <ClInclude Include="source\UIBase.h" />
+    <ClInclude Include="source\UIExpPoint.h" />
+    <ClInclude Include="source\UIHeart.h" />
+    <ClInclude Include="source\EnemyStract.h" />
+    <ClInclude Include="source\CrystarPattern4.h" />
+    <ClInclude Include="source\SlaBlockPattern2.h" />
+    <ClInclude Include="source\ScreenVibration.h" />
+    <ClInclude Include="source\BoardPolygon.h" />
+    <ClInclude Include="source\ModePause.h" />
+    <ClInclude Include="source\ModeInstructions.h" />
+    <ClInclude Include="source\AnimationItem.h" />
+    <ClInclude Include="source\AnimationManager.h" />
+    <ClInclude Include="source\Tower.h" />
+    <ClInclude Include="source\FrameData.h" />
+    <ClInclude Include="source\ModelColor.h" />
+    <ClInclude Include="source\TowerParts.h" />
+    <ClInclude Include="source\MotionList.h" />
+    <ClInclude Include="source\CrystarRoof.h" />
+    <ClInclude Include="source\CrystarPattern2.h" />
+    <ClInclude Include="source\CrystarPattern1.h" />
+    <ClInclude Include="source\ClassificationEffect.h" />
+    <ClInclude Include="source\EffekseerPosSynchro.h" />
+    <ClInclude Include="source\EffekseerBase.h" />
+    <ClInclude Include="source\UISuppressionGauge.h" />
+    <ClInclude Include="source\TimeLimit.h" />
+    <ClInclude Include="source\UITimeLimit.h" />
+    <ClInclude Include="source\Boss.h" />
+    <ClInclude Include="source\BoardPolygonDust.h" />
+    <ClInclude Include="source\PlaneEffectBase.h" />
+    <ClInclude Include="source\BossIronBall.h" />
+    <ClInclude Include="source\EffectBase.h" />
+    <ClInclude Include="source\EffectManeger.h" />
     <ClInclude Include="source\IronBall.h" />
     <ClInclude Include="source\ScreenVibration.h" />
     <ClInclude Include="source\SlaBlock.h" />
@@ -178,19 +258,10 @@
     <ClCompile Include="source\EnemyBase.cpp">
       <Filter>Character\Enemy</Filter>
     </ClCompile>
-    <ClCompile Include="source\EnemyPool.cpp">
-      <Filter>Character\Enemy</Filter>
-    </ClCompile>
     <ClCompile Include="source\Player.cpp">
       <Filter>Character\Player</Filter>
     </ClCompile>
-    <ClCompile Include="source\BreakObject.cpp">
-      <Filter>Building</Filter>
-    </ClCompile>
     <ClCompile Include="source\BuildingBase.cpp">
-      <Filter>Building</Filter>
-    </ClCompile>
-    <ClCompile Include="source\House.cpp">
       <Filter>Building</Filter>
     </ClCompile>
     <ClCompile Include="source\Tower.cpp">
@@ -315,6 +386,27 @@
       <Filter>Mode</Filter>
     </ClInclude>
     <ClInclude Include="source\ModeTutorial.h" />
+    <ClInclude Include="source\Fog.h" />
+    <ClInclude Include="source\ModeMovie.h" />
+    <ClInclude Include="source\ModeBossBattle.h">
+      <Filter>Mode</Filter>
+    </ClInclude>
+    <ClInclude Include="source\AnimationChain.h" />
+    <ClInclude Include="source\UIBossHp.h" />
+    <ClInclude Include="source\BoardParabola.h" />
+    <ClInclude Include="source\Afterglow.h" />
+    <ClInclude Include="source\UnbreakableBuilding.h">
+      <Filter>Building</Filter>
+    </ClInclude>
+    <ClInclude Include="source\BreakableBuilding.h">
+      <Filter>Building</Filter>
+    </ClInclude>
+    <ClInclude Include="source\BreakModelParts.h">
+      <Filter>Building</Filter>
+    </ClInclude>
+    <ClInclude Include="source\AfterImage.h">
+      <Filter>Character</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\CharacterBase.h">
@@ -347,19 +439,10 @@
     <ClInclude Include="source\EnemyBase.h">
       <Filter>Character\Enemy</Filter>
     </ClInclude>
-    <ClInclude Include="source\EnemyPool.h">
-      <Filter>Character\Enemy</Filter>
-    </ClInclude>
     <ClInclude Include="source\Player.h">
       <Filter>Character\Player</Filter>
     </ClInclude>
-    <ClInclude Include="source\BreakObject.h">
-      <Filter>Building</Filter>
-    </ClInclude>
     <ClInclude Include="source\BuildingBase.h">
-      <Filter>Building</Filter>
-    </ClInclude>
-    <ClInclude Include="source\House.h">
       <Filter>Building</Filter>
     </ClInclude>
     <ClInclude Include="source\Tower.h">
@@ -518,7 +601,6 @@
       <UniqueIdentifier>{83bca989-3fef-431d-bc70-e6602cf6729d}</UniqueIdentifier>
     </Filter>
     <ClInclude Include="source\TargetZoomCamera.h" />
-    <ClInclude Include="source\UnbreakableObject.h" />
     <ClInclude Include="source\ModeRotationCamera.h" />
     <ClInclude Include="source\ModeZoomCamera.h" />
   </ItemGroup>

@@ -115,7 +115,7 @@ float Easing::InOutCirc(float cnt, float start, float end, float frames) {
     return (end - start) / 2.0 * (sqrt(1 - cnt * cnt) + 1) + start;
 }
 
-float Easing::EasingOutElastic(float cnt, float start, float end, float frames)
+float Easing::OutElastic(float cnt, float start, float end, float frames)
 {
     if (cnt == 0) {
         return start;

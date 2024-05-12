@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename ModeFade.h
+// @date: 2024/02/29
+// @author: saito ko
+// @explanation
+// ステージ遷移時にフェードイン、フェードアウトを行うためのクラス
+//----------------------------------------------------------------------
 #pragma once
 #include "appframe.h"
 
@@ -12,9 +19,9 @@ public:
 	virtual bool Process()override;
 	virtual bool Render()override;
 protected:
-	int _alphaFade;
-	int _currentTime;
-	int _fadeTime;
-    bool _isFadeIn;
+	int _alphaFade;// フェードのアルファ値
+	int _currentTime;// 現在の時間
+	int _fadeTime;// フェードする時間
+    bool _isFadeIn;// フェードインかフェードアウトか
 };
 

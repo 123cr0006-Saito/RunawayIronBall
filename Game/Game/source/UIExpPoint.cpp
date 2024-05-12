@@ -1,18 +1,28 @@
+//----------------------------------------------------------------------
+// @filename UIExpPoint.cpp
+// @date: 2024/12/25
+// @author: saito ko
+// @explanation
+// 経験値のUIを表示するクラス
+//----------------------------------------------------------------------
 #include "UIExpPoint.h"
-
 const unsigned short UIExpPoint::vertex[6]{ 0,1,2,2,1,3 };
-
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @param pos 位置
+// @return 無し
+//----------------------------------------------------------------------
 UIExpPoint::UIExpPoint(VECTOR pos) :
 	UIBase(pos) 
 {
 	_player = Player::GetInstance();
-	_handle = new int[2];
-	std::string path = "res/UI/UIGauge/";
+	_handle = NEW int[2];
+	std::string path = "res/UI/Gauge/";
 	std::string name[2] = {"UI_EXP_Gauge_Black","UI_EXP_Gauge_Red"};
 	for (int i = 0; i < 2; i++) {
 		_handle[i] = ResourceServer::Load(name[i], path + name[i] + ".png");
 	}
-	ResourceServer::LoadMultGraph("UILevel", "res/UI/UILevel/UI_Level",".png",_levelMax, _levelHandle);
+	ResourceServer::LoadMultGraph("UILevel", "res/UI/Level/UI_Level",".png",_levelMax, _levelHandle);
 
 	_ratio = 0.0f;
 	_nowRatio = 0.0f;
@@ -40,14 +50,20 @@ UIExpPoint::UIExpPoint(VECTOR pos) :
 	}
 
 };
-
+//----------------------------------------------------------------------
+// @brief デストラクタ
+// @return 無し
+//----------------------------------------------------------------------
 UIExpPoint::~UIExpPoint() {
 	_player = nullptr;
 	if (_handle != nullptr) {
 		delete[] _handle; _handle = nullptr;
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief 経験値バーの割合を計算
+// @return 無し
+//----------------------------------------------------------------------
 void UIExpPoint::SetRatio() {
 	static int oldExp;
 	static int oldLevel;
@@ -57,9 +73,8 @@ void UIExpPoint::SetRatio() {
 
 	int nowExp = _player->GetNowExp();
 	int nextExp = _player->GetNextExp();
-
+	int nowLevel = _player->GetNowLevel();
 	if (nowExp != oldExp) {
-		int nowLevel = _player->GetNowLevel();
 		_nextRatio = (float)nowExp / nextExp;
 		if (nowLevel != oldLevel) {
 			_nextRatio = 1 + _nextRatio;
@@ -77,9 +92,16 @@ void UIExpPoint::SetRatio() {
 		_ratio = Easing::OutSine(nowTime, _nowRatio, _nextRatio, easingTime);
 	}
 
+	if(nowLevel >= _levelMax-1){
+		_ratio = 0.0f;
+	}
+
 	oldExp = nowExp;
 };
-
+//----------------------------------------------------------------------
+// @brief 更新処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool UIExpPoint::Process() {
 
 	SetRatio();
@@ -91,7 +113,10 @@ bool UIExpPoint::Process() {
 
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 描画処理
+// @return 成功しているか
+//----------------------------------------------------------------------
 bool UIExpPoint::Draw() {
 
 	// 経験値フレーム

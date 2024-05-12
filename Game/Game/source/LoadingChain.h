@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename LoadingChain.h
+// @date: 2024/03/03
+// @author: saito ko
+// @explanation
+// loading時の鎖を制御・描画を行うクラス
+//----------------------------------------------------------------------
 #pragma once
 #include "dxlib.h"
 #include "ModelColor.h"

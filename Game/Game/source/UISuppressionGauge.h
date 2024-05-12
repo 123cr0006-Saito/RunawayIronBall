@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename UISuppressionGauge.h
+// @date: 2024/02/26
+// @author: saito ko
+// @explanation
+// 制圧ゲージを表示するクラス
+//----------------------------------------------------------------------
 #pragma once
 #include "UIBase.h"
 #include "Suppression.h"

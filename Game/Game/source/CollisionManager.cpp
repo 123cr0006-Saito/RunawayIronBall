@@ -1,5 +1,24 @@
+//----------------------------------------------------------------------
+// @filename CollisionManager.cpp
+// @date: 2024/03/07
+// @author: Morozumi Hiroya
+// 
+// @explanation
+// 当たり判定処理の管理を行うクラス
+// XZ平面に対して4分木空間分割を行い、当たり判定処理の回数を削減する
+// 
+// Cellクラスを用いて、オブジェクトを管理する
+// CellのOBJ_TYPEに関しては、ObjectBaseクラスの派生クラスのInit関数で設定する
+// CellのOBJ_TYPEによりObjectBaseクラスのどの派生クラスかの判別がつくので、ObjectBaseクラスから各派生クラスへのダウンキャストはstatic_castで行う
+// 
+// @reference
+// 参考サイト
+// https://qiita.com/mogamoga1337/items/a1060d531b70c32a8ade
+// http://marupeke296.com/COL_2D_No8_QuadTree.html
+// http://marupeke296.com/COL_2D_No9_QuadTree_Imp.html
+//----------------------------------------------------------------------
 #include "CollisionManager.h"
-
+#include "Suppression.h"
 #include "Player.h"
 #include "IronBall.h"
 #include "EnemyBase.h"
@@ -47,6 +66,7 @@ CollisionManager::~CollisionManager()
 	_reserveRemovementList.clear();
 }
 
+// 初期化処理
 void CollisionManager::Init()
 {
 	_offsetX = -STAGE_LENGTH / 2.0f;
@@ -59,10 +79,11 @@ void CollisionManager::Init()
 	_tree.resize(_treeSize);
 
 	for (int i = 0; i < _treeSize; i++) {
-		_tree[i] = new Cell();
+		_tree[i] = NEW Cell();
 	}
 }
 
+// 更新処理
 void CollisionManager::Process()
 {
 	// 削除予約リストにあるセルを削除
@@ -79,13 +100,18 @@ void CollisionManager::Process()
 	RemoveCellFromReserveList();
 }
 
+// セルをツリーへ追加、更新
 void CollisionManager::UpdateCell(Cell* cell)
 {
 	if (cell == nullptr || cell->_obj == nullptr) return;
 
+	// オブジェクトの座標からツリーのインデックスを計算
 	unsigned int treeIndex = 0;
+
+	// オブジェクトを覆う矩形を作成し、その矩形が含まれるセグメントを計算
 	VECTOR pos1 = VGet(0.0f, 0.0f, 0.0f); // 最小座標
 	VECTOR pos2 = VGet(0.0f, 0.0f, 0.0f); // 最大座標
+
 	switch (cell->_objType)
 	{
 	case OBJ_TYPE::NONE:
@@ -178,6 +204,7 @@ void CollisionManager::UpdateCell(Cell* cell)
 	break;
 	}
 
+	// 2つの頂点からセルが属するツリーのインデックスを計算
 	treeIndex = CalcTreeIndex(pos1, pos2);
 	if (cell->_segment != _tree[treeIndex]) {
 		RemoveCell(cell);
@@ -185,10 +212,12 @@ void CollisionManager::UpdateCell(Cell* cell)
 	}
 }
 
+// 2つの頂点からセルが属するツリーのインデックスを計算
 unsigned int CollisionManager::CalcTreeIndex(VECTOR pos1, VECTOR pos2)
 {
-	unsigned int areaIndex1 = CheckArea(pos1);
-	unsigned int areaIndex2 = CheckArea(pos2);
+	// それぞれの頂点が属するセグメントを計算
+	unsigned int areaIndex1 = CalcSegment(pos1);
+	unsigned int areaIndex2 = CalcSegment(pos2);
 	unsigned int xorIndex = areaIndex1 ^ areaIndex2;
 
 	unsigned int areaIndex = areaIndex1;
@@ -214,9 +243,41 @@ unsigned int CollisionManager::CalcTreeIndex(VECTOR pos1, VECTOR pos2)
 	return treeIndex;
 }
 
+// 指定された座標が属するセグメントのインデックスを計算（最小単位まで分割したセグメント）
+unsigned int CollisionManager::CalcSegment(VECTOR pos)
+{
+	// ワールドの原点からのオフセットを引いた座標を起点とする
+	VECTOR p = VGet(pos.x - _offsetX, 0.0f, pos.z - _offsetZ);
+	// ステージの範囲を超えないようにクランプする
+	p.x = Math::Clamp(0.0f, STAGE_LENGTH - 1, p.x);
+	p.z = Math::Clamp(0.0f, STAGE_LENGTH - 1, p.z);
+
+	// 各軸におけるインデックス番号を計算
+	unsigned int xIndex = static_cast<unsigned int>(p.x / _segmentLength);
+	unsigned int zIndex = static_cast<unsigned int>(p.z / _segmentLength);
+	// セグメントのインデックスを計算
+	unsigned int areaIndex = (SeparateBit(xIndex) | (SeparateBit(zIndex) << 1));
+
+	return areaIndex;
+}
+
+// 入力値を2進数で一つ飛ばしに分割する
+// 例 : 1101 -> 01 01 00 01
+unsigned int CollisionManager::SeparateBit(unsigned int n)
+{
+	n = (n | (n << 8)) & 0x00ff00ff;
+	n = (n | (n << 4)) & 0x0f0f0f0f;
+	n = (n | (n << 2)) & 0x33333333;
+	return (n | (n << 1)) & 0x55555555;
+}
+
+// ツリーにセルを追加
+// ダミーセルの次にセルを追加する
 void CollisionManager::InsertCellIntoTree(unsigned int treeIndex, Cell* cell)
 {
+	// ダミーセル
 	Cell* baseCell = _tree[treeIndex];
+	// ダミーセルの次のセル
 	Cell* nextCell = baseCell->_next;
 
 	cell->_segment = baseCell;
@@ -230,6 +291,7 @@ void CollisionManager::InsertCellIntoTree(unsigned int treeIndex, Cell* cell)
 	}
 }
 
+// ツリーからセルを削除
 void CollisionManager::RemoveCell(Cell* cell)
 {
 	Cell* prevCell = cell->_prev;
@@ -246,11 +308,13 @@ void CollisionManager::RemoveCell(Cell* cell)
 	cell->_next = nullptr;
 }
 
+// セルの削除予約
 void CollisionManager::ReserveRemovementCell(Cell* cell)
 {
 	_reserveRemovementList.push_back(cell);
 }
 
+// 削除予約リストにあるセルを削除
 void CollisionManager::RemoveCellFromReserveList()
 {
 	for (auto& cell : _reserveRemovementList) {
@@ -259,30 +323,60 @@ void CollisionManager::RemoveCellFromReserveList()
 	_reserveRemovementList.clear();
 }
 
-unsigned int CollisionManager::CheckArea(VECTOR pos)
+// 当たり判定リストを作成する
+void CollisionManager::CreateColList(unsigned int treeIndex, std::list<Cell*>& colStack)
 {
-	VECTOR p = VGet(pos.x - _offsetX, 0.0f, pos.z - _offsetZ);
-	p.x = Math::Clamp(0.0f, STAGE_LENGTH - 1, p.x);
-	p.z = Math::Clamp(0.0f, STAGE_LENGTH - 1, p.z);
-	unsigned int xIndex = static_cast<unsigned int>(p.x / _segmentLength);
-	unsigned int zIndex = static_cast<unsigned int>(p.z / _segmentLength);
+	Cell* cell1 = _tree[treeIndex]->_next;
+	// ① 同セグメント内のオブジェクト同士の当たり判定リストを作成
+	while (cell1 != nullptr)
+	{
+		Cell* cell2 = cell1->_next;
+		while (cell2 != nullptr)
+		{
+			_colList.push_back(std::make_pair(cell1, cell2));
+			cell2 = cell2->_next;
+		}
+		// ② 当たり判定スタックとの当たり判定リストを作成（当たり判定スタックには親セグメント（+ そのさらに親セグメント）に属するセルが登録されている）
+		for (auto& colCell : colStack) {
+			_colList.push_back(std::make_pair(cell1, colCell));
+		}
+		cell1 = cell1->_next;
+	}
 
+	bool childFlag = false;
+	// ③ 子セグメントを調べる
+	unsigned int objNum = 0;
+	// 1つのセグメントは4つの子セグメントを持つ
+	for (int j = 0; j < 4; j++) {
+		unsigned int childIndex = treeIndex * 4 + 1 + j;
+		// 子セグメントが存在する場合
+		if (childIndex < _treeSize && _tree[childIndex] != nullptr) {
+			if (!childFlag) {
+				// ④ treeIndexのCellをスタックに追加
+				cell1 = _tree[treeIndex]->_next;
+				while (cell1 != nullptr) {
+					colStack.push_back(cell1);
+					objNum++;
+					cell1 = cell1->_next;
+				}
+			}
+			childFlag = true;
+			CreateColList(childIndex, colStack);
+		}
+	}
 
-	unsigned int areaIndex = (SeparateBit(xIndex) | (SeparateBit(zIndex) << 1));
-
-	return areaIndex;
+	// ⑤ スタックからCellを取り除く
+	if (childFlag) {
+		for (int i = 0; i < objNum; i++) {
+			colStack.pop_back();
+		}
+	}
 }
 
-unsigned int CollisionManager::SeparateBit(unsigned int n)
-{
-	n = (n | (n << 8)) & 0x00ff00ff;
-	n = (n | (n << 4)) & 0x0f0f0f0f;
-	n = (n | (n << 2)) & 0x33333333;
-	return (n | (n << 1)) & 0x55555555;
-}
-
+// 当たり判定処理
 void CollisionManager::CheckColList()
 {
+	// 当たり判定リストを走査
 	for (auto& colPair : _colList) {
 		Cell* cell1 = colPair.first;
 		Cell* cell2 = colPair.second;
@@ -597,8 +691,8 @@ void CollisionManager::CheckHit(Player* player, Tower* tower)
 
 void CollisionManager::CheckHitIbAndEn(IronBall* ironBall, EnemyBase* enemy)
 {
-	bool isAttackState = ironBall->GetEnabledAttackCollision();
-	if (isAttackState) {
+	bool enabledIBAttackCollision = ironBall->GetEnabledAttackCollision();
+	if (enabledIBAttackCollision) {
 		Sphere ibCol = ironBall->GetIBCollision();
 		Sphere eCol = { enemy->GetCollisionPos(), enemy->GetR() };
 
@@ -610,14 +704,15 @@ void CollisionManager::CheckHitIbAndEn(IronBall* ironBall, EnemyBase* enemy)
 			VECTOR vDir = VSub(eCol.centerPos, pPos);
 			vDir = VNorm(vDir);
 			enemy->SetKnockBackAndDamage(vDir, player->GetPower());
+			global._soundServer->DirectPlay("SE_Hit01");
 		}
 	}
 }
 
 void CollisionManager::CheckHitIbAndBldg(IronBall* ironBall, BuildingBase* building)
 {
-	bool isAttackState = ironBall->GetEnabledAttackCollision();
-	if (building->GetUseCollision() && building->GetCanBreak() && isAttackState) {
+	bool enabledIBAttackCollision = ironBall->GetEnabledAttackCollision();
+	if (building->GetUseCollision() && building->GetCanBreak() && enabledIBAttackCollision) {
 		Sphere ibCol = ironBall->GetIBCollision();
 		OBB bCol = building->GetOBBCollision();
 
@@ -625,17 +720,18 @@ void CollisionManager::CheckHitIbAndBldg(IronBall* ironBall, BuildingBase* build
 			Player* player = static_cast<Player*>(ironBall->GetParentInstance());
 			VECTOR vDir = VSub(bCol.pos, player->GetPosition());
 			building->SetHit(vDir);
-			player->SetExp(50);
-			global._soundServer->DirectPlay("OBJ_RockBreak");
+			player->SetExp(building->GetExp());
+			Suppression::GetInstance()->SubSuppression(building->GetSuppression());
+			global._soundServer->DirectPlay(building->GetName() + "_Break");
 		}
 	}
 }
 
 void CollisionManager::CheckHitIbAndTwr(IronBall* ironBall, Tower* tower)
 {
-	bool isAttackState = ironBall->GetEnabledAttackCollision();
+	bool enabledIBAttackCollision = ironBall->GetEnabledAttackCollision();
 	bool canBlast = tower->GetCanBlast();
-	if (isAttackState && canBlast) {
+	if (enabledIBAttackCollision && canBlast) {
 		Sphere ibCol = ironBall->GetIBCollision();
 		Sphere tCol = tower->GetCollision();
 
@@ -644,15 +740,15 @@ void CollisionManager::CheckHitIbAndTwr(IronBall* ironBall, Tower* tower)
 			VECTOR vDir = VSub(tCol.centerPos, player->GetPosition());
 			player->SetExp(50);
 			tower->SetBlast(vDir);
-			global._soundServer->DirectPlay("OBJ_RockBreak");
+			global._soundServer->DirectPlay("SE_Hit_Tower");
 		}
 	}
 }
 
 void CollisionManager::CheckHitChAndEn(IronBall* ironBall, EnemyBase* enemy)
 {
-	bool isAttackState = ironBall->GetEnabledAttackCollision();
-	if (isAttackState) {
+	bool enabledIBAttackCollision = ironBall->GetEnabledAttackCollision();
+	if (enabledIBAttackCollision) {
 		Capsule cCol = ironBall->GetChainCollision();
 		Sphere eCol = { enemy->GetCollisionPos(), enemy->GetR() };
 
@@ -664,14 +760,15 @@ void CollisionManager::CheckHitChAndEn(IronBall* ironBall, EnemyBase* enemy)
 			VECTOR vDir = VSub(eCol.centerPos, pPos);
 			vDir = VNorm(vDir);
 			enemy->SetKnockBackAndDamage(vDir, player->GetPower());
+			global._soundServer->DirectPlay("SE_Hit01");
 		}
 	}
 }
 
 void CollisionManager::CheckHitChAndBldg(IronBall* ironBall, BuildingBase* building)
 {
-	bool isAttackState = ironBall->GetEnabledAttackCollision();
-	if (building->GetUseCollision() && building->GetCanBreak() && isAttackState) {
+	bool enabledIBAttackCollision = ironBall->GetEnabledAttackCollision();
+	if (building->GetUseCollision() && building->GetCanBreak() && enabledIBAttackCollision) {
 		Capsule cCol = ironBall->GetChainCollision();
 		OBB bCol = building->GetOBBCollision();
 
@@ -679,17 +776,18 @@ void CollisionManager::CheckHitChAndBldg(IronBall* ironBall, BuildingBase* build
 			Player* player = static_cast<Player*>(ironBall->GetParentInstance());
 			VECTOR vDir = VSub(bCol.pos, player->GetPosition());
 			building->SetHit(vDir);
-			player->SetExp(50);
-			global._soundServer->DirectPlay("OBJ_RockBreak");
+			player->SetExp(building->GetExp());
+			global._soundServer->DirectPlay(building->GetName() + "_Break");
+			Suppression::GetInstance()->SubSuppression(building->GetSuppression());
 		}
 	}
 }
 
 void CollisionManager::CheckHitChAndTwr(IronBall* ironBall, Tower* tower)
 {
-	bool isAttackState = ironBall->GetEnabledAttackCollision();
+	bool enabledIBAttackCollision = ironBall->GetEnabledAttackCollision();
 	bool canBlast = tower->GetCanBlast();
-	if (isAttackState && canBlast) {
+	if (enabledIBAttackCollision && canBlast) {
 		Capsule cCol = ironBall->GetChainCollision();
 		Sphere tCol = tower->GetCollision();
 
@@ -698,7 +796,7 @@ void CollisionManager::CheckHitChAndTwr(IronBall* ironBall, Tower* tower)
 			VECTOR vDir = VSub(tCol.centerPos, player->GetPosition());
 			player->SetExp(50);
 			tower->SetBlast(vDir);
-			global._soundServer->DirectPlay("OBJ_RockBreak");
+			global._soundServer->DirectPlay("SE_Hit_Tower");
 		}
 	}
 }
@@ -732,7 +830,9 @@ void CollisionManager::CheckHit(EnemyBase* enemy, BuildingBase* building)
 		if (enemy->GetEnemyState() == ENEMYTYPE::DEAD) {
 			VECTOR vDir = VSub(bCol.pos, eCol.centerPos);
 			building->SetHit(vDir);
-			global._soundServer->DirectPlay("OBJ_RockBreak");
+			Player::GetInstance()->SetExp(building->GetExp());
+			global._soundServer->DirectPlay(building->GetName() + "_Break");
+			Suppression::GetInstance()->SubSuppression(building->GetSuppression());
 		}
 		else {
 			// 敵の押し出し処理
@@ -772,8 +872,13 @@ void CollisionManager::CheckHit(EnemyBase* enemy, TowerParts* towerParts)
 		Sphere tCol = towerParts->GetCollision();
 
 		if (Collision3D::SphereCol(eCol, tCol)) {
-			VECTOR vDir = VSub(tCol.centerPos, eCol.centerPos);
-			enemy->SetKnockBackAndDamage(vDir, 200);
+			VECTOR vDir = VSub(eCol.centerPos, tCol.centerPos);
+			vDir = VNorm(vDir);
+			//float r = rand() % 2;
+			//r = 1;
+			//vDir = VTransform(vDir, MGetRotY(Math::DegToRad(45.0f * r)));
+			enemy->SetKnockBackAndDamage(vDir, 9999);
+			global._soundServer->DirectPlay("SE_Hit01");
 		}
 	}
 }
@@ -788,60 +893,27 @@ void CollisionManager::CheckHit(BuildingBase* building, TowerParts* towerParts)
 		if (Collision3D::OBBSphereCol(bCol, tCol)) {
 			VECTOR vDir = VSub(bCol.pos, tCol.centerPos);
 			building->SetHit(vDir);
-			global._soundServer->DirectPlay("OBJ_RockBreak");
+			Player::GetInstance()->SetExp(building->GetExp());
+			global._soundServer->DirectPlay(building->GetName() + "_Break");
+			Suppression::GetInstance()->SubSuppression(building->GetSuppression());
 		}
 	}
 }
 
-void CollisionManager::CreateColList(unsigned int treeIndex, std::list<Cell*>& colStack)
+// ツリーとリストのクリア
+// _tree, _colList, _reserveRemovementListをクリアする
+void CollisionManager::ClearTreeAndList()
 {
-	Cell* cell1 = _tree[treeIndex]->_next;
-	// ① 同空間内のオブジェクト同士の衝突リストを作成
-	while (cell1 != nullptr)
-	{
-		Cell* cell2 = cell1->_next;
-		while (cell2 != nullptr)
-		{
-			_colList.push_back(std::make_pair(cell1, cell2));
-			cell2 = cell2->_next;
-		}
-		// ② 衝突スタックとの衝突リストを作成
-		for (auto& colCell : colStack) {
-			_colList.push_back(std::make_pair(cell1, colCell));
-		}
-		cell1 = cell1->_next;
+	for (int i = 0; i < _treeSize; i++) {
+		_tree[i]->_next = nullptr;
+		_tree[i]->_prev = nullptr;
 	}
-
-	bool childFlag = false;
-	// ③ 子空間を調べる
-	unsigned int objNum = 0;
-	// 1つの空間は4つの子空間を持つ
-	for (int j = 0; j < 4; j++) {
-		unsigned int childIndex = treeIndex * 4 + 1 + j;
-		if (childIndex < _treeSize && _tree[childIndex] != nullptr) {
-			if (!childFlag) {
-				// ④ treeIndexのCellをスタックに追加
-				cell1 = _tree[treeIndex]->_next;
-				while (cell1 != nullptr) {
-					colStack.push_back(cell1);
-					objNum++;
-					cell1 = cell1->_next;
-				}
-			}
-			childFlag = true;
-			CreateColList(childIndex, colStack);
-		}
-	}
-
-	// ⑤ スタックからCellを取り除く
-	if (childFlag) {
-		for (int i = 0; i < objNum; i++) {
-			colStack.pop_back();
-		}
-	}
+	_colList.clear();
+	_reserveRemovementList.clear();
 }
 
-void CollisionManager::DrawSegmentLine()
+// セグメントの区切りをワールド空間に描画
+void CollisionManager::DrawSegment()
 {
 	for (int i = 0; i < _segmentNumPerSide + 1; i++) {
 		VECTOR startPos = VGet(_offsetX + _segmentLength * i, 0.0f, _offsetZ);
@@ -857,13 +929,13 @@ void CollisionManager::DrawSegmentLine()
 	}
 }
 
-void CollisionManager::DrawAreaIndex()
+// セルが属するセグメントのインデックスをそのセルを保持するオブジェクトの座標に描画
+void CollisionManager::DrawSegmentIndex()
 {
 	for (int i = 0; i < _treeSize; i++) {
 		Cell* cell = _tree[i]->_next;
 		while (cell != nullptr)
 		{
-
 			VECTOR worldPos = VGet(0.0f, 0.0f, 0.0f);
 			ObjectBase* obj = nullptr;
 			switch (cell->_objType)

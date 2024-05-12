@@ -1,4 +1,15 @@
+//----------------------------------------------------------------------
+// @filename LoadingChain.cpp
+// @date: 2024/03/03
+// @author: saito ko
+// @explanation
+// loading時の鎖を制御・描画を行うクラス
+//----------------------------------------------------------------------
 #include "LoadingChain.h"
+//----------------------------------------------------------------------
+// @brief: コンストラクタ
+// @return: 無し
+//----------------------------------------------------------------------
 LoadingChain::LoadingChain() {
 	_cModelHandle = -1;
 	_iModelHandle = -1;
@@ -18,16 +29,22 @@ LoadingChain::LoadingChain() {
 	_attackAnimCnt = 0;
 	_length = 0;
 
+	_modelColor = nullptr;
+	_ibDefaultScale = VGet(1,1,1);
 };
-
+//----------------------------------------------------------------------
+// @brief: デストラクタ
+// @return: 無し
+//----------------------------------------------------------------------
 LoadingChain::~LoadingChain() {
 	delete _modelColor; _modelColor = nullptr;
-	MV1DeleteModel(_cModelHandle);
-	MV1DeleteModel(_iModelHandle);
 };
-
+//----------------------------------------------------------------------
+// @brief: 初期化
+// @return: 無し
+//----------------------------------------------------------------------
 void LoadingChain::Init(){
-	_cModelHandle = ResourceServer::Load("Chain","res/Chain/Cg_Chain.mv1");
+	_cModelHandle = ResourceServer::MV1LoadModel("LoadingChain","res/Character/Loading/Cg_Chain.mv1");
 	_cPos[0] = VGet(0.0f, 0.0f, 0.0f);
 	MV1SetPosition(_cModelHandle, _cPos[0]);
 	MV1SetScale(_cModelHandle, VGet(0.5f, 0.5f, 0.5f));
@@ -36,7 +53,7 @@ void LoadingChain::Init(){
 		_cPos[i] = VAdd(_cPos[i - 1], VGet(100.0f, 0.0f, 0.0f));
 	}
 
-	_iModelHandle = ResourceServer::Load("IronBall", "res/Character/Cg_Iron_Ball/Cg_Iron_Ball.mv1");
+	_iModelHandle = ResourceServer::MV1LoadModel("LoadingIronBall", "res/Character/Loading/Cg_Iron_Ball.mv1");
 	_iPos = VAdd(_cPos[Chain_Num - 1], VGet(0.0f, 10.0f, 0.0f));
 	_ibDefaultScale = VGet(2.5f, 2.5f, 2.5f);
 	MV1SetScale(_iModelHandle, _ibDefaultScale);
@@ -49,13 +66,26 @@ void LoadingChain::Init(){
 
 	_length = 50.0f;
 
-	_modelColor = new ModelColor();
+	// 境界線を消す
+	for (int i = 0; i < MV1GetMaterialNum(_cModelHandle); i++) {
+		MV1SetMaterialOutLineWidth(_cModelHandle, i, 0);
+		MV1SetMaterialOutLineDotWidth(_cModelHandle, i, 0);
+	}
+	for (int i = 0; i < MV1GetMaterialNum(_iModelHandle); i++) {
+		MV1SetMaterialOutLineWidth(_iModelHandle, i, 0);
+		MV1SetMaterialOutLineDotWidth(_iModelHandle, i, 0);
+	}
+
+	_modelColor = NEW ModelColor();
 	_modelColor->Init(_iModelHandle);
 	_modelColor->ChangeFlickerTexture(true);
 	_modelColor->Init(_cModelHandle);
 	_modelColor->ChangeFlickerTexture(true);
 };
-
+//----------------------------------------------------------------------
+// @brief: 鎖の移動
+// @return: 無し
+//----------------------------------------------------------------------
 void LoadingChain::Process(){
 	// 鎖の初めの位置
 	MATRIX m = MV1GetFrameLocalWorldMatrix(_playerModelHandle, _socketNo[0]);
@@ -86,11 +116,6 @@ void LoadingChain::Process(){
 		float offsetY = (difference * vDelta.y / distance) * 0.9f;
 		float offsetZ = (difference * vDelta.z / distance) * 0.9f;
 
-		//if (i != 0) {
-		//	_cPos[i].x -= offsetX;
-		//	_cPos[i].y -= offsetY;
-		//	_cPos[i].z -= offsetZ;
-		//}
 		float mul = 1.0f;
 		if (i == 0) mul = 2.0f;
 		_cPos[i + 1].x += offsetX * mul;
@@ -111,7 +136,10 @@ void LoadingChain::Process(){
 	// アニメーションプロセス
 	AnimProcess();
 };
-
+//----------------------------------------------------------------------
+// @brief: アニメーションの処理
+// @return: 無し
+//----------------------------------------------------------------------
 void LoadingChain::AnimProcess(){
 	MV1SetAttachAnimTime(_iModelHandle, _animIndex, _playTime);
 
@@ -120,7 +148,10 @@ void LoadingChain::AnimProcess(){
 		_playTime = 0.0f;
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief: プレイヤーモデルのハンドルをセット
+// @param: handle : プレイヤーモデルのハンドル
+// @return: 無し
 void LoadingChain::SetPlayerModelHandle(int handle) {
 	_playerModelHandle = handle;
 
@@ -128,7 +159,10 @@ void LoadingChain::SetPlayerModelHandle(int handle) {
 	_socketNo[1] = MV1SearchFrame(_playerModelHandle, "chain2");
 	_socketNo[2] = MV1SearchFrame(_playerModelHandle, "chain3");
 };
-
+//----------------------------------------------------------------------
+// @brief: 描画処理
+// @return: 無し
+//----------------------------------------------------------------------
 void LoadingChain::Render() {
 	// 鎖の描画
 	for (int i = 0; i < Chain_Num; i++) {

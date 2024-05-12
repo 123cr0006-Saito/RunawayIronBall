@@ -1,16 +1,29 @@
 #include "bone.h"
-
-const Vector3D bone::_orign(0,0,0);
+//----------------------------------------------------------------------
+// @filename bone.cpp
+// @date: 2023/12/30
+// @author: saito ko
+// @explanation
+// キャラクターの髪の毛やリボンなどをboneを物理演算で動かすためのクラス
+//----------------------------------------------------------------------
+const Vector3D bone::_orign(0, 0, 0);
 
 //1Ｆ 大体0.015 ~ 0.017秒ぐらい 
 //1回だと発散する
 //2回だとぐにゃぐにゃになる
 //10回だと鎖っぽくなる
 //100回以上がきれいに見える
-
 //今は大体150～170回
 const double bone::_processInterval = 0.0001;
 
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @param Model モデルハンドル
+// @param list 動かしたいボーンのフレーム番号
+// @param size ボーンの数
+// @param jsonFileName パラメータデータが入ったjsonファイルの名前
+// @return なし
+//----------------------------------------------------------------------
 bone::bone(
 	int* Model,
 	std::vector<int> list,
@@ -27,24 +40,25 @@ bone::bone(
 	_vecDirList = NEW Vector3D[_listSize];
 	_orignPos = NEW Vector3D[_listSize + 2];
 	_transMatrixList = NEW MATRIX[_listSize];
-
-	_transFlag = 1;
-	_oldTransFlag = _transFlag;
-
+	// デバッグ情報を表示するかどうか
+	_isTrans = 1;
+	_oldIsTrans = _isTrans;
+	// 計算する前の骨の向きや行列・位置を取得
 	for (int i = 0; i < _listSize; i++) {
 		_transMatrixList[i] = MV1GetFrameLocalMatrix(*_model, _frameList[i + 1]);//自分（親）の場所
 		MATRIX local_mat = MV1GetFrameLocalMatrix(*_model, _frameList[i + 2]);//子に向いている方向
 		_vecDirList[i] = VTransform(_orign.toVECTOR(), local_mat);
-
+		// 行列の3行目を初期化
 		for (int j = 0; j < 3; j++) {
 			_transMatrixList[i].m[3][j] = 0.0f;
 		}
 
 		_orignPos[i + 2] = MV1GetFramePosition(*_model, _frameList[i + 2]);
 	}
+	//付け根の位置を取得
 	_orignPos[0] = MV1GetFramePosition(*_model, _frameList[0]);
 	_orignPos[1] = MV1GetFramePosition(*_model, _frameList[1]);
-
+	// 重力の向き
 	_gravityDir = VGet(0.0f, -1.0f, 0.0f);
 
 	//----------------------------------------------------------------------------------
@@ -54,23 +68,23 @@ bone::bone(
 	_massAccelList = NEW Vector3D[_massPointSize];
 
 	_massWeight = NEW float[_massPointSize];
-	 _viscousResistance = NEW float[_massPointSize];
-	 _gravity = NEW float[_massPointSize];
-	 _spring = NEW float[_massPointSize];
-	 _naturalCorrectionFactor = NEW float[_massPointSize];
+	_viscousResistance = NEW float[_massPointSize];
+	_gravity = NEW float[_massPointSize];
+	_spring = NEW float[_massPointSize];
+	_naturalCorrectionFactor = NEW float[_massPointSize];
 
-	 //ファイル読み込み---------------------------------------------------
-	 myJson json(jsonFileName);
-	 int i = 0;
-	 for (auto& bone : json._json) {
-		 bone.at("massWeight").get_to(_massWeight[i]);
-		 bone.at("viscousResistance").get_to(_viscousResistance[i]);
-		 bone.at("gravity").get_to(_gravity[i]);
-		 bone.at("spring").get_to(_spring[i]);
-		 bone.at("naturalCorrectionFactor").get_to(_naturalCorrectionFactor[i]);
-		 i++;
-	 }
-	 //--------------------------------------------------------------------------
+	//ファイルからそれぞれのパラメータを読み込み-----------
+	myJson json(jsonFileName);
+	int i = 0;
+	for (auto& bone : json._json) {
+		bone.at("massWeight").get_to(_massWeight[i]);
+		bone.at("viscousResistance").get_to(_viscousResistance[i]);
+		bone.at("gravity").get_to(_gravity[i]);
+		bone.at("spring").get_to(_spring[i]);
+		bone.at("naturalCorrectionFactor").get_to(_naturalCorrectionFactor[i]);
+		i++;
+	}
+	//--------------------------------------------------------------------------
 
 	for (int i = 0; i < _massPointSize; i++) {
 		_massPosList[i].Set(MV1GetFramePosition(*_model, _frameList[i + 1]));
@@ -90,7 +104,10 @@ bone::bone(
 		_springList[i] = _naturalList[i] * _spring[i];
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief デストラクタ
+// @return なし
+//----------------------------------------------------------------------
 bone::~bone() {
 	_frameList.clear();
 	_springList.clear();
@@ -111,7 +128,11 @@ bone::~bone() {
 	delete[] _naturalCorrectionFactor; _naturalCorrectionFactor = nullptr;
 
 };
-
+//----------------------------------------------------------------------
+// @brief メイン処理
+// @param pos_list ボーンの位置のリスト
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 void bone::SetMain(Vector3D* pos_list) {
 	for (int i = 0; i < _listSize; i++) {
 		SetBoneDir(
@@ -124,7 +145,16 @@ void bone::SetMain(Vector3D* pos_list) {
 		);
 	};
 };
-
+//----------------------------------------------------------------------
+// @brief ボーンの向きを設定
+// @param world_dir_vec ボーンの方向
+// @param boon_pos ボーンの付け根の位置
+// @param target_frame 変更するボーンのフレーム番号
+// @param parent_frame 親ボーンのフレーム番号
+// @param trans_mat  付け根の位置を変更するための行列
+// @param dir_parent 今の向き
+// @return なし
+//----------------------------------------------------------------------
 void bone::SetBoneDir(
 	Vector3D world_dir_vec,
 	Vector3D boon_pos,
@@ -154,20 +184,27 @@ void bone::SetBoneDir(
 	tmpMat = MMult(rotationMat, shiftPos);
 	MV1SetFrameUserLocalMatrix(*_model, target_frame, tmpMat);
 }
-
+//----------------------------------------------------------------------
+// @brief デバッグ処理
+// @param transNum 透明にするボーンのフレーム番号
+// @return なし
+//----------------------------------------------------------------------
 void bone::DebugProcess(int transNum) {
-	if (_oldTransFlag != _transFlag) {
+	if (_oldIsTrans != _isTrans) {
 		for (int i = 0; i < _frameList.size(); i++) {
 			int frameNum = _frameList.at(i);
-			MV1SetFrameVisible(*_model, frameNum, _transFlag);
+			MV1SetFrameVisible(*_model, frameNum, _isTrans);
 		}
-		MV1SetFrameVisible(*_model, transNum, _transFlag);
-		_oldTransFlag = _transFlag;
+		MV1SetFrameVisible(*_model, transNum, _isTrans);
+		_oldIsTrans = _isTrans;
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief デバッグ描画
+// @return なし
+//----------------------------------------------------------------------
 void bone::DebugRender() {
-	if (!_transFlag) {
+	if (!_isTrans) {
 		int r = 5;
 		int divNum = 16;
 		int color = GetColor(255, 0, 0);
@@ -180,11 +217,14 @@ void bone::DebugRender() {
 		}
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief メイン処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool bone::Process() {
-
+	// 1Fの経過時間を取得
 	double _elapsedTime = global._timer->GetElapsedTime();
-
+	// 経過時間を差分化して処理を行う
 	while (1)
 	{
 		//1フレームを_processIntervalで差分化する
@@ -192,26 +232,31 @@ bool bone::Process() {
 		_elapsedTime -= _processInterval;
 		UpdatePosAndAccel(_processInterval);
 	}
+	// ボーンの位置を更新
 	SetMain(_massPosList);
-
 	return true;
 };
-
-void bone::SetGravity(std::string end, std::string start){
+//----------------------------------------------------------------------
+// @brief 重力の方向を設定
+// @param end 重力の方向を設定位置を取得するためのボーンのフレーム名
+// @param start 重力の方向を設定位置を取得するためのボーンのフレーム名
+// @return なし
+//----------------------------------------------------------------------
+void bone::SetGravity(std::string end, std::string start) {
 	int frame = MV1SearchFrame(*_model, end.c_str());
 	VECTOR headPos = MV1GetFramePosition(*_model, frame);
 	frame = MV1SearchFrame(*_model, start.c_str());
 	VECTOR spinePos = MV1GetFramePosition(*_model, frame);
-	
+
 	VECTOR dirVec = VSub(spinePos, headPos);
 	_gravityDir = VNorm(VScale(dirVec, -1));
 };
 
-//参考サイト
-//http://www.den.t.u-tokyo.ac.jp/ad_prog/ode/ //オイラー法について
-//https://high-school-physics.com/spring-constant-of-the-combined-spring/ //ばねのつり合いについて
-//オイラー法で計算したため、ひとつ前の計算した値を使用している
-//時間があればルンゲクッタ法に変更したい
+//----------------------------------------------------------------------
+// @brief オイラー法によるboneの位置と加速度の更新
+// @param _elapsedTime 差分化した時間
+// @return なし
+// ----------------------------------------------------------------------
 void bone::UpdatePosAndAccel(double _elapsedTime) {
 	//時間で処理を細分化し少しずつ答えに近づけていく
 	Vector3D* newPosList = NEW Vector3D[_massPointSize];
@@ -235,11 +280,17 @@ void bone::UpdatePosAndAccel(double _elapsedTime) {
 	// 速度と位置をまとめて変更
 	std::swap(_massAccelList, newAccelList);
 	std::swap(_massPosList, newPosList);
-};
 
-//質点に働く力を計算 F=maを求める
-//参考サイト
-//https://www.yukimura-physics.com/entry/dyn-f22 //運動方程式の立て方について
+	delete[] newPosList;
+	delete[] newAccelList;
+};
+//----------------------------------------------------------------------
+// @brief ばねのつり合い、重力、抵抗力から力を求める
+// @param i 質点の番号
+// @param posList 質点の位置のリスト
+// @param accelList 質点の加速度のリスト
+// @return ニュートンの運動の法則に基づいた力
+// ----------------------------------------------------------------------
 Vector3D bone::ForceWorksToMassPoint(int i, Vector3D* posList, Vector3D* accelList) {
 	Vector3D force;
 
@@ -271,7 +322,10 @@ Vector3D bone::ForceWorksToMassPoint(int i, Vector3D* posList, Vector3D* accelLi
 
 	return force;
 };
-
+//----------------------------------------------------------------------
+// @brief boneの位置と加速度の初期化
+// @return なし
+//----------------------------------------------------------------------
 void bone::PositionReset() {
 	//※注意　位置や速度を初期化しますが、
 	// 垂直なモデルでないと初期化した後重力の影響で動きます

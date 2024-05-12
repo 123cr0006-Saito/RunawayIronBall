@@ -1,22 +1,39 @@
+//----------------------------------------------------------------------
+// @filename CrystarPattern2.cpp
+// @date: 2024/01/26
+// @author: saito ko
+// @explanation
+// クライスターのパターン2(岩)のクラス 頭突き攻撃をします。
+//----------------------------------------------------------------------
 #include "CrystarPattern2.h"
 
 int CrystarPattern2::_collisionFrame = -1;
-
-CrystarPattern2::CrystarPattern2() :EnemyBase::EnemyBase() {
-
-};
-
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @return なし
+//----------------------------------------------------------------------
+CrystarPattern2::CrystarPattern2() :EnemyBase::EnemyBase() {};
+//----------------------------------------------------------------------
+// @brief デストラクタ
+// @return なし
+//----------------------------------------------------------------------
 CrystarPattern2::~CrystarPattern2() {
 	delete _frameData;
 	delete _animManager;
 	delete _roof;
 };
-
+//----------------------------------------------------------------------
+// @brief エネミーの固有変数の初期化
+// @return なし
+//----------------------------------------------------------------------
 void CrystarPattern2::InheritanceInit() {
 	//個別でセットするもの
 	_animState = ANIMSTATE::IDLE;
 };
-
+//----------------------------------------------------------------------
+// @brief アニメーションマネージャーとフレームデータ・クライスターの屋根の初期化
+// @return なし
+//----------------------------------------------------------------------
 void CrystarPattern2::AnimInit() {
 
 	_roof = NEW CrystarRoof(ResourceServer::MV1LoadModel("CrystarRoof_Rock","res/Enemy/Cg_Enemy_Crystar_Rock/Cg_Enemy_Roof_Crystar_Rock.mv1"), _model, "joint1");
@@ -35,7 +52,10 @@ void CrystarPattern2::AnimInit() {
 		_collisionFrame = MV1SearchFrame(_model, "Hip");
 	}
 }
-
+//----------------------------------------------------------------------
+// @brief 更新処理
+// @return なし
+//----------------------------------------------------------------------
 void CrystarPattern2::CommandProcess() {
 	std::vector<CommandParam> commandParam = _frameData->GetCommandData();
 
@@ -52,7 +72,11 @@ void CrystarPattern2::CommandProcess() {
 		}
 	}
 };
-
+//----------------------------------------------------------------------
+// @brief 初期化処理
+// @param pos 初期位置
+// @return 無し
+//----------------------------------------------------------------------
 void CrystarPattern2::Init(VECTOR pos) {
 	_IsUse = true;
 
@@ -74,7 +98,11 @@ void CrystarPattern2::Init(VECTOR pos) {
 
 	InheritanceInit();
 };
-
+//----------------------------------------------------------------------
+// @brief サーチ状態の更新処理
+// @param plAttack プレイヤーが攻撃しているかどうか
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool CrystarPattern2::ModeSearch(bool plAttack) {
 	switch (_searchState) {
 	case SEARCHTYPE::MOVE:
@@ -109,7 +137,7 @@ bool CrystarPattern2::ModeSearch(bool plAttack) {
 			VECTOR ene_dir = VScale(Math::MatrixToVector(matrix, 2), -1);
 			VECTOR pla_dir = VNorm(dirVec);
 			float range_dir = Math::CalcVectorAngle(ene_dir, pla_dir);
-
+			// プレイヤーが視界に入ったら発見
 			if (range_dir <= _flontAngle) {
 				_modeState = ENEMYTYPE::DISCOVER;//状態を発見にする
 				_currentTime = GetNowCount();
@@ -120,7 +148,10 @@ bool CrystarPattern2::ModeSearch(bool plAttack) {
 
 	return true;
 }
-
+//----------------------------------------------------------------------
+// @brief 追跡状態の処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool CrystarPattern2::ModeDisCover() {
 	//移動処理
 	VECTOR move = VSub(_player->GetCollision().down_pos, _pos); move.y = 0.0f;//これをオンにするとy軸の移動がなくなる
@@ -153,11 +184,14 @@ bool CrystarPattern2::ModeDisCover() {
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 攻撃状態の処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool CrystarPattern2::ModeAttack() {
 	float attackTime = 54.0f / 60.0f * 1000; // 攻撃モーション時間
 	int nowTime = GetNowCount() - _currentTime;//今の状態になってから何秒経ったか？
-	float speed = 2 * -1; //モデルの方向が-z方向なので*-1
+	float speed = 3 * -1; //モデルの方向が-z方向なので*-1
 	if (nowTime > attackTime) { speed *= -1; _animState = ANIMSTATE::HANDBUTT; }
 
 	VECTOR dirvec = Math::MatrixToVector(MGetRotY(_rotation.y), 2);
@@ -171,7 +205,10 @@ bool CrystarPattern2::ModeAttack() {
 
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief クールタイム状態の処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool CrystarPattern2::ModeCoolTime() {
 
 	if (GetNowCount() - _currentTime >= _coolTime) {
@@ -181,7 +218,10 @@ bool CrystarPattern2::ModeCoolTime() {
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief ノックバック状態の処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool CrystarPattern2::ModeKnockBack() {
 	int nowTime = GetNowCount() - _currentTime;
 	float CoolTime = 3.0f * 1000; //硬直時間
@@ -197,14 +237,20 @@ bool CrystarPattern2::ModeKnockBack() {
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 固有の更新処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool CrystarPattern2::IndividualProcessing() {
-	_roof->Updata();
+	_roof->Update();
 	_animManager->Process(static_cast<int>(_animState));
 	_frameData->Process(static_cast<int>(_animState), _animManager->GetPlayTime());
 	return true;
 }
-
+//----------------------------------------------------------------------
+// @brief モデルの更新処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool CrystarPattern2::SetState() {
 	//最終的なモデルの位置や角度を調整
 	if (_model != 0) {
@@ -213,12 +259,18 @@ bool CrystarPattern2::SetState() {
 	}
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 固有の描画処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool CrystarPattern2::IndividualRendering() {
 	_roof->Render();
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief デバック用の描画処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool CrystarPattern2::DebugRender() {
 	DrawSphere3D(MV1GetFramePosition(_model, _collisionFrame), _r, 8, GetColor(0, 255, 0), GetColor(0, 0, 255), false);
 	return true;

@@ -1,10 +1,25 @@
+//----------------------------------------------------------------------
+// @filename LoadingPlayer.cpp
+// @date: 2024/03/03
+// @author: saito ko
+// @explanation
+// loading時のキャラクターのを制御・描画を行うクラス
+//----------------------------------------------------------------------
 #include "LoadingPlayer.h"
+//----------------------------------------------------------------------
+// @brief コンストラクタ
+// @return 無し
+//----------------------------------------------------------------------
 LoadingPlayer::LoadingPlayer(){
 
-	_modelHandle = ResourceServer::Load("Player", "res/Character/cg_player_girl/Cg_Player_Girl.mv1");
-	//_modelHandle = MV1LoadModel("res/Character/cg_player_girl/cg_player_girl_TEST_Ver.2.mv1");
+	_modelHandle = ResourceServer::MV1LoadModel("LoadingPlayer", "res/Character/Loading/Cg_Player_Girl.mv1");
 	float rotation = Math::DegToRad(90);// -x 方向に向ける
 	MV1SetRotationXYZ(_modelHandle, VGet(0,rotation,0));
+	for(int i = 0; i < MV1GetMaterialNum(_modelHandle); i++){
+		MV1SetMaterialOutLineWidth(_modelHandle, i, 0);
+		MV1SetMaterialOutLineDotWidth(_modelHandle, i, 0);
+	}
+
 
 	_pos = VGet(0, 0, 0);
 	
@@ -22,6 +37,7 @@ LoadingPlayer::LoadingPlayer(){
 
 	//アニメーションの初期化
 	std::string frameName;
+	// ランダムでアニメーションを変更
 	if (rand() % 2 == 0) {
 		frameName = "MO_PL_Walk";
 	}
@@ -35,13 +51,18 @@ LoadingPlayer::LoadingPlayer(){
 	_totalTime = MV1GetAttachAnimTotalTime(_modelHandle,_attachIndex);
 	_playTime = 0.0f;
 };
-
+//----------------------------------------------------------------------
+// @brief デストラクタ
+// @return 無し
+//----------------------------------------------------------------------
 LoadingPlayer::~LoadingPlayer() {
-	MV1DeleteModel(_modelHandle);
 	delete _chain; _chain = nullptr;
 	delete _modelColor; _modelColor = nullptr;
 };
-
+//----------------------------------------------------------------------
+// @brief 更新処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool LoadingPlayer::Process(){
 	_chain->Process();
 
@@ -50,7 +71,10 @@ bool LoadingPlayer::Process(){
 	AnimationProcess();
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief アニメーション処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool LoadingPlayer::AnimationProcess(){
 
 	MV1SetAttachAnimTime(_modelHandle, _attachIndex, _playTime);
@@ -62,7 +86,10 @@ bool LoadingPlayer::AnimationProcess(){
 
 	return true;
 };
-
+//----------------------------------------------------------------------
+// @brief 描画処理
+// @return 成功したかどうか
+//----------------------------------------------------------------------
 bool LoadingPlayer::Render() {
 	MV1DrawModel(_modelHandle);
 	_chain->Render();

@@ -1,3 +1,10 @@
+//----------------------------------------------------------------------
+// @filename SlaBlock.cpp
+// @date: 2023/12/14
+// @author: saito ko
+// @explanation
+// スラブロックの攻撃パターン1(岩)のクラス 1度だけプレイヤーの真上から落下攻撃を行います
+//----------------------------------------------------------------------
 #pragma once
 #include "EnemyBase.h"
 #include "ScreenVibration.h"
@@ -35,6 +42,6 @@ protected :
 		STOMP,
 		STAN
 	};
-	static int _collisionFrame;
-	ANIMSTATE _animState;
+	static int _collisionFrame;// 当たり判定のフレーム
+	ANIMSTATE _animState;// アニメーションの状態
 };

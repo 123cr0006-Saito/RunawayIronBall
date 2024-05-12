@@ -31,7 +31,5 @@ static float InCirc(float cnt, float start, float end, float frames);
 static float OutCirc(float cnt, float start, float end, float frames);
 static float InOutCirc(float cnt, float start, float end, float frames);
 
-static float  EasingOutElastic(float cnt, float start, float end, float frames);
-
-
+static float  OutElastic(float cnt, float start, float end, float frames);
 };
