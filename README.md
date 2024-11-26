@@ -14,6 +14,11 @@
 [nlomann-json](https://github.com/nlohmann/json)  
 
 # プロジェクト構成  
+<details>
+
+<summary>プロジェクト構成</summary>
+
+
 ```
 .
 |── AppFrame(ゲームを作成する際に必要となる機能や便利な機能をまとめたライブラリ)
@@ -272,6 +277,7 @@
 |
 └── README.md
 ```
+</details>
 
 # 起動方法  
 上記のプロジェクトをダウンロードし、解凍後「Game/Game.sln」を起動  
